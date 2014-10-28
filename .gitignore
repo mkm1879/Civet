@@ -13,7 +13,6 @@ bin
 *.log
 antbin
 *.log.*
-lib
 *.xls
 *.xlsx
 *.config
