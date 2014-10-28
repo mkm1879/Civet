@@ -1,0 +1,58 @@
+# CivetAltTabOrderMap.config
+# These maps are used when all fields sticky is on
+# if nothing is different, this file can be removed.
+#
+# Special Controls and Events
+# Control with focus when dialog opens
+pFirstControl=OtherCity
+pInstateFirst=OtherCity
+# Control with focus when Premise info found and filled in
+pPremiseFound=ThisCity
+#
+# Alternate tab order specification
+# Usage = FromControl=ToControl
+# Use copy and paste because spelling 
+# and capitalization must match exactly.
+# Default is next control in the list.  
+#
+ZoomPlusButton=
+ZoomMinusButton=
+RotateButton=
+ViewInAcrobatButton=
+PreviousFileButton=
+PreviousPageButton=
+NextPageButton=
+NextFileButton=
+GotoPageButton=
+AllValuesSticky=
+EditLastButton=
+Inbound= 
+Outbound= 
+InState= 
+OtherState=OtherCity 
+OtherName= 
+OtherAddress= 
+OtherCity=CertificateNumber 
+OtherZipcode= 
+OtherPIN= 
+ThisPhone= 
+ThisPIN=ThisCity 
+ThisName= 
+ThisAddress= 
+ThisCity= 
+ThisZipcode= 
+Species= 
+Number= 
+InspectedDate= 
+ReceivedDate= 
+CertificateNumber= 
+# Avoid the Issuing Vet as a ToControl because one
+# or the other hides depending on direction
+ThisIssuedBy= 
+OtherIssuedBy= 
+ShowAllVets= 
+Purpose= 
+ErrorsButton= 
+AddPageButton= 
+AddAnimalIDsButton= 
+SaveNextButton= 

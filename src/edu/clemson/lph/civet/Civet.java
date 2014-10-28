@@ -1,0 +1,124 @@
+package edu.clemson.lph.civet;
+/*
+Copyright 2014 Michael K Martin
+
+This file is part of Civet.
+
+Civet is free software: you can redistribute it and/or modify
+it under the terms of the Lesser GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Civet is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the Lesser GNU General Public License
+along with Civet.  If not, see <http://www.gnu.org/licenses/>.
+*/
+import java.awt.EventQueue;
+import java.io.IOException;
+
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
+import edu.clemson.lph.civet.robot.COKSRobot;
+import edu.clemson.lph.dialogs.ProgressDialog;
+import edu.clemson.lph.utils.StdErrLog;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+public class Civet {
+	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	static {
+		// BasicConfigurator replaced with PropertyConfigurator.
+	     PropertyConfigurator.configure("CivetConfig.txt");
+	     logger.setLevel(Level.ERROR);
+	}
+	private static ProgressDialog prog;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		// BasicConfigurator replaced with PropertyConfigurator.
+		PropertyConfigurator.configure("CivetConfig.txt");
+		// Fail now so config file and required files can be fixed before work is done.
+		CivetConfig.checkAllConfig();
+		if( args.length >= 1 && args[0].toLowerCase().equals("-robot") ) {
+			if( !CivetConfig.isJPedalXFA() ) {
+				System.err.println( "Robot mode requires JPedalXFA" );
+				System.exit(1);
+			}
+			COKSRobot robbie;
+			try {
+				robbie = new COKSRobot();
+				robbie.start();
+			} catch (IOException e) {
+				logger.error("Failed to start robot", e);
+				System.exit(1);
+			}
+		}
+		else {
+			if( args.length >= 2 ) {
+				CivetConfig.setDBUserName( args[0] );
+				CivetConfig.setDBPassword( args[1] );
+			}
+			StdErrLog.tieSystemErrToLog();
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						String os = System.getProperty("os.name");
+						if( os.toLowerCase().contains("mac os") ) {
+							System.setProperty("apple.laf.useScreenMenuBar", "true");
+							System.setProperty("com.apple.mrj.application.apple.menu.about.name",
+									"Civet");
+							System.setProperty("com.apple.mrj.application.growbox.intrudes",
+									"false");
+							UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+						}
+						else {
+							UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+							logger.info("UI look and feel set");
+						}
+					} 
+					catch (Exception e) {
+						logger.error(e.getMessage());
+					}
+					if( !CivetConfig.isStandAlone() ) {
+						prog = new ProgressDialog(null, "Civet: Cache", "Updating lookup tables from USAHERDS database");
+						prog.setAuto(true);
+						prog.setVisible(true);
+						(new Thread() {
+							public void run() {
+								try {
+									CivetConfig.initWebServices();
+									LookupFilesGenerator gen = new LookupFilesGenerator();
+									gen.generateAllLookups();
+									SwingUtilities.invokeLater(new Runnable() {
+										public void run() {
+											prog.setVisible(false);
+											new CivetInbox();
+										}
+									});
+								} catch (Exception e) {
+									logger.error("Error running main program in event thread", e);
+								}
+							}
+						}).start();
+					}
+				}
+			});
+	     }
+	}
+
+	/**
+	 * Hide constructor.  This class is ONLY a static main for configuration and startup.
+	 */
+	private Civet() {
+	}
+}

@@ -1,0 +1,26 @@
+.himage.CULPHWordMark.jpg
+.cb.South Carolina
+.cb.Department of Livestock
+.cb.Poultry Health Programs
+.cb.Office (803) 788-2260
+.cb.Fax (803) 736-0885
+
+This is a test of new software.  If I accidentally send it for real, I'm very sorry to bother you.  You should have already received these in the regular mail.  Mike Martin.
+
+TO  
+   {{{OtherStateVet}}}
+   {{{Address}}}
+   {{{City}}}, {{{StateCode}}}  {{{ZipCode}}}
+
+Enclosed are copies of Certificates of Veterinary Inspection  {{{StateName}}} bound for South Carolina that include errors.  Specific errors are listed on a cover page for each CVI.  
+
+Other information from Dr. Parr
+
+Boyd H. Parr, DVM
+State Veterinarian
+
+.fimage.ClemsonSeal.png
+.ci.DEPARTMENT OF LIVESTOCK POULTRY HEALTH PROGRAMS
+.csi.Animal Health Programs   PO Box 102406, Columbia, SC 29224-2406  (500 Clemson Road, Columbia, SC 29229) 
+.csi. 803.788.2260   FAX 803.736.0885    
+.csi. Public Service Activities
