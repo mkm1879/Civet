@@ -4,8 +4,9 @@ examples/*
 *.class
 *.csv
 lib/jpedalXFA.jar
-lib/jpedal.jar
 lib/sqljdbc4.jar
+lib/jpedal.jar
+lib/jpedal-standard.jar
 !StateVetTable.csv
 *.docx
 *.doc

@@ -77,17 +77,14 @@ errorTypeTableFile=ErrorTypeTable.csv
 log4j.rootLogger=info, stdout, R
 
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
-log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-
+log4j.appender.stdout.layout=org.apache.log4j.EnhancedPatternLayout
 # Pattern to output the caller's file name and line number.
-log4j.appender.stdout.layout.ConversionPattern=%5p [%t] (%F:%L) - %m%n
+log4j.appender.stdout.layout.ConversionPattern=%5p [%t] (%F:%L) - %m%n%throwable{5}
 
 log4j.appender.R=org.apache.log4j.RollingFileAppender
 log4j.appender.R.File=Civet.log
-
 log4j.appender.R.MaxFileSize=100KB
 # Keep one backup file
 log4j.appender.R.MaxBackupIndex=1
-
-log4j.appender.R.layout=org.apache.log4j.PatternLayout
-log4j.appender.R.layout.ConversionPattern=%d %5p %t (%F:%M:%L)%n%m%n
+log4j.appender.R.layout=org.apache.log4j.EnhancedPatternLayout
+log4j.appender.R.layout.ConversionPattern=%d{dd MMM yyyy HH:mm} %5p %F [%t] %n%m%n %throwable{5}%n
