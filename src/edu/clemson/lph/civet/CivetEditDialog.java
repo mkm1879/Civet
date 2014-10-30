@@ -1587,6 +1587,11 @@ public final class CivetEditDialog extends JFrame {
 		}
 		else {
 			sThisPremId = sUpperPin;
+			jtfThisPIN.setText(sUpperPin);
+		}
+		if( CivetConfig.isStandAlone() ) {
+			// TODO Implement local premises lookup replacement
+			return;
 		}
 		if( bInSearch ) 
 			return;
@@ -1661,36 +1666,42 @@ public final class CivetEditDialog extends JFrame {
 	}
 
 	void jtfPhone_focusLost(FocusEvent e) {
-		if( !CivetConfig.isStandAlone() ) {
-			String sPhone = jtfPhone.getText();
-			if( sPhone == null || sPhone.trim().length() == 0 || sPhone.equals(sPriorPhone) ) return;
-			PremisesSearchDialog dlg = new PremisesSearchDialog();
-			try {
-				dlg.searchPhone(sPhone);
-				if( dlg.exitOK() ) {
-					jtfThisName.setText(dlg.getSelectedPremName());
-					jtfAddress.setText(dlg.getSelectedAddress1());
-					jtfThisCity.setText(dlg.getSelectedCity());
-					jtfZip.setText(dlg.getSelectedZipCode());
-					String sPin = dlg.getSelectedFedPremId();
-					if( sPin == null ) {
-						sPin = dlg.getSelectedStatePremId();
-						String sThisState = CivetConfig.getHomeStateAbbr();
-						bLidFromHerds = isValidLid( sPin, sThisState);
-					}
-					jtfThisPIN.setText(sPin);
-					Component c = traversal.getComponentByName(traversal.getProperty("pPremiseFound"));
-					if( c != null)
-						c.requestFocus();
+		if( CivetConfig.isStandAlone() ) {
+			// TODO Implement local premises lookup replacement
+			return;
+		}
+		String sPhone = jtfPhone.getText();
+		if( sPhone == null || sPhone.trim().length() == 0 || sPhone.equals(sPriorPhone) ) return;
+		PremisesSearchDialog dlg = new PremisesSearchDialog();
+		try {
+			dlg.searchPhone(sPhone);
+			if( dlg.exitOK() ) {
+				jtfThisName.setText(dlg.getSelectedPremName());
+				jtfAddress.setText(dlg.getSelectedAddress1());
+				jtfThisCity.setText(dlg.getSelectedCity());
+				jtfZip.setText(dlg.getSelectedZipCode());
+				String sPin = dlg.getSelectedFedPremId();
+				if( sPin == null ) {
+					sPin = dlg.getSelectedStatePremId();
+					String sThisState = CivetConfig.getHomeStateAbbr();
+					bLidFromHerds = isValidLid( sPin, sThisState);
 				}
-			} catch (WebServiceException e1) {
-				MessageDialog.showMessage(this, "Civet: Error", "Web Service Failure\n" + e1.getMessage());
-				logger.error("Web Service Failure", e1);
+				jtfThisPIN.setText(sPin);
+				Component c = traversal.getComponentByName(traversal.getProperty("pPremiseFound"));
+				if( c != null)
+					c.requestFocus();
 			}
+		} catch (WebServiceException e1) {
+			MessageDialog.showMessage(this, "Civet: Error", "Web Service Failure\n" + e1.getMessage());
+			logger.error("Web Service Failure", e1);
 		}
 	}
 
 	void jtfAddrCity_focusLost(FocusEvent e) {
+		if( CivetConfig.isStandAlone() ) {
+			// TODO Implement local premises lookup replacement
+			return;
+		}
 		String sCity = jtfThisCity.getText();
 		String sAddress = jtfAddress.getText();
 		// don't bother if either address or city is blank or neither has changed.

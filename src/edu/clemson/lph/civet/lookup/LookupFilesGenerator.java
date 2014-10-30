@@ -58,6 +58,35 @@ public class LookupFilesGenerator {
 		}
 	}
 	
+	public static synchronized boolean checkLookupFiles() {
+		boolean bRet = true;
+		String sName = CivetConfig.getSppTableFile();
+		File f = new File( sName );
+		if( !f.exists() || !f.isFile() ) {
+			logger.error( "Species lookup table: " + sName + " does not exist or is not a file");
+			bRet = false;
+		}
+		sName = CivetConfig.getErrorTypeTableFile();
+		f = new File( sName );
+		if( !f.exists() || !f.isFile() ) {
+			logger.error( "Error type lookup table: " + sName + " does not exist or is not a file");
+			bRet = false;
+		}
+		sName = CivetConfig.getPurposeTableFile();
+		f = new File( sName );
+		if( !f.exists() || !f.isFile() ) {
+			logger.error( "CVI purpose lookup table: " + sName + " does not exist or is not a file");
+			bRet = false;
+		}
+		sName = CivetConfig.getStateVetTableFile();
+		f = new File( sName );
+		if( !f.exists() || !f.isFile() ) {
+			logger.error( "State vet lookup table: " + sName + " does not exist or is not a file");
+			bRet = false;
+		}
+		return bRet;
+	}
+	
 	public static boolean isNewThisSession() {
 		return bNewThisSession;
 	}

@@ -165,7 +165,7 @@ public class CivetInbox extends JFrame {
 		statusBar.setText(" ");
 		jpCount.setLayout(new FlowLayout());
 		menuView.setText("View");
-		menuView.setEnabled(!CivetConfig.isStandAlone());
+		menuView.setEnabled(true);
 		
 		menuItemViewNew.setText("To Be Entered");
 		menuItemViewNew.addActionListener(new ActionListener() {
@@ -176,7 +176,7 @@ public class CivetInbox extends JFrame {
 		menuView.add(menuItemViewNew);
 		
 		menuItemViewToBeFiled.setText("Entered CVIs Ready to Upload to HERDS");
-		menuItemViewToBeFiled.setEnabled(!CivetConfig.isStandAlone());
+		menuItemViewToBeFiled.setEnabled(true);
 		menuItemViewToBeFiled.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				viewToBeFiled();
@@ -216,7 +216,7 @@ public class CivetInbox extends JFrame {
 		menuView.add(menuItemViewUnsentInboundErrors);
 
 		menuItemViewRefresh.setText("Refresh");
-		menuItemViewRefresh.setEnabled(!CivetConfig.isStandAlone());
+		menuItemViewRefresh.setEnabled(true);
 		menuItemViewRefresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				currentModel.refresh();
@@ -227,21 +227,19 @@ public class CivetInbox extends JFrame {
 		this.setJMenuBar(menuBar1);
 		statusPanel.setLayout(new FlowLayout());
 		mainPanel.setLayout(borderLayout2);
-		if( !CivetConfig.isStandAlone() ) {
-			sourceModel = new SourceFilesTableModel( new File( CivetConfig.getInputDirPath() ) );
-			tblInBox.setModel(sourceModel);
-			tblInBox.setRowSorter( sourceModel.getSorter() );
-			tblInBox.setDefaultRenderer(java.util.Date.class, new DateCellRenderer() );
-			tblInBox.setAutoCreateRowSorter(true);
-			tblInBox.setRowSelectionAllowed(true);
-			tblInBox.addMouseListener(new MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					if( e.getClickCount() == 2 ) {
-						doOpenFiles();
-					}
+		sourceModel = new SourceFilesTableModel( new File( CivetConfig.getInputDirPath() ) );
+		tblInBox.setModel(sourceModel);
+		tblInBox.setRowSorter( sourceModel.getSorter() );
+		tblInBox.setDefaultRenderer(java.util.Date.class, new DateCellRenderer() );
+		tblInBox.setAutoCreateRowSorter(true);
+		tblInBox.setRowSelectionAllowed(true);
+		tblInBox.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if( e.getClickCount() == 2 ) {
+					doOpenFiles();
 				}
-			});
-		}
+			}
+		});
 		contentPane.setPreferredSize(new Dimension(640, 480));
 		contentPane.add(mainPanel, BorderLayout.CENTER);
 		mainPanel.add(scrollPane,  BorderLayout.CENTER);
@@ -264,13 +262,13 @@ public class CivetInbox extends JFrame {
 		});
 		menuFile.add(menuItemFileExit);
 
+		// TODO What goes in the Edit menu?
 		menuEdit.setText("Edit");
-		menuEdit.setEnabled(!CivetConfig.isStandAlone());
 		menuBar1.add(menuEdit);
 
 
 		mnSend = new JMenu("Send");
-		mnSend.setEnabled(!CivetConfig.isStandAlone());
+		mnSend.setEnabled(true);
 		menuBar1.add(mnSend);
 
 		menuItemSubmitSelectedCVIs = new JMenuItem("Submit Selected CVIs to USAHERDS");
@@ -305,9 +303,6 @@ public class CivetInbox extends JFrame {
 			}
 		});
 		mnSend.add(menuItemSendInboundErrors);
-		if( CivetConfig.isStandAlone() ) {
-			setVisible(true);
-		}
 		
 		menuAddOns = new JMenu( "Add Ons");
 		// Once we set it up right, the package edu.clemson.lph.civet.addons will
@@ -344,7 +339,7 @@ public class CivetInbox extends JFrame {
 		}
 		
 		// Set items that only appear when viewing specific table
-		if( currentModel == toFileModel && toFileModel.getRowCount() > 0 ) {
+		if( currentModel == toFileModel && toFileModel.getRowCount() > 0 && !CivetConfig.isStandAlone() ) {
 			menuItemSubmitSelectedCVIs.setEnabled(true);
 			menuItemSubmitAllCVIs.setEnabled(true);
 		}

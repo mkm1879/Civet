@@ -71,8 +71,8 @@ public class Civet {
 		}
 		else {
 			if( args.length >= 2 ) {
-				CivetConfig.setDBUserName( args[0] );
-				CivetConfig.setDBPassword( args[1] );
+				CivetConfig.setHERDSUserName( args[0] );
+				CivetConfig.setHERDSPassword( args[1] );
 			}
 			StdErrLog.tieSystemErrToLog();
 			EventQueue.invokeLater(new Runnable() {
@@ -95,7 +95,15 @@ public class Civet {
 					catch (Exception e) {
 						logger.error(e.getMessage());
 					}
-					if( !CivetConfig.isStandAlone() ) {
+					if( CivetConfig.isStandAlone() ) {
+						if( !LookupFilesGenerator.checkLookupFiles() ) {
+							System.exit(1);
+						}
+						else {
+							new CivetInbox();
+						}
+					}
+					else {
 						prog = new ProgressDialog(null, "Civet: Cache", "Updating lookup tables from USAHERDS database");
 						prog.setAuto(true);
 						prog.setVisible(true);
@@ -121,7 +129,7 @@ public class Civet {
 			});
 	     }
 	}
-
+	
 	/**
 	 * Hide constructor.  This class is ONLY a static main for configuration and startup.
 	 */

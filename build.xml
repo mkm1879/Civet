@@ -222,11 +222,6 @@
             <classpath refid="Civet.classpath"/>
         </java>
     </target>
-    <target name="WSTest (1)">
-        <java classname="edu.clemson.lph.civet.webservice.WSTest" failonerror="true" fork="yes">
-            <classpath refid="Civet.classpath"/>
-        </java>
-    </target>
     <target name="XMLUtility">
         <java classname="edu.clemson.lph.utils.XMLUtility" failonerror="true" fork="yes">
             <classpath refid="Civet.classpath"/>
