@@ -104,20 +104,6 @@ public class UsaHerdsLookupVets {
 		iCurrentRow = -1;
 	}
 	
-	public static void main( String args[] ) {
-		UsaHerdsLookupVets me;
-		try {
-			me = new UsaHerdsLookupVets(true);
-			while( me.next() ) {
-				System.out.println( String.format("%d | %s | %s", me.getKeyValue(), me.getFormattedName(), me.getAddress1() ));
-			}
-			me.generateLookupTable( "HERDSVetList.csv" );
-		} catch (WebServiceException e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
-		}
-	}
-	
 	public void clear() {
 		rows.clear();
 		iCurrentRow = -1;

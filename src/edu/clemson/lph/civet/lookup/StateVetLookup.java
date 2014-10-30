@@ -190,30 +190,6 @@ public class StateVetLookup implements DBTableSource {
 			this.sFileType = sFileType;
 		}
 	}
-	
-	public static void main( String args[] ) {
-		StateVetLookup lu = new StateVetLookup();
-		ArrayList<String> h = lu.getColumnNames();
-		int j = 0;
-		for( String s : h ) {
-			if( j++ > 0 )
-				System.out.print(", ");
-			System.out.print(s);
-		}
-		System.out.println();
-		ArrayList<ArrayList<Object>> rows = lu.getRows();
-		for( ArrayList<Object> row : rows ) {
-			int i = 0;
-			for( Object o : row ) {
-				String s = (String)o;
-				if( i++ > 0 ) 
-					System.out.print( ", " );
-				System.out.print( s );
-			}
-			System.out.println();
-		}
-		
-	}
 
 	@Override
 	public ArrayList<String> getColumnNames() {

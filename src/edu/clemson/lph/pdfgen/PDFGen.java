@@ -47,28 +47,6 @@ public class PDFGen implements CodeSource{
     public void setSourceFile( String sSourceFile ) { this.sSourceFile = sSourceFile; }
     public void setDestStream( OutputStream osDest ) { this.osDest = osDest; }
 
-	/**
-	 * main is here for testing.
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		PDFGen inst = new PDFGen();
-		inst.setCodeSource(inst);
-		try {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			FileOutputStream fos = new FileOutputStream("PDFGen.pdf");
-//			inst.printDoc("OutboundLetterTemplate.txt", bos);
-			inst.printDoc("ErrorLetterTemplate.txt", bos);
-			fos.write(bos.toByteArray());  // This byte array is first to merge
-			fos.close();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	public void printDoc( String sSourceFile, OutputStream osDest  ) {
 		this.sSourceFile = sSourceFile;

@@ -268,36 +268,7 @@ public class CSVParser {
 		return sb.toString();
 	}
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		try {
-//			String sIn = "Now is the time \" for \"\"all good\",\"men\nto come to the aid\"\nof their country";
-//			System.out.println( sIn);
-//			System.out.println( stripNewLines(sIn));
-			CSVParser p = new CSVParser("cviExport_20140306072734.csv");
-			CSVPrinter printer = new CSVPrinter( "../CSVParser/TestOut.csv" );
-			List<String> aHead = p.getHeader();
-			for( String s : aHead ) {
-				System.out.print( s + "|" );
-			}
-			printer.println(p.getHeader());
-			List<String> aRow = p.getNext();
-			while( aRow != null ) {
-				for( String s : aRow ) {
-					printer.print(s);
-				}
-				printer.println();
-				aRow = p.getNext();
-			}
-			printer.flush();
-			printer.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+
 	
 	private String readReaderAsString(BufferedReader reader) throws IOException {
         StringBuffer fileData = new StringBuffer();

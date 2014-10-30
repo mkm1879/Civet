@@ -91,7 +91,7 @@ public class COKSRobot extends Thread {
 		PdfDecoder pdfDecoder = new PdfDecoder();
 		java.util.Date now = new java.util.Date();
 		for( File file : files ) {
-			File fXML = new File( xmlDir, file.getName() + ".xml" );
+			File fXML = new File( xmlDir, file.getName() + ".cvi" );
 			try {
 				pdfDecoder.openPdfFile(file.getAbsolutePath());
 				AcroRenderer rend = pdfDecoder.getFormRenderer();

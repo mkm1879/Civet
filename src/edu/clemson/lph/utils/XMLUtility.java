@@ -193,51 +193,8 @@ public class XMLUtility {
 		}
 		return dRet;
 	}
-	
-	/**
-	 * Just for testing base64 output.
-	 * @param args
-	 */
-	public static void main( String args[] ) {
-		String sBase64 = "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48Y3ZpTWV0YURhdGEgY2VydGlmaWNhdGVOYnI9IjU2LTMyMzUtMTM5MTg4MjE4NSI+PGJ1cmVhdVJlY2VpcHREYXRlPjIwMTQtMDktMDI8L2J1cmVhdVJlY2VpcHREYXRlPjwvY3ZpTWV0YURhdGE+";
-		try {
-			byte base64Bytes[] = sBase64.getBytes("UTF-8");
-			byte  xmlBytes[] = org.apache.commons.codec.binary.Base64.decodeBase64(base64Bytes);
-			String sXml = new String( xmlBytes, "UTF-8");
-			System.out.println(sXml);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
-		}
-	}
-	
-//	public static ArrayList<Node> listChildElementsByName( ArrayList<Node> aNodes, String sName ) {
-//		Node node = aNodes.get(0);
-//		if( node == null || sName == null ) return null;
-//		if( node.getNodeType() == Node.ELEMENT_NODE ) {
-//			if( sName.equals(node.getNodeName() ) ) {
-//				aNodes.add(node);
-//			}
-//			else {
-//				NodeList nodes = node.getChildNodes();
-//				for( int i = 0; i < nodes.getLength(); i++ ) {
-//					Node n = nodes.item(i);
-//					if( n.getNodeType() == Node.ELEMENT_NODE ) {
-//						if( sName.equals(n.getNodeName() ) ) {
-//							aNodes.add(node);
-//						}
-//						else {
-//							ArrayList<Node> nextNodes = listChildElementsByName( n, sName );
-//							if( nextNodes != null )
-//								aNodes.addAll(nextNodes);
-//						}
-//					}
-//				}
-//			}
-//		}
-//		// Should only reach here if a non-Element node is passed in
-//		return null;
-//	}
+
+
 
 }
 

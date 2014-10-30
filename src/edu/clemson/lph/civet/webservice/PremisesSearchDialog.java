@@ -73,22 +73,6 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 	private boolean bSearchNow = false;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			PremisesSearchDialog dialog = new PremisesSearchDialog();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//			UsaHerdsLookupPrems model = new UsaHerdsLookupPrems();
-//			dialog.setDataModel(model);
-			dialog.setVisible(true);
-			dialog.pack();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Create the dialog.
 	 */
 	public PremisesSearchDialog() {

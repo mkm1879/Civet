@@ -69,13 +69,5 @@ public class IDTypeGuesser {
 		return sRet;
 	}
 
-	public static void main(String[] args) {
-		String sInput = "003ezun";
-    	System.out.println(sInput + " looks like a " + IDTypeGuesser.getTagType(sInput) + " tag ");
-		sInput = "Fred's Fast Filly";
-    	System.out.println(sInput + " looks like a " + IDTypeGuesser.getTagType(sInput) + " tag ");
-		sInput = "SC2S C012";
-    	System.out.println(sInput + " looks like a " + IDTypeGuesser.getTagType(sInput) + " tag ");
-	}
 
 }

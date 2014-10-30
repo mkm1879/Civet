@@ -334,18 +334,7 @@ public static String textToText( String sValue,int iFutureMode ) {
 		  }
 		  return iRet;
 	  }
-	  
-	  public static void main( String args[] ) {
-		  System.out.println( DateField.textToText("2014-03-26", DateField.NO_FUTURE) );
-		  System.out.println( DateField.textToText("3/26/14", DateField.NO_FUTURE) );
-		  System.out.println( DateField.textToText("3/26/2014", DateField.NO_FUTURE) );
-		  System.out.println( DateField.textToText("4/26/2014", DateField.NO_FUTURE) );
-		  System.out.println( DateField.textToText("3/26/2008", DateField.NO_FUTURE) );
-		  System.out.println( DateField.textToText("3-26-14", DateField.NO_FUTURE) );
-		  System.out.println( DateField.textToText("03-26-2014", DateField.NO_FUTURE) );
-		  System.out.println( DateField.textToText("Mar 26, 2014", DateField.NO_FUTURE) );
-		  System.out.println( DateField.textToText("Zon 26, 2014", DateField.NO_FUTURE) );
-	  }
+
 	  
 	  public boolean isFuture() {
 		  boolean bRet = false;

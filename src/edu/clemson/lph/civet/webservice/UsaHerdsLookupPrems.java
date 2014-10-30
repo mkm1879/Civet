@@ -158,34 +158,6 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel {
 		iCurrentRow = -1;
 	}
 	
-	public static void main( String args[] ) {
-		CivetConfig.setHERDSUserName("civet");
-		CivetConfig.setHERDSPassword("civet#2014");
-		CivetWebServices service = new CivetWebServices();
-		Document doc;
-		try {
-			doc = service.getCivetPremises(null, null, null, null, "CA", null, null, null, "*3*", null);
-			FileOutputStream fOut = new FileOutputStream(new File("PremisesCA3.xml"));
-			PrintWriter pw = new PrintWriter( fOut );
-			pw.write(XMLUtility.domToString(doc));
-			pw.close();
-			fOut.close();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
-		}
-//		UsaHerdsLookupPrems me;
-//		try {
-//			me = new UsaHerdsLookupPrems();
-//			while( me.next() ) {
-//				System.out.println( String.format("%d | %s | %s| %s", me.getKeyValue(), me.getStatePremId(), me.getFedPremId(), me.getAddress1() ));
-//			}
-//		} catch (WebServiceException e) {
-//			// TODO Auto-generated catch block
-//			logger.error(e);
-//		}
- 	}
-	
 	public void clear() {
 		rows.clear();
 		iCurrentRow = -1;

@@ -31,13 +31,6 @@ public class StringUtils {
 		}
 		return sb.toString();
 	}
-	
-	public static void main( String args[] ) {
-		System.out.println( StringUtils.toTitleCase("ALABAMA"));
-		System.out.println( StringUtils.toTitleCase("alabama"));
-		System.out.println( StringUtils.toTitleCase("SOUTH DAKOTA"));
-		System.out.println( StringUtils.toTitleCase("south dakota"));
-		System.out.println( StringUtils.toTitleCase("3.14159 pi"));
-	}
+
 
 }

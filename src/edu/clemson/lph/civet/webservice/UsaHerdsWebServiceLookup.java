@@ -80,18 +80,6 @@ public class UsaHerdsWebServiceLookup {
 		populateRows(doc);
 		iCurrentRow = -1;
 	}
-	
-	public static void main( String args[] ) {
-		UsaHerdsWebServiceLookup me;
-		try {
-			me = new UsaHerdsWebServiceLookup(LOOKUP_PURPOSES);
-			while( me.next() ) {
-				System.out.println( String.format("%d | %s | %d", me.getKeyValue(), me.getDescription(), me.getDisplaySequence() ));
-			}
-		} catch (WebServiceException e) {
-			logger.error(e);
-		}
-	}
 
 	private void populateRows( Document doc ) {
 		rows = new ArrayList<WebServiceLookupRow>();

@@ -282,32 +282,5 @@ public class CSVDataFile {
 		return dRet;
 	}
 
-	/**
-	 * Simple little test.  Better to use JUnit tests.
-	 * @param args
-	 */
-	public static void main( String args[] ) {
-		try {
-		CSVDataFile me = new CSVDataFile( "D:\\Documents\\Epi\\Swine\\Prestage_June.xlsx.csv" );
-		System.out.println( "Company is " + me.getCompany());
-		while( me.nextRow() ) {
-			System.out.println( me.isInbound() + ", " + me.getSourceState() + ", " + me.getSourcePin() + ", " 
-		            + me.getDestState()+ ", " + me.getDestPin() + ", "
-					+ me.getVet() + ", " + me.getDate() + ", " + me.getNumber() );
-		}
-		CSVDataFile me2 = new CSVDataFile( "D:\\Documents\\Epi\\Swine\\Murphy Brown_April 2012.csv" );
-		System.out.println( "Company is " + me2.getCompany());
-		while( me2.nextRow() ) {
-			System.out.println( me2.isInbound() + ", " + me2.getSourceState()+ ", "  + me2.getSourcePin() 
-					+ ", " + me2.getDestState() + ", " + me2.getDestPin()
-					+ ", " + me2.getVet() + ", " + me2.getDate() + ", " + me2.getNumber() );
-		}
-		}
-		catch( IOException e ) {
-			System.out.println( "Error with test file" );
-			e.printStackTrace();
-		}
-		System.exit(0);
-	}
 
 }// class CSVFile

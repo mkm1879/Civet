@@ -46,26 +46,6 @@ public class BulkLoadSwineMovementCSV implements ThreadListener, AddOn {
 	
 	public BulkLoadSwineMovementCSV() {
 	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		SCDatabaseConnectionFactory factory = new SCDatabaseConnectionFactory();
-		ThreeLineQuestionDialog dlg = new ThreeLineQuestionDialog( "DB Login", "DB Name", "UserName", "Password", true);
-		dlg.setPassword(true);
-		dlg.setVisible(true);
-		if( dlg.isExitOK() ) {
-		String DBName = dlg.getAnswerOne();
-		String Username = dlg.getAnswerTwo();
-		String Password = dlg.getAnswerThree();
-		factory.setServerName(DBName);
-		factory.setUserName( Username );
-		factory.setPassword( Password );
-		BulkLoadSwineMovementCSV me = new BulkLoadSwineMovementCSV();
-		me.doImportCSV(null); 
-		}
-	}
 	
 	public void doImportCSV(Window parent) {
 		if( factory == null )

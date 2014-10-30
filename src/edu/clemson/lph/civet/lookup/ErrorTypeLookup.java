@@ -100,10 +100,6 @@ public class ErrorTypeLookup {
 			this.iDisplaySequence = iDisplaySequence;
 		}
 	}
-	
-	public static void main( String args[] ) {
-		
-	}
 
 }
 

@@ -238,24 +238,5 @@ public class CSVNineDashThreeDataFile {
 		}
 		return tagList;
 	}
-	/**
-	 * Simple little test.  Better to use JUnit tests.
-	 * @param args
-	 */
-	public static void main( String args[] ) {
-		try {
-			CSVNineDashThreeDataFile me = new CSVNineDashThreeDataFile( "E:\\EclipseJava\\Civet\\NPIP93Data.csv" );
-			while( me.nextRow() ) {
-				System.out.println( me.isInbound() + ", " + me.getConsignorState() + ", " + me.getConsignorPIN() + ", " 
-						+ me.getConsigneeState()+ ", " + me.getConsigneePIN() + ", "
-						+ me.getSpecies() + ", " + me.getInspectionDate() + ", " + me.getAnimalCount() );
-			}
-		}
-		catch( IOException e ) {
-			System.out.println( "Error with test file" );
-			e.printStackTrace();
-		}
-		System.exit(0);
-	}
 
 }// class CSVFile

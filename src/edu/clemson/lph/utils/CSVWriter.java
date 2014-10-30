@@ -149,47 +149,5 @@ public class CSVWriter {
 	}
 
 
-	/**
-	 * Testing only
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		PropertyConfigurator.configure("CivetConfig.txt");
-		CSVWriter w = new CSVWriter();
-		try {
-			w.setHeader(new String[] {"Key", "Description", "DisplaySequence"} );
-			w.addRow(new Object[] { new Integer(1), "First Row", new Integer(1) });
-			w.addRow(new Object[] { new Integer(2), "Second Row", new Integer(2) });
-			w.addRow(new Object[] { new Integer(3), "Third Row", new Double(3.0) });
-			w.addRow(new Object[] { new Integer(4), "Fourth Row", new Float(4.0) });
-			w.addRow(new Object[] { new Integer(5), "Fifth Row", new java.util.Date() });
-			w.addRow(new Object[] { new Integer(6), "Object Row", logger});
-			w.addRow(new Object[] { new Integer(7), "Short Row" });
-			System.out.println( w.write("TestCSVWriter") + " rows written");
-		} catch (DataFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			CSVParser p = new CSVParser("TestCSVWriter.csv");
-			for( String s : p.getHeader() )
-				System.out.print(s + ", ");
-			System.out.println();
-			List<String> lRow = p.getNext();
-			while( lRow != null ) {
-				for( String s : lRow )
-					System.out.print(s + ", ");
-				System.out.println();
-				lRow = p.getNext();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
 
 }

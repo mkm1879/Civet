@@ -42,23 +42,6 @@ public class ProgressDialog extends JDialog {
 	  JLabel lMsg = new JLabel();
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ProgressDialog dialog = new ProgressDialog();
-					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the dialog.
 	 */
 	public ProgressDialog() {

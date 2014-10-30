@@ -596,10 +596,6 @@ public class CivetConfig {
 		}
 		return bRet;
 	}
-
-	public static void main( String args[] ) {
-		System.out.println( CivetConfig.getMaxAttachSize() );
-	}
 	
 	/**
 	 * Generic crash out routine.

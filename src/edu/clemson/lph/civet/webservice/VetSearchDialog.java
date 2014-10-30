@@ -68,23 +68,6 @@ public class VetSearchDialog extends JDialog implements SearchDialog<Integer> {
 	private JTextField jtfLicenseNbr;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			VetLookup.generateLookupTable("VetTable.csv", true);
-			VetSearchDialog dialog = new VetSearchDialog();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//			UsaHerdsLookupPrems model = new UsaHerdsLookupPrems();
-//			dialog.setDataModel(model);
-			dialog.setVisible(true);
-			dialog.pack();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Create the dialog.
 	 */
 	public VetSearchDialog() {

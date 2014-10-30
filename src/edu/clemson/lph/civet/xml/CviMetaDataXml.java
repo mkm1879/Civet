@@ -295,25 +295,4 @@ public class CviMetaDataXml {
 		return XMLUtility.domToString(doc);
 	}
 
-	public static void main(String[] args) {
-		String base64 = "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48Y3ZpTWV0YURhdGEgY2VydGlmaWNhdGVOYnI9IlRlc3RFcnJvcnM0Ij48YnVyZWF1UmVjZWlwdERhdGU+MjAxNC0wOS0yNTwvYnVyZWF1UmVjZWlwdERhdGU+PGVycm9ycz48ZXJyPklORDwvZXJyPjxlcnI+T1RIPC9lcnI+PC9lcnJvcnM+PGVycm9yTm90ZT5Tb21lIG5vdGU8L2Vycm9yTm90ZT48L2N2aU1ldGFEYXRhPg==";		
-		try {
-			byte bytes[] = Base64.decodeBase64(base64.getBytes());
-			String sXML = new String( bytes, "UTF-8");
-			System.out.println( sXML );
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
-		}
-		CviMetaDataXml me = new CviMetaDataXml();
-		me.setCertificateNbr("SC_Test_1234");
-		me.addError("IND");
-		me.addError("OOD");
-		me.addError("IND");  // Test checking for duplication
-		me.setBureauReceiptDate(new java.util.Date() ); // put this after to be sure insertBefore works
-		me.setErrorNote("This is a note");
-		XMLDocHelper helper = new XMLDocHelper( me.getDocument() );
-		System.out.println(helper.getXMLString(false, "UTF-16"));
-	}
-
 }

@@ -173,8 +173,4 @@ public class YesNoDialog extends JDialog {
 		setVisible(false);
 	}
 
-	public static void main( String args[] ) {
-		boolean bAnswer = YesNoDialog.ask( (Frame)null, "this is a question", "yes or no" );
-		System.out.println( "you answered " + bAnswer );
-	}
 }

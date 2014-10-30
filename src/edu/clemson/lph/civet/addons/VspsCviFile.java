@@ -56,38 +56,6 @@ public class VspsCviFile implements AddOn {
 	public VspsCviFile() {
 	}
 
-	/**
-	 * Test only
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			System.setProperty("apple.laf.useScreenMenuBar", "true");
-			System.setProperty("com.apple.mrj.application.apple.menu.about.name",
-					"Civet");
-			System.setProperty("com.apple.mrj.application.growbox.intrudes",
-					"false");
-			logger.info("UI look and feel set");
-		}
-		catch (Exception e) {
-			logger.error(e.getMessage());
-		}
-		File fDir = new File( "E:\\EclipseJava" );
-		JFileChooser open = new JFileChooser( fDir );
-		open.setDialogTitle("Civet: Open VSPS CSV File");
-		open.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		open.setFileFilter(new FileNameExtensionFilter(
-		        "CSV Files", "csv"));
-		int resultOfFileSelect = open.showOpenDialog(null);
-		if(resultOfFileSelect==JFileChooser.APPROVE_OPTION){
-			File fIn = open.getSelectedFile();
-			VspsCviFile vsps = new VspsCviFile();
-//			vsps.saveme();
-		    vsps.printme(fIn);
-		}
-	}
-	
 	// To be called from CVIHerdsFiler frame
 	public void importVspsFile(Window parent) {
 		File fDir = new File( "E:\\EclipseJava" );
