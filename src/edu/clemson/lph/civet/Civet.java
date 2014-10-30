@@ -37,7 +37,7 @@ public class Civet {
 	static {
 		// BasicConfigurator replaced with PropertyConfigurator.
 	     PropertyConfigurator.configure("CivetConfig.txt");
-	     logger.setLevel(Level.ERROR);
+	     logger.setLevel(Level.INFO);
 	}
 	private static ProgressDialog prog;
 
@@ -49,10 +49,16 @@ public class Civet {
 		PropertyConfigurator.configure("CivetConfig.txt");
 		// Fail now so config file and required files can be fixed before work is done.
 		CivetConfig.checkAllConfig();
+		logger.setLevel(CivetConfig.getLogLevel());
 		if( args.length >= 1 && args[0].toLowerCase().equals("-robot") ) {
+			logger.info("Starting in Robot Mode");
 			if( !CivetConfig.isJPedalXFA() ) {
-				System.err.println( "Robot mode requires JPedalXFA" );
+				logger.error("Robot mode requires JPedalXFA" );
 				System.exit(1);
+			}
+			if( args.length >= 3 ) {
+				CivetConfig.setHERDSUserName( args[1] );
+				CivetConfig.setHERDSPassword( args[2] );
 			}
 			COKSRobot robbie;
 			try {

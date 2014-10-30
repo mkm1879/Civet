@@ -19,12 +19,19 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CoKsXML;
+import edu.clemson.lph.civet.xml.CviMetaDataXml;
+import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.utils.FileUtils;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.rmi.RemoteException;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -43,6 +50,7 @@ public class COKSRobot extends Thread {
 	private File xmlDir;
 	private boolean bStd;
 	private boolean bCancel = false;
+	private boolean bLoggedIn = false;
 	
 	public COKSRobot() throws IOException {
 		inDir = new File( CivetConfig.getRobotInputPath() );
@@ -55,6 +63,8 @@ public class COKSRobot extends Thread {
 		if( !xmlDir.isDirectory() )
 			throw new IOException( "Robot XML Path is not a directory\n" + xmlDir.getAbsolutePath());
 		String sFormat = CivetConfig.getRobotOutputFormat();
+		if( CivetConfig.getHERDSUserName() != null && CivetConfig.getHERDSPassword() != null )
+			bLoggedIn = true;
 		if( sFormat.equals("STD") ) 
 			bStd = true;
 		else if( sFormat.equals("ADOBE") )
@@ -79,6 +89,7 @@ public class COKSRobot extends Thread {
 			}
 		});
 		PdfDecoder pdfDecoder = new PdfDecoder();
+		java.util.Date now = new java.util.Date();
 		for( File file : files ) {
 			File fXML = new File( xmlDir, file.getName() + ".xml" );
 			try {
@@ -88,15 +99,40 @@ public class COKSRobot extends Thread {
 					Node xmlNode = rend.getXMLContentAsNode(PdfDictionary.XFA_DATASET);
 					CoKsXML coks = new CoKsXML( xmlNode );
 					String sXML = null;
-					if( bStd )
-						sXML = coks.toStdXMLString();
-					else
+					if( bStd ) {
+						StdeCviXml stdXml = coks.getStdeCviXml();
+						byte[] pdfBytes = FileUtils.readBinaryFile( file );
+						stdXml.setOriginalCVI( pdfBytes, file.getName() );
+						CviMetaDataXml metaData = new CviMetaDataXml();
+						metaData.setBureauReceiptDate( now );
+						stdXml.addMetadataAttachement( metaData );
+						sXML = stdXml.getXMLString();
+						if( bLoggedIn ) {
+							try {
+								CivetWebServices herds = new CivetWebServices();
+								String sRet = herds.sendCviXML(sXML);
+								if( !sRet.startsWith(CivetWebServices.CVI_SUCCESS_MESSAGE) ) {
+									saveToXml(fXML, sXML);
+									logger.error("Could not submit to HERDS\nSaving to Robot XML folder");
+									logger.info("Processed File: " + file.getName() + " to: " + fXML.getName() );
+									bLoggedIn = false;
+								}
+							} catch( RemoteException re ) {
+								saveToXml(fXML, sXML);
+								logger.error("Could not submit to HERDS\nSaving to Robot XML folder", re);
+								logger.info("Processed File: " + file.getName() + " to: " + fXML.getName() );
+								bLoggedIn = false;
+							}
+						}
+						else {
+							saveToXml(fXML, sXML);
+						}
+					}
+					else {
 						sXML = coks.toAcrobatXMLString();
-					FileOutputStream sOut = new FileOutputStream( fXML );
-					sOut.write(sXML.getBytes("UTF-8"));
-					sOut.flush();
-					sOut.close();
-					logger.info("Processed File: " + file.getName() + " to: " + fXML.getName() );
+						saveToXml(fXML, sXML);
+						logger.info("Processed File: " + file.getName() + " to: " + fXML.getName() );
+					}
 				}
 				else {
 					logger.error( "File " + file.getName() + " was not a CO/KS XFA form");
@@ -107,19 +143,29 @@ public class COKSRobot extends Thread {
 				File fout = new File( fPathOut, file.getName() );
 				file.renameTo(fout);
 			} catch (PdfException e) {
-				logger.error("Error parsing pdf file " + file.getAbsolutePath() );
+				logger.error("Error parsing pdf file " + file.getAbsolutePath(), e);
 			} catch (IOException e) {
-				logger.error("Error writing xml file " + fXML.getAbsolutePath() );
+				logger.error("Error writing xml file " + fXML.getAbsolutePath(), e);
+			} catch (Exception e) {
+				logger.error("Error reading bytes from file " + file.getAbsolutePath(), e);
 			}
 		}
 	}
 	
+	private void saveToXml(File fXML, String sXML) throws UnsupportedEncodingException, IOException {
+		FileOutputStream sOut = new FileOutputStream( fXML );
+		sOut.write(sXML.getBytes("UTF-8"));
+		sOut.flush();
+		sOut.close();
+	}
+	
 	@Override
 	public void run() {
+		long lWait = CivetConfig.getRobotWaitSeconds() * 1000;
         while( !bCancel ) {
             synchronized (this) {
               try {
-            	  wait(1000);
+            	  wait(lWait);
             	  processFiles();
               }
               catch (InterruptedException ex) {
@@ -127,18 +173,6 @@ public class COKSRobot extends Thread {
             }
           }
 
-	}
-
-	public static void main(String[] args) {
-	     PropertyConfigurator.configure("CivetConfig.txt");
-	     logger.setLevel(Level.ERROR);
-		try {
-			COKSRobot robbie = new COKSRobot();
-			robbie.start();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 }

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jpedal.PdfDecoder;
 
@@ -76,6 +77,14 @@ public class CivetConfig {
 		if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes"))
 			bRet = true;
 		return bRet;
+	}	
+	
+	public static Level getLogLevel() {
+		Level lRet = Level.ERROR;
+		String sVal = props.getProperty("logLevel");
+		if( sVal != null && sVal.equalsIgnoreCase("info") )
+			lRet = Level.INFO;
+		return lRet;
 	}
 	
 	public static String getDefaultDirection() {
@@ -417,6 +426,20 @@ public class CivetConfig {
 			System.exit(1);
 		}
 		return sRet;
+	}
+	
+	public static int getRobotWaitSeconds() {
+		int iRet = -1;
+		String sRet = props.getProperty("robotWaitSeconds");
+		if( sRet == null ) exitError("robotWaitSeconds");
+		try {
+			iRet = Integer.parseInt(sRet);
+		} catch( NumberFormatException nfe ) {
+			logger.info( "Cannot read robot wait time " + sRet + " as an integer number");
+			logger.error(nfe);
+			System.exit(1);
+		}
+		return iRet;
 	}
 
 	public static String getVetTableFile() {

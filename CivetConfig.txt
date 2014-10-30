@@ -65,6 +65,7 @@ robotCompleteOutPath=E:\\Documents\\Civet\\CivetRobotComplete
 robotXMLOutPath=E:\\Documents\\Civet\\CivetRobotXML
 robotOutputFormat=STD
 #robotOutputFormat=ADOBE
+robotWaitSeconds=15
 
 #For operations without DB connection, provide basic lookups
 vetTableFile=VetTable.csv
@@ -74,6 +75,7 @@ purposeTableFile=PurposeTable.csv
 errorTypeTableFile=ErrorTypeTable.csv
 
 #Logging using Apache Log 4 J library
+logLevel=INFO
 log4j.rootLogger=info, stdout, R
 
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
