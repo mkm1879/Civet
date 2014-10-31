@@ -27,3 +27,5 @@ antbin
 *.lnk
 .project
 .properties
+Publish/*
+

@@ -87,7 +87,6 @@
     <target name="Civet (1)">
         <java classname="edu.clemson.lph.civet.Civet" failonerror="true" fork="yes">
             <jvmarg line="-Dorg.jpedal.jai=true"/>
-            <arg line="-robot"/>
             <classpath refid="Civet.classpath"/>
         </java>
     </target>
@@ -192,6 +191,11 @@
             <classpath refid="Civet.classpath"/>
         </java>
     </target>
+    <target name="TestPremisesLocalStore">
+        <java classname="edu.clemson.lph.civet.lookup.TestPremisesLocalStore" failonerror="true" fork="yes">
+            <classpath refid="Civet.classpath"/>
+        </java>
+    </target>
     <target name="UsaHerdsLookupPrems">
         <java classname="edu.clemson.lph.civet.webservice.UsaHerdsLookupPrems" failonerror="true" fork="yes">
             <classpath refid="Civet.classpath"/>
@@ -219,6 +223,11 @@
     </target>
     <target name="VspsCviFile (1)">
         <java classname="edu.clemson.lph.civet.addons.VspsCviFile" failonerror="true" fork="yes">
+            <classpath refid="Civet.classpath"/>
+        </java>
+    </target>
+    <target name="WSTest (1)">
+        <java classname="edu.clemson.lph.civet.webservice.WSTest" failonerror="true" fork="yes">
             <classpath refid="Civet.classpath"/>
         </java>
     </target>

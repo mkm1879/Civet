@@ -1378,8 +1378,8 @@ public final class CivetEditDialog extends JFrame {
 	
 	
 	private void doCleanup() {
-		//TODO Add logic to handle partially complete file or file list.
 		LocalPremisesTableModel.saveData();
+		//TODO Add logic to handle partially complete file or file list.
 		File[] completeFiles = controller.getCompleteFiles();
     	moveCompleteFiles( completeFiles );
     	if( parent instanceof CivetInbox) {

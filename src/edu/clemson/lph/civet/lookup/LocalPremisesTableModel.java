@@ -116,6 +116,8 @@ public class LocalPremisesTableModel implements PremisesTableModel {
 	}
 	
 	public static void saveData() {
+		// Nothing to save.
+		if( dataStore == null ) return;
 		CSVWriter writer = new CSVWriter();
 		try {
 			writer.setHeader( new ArrayList<String>(Arrays.asList("PIN","Name","Address","City","State","Zip","Phone") ) );

@@ -704,12 +704,6 @@ public class CivetConfig {
 		if( !f.exists() || !f.isDirectory() ) {
 			exitErrorImmediate( "OutputDirPath\n" + sRet + " does not exist or is not a folder");			
 		}
-		sRet = props.getProperty("bulkLoadDirPath");
-		if( sRet == null ) exitErrorImmediate("bulkLoadDirPath");
-		f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "bulkLoadDirPath\n" + sRet + " does not exist or is not a folder");			
-		}
 		sRet = props.getProperty("robotInputPath");
 		if( sRet == null ) exitErrorImmediate("robotInputPath");
 		f = new File( sRet );
