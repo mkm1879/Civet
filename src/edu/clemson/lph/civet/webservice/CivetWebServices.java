@@ -237,7 +237,7 @@ public class CivetWebServices {
 	 * Under development.  I'm not sure all these parameters are allowed.
 	 * @param sLastName
 	 * @param sFirstName
-	 * @param sAddress1
+	 * @param sAddress
 	 * @param sCity
 	 * @param sStateCode
 	 * @param sZipCode

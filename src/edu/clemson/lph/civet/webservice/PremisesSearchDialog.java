@@ -46,6 +46,7 @@ import java.awt.event.MouseEvent;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.SearchDialog;
 
@@ -57,7 +58,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 	private final JPanel contentPanel = new JPanel();
 	private int deltaX;
 	private int deltaY;
-	private UsaHerdsLookupPrems model = null;
+	private PremisesTableModel model = null;
 	private String sPremisesId = null;
 	private JTable tblResults;
 	private JTextField jtfAddress1;
@@ -142,7 +143,10 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 		clear();
 		bSearchNow = true;
 		jtfPhone.setText(sPhone);
-		model = new UsaHerdsLookupPrems( sPhone );
+		if( CivetConfig.isStandAlone() )
+			model = new LocalPremisesTableModel( sPhone );
+		else
+			model = new UsaHerdsLookupPrems( sPhone );
 		tblResults.setModel(model);
 		if( model.getRowCount() == 1 ) {
 			bOK = true;
@@ -174,7 +178,10 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			sStateCode = CivetConfig.getHomeStateAbbr();
 		jtfState.setText(sStateCode);
 		jtfZip.setText(sZipCode);
-		model = new UsaHerdsLookupPrems( sAddress, sCity, sStateCode, sZipCode );
+		if( CivetConfig.isStandAlone() )
+			model = new LocalPremisesTableModel( sAddress, sCity, sStateCode, sZipCode, null );
+		else
+			model = new UsaHerdsLookupPrems( sAddress, sCity, sStateCode, sZipCode );
 		tblResults.setModel(model);
 		if( model.getRowCount() == 1 ) {
 			bOK = true;
@@ -225,6 +232,12 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			model = new UsaHerdsLookupPrems(null, null, 
 					sAddress1, sCity, sStateCode, sZipCode, 
 					sCounty, null, sPhone, null);
+			if( CivetConfig.isStandAlone() )
+				model = new LocalPremisesTableModel(sAddress1, sCity, sStateCode, sZipCode, sPhone);
+			else
+				model = new UsaHerdsLookupPrems(null, null, 
+						sAddress1, sCity, sStateCode, sZipCode, 
+						sCounty, null, sPhone, null);
 			tblResults.setModel( model );
 		}
 	}
@@ -292,9 +305,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 	public String getSelectedKey() {
 		int iTableRow = getSelectedRow();
 		int iModelRow = getModelRow(iTableRow);
-		sPremisesId = model.getFederalIdAt( iModelRow );
-		if( sPremisesId == null ) 
-			sPremisesId = model.getStateIdAt( iModelRow );		
+		sPremisesId = model.getPremIdAt( iModelRow );
 		return sPremisesId;
 	}
 	
@@ -305,10 +316,10 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 		return sRet;
 	}
 
-	public String getSelectedAddress1() {
+	public String getSelectedAddress() {
 		int iTableRow = getSelectedRow();
 		int iModelRow = getModelRow(iTableRow);
-		String sRet = model.getAddress1At( iModelRow );
+		String sRet = model.getAddressAt( iModelRow );
 		return sRet;
 	}
 
@@ -340,20 +351,12 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 		return sRet;
 	}
 
-	public String getSelectedFedPremId() {
+	public String getSelectedPremId() {
 		int iTableRow = getSelectedRow();
 		int iModelRow = getModelRow(iTableRow);
-		String sRet = model.getFederalIdAt( iModelRow );
+		String sRet = model.getPremIdAt( iModelRow );
 		return sRet;
 	}
-
-	public String getSelectedStatePremId() {
-		int iTableRow = getSelectedRow();
-		int iModelRow = getModelRow(iTableRow);
-		String sRet = model.getStateIdAt( iModelRow );
-		return sRet;
-	}
-	
 
 	public void setPhone( String sPhone ) {
 		jtfPhone.setText(sPhone);

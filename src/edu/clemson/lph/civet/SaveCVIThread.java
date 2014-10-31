@@ -31,6 +31,8 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
+import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
+import edu.clemson.lph.civet.lookup.PremisesLocalStore;
 import edu.clemson.lph.civet.lookup.PurposeLookup;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.lookup.VetLookup;
@@ -166,6 +168,9 @@ public class SaveCVIThread extends Thread {
 			saveXml( sXml );
 			if( !bNoEmail )
 				saveEmail( sXml );
+			if( CivetConfig.isStandAlone() ) {
+				saveLocalPremData();
+			}
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -181,6 +186,16 @@ public class SaveCVIThread extends Thread {
 				prog.dispose();
 			}
 		});
+	}
+
+	private void saveLocalPremData() {
+		PremisesLocalStore dataStore = LocalPremisesTableModel.getLocalStore();
+		if( bImport )
+			dataStore.addPremises(  sDestinationPIN,  sDestinationName,  sDestinationAddress,  sDestinationCity,			
+					sDestinationStateCode,  sDestinationZipCode,  sDestinationPhone );
+		else
+			dataStore.addPremises(  sOriginPIN,  sOriginName,  sOriginAddress,  sOriginCity,			
+					sOriginStateCode,  sOriginZipCode,  sOriginPhone );
 	}
 
 	private void setUpFileNamesAndContent() {

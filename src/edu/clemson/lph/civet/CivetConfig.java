@@ -44,6 +44,7 @@ public class CivetConfig {
 	private static String sHERDSPassword = null;
 	private static String sDBUserName = null;
 	private static String sDBPassword = null;
+	private static Boolean bStandAlone = null;
 	
 
 //	static {
@@ -71,13 +72,22 @@ public class CivetConfig {
 	}
 	
 	public static boolean isStandAlone() {
-		boolean bRet = false;
-		String sVal = props.getProperty("standAlone");
-		if( sVal == null ) exitError("standAlone");
-		if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes"))
-			bRet = true;
-		return bRet;
+		if( bStandAlone == null ) {
+			String sVal = props.getProperty("standAlone");
+			if( sVal == null ) exitError("standAlone");
+			if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bStandAlone = true;
+			}
+			else {
+				bStandAlone = false;
+			}
+		}
+		return bStandAlone;
 	}	
+	
+	public static void setStandAlone( boolean standAlone ) {
+		bStandAlone = standAlone;
+	}
 	
 	public static Level getLogLevel() {
 		Level lRet = Level.ERROR;

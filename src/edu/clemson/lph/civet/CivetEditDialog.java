@@ -66,11 +66,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import edu.clemson.lph.civet.lookup.ErrorTypeLookup;
+import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
 import edu.clemson.lph.civet.lookup.PurposeLookup;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.webservice.PremisesSearchDialog;
+import edu.clemson.lph.civet.webservice.PremisesTableModel;
 import edu.clemson.lph.civet.webservice.UsaHerdsLookupPrems;
 import edu.clemson.lph.civet.webservice.VetSearchDialog;
 import edu.clemson.lph.civet.webservice.WebServiceException;
@@ -1377,6 +1379,7 @@ public final class CivetEditDialog extends JFrame {
 	
 	private void doCleanup() {
 		//TODO Add logic to handle partially complete file or file list.
+		LocalPremisesTableModel.saveData();
 		File[] completeFiles = controller.getCompleteFiles();
     	moveCompleteFiles( completeFiles );
     	if( parent instanceof CivetInbox) {
@@ -1589,10 +1592,6 @@ public final class CivetEditDialog extends JFrame {
 			sThisPremId = sUpperPin;
 			jtfThisPIN.setText(sUpperPin);
 		}
-		if( CivetConfig.isStandAlone() ) {
-			// TODO Implement local premises lookup replacement
-			return;
-		}
 		if( bInSearch ) 
 			return;
 		bInSearch = true;
@@ -1616,7 +1615,7 @@ public final class CivetEditDialog extends JFrame {
 			PremisesSearchDialog dlg = (PremisesSearchDialog)jtfThisPIN.getSearchDialog(); 
 			if( dlg.exitOK() ) {
 				jtfThisName.setText(dlg.getSelectedPremName());
-				jtfAddress.setText(dlg.getSelectedAddress1());
+				jtfAddress.setText(dlg.getSelectedAddress());
 				jtfThisCity.setText(dlg.getSelectedCity());
 				jtfZip.setText(dlg.getSelectedZipCode());
 				String sNewPhone = dlg.getSelectedPhone();
@@ -1631,14 +1630,17 @@ public final class CivetEditDialog extends JFrame {
 			}
 			else {
 				// Note, this route is broken until search logic gets refined.
-				UsaHerdsLookupPrems model;
+				PremisesTableModel model;
 				try {
-					model = new UsaHerdsLookupPrems( sStatePremisesId, sFedPremisesId );
+					if( CivetConfig.isStandAlone() )
+						model = new LocalPremisesTableModel( sStatePremisesId, sFedPremisesId );
+					else
+						model = new UsaHerdsLookupPrems( sStatePremisesId, sFedPremisesId );
 					if( model.getRowCount() == 1 ) {
 						if( model.next() ) {
 							jtfThisPIN.setText(sThisPremId);
 							jtfThisName.setText(model.getPremName());
-							jtfAddress.setText(model.getAddress1());
+							jtfAddress.setText(model.getAddress());
 							jtfThisCity.setText(model.getCity());
 							jtfZip.setText(model.getZipCode());
 							String sNewPhone = model.getPhone();
@@ -1666,23 +1668,18 @@ public final class CivetEditDialog extends JFrame {
 	}
 
 	void jtfPhone_focusLost(FocusEvent e) {
-		if( CivetConfig.isStandAlone() ) {
-			// TODO Implement local premises lookup replacement
-			return;
-		}
-		String sPhone = jtfPhone.getText();
+	String sPhone = jtfPhone.getText();
 		if( sPhone == null || sPhone.trim().length() == 0 || sPhone.equals(sPriorPhone) ) return;
 		PremisesSearchDialog dlg = new PremisesSearchDialog();
 		try {
 			dlg.searchPhone(sPhone);
 			if( dlg.exitOK() ) {
 				jtfThisName.setText(dlg.getSelectedPremName());
-				jtfAddress.setText(dlg.getSelectedAddress1());
+				jtfAddress.setText(dlg.getSelectedAddress());
 				jtfThisCity.setText(dlg.getSelectedCity());
 				jtfZip.setText(dlg.getSelectedZipCode());
-				String sPin = dlg.getSelectedFedPremId();
-				if( sPin == null ) {
-					sPin = dlg.getSelectedStatePremId();
+				String sPin = dlg.getSelectedPremId();
+				if( sPin != null && sPin.trim().length() != 7 ) {
 					String sThisState = CivetConfig.getHomeStateAbbr();
 					bLidFromHerds = isValidLid( sPin, sThisState);
 				}
@@ -1698,10 +1695,6 @@ public final class CivetEditDialog extends JFrame {
 	}
 
 	void jtfAddrCity_focusLost(FocusEvent e) {
-		if( CivetConfig.isStandAlone() ) {
-			// TODO Implement local premises lookup replacement
-			return;
-		}
 		String sCity = jtfThisCity.getText();
 		String sAddress = jtfAddress.getText();
 		// don't bother if either address or city is blank or neither has changed.
@@ -1720,12 +1713,11 @@ public final class CivetEditDialog extends JFrame {
 					if( jtfPhone.getText() == null || jtfPhone.getText().trim().length() == 0 )
 						jtfPhone.setText(dlg.getSelectedPhone());
 					jtfThisName.setText(dlg.getSelectedPremName());
-					jtfAddress.setText(dlg.getSelectedAddress1());
+					jtfAddress.setText(dlg.getSelectedAddress());
 					jtfThisCity.setText(dlg.getSelectedCity());
 					jtfZip.setText(dlg.getSelectedZipCode());
-					String sPin = dlg.getSelectedFedPremId();
-					if( sPin == null ) {
-						sPin = dlg.getSelectedStatePremId();
+					String sPin = dlg.getSelectedPremId();
+					if( sPin != null && sPin.trim().length() != 7 ) {
 						String sThisState = CivetConfig.getHomeStateAbbr();
 						bLidFromHerds = isValidLid( sPin, sThisState);
 					}

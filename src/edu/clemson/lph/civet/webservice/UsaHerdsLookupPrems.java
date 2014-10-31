@@ -47,13 +47,13 @@ import edu.clemson.lph.utils.XMLUtility;
  * 	 public class ExternalMessagesStub (Generated Code)
  *      public class CivetWebServices (Thin wrapper adds addresses usernames and passwords from CivetConfig)
  *      		public Document getCivetPremises( String sStatePremID, String sFedPremID, 
- *					String sAddress1, String sCity, String sStateCode, String sZipCode, 
+ *					String sAddress, String sCity, String sStateCode, String sZipCode, 
  *					String sCounty, String sCountry, String sPhone, String sClassType  ) (Returns DOM of returned XML)
  *         public class UsaHerdsLookupPrems (Provides next()/get() Interface and implements DBTableModel)
  * @author mmarti5
  *
  */
-public class UsaHerdsLookupPrems implements javax.swing.table.TableModel {
+public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, PremisesTableModel {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 		// BasicConfigurator replaced with PropertyConfigurator.
@@ -88,7 +88,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel {
 	 * Used by PremisesSearch Dialog
 	 * @param sStatePremID
 	 * @param sFedPremID
-	 * @param sAddress1
+	 * @param sAddress
 	 * @param sCity
 	 * @param sStateCode
 	 * @param sZipCode
@@ -158,6 +158,10 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel {
 		iCurrentRow = -1;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.clemson.lph.civet.webservice.PremisesTableModel#clear()
+	 */
+	@Override
 	public void clear() {
 		rows.clear();
 		iCurrentRow = -1;
@@ -242,12 +246,20 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.clemson.lph.civet.webservice.PremisesTableModel#first()
+	 */
+	@Override
 	public boolean first() {
 		if( rows == null || rows.size() == 0 ) return false;
 		iCurrentRow = -1;
 		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.clemson.lph.civet.webservice.PremisesTableModel#next()
+	 */
+	@Override
 	public boolean next() {
 		boolean bRet = false;
 		iCurrentRow++;
@@ -262,41 +274,63 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel {
 		return bRet;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.clemson.lph.civet.webservice.PremisesTableModel#getPremNameAt(int)
+	 */
+	@Override
 	public String getPremNameAt( int iRow ) {
 		WebServicePremisesRow row = rows.get(iRow);
 		return row.sPremName;
 	}
 	
-	public String getStateIdAt( int iRow ) {
+	public String getPremIdAt( int iRow ) {
+		String sPremId = getFederalIdAt(iRow);
+		if( sPremId == null || sPremId.trim().length() == 0 )
+			sPremId = getStateIdAt(iRow);
+		return sPremId;
+	}
+	
+	private String getStateIdAt( int iRow ) {
 		WebServicePremisesRow row = rows.get(iRow);
 		return row.sStatePremID;
 	}
 	
-	public String getFederalIdAt( int iRow ) {
+	private String getFederalIdAt( int iRow ) {
 		WebServicePremisesRow row = rows.get(iRow);
 		return row.sFedPremID;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.clemson.lph.civet.webservice.PremisesTableModel#getPhoneAt(int)
+	 */
+	@Override
 	public String getPhoneAt( int iRow ) {
 		WebServicePremisesRow row = rows.get(iRow);
 		return row.sPhone;
 	}
 
-	public String getAddress1At( int iRow ) {
+	/* (non-Javadoc)
+	 * @see edu.clemson.lph.civet.webservice.PremisesTableModel#getAddressAt(int)
+	 */
+	@Override
+	public String getAddressAt( int iRow ) {
 		WebServicePremisesRow row = rows.get(iRow);
-		return row.sAddress1;
+		return row.sAddress;
 	}
 
-	public String getAddress2At( int iRow ) {
-		WebServicePremisesRow row = rows.get(iRow);
-		return row.sAddress2;
-	}
-
+	/* (non-Javadoc)
+	 * @see edu.clemson.lph.civet.webservice.PremisesTableModel#getCityAt(int)
+	 */
+	@Override
 	public String getCityAt( int iRow ) {
 		WebServicePremisesRow row = rows.get(iRow);
 		return row.sCity;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.clemson.lph.civet.webservice.PremisesTableModel#getStateCodeAt(int)
+	 */
+	@Override
 	public String getStateCodeAt( int iRow ) {
 		WebServicePremisesRow row = rows.get(iRow);
 		return row.sStateCode;
@@ -307,6 +341,10 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel {
 		return row.sCounty;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.clemson.lph.civet.webservice.PremisesTableModel#getZipCodeAt(int)
+	 */
+	@Override
 	public String getZipCodeAt( int iRow ) {
 		WebServicePremisesRow row = rows.get(iRow);
 		return row.sZipCode;
@@ -316,13 +354,20 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel {
 		if( currentRow == null ) return null;
 		return currentRow.iKeyValue;
 	}
+	
+	public String getPremId() {
+		String sPremId = getFedPremId();
+		if( sPremId == null || sPremId.trim().length() == 0 )
+			sPremId = getStatePremId();
+		return sPremId;
+	}
 
-	public String getStatePremId() {
+	private String getStatePremId() {
 		if( currentRow == null) return null;
 		return currentRow.sStatePremID;
 	}
 	
-	public String getFedPremId() {
+	private String getFedPremId() {
 		if( currentRow == null) return null;
 		return currentRow.sFedPremID;
 	}
@@ -332,14 +377,9 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel {
 		return currentRow.sPremName;
 	}
 	
-	public String getAddress1() {
+	public String getAddress() {
 		if( currentRow == null) return null;
-		return currentRow.sAddress1;
-	}
-	
-	public String getAddress2() {
-		if( currentRow == null) return null;
-		return currentRow.sAddress2;
+		return currentRow.sAddress;
 	}
 	
 	public String getCity() {
@@ -402,8 +442,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel {
 		public String sStatePremID;
 		public String sFedPremID;
 		public String sPremName;
-		public String sAddress1;
-		public String sAddress2;
+		public String sAddress;
 		public String sCity;
 		public String sStateCode;
 		public String sZipCode;
@@ -424,8 +463,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel {
 			this.sStatePremID = sStatePremID;
 			this.sFedPremID = sFedPremID;
 			this.sPremName = sPremName;
-			this.sAddress1 = sAddress1;
-			this.sAddress2 = sAddress2;
+			this.sAddress = sAddress1;
 			this.sCity = sCity;
 			this.sStateCode = sStateCode;
 			this.sZipCode = sZipCode;
@@ -472,7 +510,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel {
 		case 0: return row.sStatePremID;
 		case 1: return row.sFedPremID;
 		case 2: return row.sPremName;
-		case 3: return row.sAddress1;
+		case 3: return row.sAddress;
 		case 4: return row.sCity;
 		case 5: return row.sCounty;
 		}
@@ -486,7 +524,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel {
 		case 0: row.sStatePremID = (String)aValue;
 		case 1: row.sFedPremID = (String)aValue;
 		case 2: row.sPremName = (String)aValue;
-		case 3: row.sAddress1 = (String)aValue;
+		case 3: row.sAddress = (String)aValue;
 		case 4: row.sCity = (String)aValue;
 		case 5: row.sCounty = (String)aValue;
 		}

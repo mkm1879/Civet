@@ -16,16 +16,9 @@ cviValidDays=30
 #Network settings used to check for live network
 localNetAddresses=130.127.169.236,130.127.169.248
 
-#SQL Server USAHERDS Settings
-standAlone=no
-dbServer=lphstage
-dbPort=1433
-dbDatabaseName=USAHerds
-dbHerdsSchemaName=dbo
-dbCivetSchemaName=Civet
-
 #Web Service Settings
-herdsWebServiceURL=http://corp-hbg-04.compaid.com/usaherds/WebService/ExternalMessages.asmx
+standAlone=yes
+herdsWebServiceURL=http://wrong_corp-hbg-04.compaid.com/usaherds/WebService/ExternalMessages.asmx
 
 #Email setup
 smtpHost=smtp-out.clemson.edu
@@ -53,11 +46,10 @@ StdSchema=E:\\Documents\\Civet\\ecviDraftRelaxed.xsd
 rotation=180
 multiRotation=90
 
-#Template Files
+#Template files for generated emails
 ExportEmailTemplate=E:\\Documents\\Civet\\CivetExportsEmailMessage.txt
 ImportErrorsEmailTemplate=E:\\Documents\\Civet\\CivetImportsErrorEmailMessage.txt
 ImportErrorsLetterTemplate=E:\\Documents\\Civet\\CivetImportsErrorLetterTemplate.txt
-
 
 #Robot Mode Settings
 robotInputPath=E:\\Documents\\Civet\\CivetRobotIn
@@ -67,12 +59,21 @@ robotOutputFormat=STD
 #robotOutputFormat=ADOBE
 robotWaitSeconds=15
 
-#For operations without DB connection, provide basic lookups
+#Basic lookup tables created by Webservice or manually for stand alone mode
 vetTableFile=VetTable.csv
 sppTableFile=SpeciesTable.csv
-stateVetTableFile=StateVetTable.csv
 purposeTableFile=PurposeTable.csv
 errorTypeTableFile=ErrorTypeTable.csv
+
+#State Vet Table distributed manually for now.
+stateVetTableFile=StateVetTable.csv
+
+#SQL Server USAHERDS Settings (Only needed if SQL add ons are used)
+dbServer=lphstage
+dbPort=1433
+dbDatabaseName=USAHerds
+dbHerdsSchemaName=dbo
+dbCivetSchemaName=Civet
 
 #Logging using Apache Log 4 J library
 logLevel=INFO

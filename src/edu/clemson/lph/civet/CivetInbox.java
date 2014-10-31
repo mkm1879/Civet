@@ -40,14 +40,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
-import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.mailman.MailMan;
 import edu.clemson.lph.utils.Validator;
-import edu.clemson.lph.civet.files.DateCellComparator;
 import edu.clemson.lph.civet.files.EmailFilesTableModel;
 import edu.clemson.lph.civet.files.DateCellRenderer;
 import edu.clemson.lph.civet.files.FilesTableModel;
@@ -110,6 +108,7 @@ public class CivetInbox extends JFrame {
 			initGui();
 			if( !LookupFilesGenerator.isNewThisSession() ) {
 				MessageDialog.showMessage(this, "Civet: Error", "Lookup files not initialized.  Running off-line.\n");
+				CivetConfig.setStandAlone(true);
 			}
 		} catch( Throwable t ) {
 			logger.error("Unexpected error in initGui", t);

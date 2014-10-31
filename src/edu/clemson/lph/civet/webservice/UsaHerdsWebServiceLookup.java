@@ -38,7 +38,7 @@ import edu.clemson.lph.utils.XMLUtility;
  * 	 public class ExternalMessagesStub (Generated Code)
  *      public class CivetWebServices (Thin wrapper adds addresses usernames and passwords from CivetConfig)
  *      		public Document getCivetPremises( String sStatePremID, String sFedPremID, 
- *					String sAddress1, String sCity, String sStateCode, String sZipCode, 
+ *					String sAddress, String sCity, String sStateCode, String sZipCode, 
  *					String sCounty, String sCountry, String sPhone, String sClassType  ) (Returns DOM of returned XML)
  *         public class UsaHerdsWebServiceLookup (Provides next()/get() Interface and populates cache CSV files)
  * @author mmarti5
