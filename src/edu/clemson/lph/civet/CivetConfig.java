@@ -45,6 +45,7 @@ public class CivetConfig {
 	private static String sDBUserName = null;
 	private static String sDBPassword = null;
 	private static Boolean bStandAlone = null;
+	private static Boolean bBrokenLIDs = null;
 	
 
 //	static {
@@ -83,6 +84,20 @@ public class CivetConfig {
 			}
 		}
 		return bStandAlone;
+	}	
+	
+	public static boolean hasBrokenLIDs() {
+		if( bBrokenLIDs == null ) {
+			String sVal = props.getProperty("brokenLIDs");
+			// default to true;
+			if( sVal == null || sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bBrokenLIDs = true;
+			}
+			else {
+				bBrokenLIDs = false;
+			}
+		}
+		return bBrokenLIDs;
 	}	
 	
 	public static void setStandAlone( boolean standAlone ) {

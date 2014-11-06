@@ -7,6 +7,8 @@ homeState=SOUTH CAROLINA
 homeStateAbbr=SC
 homeStateKey=56
 
+brokenLIDs=true
+
 # Import or Export selected by default?
 defaultDirection=Import
 
@@ -18,7 +20,7 @@ localNetAddresses=130.127.169.236,130.127.169.248
 
 #Web Service Settings
 standAlone=yes
-herdsWebServiceURL=http://wrong_corp-hbg-04.compaid.com/usaherds/WebService/ExternalMessages.asmx
+herdsWebServiceURL=http://corp-hbg-04.compaid.com/usaherds/WebService/ExternalMessages.asmx
 
 #Email setup
 smtpHost=smtp-out.clemson.edu

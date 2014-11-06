@@ -2144,10 +2144,11 @@ public final class CivetEditDialog extends JFrame {
 		String sOtherZipcode = jtfOtherZip.getText();
 		String sOtherPIN = jtfOtherPIN.getText();
 		// Only save actual PINs for other state and only save PINs or HERDS State PremIds (they aren't really LIDS!)
-		if( sOtherPIN != null && sOtherPIN.trim().length() != 7 )
+		// if not 
+		if( sOtherPIN != null && sOtherPIN.trim().length() != 7 && CivetConfig.hasBrokenLIDs() )
 			sOtherPIN = null;
 		String sThisPremisesId = jtfThisPIN.getText();
-		if( sThisPremisesId != null && sThisPremisesId.trim().length() != 7 && !bLidFromHerds )
+		if( sThisPremisesId != null && sThisPremisesId.trim().length() != 7 && CivetConfig.hasBrokenLIDs() && !bLidFromHerds )
 			sOtherPIN = null;
 		String sPhone = jtfPhone.getText();
 		String sThisName = jtfThisName.getText();

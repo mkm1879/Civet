@@ -191,7 +191,8 @@ public class SendOutboundCVIEmailThread extends Thread {
 				if( "CVI".equalsIgnoreCase(sCurrentFileType)  ) {
 					sFileName = thisCVI.getOriginState() + "_To_" + thisCVI.getDestinationState() + 
 							"_" + thisCVI.getCertificateNumber() + ".cvi";
-					thisCVI.purgeLids();
+					if( CivetConfig.hasBrokenLIDs() )
+						thisCVI.purgeLids();
 					String sThisCvi = thisCVI.getXMLString();
 					byte pdfBytes[] = sThisCvi.getBytes("UTF-8");
 					aFiles.add(new MIMEFile(sFileName,"text/xml",pdfBytes));
