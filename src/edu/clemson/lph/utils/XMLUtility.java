@@ -48,12 +48,16 @@ public class XMLUtility {
 	private static final String sXmlDateFmt = "yyyy-MM-dd";
 
 	public static Document stringToDom( String sXML ) throws ParserConfigurationException, SAXException, IOException	{
+		if( sXML == null || sXML.trim().length() == 0 ) return null;
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
-		return builder.parse( new InputSource( new StringReader(sXML) ) );
+		StringReader reader =  new StringReader( sXML );
+		InputSource source = new InputSource( reader );
+		return builder.parse( source );
 	}
 	
 	public static String domToString( Document dom ) {
+		if( dom == null ) return null;
 		XMLDocHelper helper = new XMLDocHelper( dom );
 		return helper.getXMLString();
 	}

@@ -149,6 +149,8 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 	}
 	
 	private String digitsOnly( String sPhone ) {
+		if( sPhone == null || sPhone.trim().length() == 0 )
+			return null;
 		StringBuffer sb = new StringBuffer();
 		for( int i = 0; i < sPhone.length(); i++ ) {
 			char cNext = sPhone.charAt(i);

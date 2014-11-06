@@ -41,6 +41,7 @@ import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
+import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.IDTypeGuesser;
 
 public class SaveCVIThread extends Thread {
@@ -81,6 +82,7 @@ public class SaveCVIThread extends Thread {
 	private ArrayList<AnimalIDRecord> aAnimalIDs;
 	private String sErrorNotes;
 	private boolean bNoEmail;
+	private boolean bCancel = false;
 
 	public SaveCVIThread(CivetEditDialog dlg, StdeCviXml stdXmlIn,
 			byte[] bAttachmentBytesIn, String sOriginalFileName, File fOriginalFileIn, boolean bImport, 
@@ -164,8 +166,10 @@ public class SaveCVIThread extends Thread {
 		
 		try {
 			setUpFileNamesAndContent();
+			if( bCancel ) return;
 			String sXml = buildXml();
 			saveXml( sXml );
+			if( bCancel ) return;
 			if( !bNoEmail )
 				saveEmail( sXml );
 			if( CivetConfig.isStandAlone() ) {
@@ -228,6 +232,7 @@ public class SaveCVIThread extends Thread {
 						prog.dispose();
 					}
 				});
+				bCancel = true;
 				return;
 			}
 		}
@@ -244,6 +249,8 @@ public class SaveCVIThread extends Thread {
 			bAttachmentFileBytes = bAttachmentBytes;
 		}
 		sXmlFileName = "CVI_" + sOriginStateCode + "_To_" + sDestinationStateCode + "_" + sCVINo + ".cvi";
+		sAttachmentFileName = FileUtils.replaceInvalidFileNameChars(sAttachmentFileName);
+		sXmlFileName = FileUtils.replaceInvalidFileNameChars(sXmlFileName);		
 	}
 	
 	private String buildXml() {
@@ -309,7 +316,7 @@ public class SaveCVIThread extends Thread {
 	}
 	
 	private void saveXml(String sStdXml) {
-		String sFilePath = CivetConfig.getToFileDirPath() + sXmlFileName;
+		final String sFilePath = CivetConfig.getToFileDirPath() + sXmlFileName;
 		final File fileOut = new File(sFilePath);
 		try {
 			PrintWriter pw = new PrintWriter( new FileOutputStream( fileOut ) );
@@ -321,9 +328,16 @@ public class SaveCVIThread extends Thread {
 					dlg.getController().setLastSavedFile(fileOut);
 				}
 			});
-		} catch (FileNotFoundException e) {
-			logger.error("Could not save " + sFilePath, e);
-			MessageDialog.messageLater(dlg, "Civet Error: File Save", "Could not save file\n " + sFilePath );
+		} catch (final FileNotFoundException e) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					logger.error("Could not save " + sFilePath, e);
+					MessageDialog.showMessage(dlg, "Civet Error: File Save", "Could not save file\n " + sFilePath );
+					prog.setVisible(false);
+					prog.dispose();
+				}
+			});
+			bCancel = true;
 			return;
 		}
 	}

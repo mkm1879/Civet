@@ -20,6 +20,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class FileUtils {
@@ -55,6 +56,25 @@ public class FileUtils {
 		if( iRead != len ) 
 			throw new Exception("File " + fThis.getName() + " size = " + len + " read = " + iRead);
 		return bytes;
+	}
+	
+	public static String replaceInvalidFileNameChars( String sFileName ) {
+		if( sFileName == null || sFileName.trim().length() == 0 )
+			return null;
+		String os = System.getProperty("os.name");
+		os = os.toLowerCase();
+		String invalidChars;
+		if (os.contains("win")) {
+		    invalidChars = "\\/:*?\"<>|";
+		} else if (os.contains("mac")) {
+		    invalidChars = "/:";
+		} else { // assume Unix/Linux
+		    invalidChars = "/";
+		}
+		for (int i = 0; i < invalidChars.length(); i++) {
+			sFileName = sFileName.replace(invalidChars.charAt(i), '_');
+		}
+		return sFileName;
 	}
 
 }
