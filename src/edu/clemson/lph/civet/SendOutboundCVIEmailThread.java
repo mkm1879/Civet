@@ -189,8 +189,10 @@ public class SendOutboundCVIEmailThread extends Thread {
 			ArrayList<MIMEFile> aFiles = new ArrayList<MIMEFile>();
 			for( StdeCviXml thisCVI : aCVIs) {
 				if( "CVI".equalsIgnoreCase(sCurrentFileType)  ) {
+					// if the receiving state wants .CVI files we need to do some clean up
 					sFileName = thisCVI.getOriginState() + "_To_" + thisCVI.getDestinationState() + 
 							"_" + thisCVI.getCertificateNumber() + ".cvi";
+					// Remove 8 character State Premises Identifiers that may or may not be LIDs
 					if( CivetConfig.hasBrokenLIDs() )
 						thisCVI.purgeLids();
 					String sThisCvi = thisCVI.getXMLString();
@@ -198,6 +200,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 					aFiles.add(new MIMEFile(sFileName,"text/xml",pdfBytes));
 				}
 				else {
+					// Otherwise, we extract the original PDF as attached to the .cvi file
 					sFileName = thisCVI.getOriginState() + "_To_" + thisCVI.getDestinationState() + 
 							"_" + thisCVI.getCertificateNumber() + ".pdf";
 					byte pdfBytes[] = thisCVI.getOriginalCVI();
