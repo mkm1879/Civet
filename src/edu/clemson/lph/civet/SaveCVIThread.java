@@ -72,6 +72,8 @@ public class SaveCVIThread extends Thread {
 	private String sDestinationPhone;
 	private java.util.Date dDateIssued;
 	private java.util.Date dDateReceived;
+	
+	@SuppressWarnings("unused") // this just gets converted to a sStdPurpose but keep for debugging, etc.
 	private String sMovementPurpose;
 	private String sStdPurpose;
 	private Integer iIssuedByKey;

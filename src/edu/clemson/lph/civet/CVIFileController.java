@@ -26,16 +26,15 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.jpedal.PdfDecoder;
-import org.jpedal.objects.acroforms.AcroRenderer;
 
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PRAcroForm;
 import com.itextpdf.text.pdf.PdfCopy;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.dialogs.MessageDialog;
+import edu.clemson.lph.pdfgen.PDFUtils;
 
 /**
  * This class handles keeping track of Files and Pages open in the CivetEditDialog.
@@ -521,11 +520,7 @@ public class CVIFileController {
 		boolean bRet = false;
 		if( currentFileName.toLowerCase().endsWith(".pdf") ) {
 			try {
-				if( CivetConfig.isJPedalXFA() ) {
-					AcroRenderer rend = dlg.getPdfDecoder().getFormRenderer();
-					if( rend.isXFA() ) 
-						bRet = true;
-				}
+				bRet = PDFUtils.isXFA(rawPdfBytes);
 			} catch( Exception e ) {
 				bRet = false;
 			}
@@ -578,10 +573,6 @@ public class CVIFileController {
 			for( Integer iPage : aPagesInCurrent ) {
 				PdfImportedPage pip = writer.getImportedPage(reader, iPage.intValue() );
 				writer.addPage(pip);
-			}
-			PRAcroForm form = reader.getAcroForm();
-			if (form != null) {
-				writer.copyAcroForm(reader);
 			}
 			document.close();
 		} catch( IOException ioe ) {

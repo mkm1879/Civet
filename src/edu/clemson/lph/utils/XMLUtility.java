@@ -19,7 +19,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
+import java.io.StringWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,6 +30,12 @@ import java.util.Set;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -41,7 +47,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.xml.XMLDocHelper;
 
 public class XMLUtility {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
@@ -57,20 +62,29 @@ public class XMLUtility {
 	}
 	
 	public static String domToString( Document dom ) {
-		if( dom == null ) return null;
-		XMLDocHelper helper = new XMLDocHelper( dom );
-		return helper.getXMLString();
+		return domToString( dom, false, null);
 	}
-
-	public static List<String> elementNames( Document dom ) {
-		ArrayList<String> names = new ArrayList<String>();
-		NodeList nodes = dom.getChildNodes();
-		for( int i = 0; i < nodes.getLength(); i++ ) {
-			Node n = nodes.item(i);
-			if( n.getNodeType() == Node.ELEMENT_NODE ) 
-				names.add(n.getNodeName());
+	
+	public static String domToString( Document dom, boolean bOmitDeclaration) {
+		return domToString(dom, bOmitDeclaration, null );
+	}
+		
+	public static String domToString( Document dom , boolean bOmitDeclaration, String sEncoding ) {
+		String sOmit = (bOmitDeclaration ? "yes" : "no");
+		try {
+		TransformerFactory transFactory = TransformerFactory.newInstance();
+		Transformer transformer = transFactory.newTransformer();
+		if( sEncoding != null )
+			transformer.setOutputProperty(OutputKeys.ENCODING, sEncoding);
+		StringWriter buffer = new StringWriter();
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, sOmit);
+			transformer.transform(new DOMSource(dom),
+			      new StreamResult(buffer));
+			return buffer.toString();
+		} catch (TransformerException e) {
+			logger.error("Transform failure", e);
 		}
-		return names;
+		return null;
 	}
 
 	public static String printElements( Document dom ) {
@@ -198,7 +212,28 @@ public class XMLUtility {
 		return dRet;
 	}
 
-
+	
+	public static String getXMLString(Document dom, boolean bOmitDeclaration) {
+		return getXMLString(dom, bOmitDeclaration, null );
+	}
+		
+	public static String getXMLString(Document dom, boolean bOmitDeclaration, String sEncoding ) {
+		String sOmit = (bOmitDeclaration ? "yes" : "no");
+		try {
+		TransformerFactory transFactory = TransformerFactory.newInstance();
+		Transformer transformer = transFactory.newTransformer();
+		if( sEncoding != null )
+			transformer.setOutputProperty(OutputKeys.ENCODING, sEncoding);
+		StringWriter buffer = new StringWriter();
+		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, sOmit);
+			transformer.transform(new DOMSource(dom),
+			      new StreamResult(buffer));
+			return buffer.toString();
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }
 

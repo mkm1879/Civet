@@ -28,7 +28,6 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PRAcroForm;
 import com.itextpdf.text.pdf.PdfCopy;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
@@ -192,11 +191,6 @@ public class PDFOpener {
 
 				PdfImportedPage pip = writer.getImportedPage(reader, iPageNo);
 				writer.addPage(pip);
-
-				PRAcroForm form = reader.getAcroForm();
-				if (form != null) {
-					writer.copyAcroForm(reader);
-				}
 				document.close();
 			}
 			catch (DocumentException ex) {

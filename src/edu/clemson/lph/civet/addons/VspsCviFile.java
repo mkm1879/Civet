@@ -25,18 +25,9 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JFileChooser;
-import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.log4j.Logger;
-
-
-
-
-
-
-
-
 import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.db.DatabaseConnectionFactory;

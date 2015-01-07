@@ -23,23 +23,17 @@ import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CoKsXML;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.pdfgen.PDFUtils;
 import edu.clemson.lph.utils.FileUtils;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.jpedal.PdfDecoder;
-import org.jpedal.exception.PdfException;
-import org.jpedal.objects.acroforms.AcroRenderer;
-import org.jpedal.objects.raw.PdfDictionary;
 import org.w3c.dom.Node;
 
 
@@ -88,20 +82,17 @@ public class COKSRobot extends Thread {
 					return false;
 			}
 		});
-		PdfDecoder pdfDecoder = new PdfDecoder();
 		java.util.Date now = new java.util.Date();
 		for( File file : files ) {
 			File fXML = new File( xmlDir, file.getName() + ".cvi" );
 			try {
-				pdfDecoder.openPdfFile(file.getAbsolutePath());
-				AcroRenderer rend = pdfDecoder.getFormRenderer();
-				if( rend.isXFA() ) {
-					Node xmlNode = rend.getXMLContentAsNode(PdfDictionary.XFA_DATASET);
+				byte[] pdfBytes = FileUtils.readBinaryFile( file );
+				if( PDFUtils.isXFA(pdfBytes) ) {
+					Node xmlNode = PDFUtils.getXFADataNode(pdfBytes);
 					CoKsXML coks = new CoKsXML( xmlNode );
 					String sXML = null;
 					if( bStd ) {
 						StdeCviXml stdXml = coks.getStdeCviXml();
-						byte[] pdfBytes = FileUtils.readBinaryFile( file );
 						stdXml.setOriginalCVI( pdfBytes, file.getName() );
 						CviMetaDataXml metaData = new CviMetaDataXml();
 						metaData.setBureauReceiptDate( now );
@@ -137,13 +128,10 @@ public class COKSRobot extends Thread {
 				else {
 					logger.error( "File " + file.getName() + " was not a CO/KS XFA form");
 				}
-				pdfDecoder.closePdfFile();
 				// Move Completed File to the compDir
 				File fPathOut = new File( compDir.getAbsolutePath() );
 				File fout = new File( fPathOut, file.getName() );
 				file.renameTo(fout);
-			} catch (PdfException e) {
-				logger.error("Error parsing pdf file " + file.getAbsolutePath(), e);
 			} catch (IOException e) {
 				logger.error("Error writing xml file " + fXML.getAbsolutePath(), e);
 			} catch (Exception e) {

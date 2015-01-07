@@ -38,6 +38,12 @@ import org.w3c.dom.NodeList;
 
 import edu.clemson.lph.civet.Civet;
 
+/**
+ * This class wraps an XML DOM document and provides various, mostly XPath-based, 
+ * convenience methods.
+ * @author mmarti5
+ *
+ */
 public class XMLDocHelper {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private Document doc;

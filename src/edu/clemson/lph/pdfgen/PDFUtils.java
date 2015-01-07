@@ -20,13 +20,17 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.log4j.Logger;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PRAcroForm;
 import com.itextpdf.text.pdf.PdfCopy;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.XfaForm;
 
 import edu.clemson.lph.civet.Civet;
 
@@ -53,10 +57,6 @@ public class PDFUtils {
 			document.open();
 			PdfImportedPage pip = writer.getImportedPage(reader, 1);
 			writer.addPage(pip);
-			PRAcroForm form = reader.getAcroForm();
-			if (form != null) {
-				writer.copyAcroForm(reader);
-			}
 			document.close();
 			byte[] pdfDataOut = baOut.toByteArray();
 			int iLen = pdfDataOut.length;
@@ -71,5 +71,48 @@ public class PDFUtils {
 		}
 		return bRet;
 	}// End decode pages to new PDF
+	
+	/**
+	 * Use iText 5.x to determine whether a PDF contains an XFA form.
+	 * @param pdfDataIn
+	 * @return
+	 */
+	public static boolean isXFA(byte[] pdfDataIn) {
+		boolean bRet = false;
+		PdfReader reader;
+		try {
+			reader = new PdfReader(pdfDataIn);
+			XfaForm form = new XfaForm(reader);
+			bRet = form.isXfaPresent();
+		} catch (IOException | ParserConfigurationException | SAXException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+			bRet = false;
+		}
+		return bRet;
+	}
+	
+	public static Node getXFADataNode(byte[] pdfDataIn) {
+		Node nData = null;
+		try {
+			PdfReader reader = new PdfReader(pdfDataIn);
+			XfaForm form = new XfaForm(reader);
+			Node xmlNode = form.getDatasetsNode();
+			if( "xfa:datasets".equals(xmlNode.getNodeName()) ) {
+				nData = xmlNode.getFirstChild();
+				if( !"xfa:data".equals(nData.getNodeName()) ) {
+					System.err.println(nData.getNodeName());
+					nData = null;
+				}
+			}
+			else
+				System.err.println(xmlNode.getNodeName() );
+		} catch (IOException | ParserConfigurationException | SAXException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+		
+		return nData;
+	}
 
 }

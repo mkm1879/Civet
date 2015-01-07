@@ -60,8 +60,6 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 import org.jpedal.PdfDecoder;
-import org.jpedal.objects.acroforms.AcroRenderer;
-import org.jpedal.objects.raw.PdfDictionary;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -90,6 +88,7 @@ import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.QuestionDialog;
 import edu.clemson.lph.dialogs.YesNoDialog;
 import edu.clemson.lph.pdfgen.PDFOpener;
+import edu.clemson.lph.pdfgen.PDFUtils;
 import edu.clemson.lph.utils.PremCheckSum;
 
 import javax.swing.border.TitledBorder;
@@ -1389,6 +1388,7 @@ public final class CivetEditDialog extends JFrame {
 	
 	// Probably fast enough to leave in event dispatch thread
 	// but not good practice.
+	// May be too slow if moving to different drive instead of just renaming to new folder.
 	public void allFilesDone() {
 		pdfDecoder.closePdfFile();
 	    if( !isReopened() ) {
@@ -2078,22 +2078,23 @@ public final class CivetEditDialog extends JFrame {
 	 * "Virtual" parameter PDF File loaded in pdfDecoder.
 	 */
 	void populateFromPDF() {
-		if( !CivetConfig.isJPedalXFA() ) {
-			logger.error("populateFromPDF called without XFA document", new Exception("Civet Error"));
-			return;
-		}
-		AcroRenderer rend = pdfDecoder.getFormRenderer();
-		if( rend.isXFA() ) {
-			Node xmlNode = rend.getXMLContentAsNode(PdfDictionary.XFA_DATASET);
+		if( controller.isXFADocument() ) {
+			byte[] pdfBytes = controller.getCurrentPdfBytes();
+			Node xmlNode = PDFUtils.getXFADataNode(pdfBytes);
+			if( xmlNode == null ) {
+				MessageDialog.messageWait(this, "Civet Error:", "Could not extract CO/KS data node from XFA PDF");		
+				return;
+			}
 			CoKsXML coks = new CoKsXML( xmlNode );
 			StdeCviXml std = coks.getStdeCviXml();
 			if( std == null ) {
 				MessageDialog.messageWait(this, "Civet Error:", "Could not convert PDF content to USAHA Standard XML using XSLT\n" +
-												CivetConfig.getCoKsXSLTFile());
+						CivetConfig.getCoKsXSLTFile());
 			}
 			else {
 				populateFromStdXml( std );
 			}
+
 		}
 	}
 	
@@ -2169,8 +2170,7 @@ public final class CivetEditDialog extends JFrame {
 		updateSpeciesList(false);
 		StdeCviXml stdXml = controller.getStdXml();
 		if( controller.isXFADocument() ) {
-			AcroRenderer rend = getPdfDecoder().getFormRenderer();
-			byte[] xmlBytes = rend.getXMLContentAsBytes(PdfDictionary.XFA_DATASET);
+			byte[] xmlBytes = controller.getCurrentPdfBytes();
 			CoKsXML coks = new CoKsXML( xmlBytes );
 			stdXml = coks.getStdeCviXml();
 		}
