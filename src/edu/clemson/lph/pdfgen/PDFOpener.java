@@ -23,8 +23,6 @@ import edu.clemson.lph.dialogs.*;
 import java.awt.Window;
 import java.io.*;
 
-import javax.swing.SwingUtilities;
-
 import org.apache.log4j.Logger;
 
 import com.itextpdf.text.DocumentException;
@@ -45,11 +43,8 @@ public class PDFOpener {
 	 * Opens the current Page in default PDF reader
 	 */
 	public void openPDFContentInAcrobat( byte[] pdfBytes ) {
-		ProgressDialog prog = new ProgressDialog(wParent, "Civet", "Opening CVI");
-		prog.setAuto(true);
-		prog.setVisible(true);
 		String sFileName = extractRecordToTempPDF( pdfBytes );
-		Thread t = new OpenRecordInAcrobat(prog, sFileName);
+		Thread t = new OpenRecordInAcrobat(sFileName);
 		t.start();
 	}
 
@@ -57,10 +52,7 @@ public class PDFOpener {
 	 * Opens the current Page in default PDF reader
 	 */
 	public void openPDFFileInAcrobat( String sFileName ) {
-		ProgressDialog prog = new ProgressDialog(wParent, "Civet", "Opening CVI");
-		prog.setAuto(true);
-		prog.setVisible(true);
-		Thread t = new OpenRecordInAcrobat(prog, sFileName);
+		Thread t = new OpenRecordInAcrobat(sFileName);
 		t.start();
 	}
 
@@ -83,9 +75,7 @@ public class PDFOpener {
 	class OpenRecordInAcrobat extends Thread {
 		String sFileName;
 		int iPageNo;
-		ProgressDialog prog;
-		public OpenRecordInAcrobat( ProgressDialog prog, String sFileName ) {
-			this.prog = prog;
+		public OpenRecordInAcrobat( String sFileName ) {
 			this.sFileName = sFileName;
 		}
 
@@ -112,12 +102,6 @@ public class PDFOpener {
 					logger.error(ex.getMessage() + "\nError in UNIDENTIFIED");
 				}
 			}
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					prog.setVisible(false);
-					prog.dispose();
-				}
-			});
 		}
 	}// End class OpenRecord
 
@@ -125,10 +109,7 @@ public class PDFOpener {
 	 * Opens the current Page in default PDF reader
 	 */
 	public void openPageContentInAcrobat(String sFileName, int iPageNo) {
-		ProgressDialog prog = new ProgressDialog(wParent, "Civet", "Extracting CVI Page");
-		prog.setAuto(true);
-		prog.setVisible(true);
-		Thread t = new OpenPageInAcrobat(prog, sFileName, iPageNo);
+		Thread t = new OpenPageInAcrobat(sFileName, iPageNo);
 		t.start();
 	}
 
@@ -136,8 +117,7 @@ public class PDFOpener {
 		String sFileName;
 		int iPageNo;
 		ProgressDialog prog;
-		public OpenPageInAcrobat( ProgressDialog prog, String sFileName, int iPageNo ) {
-			this.prog = prog;
+		public OpenPageInAcrobat(String sFileName, int iPageNo ) {
 			this.sFileName = sFileName;
 			this.iPageNo = iPageNo;
 		}
@@ -166,12 +146,6 @@ public class PDFOpener {
 					logger.error(ex.getMessage() + "\nError in UNIDENTIFIED");
 				}
 			}
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					prog.setVisible(false);
-					prog.dispose();
-				}
-			});
 		}
 
 		String extractPageToTempPDF(String sFilePath, int iPage) {
