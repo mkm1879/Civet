@@ -55,6 +55,7 @@ import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
+	public static final String VERSION = "3.0";
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private JPanel contentPane;
 	private JMenuBar menuBar1 = new JMenuBar();
@@ -100,6 +101,8 @@ public class CivetInbox extends JFrame {
 	private JMenuItem menuItemSendOutboundCVIs;
 	private JMenuItem menuItemSendInboundErrors;
 	JMenu menuAddOns = new JMenu();
+	JMenu menuHelp = new JMenu();
+	JMenuItem menuItemAbout = new JMenuItem();
 
 
 	// for design time only remove before distribution
@@ -222,6 +225,15 @@ public class CivetInbox extends JFrame {
 			}
 		});
 		menuView.add(menuItemViewRefresh);
+		menuHelp.setText("Help");
+		menuItemAbout.setText("About Civet");
+		menuItemAbout.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				MessageDialog.showMessage(CivetInbox.this, "About Civet", "Civet: CVI Management Utility\nVersion: " + VERSION);
+			}
+		});
+		menuHelp.add(menuItemAbout);
 
 		this.setJMenuBar(menuBar1);
 		statusPanel.setLayout(new FlowLayout());
@@ -309,6 +321,7 @@ public class CivetInbox extends JFrame {
 		// Clemson DB stuff for us.
 		AddOnLoader.populateMenu(this, menuAddOns);
 		menuBar1.add(menuAddOns);
+		menuBar1.add(menuHelp);
 		viewNew();
 		setVisible( true );
 
