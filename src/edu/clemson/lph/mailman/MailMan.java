@@ -37,7 +37,7 @@ public class MailMan {
 	private static String sHost = null;
 	private static int iPort = -1;
 	private static String sFrom = null;
-	private static boolean isTLS;
+	private static String sSecurity = "NONE";
 
 	public MailMan() {
 
@@ -265,7 +265,13 @@ public class MailMan {
 
 	private static Properties setupProperties() {
 		Properties props = new Properties();
-		if( isTLS ) {
+		if( "STARTTLS".equalsIgnoreCase(sSecurity) ) {
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.smtp.host", "smtp.gmail.com");
+			props.put("mail.smtp.port", "587");
+		}
+		else if( "SSL".equalsIgnoreCase(sSecurity) ) {
 			props.put("mail.smtps.user", sUserID);
 			props.put("mail.smtps.host", sHost);
 			props.put("mail.smtps.port", iPort);
@@ -319,12 +325,12 @@ public class MailMan {
 		MailMan.iPort = iPort;
 	}
 
-	public static void setTLS(boolean bTLS) {
-		MailMan.isTLS = bTLS;
+	public static void setSecurity(String sSecurity) {
+		MailMan.sSecurity = sSecurity;
 	}
 
-	public static boolean isTLS() {
-		return isTLS;
+	public static String getSecurity() {
+		return sSecurity;
 	}
 
 	public static int getDefaultPort() {

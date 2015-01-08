@@ -28,6 +28,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.log4j.Logger;
+
 import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
@@ -81,6 +82,7 @@ public class VspsCviFile implements AddOn {
 	/**
 	 * Test only
 	 */
+	@SuppressWarnings("unused")
 	private void printme(File fIn) {
 		try {
 			parser = new LabeledCSVParser( new FileReader( fIn ) );

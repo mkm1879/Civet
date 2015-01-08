@@ -129,7 +129,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 					PDFGen pdfGenerator = new PDFGen();
 					pdfGenerator.setCodeSource(this);
 					ByteArrayOutputStream bos = new ByteArrayOutputStream();
-					pdfGenerator.printDoc("ErrorLetterTemplate.txt", bos);
+					pdfGenerator.printDoc(CivetConfig.getImportErrorsLetterTemplate(), bos);
 					byte[] letterBytes = bos.toByteArray(); 
 					aLetterBytes.add(letterBytes);
 					lAttachmentsSize += pdfBytes.length + letterBytes.length;
@@ -196,11 +196,11 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 			throw new Exception( "Missmatched letters with CVIs in send errors");
 		if( sInBoundCVIErrorMessage == null ) {
 			try {
-				File fIn = new File( "InBoundCVIErrorMessage.txt" );
+				File fIn = new File( CivetConfig.getImportErrorsEmailTemplate() );
 				sInBoundCVIErrorMessage = FileUtils.readTextFile( fIn );
 			} catch (FileNotFoundException fnf) {
 				MessageDialog.messageLater(prog.getWindowParent(), "Civet: Template File Missing",
-                                       "Cannot find template file InBoundCVIErrorMessage.txt");
+                                       "Cannot find template file " + CivetConfig.getImportErrorsEmailTemplate());
 				return false;
 			}
 		}

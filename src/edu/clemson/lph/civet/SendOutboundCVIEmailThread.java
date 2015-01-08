@@ -171,7 +171,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 		String sTemplateFile = null;
 		if( sOutBoundCVIMessage == null ) {
 			try {
-				sTemplateFile = "OutBoundCivetMessage.txt";
+				sTemplateFile = CivetConfig.getExportMailTemplate();
 				File fIn = new File( sTemplateFile );
 				sOutBoundCVIMessage = FileUtils.readTextFile( fIn );
 			} catch (FileNotFoundException fnf) {
@@ -223,7 +223,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 			logger.error(me.getMessage() + "\nInvalid MIMEFile Specification" );
 			bRet = false;
 		} catch (Exception e) {
-			logger.error("Could not read file " + sFileName, e);
+			logger.error("Could not send file " + sFileName, e);
 			bRet = false;
 		}
 		return bRet;

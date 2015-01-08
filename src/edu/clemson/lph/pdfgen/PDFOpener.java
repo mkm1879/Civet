@@ -32,11 +32,12 @@ import com.itextpdf.text.pdf.PdfReader;
 
 public class PDFOpener {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private Window wParent;
 	
-	
+	/**
+	 * Note: Originally intended to open viewer as child window but that failed.
+	 * @param parent
+	 */
 	public PDFOpener( Window parent ) {
-		wParent = parent;
 	}
 
 	/**

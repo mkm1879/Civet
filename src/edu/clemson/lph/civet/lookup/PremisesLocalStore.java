@@ -38,6 +38,7 @@ public class PremisesLocalStore {
 	
 	public synchronized void addPremises( String sPremisesId, String sPremisesName, String sAddress, String sCity,			
 								String sState, String sZip, String sPhone ) {
+		try {
 		PremRecord rNew = new PremRecord( sPremisesId, sPremisesName, sAddress, sCity, sState, sZip, sPhone );
 		PremRecord rPrem = containedIn( aPrems, rNew );
 		if( rPrem != null ) {
@@ -100,6 +101,9 @@ public class PremisesLocalStore {
 				aPrems.add(rPrem);
 				hAddressMap.put(aKey, aPrems);
 			}
+		}
+		} catch( Exception e ) {
+			logger.error(e);
 		}
 	}
 	

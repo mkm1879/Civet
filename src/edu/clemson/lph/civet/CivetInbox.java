@@ -55,7 +55,7 @@ import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.0";
+	public static final String VERSION = "3.01";
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private JPanel contentPane;
 	private JMenuBar menuBar1 = new JMenuBar();
@@ -449,11 +449,8 @@ public class CivetInbox extends JFrame {
 				MailMan.setDefaultPassword(ask.getAnswerTwo());
 				MailMan.setDefaultHost(CivetConfig.getSmtpHost());
 				MailMan.setDefaultPort(CivetConfig.getSmtpPortInt());
-				String sIsTLS = CivetConfig.getSmtpIsTLS();
-				if( "yes".equalsIgnoreCase(sIsTLS) || "true".equalsIgnoreCase(sIsTLS) )
-					MailMan.setTLS(true);
-				else
-					MailMan.setTLS(false);
+				String sSecurity = CivetConfig.getSmtpSecurity();
+				MailMan.setSecurity(sSecurity);
 				MailMan.setDefaultFrom(ask.getAnswerOne() + CivetConfig.getSmtpDomain() );
 			}
 			else {

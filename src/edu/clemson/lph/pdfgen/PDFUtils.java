@@ -84,8 +84,13 @@ public class PDFUtils {
 			reader = new PdfReader(pdfDataIn);
 			XfaForm form = new XfaForm(reader);
 			bRet = form.isXfaPresent();
-		} catch (IOException | ParserConfigurationException | SAXException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {
+			logger.error(e);
+			bRet = false;
+		} catch (ParserConfigurationException e) {
+			logger.error(e);
+			bRet = false;
+		} catch (SAXException e) {
 			logger.error(e);
 			bRet = false;
 		}
@@ -107,8 +112,11 @@ public class PDFUtils {
 			}
 			else
 				System.err.println(xmlNode.getNodeName() );
-		} catch (IOException | ParserConfigurationException | SAXException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {
+			logger.error(e);
+		} catch (ParserConfigurationException e) {
+			logger.error(e);
+		} catch (SAXException e) {
 			logger.error(e);
 		}
 		

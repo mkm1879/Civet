@@ -22,12 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.zip.DataFormatException;
-
-
-
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.civet.webservice.UsaHerdsLookupVets;

@@ -1,28 +1,4 @@
 package edu.clemson.lph.civet.lookup;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-
-
-
-
-
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.zip.DataFormatException;
-
-import javax.swing.event.TableModelListener;
-
-import org.apache.log4j.Logger;
-
-import edu.clemson.lph.civet.Civet;
 /*
 Copyright 2014 Michael K Martin
 
@@ -41,6 +17,16 @@ GNU General Public License for more details.
 You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.zip.DataFormatException;
+import javax.swing.event.TableModelListener;
+import org.apache.log4j.Logger;
+import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.webservice.PremisesTableModel;
 import edu.clemson.lph.utils.CSVWriter;
 import edu.clemson.lph.utils.LabeledCSVParser;

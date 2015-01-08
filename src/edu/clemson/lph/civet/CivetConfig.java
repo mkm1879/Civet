@@ -217,9 +217,9 @@ public class CivetConfig {
 		return sRet;
 	}
 
-	public static String getSmtpIsTLS() {
-		String sRet = props.getProperty("smtpIsTls");
-		if( sRet == null ) exitError("smtpIsTls");
+	public static String getSmtpSecurity() {
+		String sRet = props.getProperty("smtpSecurity");
+		if( sRet == null ) exitError("smtpSecurity");
 		return sRet;
 	}
 	
@@ -681,7 +681,7 @@ public class CivetConfig {
 		if( sRet == null ) exitErrorImmediate("smtpHost");
 		sRet = props.getProperty("smtpPort");
 		if( sRet == null ) exitErrorImmediate("smtpPort");
-		sRet = props.getProperty("smtpIsTls");
+		sRet = props.getProperty("smtpSecurity");
 		if( sRet == null ) exitErrorImmediate("smtpIsTls");
 		sRet = props.getProperty("smtpPort");
 		if( sRet == null ) exitErrorImmediate("smtpPorty");

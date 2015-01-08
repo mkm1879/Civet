@@ -23,12 +23,11 @@ standAlone=yes
 herdsWebServiceURL=http://corp-hbg-04.compaid.com/usaherds/WebService/ExternalMessages.asmx
 
 #Email setup
-smtpHost=smtp-out.clemson.edu
-# Note smtp-out.clemson.edu is actually listening on port 25.  Port 465 is a redirect.
-#smtpPort=465
-smtpPort=25
-smtpIsTls=false
-smtpDomain=@clemson.edu
+smtpHost=smtp.googlemail.com
+smtpPort=587
+#smtpPort=25
+smtpSecurity=STARTTLS
+smtpDomain=@gmail.com
 #If emailTestTo is set emails do NOT go to destination state but to this address for testing!!!!!!
 emailTestTo=mmarti5@clemson.edu
 emailCopyTo=

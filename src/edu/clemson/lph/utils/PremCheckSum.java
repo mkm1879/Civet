@@ -1,7 +1,5 @@
 package edu.clemson.lph.utils;
 
-import java.util.Random;
-
 /*
 Copyright 2014 Michael K Martin
 
