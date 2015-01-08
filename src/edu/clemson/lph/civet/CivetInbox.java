@@ -315,12 +315,17 @@ public class CivetInbox extends JFrame {
 		});
 		mnSend.add(menuItemSendInboundErrors);
 		
-		menuAddOns = new JMenu( "Add Ons");
-		// Once we set it up right, the package edu.clemson.lph.civet.addons will
-		// be in a separate Jar file.  It will be empty by default and populated with 
-		// Clemson DB stuff for us.
-		AddOnLoader.populateMenu(this, menuAddOns);
-		menuBar1.add(menuAddOns);
+		// Only include add ons in local version
+		// This is a kluge until I figure out how to package add ons differently for local use
+		// in a better build cycle.
+		if( VERSION.endsWith("local") ) {
+			menuAddOns = new JMenu( "Add Ons");
+			menuBar1.add(menuAddOns);
+			// Once we set it up right, the package edu.clemson.lph.civet.addons will
+			// be in a separate Jar file.  It will be empty by default and populated with 
+			// Clemson DB stuff for us.
+			AddOnLoader.populateMenu(this, menuAddOns);
+		}
 		menuBar1.add(menuHelp);
 		viewNew();
 		setVisible( true );

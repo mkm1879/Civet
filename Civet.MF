@@ -14,7 +14,9 @@ Class-Path: .
  lib/httpcore-4.0.jar 
  lib/itextpdf-5.5.4.jar 
  lib/jai_imageio_idrsolutionsBuild.jar 
- lib/jpedal.jar 
+ lib/jpedalXFA.jar 
+ lib/jpedal-standard.jar 
+ lib/jpedal_LGPL.jar 
  lib/log4j-1.2.17.jar 
  lib/javax.mail.jar 
  lib/neethi-3.0.2.jar 
