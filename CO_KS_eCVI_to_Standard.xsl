@@ -142,9 +142,22 @@
         </xsl:element>
         <xsl:element name="Person">
             <xsl:element name="Name">
-                <xsl:value-of select="$data/lName"/>
-                <xsl:text>, </xsl:text>
-                <xsl:value-of select="$data/fName"/>
+                <xsl:choose>
+                    <xsl:when test="$data/lName!='' and $data/fName!=''">
+                        <xsl:value-of select="$data/lName"/>
+                        <xsl:text>, </xsl:text>
+                        <xsl:value-of select="$data/fName"/>                        
+                    </xsl:when>
+                    <xsl:when test="$data/lName!='' and $data/fName=''">
+                        <xsl:value-of select="$data/lName"/>
+                    </xsl:when>
+                    <xsl:when test="$data/lName='' and $data/fName!=''">
+                        <xsl:value-of select="$data/fName"/>                        
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:text></xsl:text>
+                    </xsl:otherwise>
+                 </xsl:choose>
             </xsl:element>
             <xsl:if test="$data/phoneNum and $data/phoneNum!=''">
                 <xsl:element name="Phone">

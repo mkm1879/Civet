@@ -55,19 +55,7 @@ public class CoKsXML {
 	private String xmlString = null;
 
 	/**
-	 * Create a CoKsXML from the byte array returned by JPedal
-	 * @param xmlBytes
-	 */
-	public CoKsXML( byte[] xmlBytes ) {
-		try {
-			xmlString = new String(xmlBytes, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			logger.error("Could not convert bytes to xml string", e);
-		}
-	}
-	
-	/**
-	 * Create a CoKsXML from the document Node returned by JPedal
+	 * Create a CoKsXML from the document Node returned by iText extraction of XFA data
 	 * @param xmlNode
 	 */
 	public CoKsXML( Node xmlNode ) {

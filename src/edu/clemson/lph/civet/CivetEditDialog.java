@@ -2170,8 +2170,9 @@ public final class CivetEditDialog extends JFrame {
 		updateSpeciesList(false);
 		StdeCviXml stdXml = controller.getStdXml();
 		if( controller.isXFADocument() ) {
-			byte[] xmlBytes = controller.getCurrentPdfBytes();
-			CoKsXML coks = new CoKsXML( xmlBytes );
+			byte[] pdfBytes = controller.getCurrentPdfBytes();
+			Node xmlNode = PDFUtils.getXFADataNode(pdfBytes);
+			CoKsXML coks = new CoKsXML( xmlNode );
 			stdXml = coks.getStdeCviXml();
 		}
 		if( sOtherState == null || sOtherState.trim().length() == 0 || aSpecies.size() == 0 

@@ -19,7 +19,7 @@ cviValidDays=30
 localNetAddresses=130.127.169.236,130.127.169.248
 
 #Web Service Settings
-standAlone=yes
+standAlone=no
 herdsWebServiceURL=http://corp-hbg-04.compaid.com/usaherds/WebService/ExternalMessages.asmx
 
 #Email setup

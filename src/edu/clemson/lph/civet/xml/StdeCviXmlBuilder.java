@@ -284,11 +284,17 @@ public class StdeCviXmlBuilder {
 	
 	public void setPurpose( String sPurpose ) {
 		if( isValidDoc() && sPurpose != null && sPurpose.trim().length() > 0 ) {
-			Element purposes = doc.createElement("MovementPurposes");
-			Node after = childNodeByNames(root,"Origin,Destination,Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");
-			root.insertBefore(purposes, after);
-			Element purpose = doc.createElement("MovementPurpose");
-			purposes.appendChild(purpose);
+			Element purposes = childElementByName( root, "MovementPurposes" );
+			if( purposes == null) {
+				purposes = doc.createElement("MovementPurposes");
+				Node after = childNodeByNames(root,"Origin,Destination,Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");
+				root.insertBefore(purposes, after);
+			}
+			Element purpose = childElementByName(purposes, "MovementPurpose");
+			if( purpose == null ) {
+				purpose = doc.createElement("MovementPurpose");
+				purposes.appendChild(purpose);
+			}
 			purpose.setTextContent(sPurpose.toLowerCase());
 		}
 	}
