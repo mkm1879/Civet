@@ -54,7 +54,7 @@ public class StateVetLookup implements DBTableSource {
 	public StateVetLookup() {
 		if( vetStateMap == null )
 			readStateVetTable();
-		vet = vetStateMap.get("SOUTH CAROLINA");
+		vet = vetStateMap.get(CivetConfig.getHomeState());
 	}
 
 	public StateVetLookup( String sStateCode ) {

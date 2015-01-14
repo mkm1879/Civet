@@ -35,6 +35,7 @@ import edu.clemson.lph.dialogs.TwoLineQuestionDialog;
 
 public class CivetConfig {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	// initialized in Civet.main via checkAllConfig
 	private static Properties props;
 	private static final int UNK = -1;
 	private static final int LGPL = 0;
@@ -42,22 +43,17 @@ public class CivetConfig {
 	private static int iJPedalType = UNK;
 	private static String sHERDSUserName = null;
 	private static String sHERDSPassword = null;
-	private static String sDBUserName = null;
-	private static String sDBPassword = null;
 	private static Boolean bStandAlone = null;
 	private static Boolean bBrokenLIDs = null;
+	// Only used in local direct DB add-ons
+	private static String sDBUserName = null;
+	private static String sDBPassword = null;
 	
 
-//	static {
-//		props = new Properties();
-//		try {
-//			props.load(new FileInputStream("CivetConfig.txt"));
-//		} catch (IOException e) {
-//			logger.error("Cannot read configuration file CivetConfig.txt", e);
-//			exitErrorImmediate("Cannot read configuration file CivetConfig.txt");
-//		}
-//	}
-//	
+	/**
+	 * Check to see if we are on LPH LAN.  Only used in local version.
+	 * @return
+	 */
 	public static String[] listLocalNetAddresses() {
 		String sAddresses = props.getProperty("localNetAddresses");
 		if( sAddresses == null ) exitError("localNetAddresses");
@@ -118,51 +114,6 @@ public class CivetConfig {
 		return sRet;
 	}
 
-
-	public static String getDbServer() {
-		String sRet = props.getProperty("dbServer");
-		if( sRet == null ) exitError("dbServer");
-		return sRet;
-	}
-
-	public static int getDbPort() {
-		int iRet = -1;
-		String sRet = props.getProperty("dbPort");
-		if( sRet == null ) exitError("dbPort");
-		try {
-			iRet = Integer.parseInt(sRet);
-		} catch( NumberFormatException nfe ) {
-			logger.error( "Cannot read dbPort " + sRet + " as an integer number");
-			logger.error(nfe);
-			System.exit(1);
-		}
-		return iRet;
-	}
-
-	public static String getDbPortString() {
-		String sRet = props.getProperty("dbPort");
-		if( sRet == null ) exitError("dbPort");
-		return sRet;
-	}
-
-	public static String getDbDatabaseName() {
-		String sRet = props.getProperty("dbDatabaseName");
-		if( sRet == null ) exitError("dbDatabaseName");
-		return sRet;
-	}
-
-	public static String getDbHerdsSchemaName() {
-		String sRet = props.getProperty("dbHerdsSchemaName");
-		if( sRet == null ) exitError("dbHerdsSchemaName");
-		return sRet;
-	}
-
-	public static String getDbCivetSchemaName() {
-		String sRet = props.getProperty("dbCivetSchemaName");
-		if( sRet == null ) exitError("dbCivetSchemaName");
-		return sRet;
-	}
-
 	public static String getHomeStateAbbr() {
 		String sRet = props.getProperty("homeStateAbbr");
 		if( sRet == null ) exitError("homeStateAbbr");
@@ -188,8 +139,7 @@ public class CivetConfig {
 		}
 		return iRet;
 	}
-	
-	
+		
 	public static int getCviValidDays() {
 		int iRet = -1;
 		String sRet = props.getProperty("cviValidDays");
@@ -293,35 +243,8 @@ public class CivetConfig {
 	public static void setHERDSPassword( String sPass ) {
 		sHERDSPassword = sPass;
 	}
-	
-	/**
-	 * Get the Database UserName
-	 * @return
-	 */
-	public static String getDBUserName() {
-		if( sDBUserName == null || sDBPassword == null ) 
-			initDB();
-		return sDBUserName;
-	}
-	
-	/**
-	 * Get the Database Password 
-	 * @return
-	 */
-	public static String getDBPassword() {
-		if( sDBUserName == null || sDBPassword == null ) 
-			initDB();
-		return sDBPassword;
-	}
-	
-	public static void setDBUserName( String sUser ) {
-		sDBUserName = sUser;
-	}
-	
-	public static void setDBPassword( String sPass ) {
-		sDBPassword = sPass;
-	}
-	
+
+
 	public static void initWebServices() {
 		String sUser = null;
 		String sPass = null;
@@ -622,6 +545,80 @@ public class CivetConfig {
 		return bRet;
 	}
 	
+
+	// These are only used by direct database "add ons" so don't start-up check but leave in.
+	public static String getDbServer() {
+		String sRet = props.getProperty("dbServer");
+		if( sRet == null ) exitError("dbServer");
+		return sRet;
+	}
+
+	public static int getDbPort() {
+		int iRet = -1;
+		String sRet = props.getProperty("dbPort");
+		if( sRet == null ) exitError("dbPort");
+		try {
+			iRet = Integer.parseInt(sRet);
+		} catch( NumberFormatException nfe ) {
+			logger.error( "Cannot read dbPort " + sRet + " as an integer number");
+			logger.error(nfe);
+			System.exit(1);
+		}
+		return iRet;
+	}
+
+	public static String getDbPortString() {
+		String sRet = props.getProperty("dbPort");
+		if( sRet == null ) exitError("dbPort");
+		return sRet;
+	}
+
+	public static String getDbDatabaseName() {
+		String sRet = props.getProperty("dbDatabaseName");
+		if( sRet == null ) exitError("dbDatabaseName");
+		return sRet;
+	}
+
+	public static String getDbHerdsSchemaName() {
+		String sRet = props.getProperty("dbHerdsSchemaName");
+		if( sRet == null ) exitError("dbHerdsSchemaName");
+		return sRet;
+	}
+
+	public static String getDbCivetSchemaName() {
+		String sRet = props.getProperty("dbCivetSchemaName");
+		if( sRet == null ) exitError("dbCivetSchemaName");
+		return sRet;
+	}
+
+	/**
+	 * Get the Database UserName
+	 * @return
+	 */
+	public static String getDBUserName() {
+		if( sDBUserName == null || sDBPassword == null ) 
+			initDB();
+		return sDBUserName;
+	}
+	
+	/**
+	 * Get the Database Password 
+	 * @return
+	 */
+	public static String getDBPassword() {
+		if( sDBUserName == null || sDBPassword == null ) 
+			initDB();
+		return sDBPassword;
+	}
+	
+	public static void setDBUserName( String sUser ) {
+		sDBUserName = sUser;
+	}
+	
+	public static void setDBPassword( String sPass ) {
+		sDBPassword = sPass;
+	}
+	
 	/**
 	 * Generic crash out routine.
 	 */
@@ -643,6 +640,7 @@ public class CivetConfig {
 	 * This method is designed to ensure that all necessary configuration is set.  
 	 * Some may legitimately return null.  Remove them here and change error handling in 
 	 * the individual get... methods.
+	 * NOTE: Only test those that are required by the external release, i.e., outside of addons
 	 */
 	public static void checkAllConfig() {
 		props = new Properties();
@@ -651,24 +649,10 @@ public class CivetConfig {
 		} catch (IOException e) {
 			exitErrorImmediate("Cannot read configuration file CivetConfig.txt");
 		}
-		String sAddresses = props.getProperty("localNetAddresses");
-		if( sAddresses == null ) exitErrorImmediate("localNetAddresses");
 		String sRet = props.getProperty("standAlone");
 		if( sRet == null ) exitErrorImmediate("standAlone");
 		sRet = props.getProperty("defaultDirection");
 		if( sRet == null ) exitErrorImmediate("defaultDirection");
-		sRet = props.getProperty("dbServer");
-		if( sRet == null ) exitErrorImmediate("dbServer");
-		sRet = props.getProperty("dbPort");
-		if( sRet == null ) exitErrorImmediate("dbPort");
-		sRet = props.getProperty("dbPort");
-		if( sRet == null ) exitErrorImmediate("dbPort");
-		sRet = props.getProperty("dbDatabaseName");
-		if( sRet == null ) exitErrorImmediate("dbDatabaseName");
-		sRet = props.getProperty("dbHerdsSchemaName");
-		if( sRet == null ) exitErrorImmediate("dbHerdsSchemaName");
-		sRet = props.getProperty("dbCivetSchemaName");
-		if( sRet == null ) exitErrorImmediate("dbCivetSchemaName");
 		sRet = props.getProperty("homeStateAbbr");
 		if( sRet == null ) exitErrorImmediate("homeStateAbbr");
 		sRet = props.getProperty("homeState");

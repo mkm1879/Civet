@@ -55,7 +55,7 @@ import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.01";
+	public static final String VERSION = "3.02";
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private JPanel contentPane;
 	private JMenuBar menuBar1 = new JMenuBar();

@@ -1,11 +1,8 @@
 # Configuration settings for Civet
 
-#homeState=CALIFORNIA
-#homeStateAbbr=CA
-#homeStateKey=93
-homeState=SOUTH CAROLINA
-homeStateAbbr=SC
-homeStateKey=56
+homeState=CALIFORNIA
+homeStateAbbr=CA
+homeStateKey=93
 
 brokenLIDs=true
 
@@ -14,9 +11,6 @@ defaultDirection=Import
 
 # Days to expiration following inspection date
 cviValidDays=30
-
-#Network settings used to check for live network
-localNetAddresses=130.127.169.236,130.127.169.248
 
 #Web Service Settings
 standAlone=no
@@ -68,13 +62,6 @@ errorTypeTableFile=ErrorTypeTable.csv
 
 #State Vet Table distributed manually for now.
 stateVetTableFile=StateVetTable.csv
-
-#SQL Server USAHERDS Settings (Only needed if SQL add ons are used)
-dbServer=lphstage
-dbPort=1433
-dbDatabaseName=USAHerds
-dbHerdsSchemaName=dbo
-dbCivetSchemaName=Civet
 
 #Logging using Apache Log 4 J library
 logLevel=INFO
