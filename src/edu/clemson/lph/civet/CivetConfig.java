@@ -250,17 +250,22 @@ public class CivetConfig {
 		String sPass = null;
 		try {
 			if( CivetConfig.getHERDSUserName() == null || CivetConfig.getHERDSPassword() == null ) {
-				TwoLineQuestionDialog dlg = new TwoLineQuestionDialog( "USAHERDS Login", "UserID", "Password", true );
-				dlg.setIntro("USAHERDS Login Settings");
 				boolean bValid = false;
 				while( !bValid ) {
+					TwoLineQuestionDialog dlg = new TwoLineQuestionDialog( "USAHERDS Login", "UserID", "Password", true );
+					dlg.setIntro("USAHERDS Login Settings");
 					dlg.setPassword(true);
+					if( sUser != null )
+						dlg.setAnswerOne(sUser);
+					if( sPass != null )
+						dlg.setAnswerTwo(sPass);
 					dlg.setVisible(true);
 					if( !dlg.isExitOK() ) {
 						System.exit(1);
 					}
 					sUser = dlg.getAnswerOne();
 					sPass = dlg.getAnswerTwo();
+					dlg.dispose();
 					bValid = CivetWebServices.validUSAHERDSCredentials(sUser, sPass);
 				}
 				setHERDSUserName( sUser );

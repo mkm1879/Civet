@@ -55,7 +55,11 @@ import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.02";
+	public static final String VERSION = "3.03";
+	private static final String IDRLICENSE = "\n\nContains material copyrighted by IDRSolutions for the sole purpose" +
+	"of evaluating its JPedalXFA library in this application.\n\n" +
+	"Reuse or redistribution of this application is prohibited.\n\n" +
+	"An LGPL version is available at http://github.com/mkm1879/civet";
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private JPanel contentPane;
 	private JMenuBar menuBar1 = new JMenuBar();
@@ -93,7 +97,6 @@ public class CivetInbox extends JFrame {
 	JMenuItem menuItemViewUnsentInboundErrors = new JMenuItem();
 	JMenuItem menuItemViewToBeFiled = new JMenuItem();
 	JMenuItem menuItemViewRefresh = new JMenuItem();
-	JMenu menuEdit = new JMenu();
 	JMenuItem menuItemEditUnsend = new JMenuItem();
 	private JMenu mnSend;
 	private JMenuItem menuItemSubmitSelectedCVIs;
@@ -230,7 +233,10 @@ public class CivetInbox extends JFrame {
 		menuItemAbout.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				MessageDialog.showMessage(CivetInbox.this, "About Civet", "Civet: CVI Management Utility\nVersion: " + VERSION);
+				String sMsg = "Civet: CVI Management Utility\nVersion: " + VERSION;
+				if( VERSION.endsWith("XFA") ) 
+					sMsg += IDRLICENSE;
+				MessageDialog.showMessage(CivetInbox.this, "About Civet", sMsg);
 			}
 		});
 		menuHelp.add(menuItemAbout);
@@ -272,11 +278,6 @@ public class CivetInbox extends JFrame {
 			}
 		});
 		menuFile.add(menuItemFileExit);
-
-		// TODO What goes in the Edit menu?
-		menuEdit.setText("Edit");
-		menuBar1.add(menuEdit);
-
 
 		mnSend = new JMenu("Send");
 		mnSend.setEnabled(true);

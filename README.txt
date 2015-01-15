@@ -7,14 +7,14 @@ sqljdbc4.jar 	http://www.microsoft.com/en-us/download/confirmation.aspx?id=11774
 		   access, so not needed by most state/users.
 
 jpedal.jar 	May be either 
-jpedal_lgpl.jar	http://sourceforge.net/projects/jpedal/  (No CO/KS eCVI support, or some image types, free)
+jpedal_LGPL.jar	http://sourceforge.net/projects/jpedal/  (No CO/KS eCVI support, or some image types, free)
 		   Included in distribution
 or 
 jpedalXFA.jar  	http://www.idrsolutions.com/jpedal-pricing/  
 		   You will need the JPedalXFA Edition, Site License XFA 
                    (or buy me a OEM license and everyone flies free!)
 		In either case, copy the jar file to the Civet install directory 
-                   and rename to simply jpedal.jar
+                   and rename to jpedalXFA.jar
 
 log4j		http://logging.apache.org/log4j/1.2/download.html
 
@@ -28,8 +28,7 @@ Building the executable:
 An ant build.xml file is included.  It has some of my local directory structure so it will need a little editing.  
 PublishCivet.bat and PublishCivetAnt.bat files show how I package up the executable jar file.  These assume
 the existence of a ./lib folder with all the listed library jar files.  I will supply most of them or download
-newer and update the version numbers, etc.  JPedal and SqlServer if used require separate download.  Note: JPedal
-would need to be renamed from jpedalXFA.jar or jpedal_LGPL.jar (or whatever) to just jpedal.jar.
+newer and update the version numbers, etc.  JPedal and SqlServer if used require separate download.  
 
 The CivetConfig.txt file will require extensive editing to conform to local absolute file paths, IP addresses,
 email settings, etc.

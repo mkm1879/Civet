@@ -627,6 +627,9 @@ public class CVIFileController {
 				dlg.setRotation(0);
 				dlg.populateFromPDF();
 			}
+			else {
+				dlg.setRotation( CivetConfig.getRotation() );
+			}
 			dlg.setupForm(currentFileName, iPageNo, iPagesInFile, iFileNo, iFiles, isPageComplete(iPageNo));
 			dlg.setVisible(true);
 			dlg.updateDisplay();

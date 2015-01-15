@@ -1318,7 +1318,7 @@ public final class CivetEditDialog extends JFrame {
 	 * opens a chooser and allows user to select One or more pdf or jpg files and opens a pdf created from them.
 	 */
 	public void selectFiles() {
-		iRotation = CivetConfig.getRotation();
+		setRotation( CivetConfig.getRotation() );
 		File fDir = new File( CivetConfig.getInputDirPath() );
 		JFileChooser open = new JFileChooser( fDir );
 		open.setDialogTitle("Civet: Open multiple PDF and Image Files");
