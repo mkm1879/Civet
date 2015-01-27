@@ -146,18 +146,18 @@
                     <xsl:when test="$data/lName!='' and $data/fName!=''">
                         <xsl:value-of select="$data/lName"/>
                         <xsl:text>, </xsl:text>
-                        <xsl:value-of select="$data/fName"/>                        
+                        <xsl:value-of select="$data/fName"/>
                     </xsl:when>
                     <xsl:when test="$data/lName!='' and $data/fName=''">
                         <xsl:value-of select="$data/lName"/>
                     </xsl:when>
                     <xsl:when test="$data/lName='' and $data/fName!=''">
-                        <xsl:value-of select="$data/fName"/>                        
+                        <xsl:value-of select="$data/fName"/>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:text></xsl:text>
+                        <xsl:text/>
                     </xsl:otherwise>
-                 </xsl:choose>
+                </xsl:choose>
             </xsl:element>
             <xsl:if test="$data/phoneNum and $data/phoneNum!=''">
                 <xsl:element name="Phone">
@@ -199,22 +199,26 @@
             <xsl:variable name="head" select="headCt"/>
             <xsl:if test="number($head) = 1">
                 <xsl:element name="Animal">
-                    <xsl:attribute name="Age">
-                        <xsl:call-template name="Age">
-                            <xsl:with-param name="item" select="."/>
-                        </xsl:call-template>
-                    </xsl:attribute>
+                    <xsl:if test="./Age and ./Age != '' ">
+                        <xsl:attribute name="Age">
+                            <xsl:call-template name="Age">
+                                <xsl:with-param name="item" select="."/>
+                            </xsl:call-template>
+                        </xsl:attribute>
+                    </xsl:if>
                     <xsl:attribute name="SpeciesCode">
                         <xsl:call-template name="Species">
                             <xsl:with-param name="species" select="spp"/>
                         </xsl:call-template>
                     </xsl:attribute>
-                    <xsl:attribute name="Breed">
-                        <xsl:call-template name="Breed">
-                            <xsl:with-param name="species" select="spp"/>
-                            <xsl:with-param name="breed" select="breed"/>
-                        </xsl:call-template>
-                    </xsl:attribute>
+                    <xsl:if test="./breed and ./breed != ''">
+                        <xsl:attribute name="Breed">
+                            <xsl:call-template name="Breed">
+                                <xsl:with-param name="species" select="spp"/>
+                                <xsl:with-param name="breed" select="breed"/>
+                            </xsl:call-template>
+                        </xsl:attribute>
+                    </xsl:if>
                     <xsl:attribute name="Sex">
                         <xsl:call-template name="Sex">
                             <xsl:with-param name="sex" select="sex"/>
@@ -289,11 +293,11 @@
                     </xsl:attribute>
                     -->
                     <xsl:element name="Description">
-                            <xsl:value-of select="description"/>
+                        <xsl:value-of select="description"/>
                     </xsl:element>
                 </xsl:element>
             </xsl:if>
-            
+
         </xsl:for-each>
     </xsl:template>
 
@@ -388,6 +392,7 @@
             <xsl:when test="$sex ='S'">Neutered Female</xsl:when>
             <xsl:when test="$sex ='X'">Other</xsl:when>
             <xsl:when test="$sex ='U'">Gender Unknown</xsl:when>
+            <xsl:otherwise>Gender Unknown</xsl:otherwise>
         </xsl:choose>
     </xsl:template>
 

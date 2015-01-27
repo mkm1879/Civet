@@ -85,16 +85,17 @@ public class SaveCVIThread extends Thread {
 	private String sErrorNotes;
 	private boolean bNoEmail;
 	private boolean bCancel = false;
+	private boolean bXFA = false;
 
 	public SaveCVIThread(CivetEditDialog dlg, StdeCviXml stdXmlIn,
-			byte[] bAttachmentBytesIn, String sOriginalFileName, File fOriginalFileIn, boolean bImport, 
+			byte[] bAttachmentBytesIn, String sOriginalFileName, File fOriginalFileIn, boolean bImport, boolean bXFAIn,
 			String sOtherStateCode, String sOtherName, String sOtherAddress, String sOtherCity, String sOtherZipcode, String sOtherPIN,
 			String sThisPIN, String sThisName, String sPhone,
 			String sThisAddress, String sThisCity, String sZipcode,
 			java.util.Date dDateIssued, java.util.Date dDateReceived, Integer iIssuedByKey, String sIssuedByName, String sCVINo,
 			String sMovementPurpose,
 			ArrayList<SpeciesRecord> aSpecies,
-			ArrayList<String> aErrorKeys, String sErrorNotes,
+			ArrayList<String> aErrorKeysIn, String sErrorNotes,
 			ArrayList<AnimalIDRecord> aAnimalIDs) {
 		this.bImport = bImport;
 		this.dlg = dlg;
@@ -153,14 +154,15 @@ public class SaveCVIThread extends Thread {
 			for( Iterator<SpeciesRecord> iter = aSpecies.iterator(); iter.hasNext(); )
 				this.aSpecies.add( iter.next() );
 		this.aErrorKeys = new ArrayList<String>();
-		if( aErrorKeys != null )
-			for( String sErrorKey : aErrorKeys )
+		if( aErrorKeysIn != null )
+			for( String sErrorKey : aErrorKeysIn )
 				this.aErrorKeys.add( sErrorKey );
 		this.sErrorNotes = sErrorNotes;
 		this.aAnimalIDs = new ArrayList<AnimalIDRecord>();
 		if( aAnimalIDs != null )
 			for( AnimalIDRecord rID : aAnimalIDs )
 				this.aAnimalIDs.add( rID );
+		this.bXFA = bXFAIn;
 	}
 
 	@Override
@@ -222,14 +224,16 @@ public class SaveCVIThread extends Thread {
 				if( iRead != len ) {
 					throw new IOException( "Array length "+ iRead + " does not match file length " + len);
 				}
-				if( sAttachmentFileName != null && !sAttachmentFileName.toLowerCase().endsWith(".pdf") ) 
-					logger.error(new Exception("Should only send PDFs as original file.  Sent " + sAttachmentFileName ));
 				bAttachmentFileBytes = bOriginalFileBytes;
+				// Use original filename unless there isn't one or it is not .pdf
+				if( sAttachmentFileName == null ) {
+					sAttachmentFileName = fOriginalFile.getName();
+				}
 			} catch (IOException e) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						MessageDialog.showMessage( dlg, "Civet: Error",
-							"Error Reading PDF File " + fOriginalFile.getAbsolutePath() )	;
+								"Error Reading PDF File " + fOriginalFile.getAbsolutePath() )	;
 						prog.setVisible(false);
 						prog.dispose();
 					}
@@ -246,10 +250,12 @@ public class SaveCVIThread extends Thread {
 		// This applies to the original scenario where we extract pages and save as individual PDFs.
 		// Because the standard expects attached images to be PDF, we'll save even other image formats
 		// this way.  
-		else if( bAttachmentBytes != null ) {
+		else if( bAttachmentBytes != null && sAttachmentFileName == null ) {
 			sAttachmentFileName = "CVI_" + sOriginStateCode + "_To_" + sDestinationStateCode + "_" + sCVINo + ".pdf";
 			bAttachmentFileBytes = bAttachmentBytes;
 		}
+		if( bAttachmentFileBytes == null || sAttachmentFileName == null )
+			logger.error( "Reached end of setupFilenameAndContent with no name or content");
 		sXmlFileName = "CVI_" + sOriginStateCode + "_To_" + sDestinationStateCode + "_" + sCVINo + ".cvi";
 		sAttachmentFileName = FileUtils.replaceInvalidFileNameChars(sAttachmentFileName);
 		sXmlFileName = FileUtils.replaceInvalidFileNameChars(sXmlFileName);		
@@ -260,55 +266,60 @@ public class SaveCVIThread extends Thread {
 		VetLookup vet = new VetLookup( iIssuedByKey );
 		xmlBuilder.setCviNumber(sCVINo);
 		xmlBuilder.setIssueDate(dDateIssued);
-		Element eVet = null;
-		if( bImport ) {
-			xmlBuilder.setVet(sIssuedByName);
-		}
-		else {
-			String sVetName = vet.getLastName() + ", " + vet.getFirstName();
-			eVet = xmlBuilder.setVet(sVetName, vet.getLicenseNo(), vet.getNAN(), vet.getPhoneDigits());
-			xmlBuilder.addAddress(eVet, vet.getAddress(), vet.getCity(), vet.getState(), vet.getZipCode());
-		}
+		if( !bXFA ) {  // Don't override vet that signed XFA document
+			Element eVet = null;
+			if( bImport ) {
+				xmlBuilder.setVet(sIssuedByName);
+			}
+			else {
+				String sVetName = vet.getLastName() + ", " + vet.getFirstName();
+				eVet = xmlBuilder.setVet(sVetName, vet.getLicenseNo(), vet.getNAN(), vet.getPhoneDigits());
+				xmlBuilder.setAddress(eVet, vet.getAddress(), vet.getCity(), vet.getState(), vet.getZipCode());
+			}
+		} // End if !bXFA
 		// Expiration date will be set automatically from getXML();
 		xmlBuilder.setPurpose(sStdPurpose);
 		// We don't enter the person name, normally  or add logic to tell prem name from person name.
 		Element eOrigin = xmlBuilder.setOrigin(sOriginPIN, sOriginName, null, sOriginPhone);
-		xmlBuilder.addAddress(eOrigin, sOriginAddress, sOriginCity, sOriginStateCode, sOriginZipCode);
+		xmlBuilder.setAddress(eOrigin, sOriginAddress, sOriginCity, sOriginStateCode, sOriginZipCode);
 		Element eDestination = xmlBuilder.setDestination(sDestinationPIN, sDestinationName, null, sDestinationPhone);
-		xmlBuilder.addAddress(eDestination, sDestinationAddress, sDestinationCity, sDestinationStateCode, sDestinationZipCode);
-		
-		// Add animals and groups.  This logic is tortured!
-		for( SpeciesRecord sr : aSpecies ) {
-			// Only add group lot if not officially IDd so count ids and subtract
-			int iSpecies = sr.iSpeciesKey;
-			int iCountIds = 0;
-			if( aAnimalIDs != null ) {
-				for( AnimalIDRecord ar : aAnimalIDs ) {
-					if( ar.iSpeciesKey == iSpecies ) {
-						iCountIds++;
+		xmlBuilder.setAddress(eDestination, sDestinationAddress, sDestinationCity, sDestinationStateCode, sDestinationZipCode);
+		if( !bXFA ) { // CO/KS doesn't do animals and groups the way we do.  Don't override.
+			// Add animals and groups.  This logic is tortured!
+			// This could be greatly improved to better coordinate with CO/KS list of animals and the standard's group concept.
+			for( SpeciesRecord sr : aSpecies ) {
+				// Only add group lot if not officially IDd so count ids and subtract
+				int iSpecies = sr.iSpeciesKey;
+				int iCountIds = 0;
+				if( aAnimalIDs != null ) {
+					for( AnimalIDRecord ar : aAnimalIDs ) {
+						if( ar.iSpeciesKey == iSpecies ) {
+							iCountIds++;
+						}
 					}
 				}
+				if( iCountIds < sr.iNumber ) {
+					SpeciesLookup luSpecies = new SpeciesLookup( iSpecies );
+					xmlBuilder.addGroup(sr.iNumber - iCountIds, "Group Lot", luSpecies.getSpeciesCode(), null, null );
+				}
 			}
-			if( iCountIds < sr.iNumber ) {
-				SpeciesLookup luSpecies = new SpeciesLookup( iSpecies );
-				xmlBuilder.addGroup(sr.iNumber - iCountIds, "Group Lot", luSpecies.getSpeciesCode(), null, null );
+			if( aAnimalIDs != null ) {
+				for( AnimalIDRecord ar : aAnimalIDs ) {
+					SpeciesLookup luSpecies = new SpeciesLookup(ar.iSpeciesKey);
+					String sType = IDTypeGuesser.getTagType(ar.sTag);
+					xmlBuilder.addAnimal( luSpecies.getSpeciesCode(),dDateIssued,null,null,null,sType,ar.sTag);
+				}
 			}
-		}
-		if( aAnimalIDs != null ) {
-			for( AnimalIDRecord ar : aAnimalIDs ) {
-				SpeciesLookup luSpecies = new SpeciesLookup(ar.iSpeciesKey);
-				String sType = IDTypeGuesser.getTagType(ar.sTag);
-				xmlBuilder.addAnimal( luSpecies.getSpeciesCode(),dDateIssued,null,null,null,sType,ar.sTag);
-			}
-		}
+		} // End if !bXFA
 		if( bAttachmentFileBytes != null ) {
 			xmlBuilder.addPDFAttachement(bAttachmentFileBytes, sAttachmentFileName);
 		}
 		CviMetaDataXml metaData = new CviMetaDataXml();
 		metaData.setCertificateNbr(sCVINo);
 		metaData.setBureauReceiptDate(dDateReceived);
-		if( aErrorKeys != null)
+		if( aErrorKeys != null )
 			for( String sErr : aErrorKeys ) {
+				if( sErr != null )
 				metaData.addError(sErr);
 			}
 		if( sErrorNotes != null && sErrorNotes.trim().length() > 0 )

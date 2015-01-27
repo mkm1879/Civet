@@ -25,6 +25,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import edu.clemson.lph.civet.webservice.CivetWebServices;
+import edu.clemson.lph.dialogs.MessageDialog;
 
 public class SubmitCVIsThread extends ProcessFilesThread {
 	private CivetWebServices service = null;
@@ -53,7 +54,10 @@ public class SubmitCVIsThread extends ProcessFilesThread {
 		} catch (final Exception e) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					logger.error("Error in process file", e);
+					logger.error("Error in uploading file to USAHERDS", e);
+					if( e.getMessage().contains("There was an exception running the extensions") ) {
+						MessageDialog.showMessage(null, "Civet Error", "Error Uploading.\nCheck the size of your scanned PDFs");
+					}
 				}
 			});		
 		}

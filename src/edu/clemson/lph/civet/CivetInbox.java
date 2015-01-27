@@ -180,15 +180,6 @@ public class CivetInbox extends JFrame {
 		});
 		menuView.add(menuItemViewNew);
 		
-		menuItemViewToBeFiled.setText("Entered CVIs Ready to Upload to HERDS");
-		menuItemViewToBeFiled.setEnabled(true);
-		menuItemViewToBeFiled.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				viewToBeFiled();
-			}
-		});
-		menuView.add(menuItemViewToBeFiled);
-
 		menuItemViewOutbound.setText("Outbound");
 		menuItemViewOutbound.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -219,6 +210,15 @@ public class CivetInbox extends JFrame {
 			}
 		});
 		menuView.add(menuItemViewUnsentInboundErrors);
+
+		menuItemViewToBeFiled.setText("Entered CVIs Ready to Upload to HERDS");
+		menuItemViewToBeFiled.setEnabled(true);
+		menuItemViewToBeFiled.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				viewToBeFiled();
+			}
+		});
+		menuView.add(menuItemViewToBeFiled);
 
 		menuItemViewRefresh.setText("Refresh");
 		menuItemViewRefresh.setEnabled(true);
@@ -283,6 +283,23 @@ public class CivetInbox extends JFrame {
 		mnSend.setEnabled(true);
 		menuBar1.add(mnSend);
 
+		menuItemSendOutboundCVIs = new JMenuItem("Send Outbound CVIs Email");
+		menuItemSendOutboundCVIs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				sendOutboundCVIs();
+			}
+		});
+		mnSend.add(menuItemSendOutboundCVIs);
+
+
+		menuItemSendInboundErrors = new JMenuItem("Send Inbound Error Letters Email");
+		menuItemSendInboundErrors.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				sendInboundErrors();
+			}
+		});
+		mnSend.add(menuItemSendInboundErrors);
+		
 		menuItemSubmitSelectedCVIs = new JMenuItem("Submit Selected CVIs to USAHERDS");
 		menuItemSubmitSelectedCVIs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -299,23 +316,6 @@ public class CivetInbox extends JFrame {
 		});
 		mnSend.add(menuItemSubmitAllCVIs);
 
-		menuItemSendOutboundCVIs = new JMenuItem("Send Outbound CVI PDFs Email");
-		menuItemSendOutboundCVIs.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				sendOutboundCVIs();
-			}
-		});
-		mnSend.add(menuItemSendOutboundCVIs);
-
-
-		menuItemSendInboundErrors = new JMenuItem("Send Inbound Errors Letter PDF");
-		menuItemSendInboundErrors.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				sendInboundErrors();
-			}
-		});
-		mnSend.add(menuItemSendInboundErrors);
-		
 		// Only include add ons in local version
 		// This is a kluge until I figure out how to package add ons differently for local use
 		// in a better build cycle.

@@ -1,8 +1,8 @@
 # Configuration settings for Civet
 
-homeState=CALIFORNIA
-homeStateAbbr=CA
-homeStateKey=93
+homeState=SOUTH CAROLINA
+homeStateAbbr=SC
+homeStateKey=56
 
 brokenLIDs=true
 
@@ -14,7 +14,7 @@ cviValidDays=30
 
 #Web Service Settings
 standAlone=no
-herdsWebServiceURL=http://corp-hbg-04.compaid.com/usaherds/WebService/ExternalMessages.asmx
+herdsWebServiceURL=http://lphstage/usaherds/WebService/ExternalMessages.asmx
 
 #Email setup
 smtpHost=smtp.googlemail.com

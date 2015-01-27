@@ -222,7 +222,7 @@ public class StdeCviXmlBuilder {
 	 * @param sZip
 	 * @return
 	 */
-	public Element addAddress( Element e, String sStreet, String sCity, String sState, String sZip ) {
+	public Element setAddress( Element e, String sStreet, String sCity, String sState, String sZip ) {
 		if( !isValidDoc() )
 			return null;
 		Element address = null;
@@ -230,54 +230,67 @@ public class StdeCviXmlBuilder {
 			address = getAddress(e, sStreet, sCity, sState, sZip );
 			if( address != null ) 
 				return address;
-			String sElement = e.getTagName();
-			Node nPerson = null;
-			if( !"Veterinarian".equals(sElement) ) {
-				nPerson = childNodeByName( e, "Person");
+			address = childElementByName(e,"Address");
+			if( address == null ) {
+				String sElement = e.getTagName();
+				Node nPerson = null;
+				if( !"Veterinarian".equals(sElement) ) {
+					nPerson = childNodeByName( e, "Person");
+				}
+				address = doc.createElement("Address");
+				e.insertBefore(address, nPerson);
 			}
-			address = doc.createElement("Address");
-			e.insertBefore(address, nPerson);
-			if( sStreet != null ) {
-				Element line1 = doc.createElement("Line1");
-				line1.setTextContent(sStreet.trim());
+			Node line1 = childNodeByName( address, "Line1");
+			if( line1 == null ) {
+				line1 = doc.createElement("Line1");
 				address.appendChild(line1);
 			}
-			else {
-				Element line1 = doc.createElement("Line1");
-				line1.setTextContent("");
-				address.appendChild(line1);			
+			if( sStreet != null ) {
+				line1.setTextContent(sStreet.trim());
 			}
-			if( sCity != null ) {
-				Element town = doc.createElement("Town");
-				town.setTextContent(sCity.trim());
+			else {
+				line1.setTextContent("");
+			}
+			Node town = childNodeByName( address, "Town");
+			if( town == null ) {
+				town = doc.createElement("Town");
 				address.appendChild(town);
 			}
+			if( sCity != null ) {
+				town.setTextContent(sCity.trim());
+			}
 			else {
-				Element town = doc.createElement("Town");
 				town.setTextContent("Not Provided");
-				address.appendChild(town);		
+			}
+			Node state = childNodeByName( address, "State");
+			if( state == null ) {
+				state = doc.createElement("State");
+				address.appendChild(state);
 			}
 			if( sState != null ) {
-				Element state = doc.createElement("State");
 				state.setTextContent(sState.trim());
-				address.appendChild(state);
 			}
 			else {
 				logger.error("Attempt to add address with no state.", new Exception());
+				state.setTextContent("ERROR");				
+			}
+			Node zip = childNodeByName( address, "ZIP" );
+			if( zip == null ) {
+				zip = doc.createElement("ZIP");
+				address.appendChild(zip);
 			}
 			if( sZip != null && sZip.trim().length() > 0 ) {		
-				Element zip = doc.createElement("ZIP");
 				zip.setTextContent(sZip.trim());
-				address.appendChild(zip);
 			}
 			else {
-				Element zip = doc.createElement("ZIP");
 				zip.setTextContent("00000");
-				address.appendChild(zip);
 			}
-			Element country = doc.createElement("Country");
+			Node country = childNodeByName( address, "Country" );
+			if( country == null ) {
+				country = doc.createElement("Country");
+				address.appendChild(country);
+			}
 			country.setTextContent("USA");
-			address.appendChild(country);
 		}
 		return address;
 	}

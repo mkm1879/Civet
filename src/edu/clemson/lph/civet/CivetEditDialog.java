@@ -1198,17 +1198,17 @@ public final class CivetEditDialog extends JFrame {
 
 	}
 	
-	public void setErrors( ArrayList<String> aErrorKeys ) {
+	public void setErrors( ArrayList<String> aErrorKeysIn ) {
 		if( this.aErrorKeys == null )
 			this.aErrorKeys = new ArrayList<String>();
 		else
 			this.aErrorKeys.clear();
-		if( aErrorKeys == null || aErrorKeys.isEmpty() ) {
+		if( aErrorKeysIn == null || aErrorKeysIn.isEmpty() ) {
 			lError.setVisible(false);
 		}
 		else {
 			lError.setVisible(true);
-			for( String s : aErrorKeys ) 
+			for( String s : aErrorKeysIn ) 
 				this.aErrorKeys.add(s);
 		}
 	}
@@ -2137,6 +2137,7 @@ public final class CivetEditDialog extends JFrame {
 		// Collect up all values needed
 		setImport(rbImport.isSelected());
 		boolean bInbound = rbImport.isSelected();
+		boolean bXFA = false;
 		String sOtherState = cbOtherState.getSelectedValue();
 		String sOtherStateCode = States.getStateCode(sOtherState);
 		String sOtherName = jtfOtherName.getText();
@@ -2174,6 +2175,8 @@ public final class CivetEditDialog extends JFrame {
 			Node xmlNode = PDFUtils.getXFADataNode(pdfBytes);
 			CoKsXML coks = new CoKsXML( xmlNode );
 			stdXml = coks.getStdeCviXml();
+			bXFA = true;  // this will prevent overwriting some values
+				// Should really disable those controls.
 		}
 		if( sOtherState == null || sOtherState.trim().length() == 0 || aSpecies.size() == 0 
 				|| dDateIssued == null || dDateReceived == null ) {
@@ -2199,26 +2202,28 @@ public final class CivetEditDialog extends JFrame {
 		File fAttachmentFile = null;
 		if( stdXml != null ) {
 			sAttachmentFileName = stdXml.getOriginalCVIFileName();
+			// Bytes and Name came from stdXML attachment
 			if( sAttachmentFileName != null ) {
 				bAttachmentBytes = stdXml.getOriginalCVI();
 			}
-			else {
+			// File without name set is an XFA XML from which we extracted data for stdXML
+			else { 
 				fAttachmentFile = controller.getCurrentFile();
-				sAttachmentFileName = fAttachmentFile.getName();
 			}
 		}
 		else {
+			// Bytes without file or name is page(s) from multipage
 			if( controller.isPageable() ) {
 				bAttachmentBytes = controller.extractPagesToNewPDF();
 				// leave filename to save thread
 			}
+			// File without name or bytes is single CVI PDF or image just send PDF bytes 
 			else {
 				bAttachmentBytes = controller.getCurrentPdfBytes();
-				sAttachmentFileName = controller.getCurrentFileName();
 			}
 		}
 		SaveCVIThread thread = new SaveCVIThread(this, stdXml, bAttachmentBytes,
-				sAttachmentFileName, fAttachmentFile, bInbound, sOtherStateCode,
+				sAttachmentFileName, fAttachmentFile, bInbound, bXFA, sOtherStateCode,
 				sOtherName, sOtherAddress, sOtherCity, sOtherZipcode, sOtherPIN,
 				sThisPremisesId, sThisName, sPhone,
 				sStreetAddress, sCity, sZipcode,
