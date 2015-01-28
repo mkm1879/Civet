@@ -125,7 +125,7 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 				 line = parser.getNext();
 			}
 		} catch (IOException e) {
-			logger.error("Failed to read Vet Table", e);
+			logger.error("Failed to read Species Table", e);
 		}
 	}
 	

@@ -131,6 +131,7 @@ public class CivetWebServices {
 			resp.serialize(parentElement, writer, false);
 			writer.flush();
 			String sOut = swOut.toString();
+			// Debugging output to verify webservice data
 //			System.out.println(sOut);
 			dOut = XMLUtility.stringToDom(sOut);
 			writer.close();
