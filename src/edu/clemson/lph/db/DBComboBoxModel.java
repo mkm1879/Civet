@@ -35,8 +35,10 @@ public class DBComboBoxModel extends DefaultComboBoxModel<String> {
 	private DatabaseConnectionFactory factory;
 	private String sQuery;
 	protected boolean bBlank = false;
-	protected HashMap<String, Object> hValues = new HashMap<String, Object>();
-	protected HashMap<Object, String> hKeys = new HashMap<Object, String>();
+	// Named for input/output
+	protected HashMap<String, Object> hValuesKeys = new HashMap<String, Object>();
+	protected HashMap<Object, String> hKeysValues = new HashMap<Object, String>();
+	protected HashMap<String, String> hValuesCodes = new HashMap<String, String>();
 	protected DBComboBox parent = null;
 	private Vector<ComboBoxSelectionListener> listeners = new Vector<ComboBoxSelectionListener>();
 
@@ -70,7 +72,7 @@ public class DBComboBoxModel extends DefaultComboBoxModel<String> {
 
 	public void setSelectedItem( String sItem ) {
 		// Make this case insensitive
-		for( String sKey : hValues.keySet() ) {
+		for( String sKey : hValuesKeys.keySet() ) {
 			if( sKey != null && sItem != null && sKey.equalsIgnoreCase( sItem ) ) {
 				sItem = sKey;
 				break;
@@ -87,12 +89,12 @@ public class DBComboBoxModel extends DefaultComboBoxModel<String> {
 	}
 	
 	public void setSelectedKey( int iKey ) {
-		String sItem = hKeys.get( iKey );
+		String sItem = hKeysValues.get( iKey );
 		setSelectedItem( sItem );
 	}
 	
 	public void setSelectedKey( Object oKey ) {
-		String sItem = hKeys.get( oKey );
+		String sItem = hKeysValues.get( oKey );
 		setSelectedItem( sItem );
 	}
 	
@@ -103,7 +105,7 @@ public class DBComboBoxModel extends DefaultComboBoxModel<String> {
 	public int getSelectedKeyInt() {
 		Integer iRet = -1;
 		String sItem = (String)getSelectedItem();
-		Object oRet = hValues.get(sItem);
+		Object oRet = hValuesKeys.get(sItem);
 		iRet = (Integer)oRet;
 		if( iRet == null ) return -1;
 		return iRet;
@@ -112,18 +114,23 @@ public class DBComboBoxModel extends DefaultComboBoxModel<String> {
 	
 	public Object getSelectedKey() {
 		String sItem = (String)getSelectedItem();
-		Object oRet = hValues.get(sItem);
+		Object oRet = hValuesKeys.get(sItem);
 		return oRet;
 	}
 
-	
+	public String getSelectedCode() {
+		String sItem = (String)getSelectedItem();
+		String sRet = hValuesCodes.get(sItem);
+		return sRet;
+	}
+
 	public ArrayList<String> getValues() {
-		ArrayList<String> aRet = new ArrayList<String>(hValues.keySet());
+		ArrayList<String> aRet = new ArrayList<String>(hValuesKeys.keySet());
 		return aRet;
 	}
 	
 	public int getKeyIntForValue( String sValue ) {
-		Object oRet = hValues.get(sValue);
+		Object oRet = hValuesKeys.get(sValue);
 		if( !(oRet instanceof Integer) ) {
 			logger.error("getKeyIntForValue called on key type of " + oRet.getClass().getName(), new Exception("Invalid Call") );
 			return -1;
@@ -133,17 +140,22 @@ public class DBComboBoxModel extends DefaultComboBoxModel<String> {
 	}
 	
 	public Object getKeyForValue( String sValue ) {
-		Object oRet = hValues.get(sValue);
+		Object oRet = hValuesKeys.get(sValue);
 		return oRet;
+	}
+		
+	public String getCodeForValue( String sValue ) {
+		String sRet = hValuesCodes.get(sValue);
+		return sRet;
 	}
 	
 	public String getValueForKey( int iKey ) {
-		String sValue = hKeys.get(iKey);
+		String sValue = hKeysValues.get(iKey);
 		return sValue;
 	}
 	
 	public String getValueForKey( Object oKey ) {
-		String sValue = hKeys.get(oKey);
+		String sValue = hKeysValues.get(oKey);
 		return sValue;
 	}
 	
@@ -152,13 +164,13 @@ public class DBComboBoxModel extends DefaultComboBoxModel<String> {
 			logger.error("DBComboBoxModel not initialized", new Exception( "Combo Box Model Exception "));
 			return;
 		}
-		hValues.clear();
-		hKeys.clear();
+		hValuesKeys.clear();
+		hKeysValues.clear();
 		super.removeAllElements();
 		if( bBlank ) {
 			super.addElement("");
-			hValues.put("", -1);
-			hKeys.put(-1, "");
+			hValuesKeys.put("", -1);
+			hKeysValues.put(-1, "");
 		}
 		Connection newConn = factory.makeDBConnection();
 		if( newConn == null ) {
@@ -173,8 +185,8 @@ public class DBComboBoxModel extends DefaultComboBoxModel<String> {
 				Integer iKey = rs.getInt(1);
 				String sValue = rs.getString(2);
 				super.addElement(sValue);
-				hValues.put(sValue, iKey);
-				hKeys.put(iKey, sValue);
+				hValuesKeys.put(sValue, iKey);
+				hKeysValues.put(iKey, sValue);
 			}
 		}
 		catch (SQLException ex) {

@@ -286,13 +286,13 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 				vetKeyMap = new HashMap<Integer, Vet>();
 				allRows = new ArrayList<Vet>();
 				lSearchRows = new ArrayList<ArrayList<Object>>();
-				hValues.clear();
-				hKeys.clear();
+				hValuesKeys.clear();
+				hKeysValues.clear();
 				super.removeAllElements();
 				if( bBlank ) {
 					super.addElement("");
-					hValues.put("", -1);
-					hKeys.put(-1, "");
+					hValuesKeys.put("", -1);
+					hKeysValues.put(-1, "");
 				}
 
 				while( line != null ) {
@@ -349,13 +349,13 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 	}
 	
 	private void updateCbModel() {
-		hValues.clear();
-		hKeys.clear();
+		hValuesKeys.clear();
+		hKeysValues.clear();
 		super.removeAllElements();
 		if( bBlank ) {
 			super.addElement("");
-			hValues.put("", -1);
-			hKeys.put(-1, "");
+			hValuesKeys.put("", -1);
+			hKeysValues.put(-1, "");
 		}
 		TreeSet<String> setVetNames = new TreeSet<String>(vetNameMap.keySet());
 		for( String sVetName : setVetNames ) {
@@ -365,8 +365,8 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 				 continue;
 			 }
 			 super.addElement(sVetName);
-			 hValues.put(sVetName, iVetKey);
-			 hKeys.put(iVetKey, sVetName);
+			 hValuesKeys.put(sVetName, iVetKey);
+			 hKeysValues.put(iVetKey, sVetName);
 		}
 	}
 	

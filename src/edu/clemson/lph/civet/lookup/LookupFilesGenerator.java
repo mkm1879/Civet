@@ -108,9 +108,9 @@ public class LookupFilesGenerator {
 		ArrayList<String> aColNames = new ArrayList<String>();
 		aColNames.add("AnimalClassHierarchyKey");
 		aColNames.add("Description");
-		aColNames.add("DisplaySequence");
-		aColNames.add("USDASpeciesCode");
-		generateLookup( sName, speciesLookup, aColNames );
+		aColNames.add("USDADescription");
+		aColNames.add("USDACode");
+		generateSpeciesLookup( sName, speciesLookup, aColNames );
 		
 	}
 	
@@ -171,6 +171,30 @@ public class LookupFilesGenerator {
 		vets.generateLookupTable(CivetConfig.getVetTableFile());
 	}
 	
+	
+	private void generateSpeciesLookup( String sName, UsaHerdsWebServiceLookup lookup, ArrayList<String> aColNames ) {
+		CSVWriter writer = new CSVWriter();
+		try {
+			writer.setHeader(aColNames);
+			while( lookup.next() ) {
+				ArrayList<Object> aValues = new ArrayList<Object>();
+				aValues.add(lookup.getKeyValue());
+				aValues.add(lookup.getDescription());
+				aValues.add(lookup.getUSDADescription());
+				if(aColNames.size() == 4)
+					aValues.add(lookup.getMappedValue());
+				for( int i = 4; i < aColNames.size(); i++ ) 
+					aValues.add("");
+				writer.addRow(aValues);
+			}
+			writer.write(sName);
+		} catch (FileNotFoundException e) {
+			logger.error("Could not find output file " + sName + ".csv", e);
+		} catch (DataFormatException e) {
+			logger.error("Rows returned by query not equal size", e);;
+		} 
+	}
+
 		
 	private void generateLookup( String sName, UsaHerdsWebServiceLookup lookup, ArrayList<String> aColNames ) {
 		CSVWriter writer = new CSVWriter();

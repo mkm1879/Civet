@@ -85,13 +85,13 @@ public class PurposeLookup extends DBComboBoxModel implements DBTableSource {
 			purposeNameMap = new HashMap<String, Purpose>();
 			purposeKeyMap = new HashMap<Integer, Purpose>();
 			lSearchRows = new ArrayList<ArrayList<Object>>();
-			hValues.clear();
-			hKeys.clear();
+			hValuesKeys.clear();
+			hKeysValues.clear();
 			super.removeAllElements();
 			if( bBlank ) {
 				super.addElement("");
-				hValues.put("", -1);
-				hKeys.put(-1, "");
+				hValuesKeys.put("", -1);
+				hKeysValues.put(-1, "");
 			}
 			List<String> line = parser.getNext();
 			while( line != null ) {
@@ -105,8 +105,8 @@ public class PurposeLookup extends DBComboBoxModel implements DBTableSource {
 				 purposeNameMap.put(sPurposeName, purpose);
 				 purposeKeyMap.put(iPurposeKey, purpose);
 				 super.addElement(sPurposeName);
-				 hValues.put(sPurposeName, iPurposeKey);
-				 hKeys.put(iPurposeKey, sPurposeName);
+				 hValuesKeys.put(sPurposeName, iPurposeKey);
+				 hKeysValues.put(iPurposeKey, sPurposeName);
 				 ArrayList<Object> aRow = new ArrayList<Object>();
 				 aRow.add(Integer.toString(iPurposeKey));
 				 aRow.add(sPurposeName);

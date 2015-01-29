@@ -325,6 +325,7 @@ public class SaveCVIThread extends Thread {
 		if( sErrorNotes != null && sErrorNotes.trim().length() > 0 )
 			metaData.setErrorNote(sErrorNotes);
 		xmlBuilder.addMetadataAttachement(metaData);
+		System.out.println(metaData.getXmlString());
 		return xmlBuilder.getXMLString();
 	}
 	

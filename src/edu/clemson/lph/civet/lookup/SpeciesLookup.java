@@ -28,6 +28,7 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.db.DBComboBoxModel;
 import edu.clemson.lph.db.DBTableSource;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
 @SuppressWarnings("serial")
@@ -56,6 +57,13 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 		if( sppCodeMap == null || sppKeyMap == null )
 			readSppTable();
 		Spp spp = sppCodeMap.get(sSppCode);
+		if( spp == null ) {
+			MessageDialog.messageLater(null, "Civet Error: Missing Species Code", "Species code " + sSppCode + " not found in lookup table.");
+			this.iSpeciesKey = -1;
+			this.sSpeciesName = "Missing Species Code";
+			this.sSpeciesCode = sSppCode;
+			return;
+		}
 		this.iSpeciesKey = spp.iSppKey;
 		this.sSpeciesName = spp.sSppName;
 		this.sSpeciesCode = spp.sSppCode;
@@ -65,6 +73,13 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 		if( sppCodeMap == null || sppKeyMap == null )
 			readSppTable();
 		Spp spp = sppKeyMap.get(iSppKey);
+		if( spp == null ) {
+			MessageDialog.messageLater(null, "Civet Error: Missing Species Key", "Species key " + iSppKey + " not found in lookup table.");
+			this.iSpeciesKey = iSppKey;
+			this.sSpeciesName = "Missing Species Code";
+			this.sSpeciesCode = "ERROR";
+			return;
+		}
 		this.iSpeciesKey = spp.iSppKey;
 		this.sSpeciesName = spp.sSppName;
 		this.sSpeciesCode = spp.sSppCode;
@@ -91,37 +106,38 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 			sppCodeMap = new HashMap<String, Spp>();
 			sppKeyMap = new HashMap<Integer, Spp>();
 			lSearchRows = new ArrayList<ArrayList<Object>>();
-			hValues.clear();
-			hKeys.clear();
+			hValuesKeys.clear();
+			hKeysValues.clear();
 			super.removeAllElements();
 			if( bBlank ) {
 				super.addElement("");
-				hValues.put("", -1);
-				hKeys.put(-1, "");
+				hValuesKeys.put("", -1);
+				hKeysValues.put(-1, "");
 			}
 			List<String> line = parser.getNext();
 			while( line != null ) {
 				 String sSppKey = line.get( parser.getLabelIdx( "AnimalClassHierarchyKey" ) );
 				 int iSppKey = Integer.parseInt(sSppKey);
-				 String sSppCode = line.get( parser.getLabelIdx( "USDASpeciesCode" ) );
-				 String sSppName = sSppCode + ": " + line.get( parser.getLabelIdx( "Description" ) );
+				 String sSppCode = line.get( parser.getLabelIdx( "USDACode" ) );
+				 if( sSppCode == null || sSppCode.trim().length() == 0 ) {
+					 line = parser.getNext();
+					 continue;
+				 }
+				 String sSppName = line.get( parser.getLabelIdx( "USDADescription" ) );
 				 Spp spp = new Spp(iSppKey, sSppCode, sSppName);
-				 sppNameMap.put(sSppName, spp);
-				 // Try to map any given USDA Code to only its first entry, presumably the most generic
-				 Spp existingSpp = sppCodeMap.get(sSppCode);
-				 if( existingSpp != null && existingSpp.iSppKey > spp.iSppKey )
-					 sppCodeMap.remove(existingSpp.sSppCode);
-				 else if( existingSpp == null || existingSpp.iSppKey > spp.iSppKey )
+				 if( sppNameMap.get(sSppName) == null ) {
+					 sppNameMap.put(sSppName, spp);
+					 sppKeyMap.put(iSppKey, spp);
 					 sppCodeMap.put(sSppCode, spp);
-				 sppKeyMap.put(iSppKey, spp);
-				 super.addElement(sSppName);
-				 hValues.put(sSppName, iSppKey);
-				 hKeys.put(iSppKey, sSppName);
-				 ArrayList<Object> aRow = new ArrayList<Object>();
-				 aRow.add(Integer.toString(iSppKey));
-				 aRow.add(sSppCode);
-				 aRow.add(sSppName);
-				 lSearchRows.add(aRow);
+					 super.addElement(sSppName);
+					 hValuesKeys.put(sSppName, iSppKey);
+					 hKeysValues.put(iSppKey, sSppName);
+					 hValuesCodes.put(sSppName,  sSppCode);
+					 ArrayList<Object> aRow = new ArrayList<Object>();
+					 aRow.add(Integer.toString(iSppKey));
+					 aRow.add(sSppName);
+					 lSearchRows.add(aRow);
+				 }
 				 line = parser.getNext();
 			}
 		} catch (IOException e) {

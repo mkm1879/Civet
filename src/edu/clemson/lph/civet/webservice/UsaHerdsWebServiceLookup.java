@@ -96,6 +96,7 @@ public class UsaHerdsWebServiceLookup {
 				NodeList fields = type.getChildNodes();
 				Integer iKeyValue = null;
 				String sDescription = null;
+				String sUSDADescription = null;
 				Integer iDisplaySequence = null;
 				String sMappedValue = null;
 				String sShortName = null;
@@ -109,8 +110,8 @@ public class UsaHerdsWebServiceLookup {
 						else if( "Description".equals(field.getNodeName() ) ) {
 							sDescription = field.getTextContent();
 						}
-						else if( "Description".equals(field.getNodeName() ) ) {
-							sDescription = field.getTextContent();
+						else if( "USDADescription".equals(field.getNodeName() ) ) {
+							sUSDADescription = field.getTextContent();
 						}
 						else if( "DisplaySequence".equals(field.getNodeName() ) ) {
 							String sDisplaySequence = field.getTextContent();
@@ -127,7 +128,8 @@ public class UsaHerdsWebServiceLookup {
 						}
 					}
 				}
-				WebServiceLookupRow row = new WebServiceLookupRow( iKeyValue, sDescription, iDisplaySequence, sMappedValue, sShortName );
+				WebServiceLookupRow row = new WebServiceLookupRow( iKeyValue, sDescription, sUSDADescription,
+						                                           iDisplaySequence, sMappedValue, sShortName );
 				rows.add(row);
 			}
 		}
@@ -158,6 +160,11 @@ public class UsaHerdsWebServiceLookup {
 		return currentRow.sDescription;
 	}
 	
+	public String getUSDADescription() {
+		if( currentRow == null ) return null;
+		return currentRow.sUSDADescription;
+	}
+	
 	public String getMappedValue() {
 		if( currentRow == null ) return null;
 		return currentRow.sMappedValue;
@@ -176,12 +183,14 @@ public class UsaHerdsWebServiceLookup {
 	private class WebServiceLookupRow {
 		public Integer iKeyValue;
 		public String sDescription;
+		public String sUSDADescription;
 		public Integer iDisplaySequence;
 		public String sMappedValue;
 		public String sShortName;
-		public  WebServiceLookupRow( Integer iKey, String sDesc, Integer iDisp, String sMapped, String sShortNm ) {
+		public  WebServiceLookupRow( Integer iKey, String sDesc, String sUSDADesc, Integer iDisp, String sMapped, String sShortNm ) {
 			iKeyValue = iKey;
 			sDescription = sDesc;
+			sUSDADescription = sUSDADesc;
 			iDisplaySequence = iDisp;
 			sMappedValue = sMapped;
 			sShortName = sShortNm;

@@ -119,13 +119,13 @@ public class States extends DBComboBoxModel implements DBTableSource {
 	
 	@Override
 	public void refresh() {
-		hValues.clear();
-		hKeys.clear();
+		hValuesKeys.clear();
+		hKeysValues.clear();
 		super.removeAllElements();
 		if( bBlank ) {
 			super.addElement("");
-			hValues.put("", -1);
-			hKeys.put(-1, "");
+			hValuesKeys.put("", -1);
+			hKeysValues.put(-1, "");
 		}
 		Object aStates[] =  states.keySet().toArray();
 		Arrays.sort( aStates );
@@ -133,8 +133,8 @@ public class States extends DBComboBoxModel implements DBTableSource {
 			String sCode = (String)oCode;
 			String sState = states.get(sCode);
 			super.addElement(sState);
-			hValues.put(sState, sCode);
-			hKeys.put(sCode, sState);
+			hValuesKeys.put(sState, sCode);
+			hKeysValues.put(sCode, sState);
 		}
 
 	}
