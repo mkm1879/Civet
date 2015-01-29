@@ -52,7 +52,7 @@ public class AddAnimalsDialog extends JDialog {
 	private DBNumericField jtfAddNum;
 	private JTable tblIDs;
 	private AnimalIDListTableModel model;
-	HashMap<Integer, String> hSpecies;
+	HashMap<String, String> hSpecies;
 	private JComboBox<String> cbSpecies;
 	private JTextField jtfPrefix;
 
@@ -60,7 +60,7 @@ public class AddAnimalsDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public AddAnimalsDialog( HashMap<Integer, String> hSpecies, AnimalIDListTableModel model ) {
+	public AddAnimalsDialog( HashMap<String, String> hSpecies, AnimalIDListTableModel model ) {
 		this.hSpecies = hSpecies;
 		this.model = model;
 		model.saveState();
@@ -81,8 +81,8 @@ public class AddAnimalsDialog extends JDialog {
 			}
 			{
 				cbSpecies = new JComboBox<String>();
-				for( int i : hSpecies.keySet() ) {
-					String sSpecies = hSpecies.get(i);
+				for( String s : hSpecies.keySet() ) {
+					String sSpecies = hSpecies.get(s);
 					cbSpecies.addItem(sSpecies);
 				}
 				panel.add(cbSpecies);
@@ -187,12 +187,12 @@ public class AddAnimalsDialog extends JDialog {
 		}
 	}
 	
-	private int getKeyForSpecies( String sSpecies ) {
-		for( int i : hSpecies.keySet() ) {
-			if( hSpecies.get(i).equals( sSpecies ) )
-				return i;
+	private String getCodeForSpecies( String sSpecies ) {
+		for( String s : hSpecies.keySet() ) {
+			if( hSpecies.get(s).equals( sSpecies ) )
+				return s;
 		}
-		return -1;
+		return null;
 	}
 	
 	public static String padTag( String sPrefix, String sSuffix, int iChars ) {
@@ -218,9 +218,9 @@ public class AddAnimalsDialog extends JDialog {
 		else
 			sID = sPrefix + sSuffix;
 		String sSpecies = (String)cbSpecies.getSelectedItem();
-		int iSpecies = getKeyForSpecies( sSpecies );
+		String sSpeciesCode = getCodeForSpecies( sSpecies );
 //		int iNextRow = model.getMaxRowID() + 1;
-		AnimalIDRecord r = new AnimalIDRecord( iSpecies, sSpecies, sID );
+		AnimalIDRecord r = new AnimalIDRecord( sSpeciesCode, sSpecies, sID );
 		if( sID != null && sID.trim().length() > 0 ) {
 			model.addRow(r);
 		}
@@ -240,7 +240,7 @@ public class AddAnimalsDialog extends JDialog {
 			return;
 		}
 		String sSpecies = (String)cbSpecies.getSelectedItem();
-		int iSpecies = getKeyForSpecies( sSpecies );
+		String sSpeciesCode = getCodeForSpecies( sSpecies );
 		if( sID != null && sID.trim().length() > 0 && iNum > 0 ) {
 			try {
 				ArrayList<String> sIDs = null;
@@ -258,8 +258,7 @@ public class AddAnimalsDialog extends JDialog {
 					return;
 				}
 				for( String sNext : sIDs ) {
-//					int iNextRow = model.getMaxRowID() + 1;
-					AnimalIDRecord r = new AnimalIDRecord( iSpecies, sSpecies, sNext );
+					AnimalIDRecord r = new AnimalIDRecord( sSpeciesCode, sSpecies, sNext );
 					model.addRow(r);
 				}
 			} catch (Exception e) {

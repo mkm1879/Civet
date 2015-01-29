@@ -39,6 +39,7 @@ public class DBComboBoxModel extends DefaultComboBoxModel<String> {
 	protected HashMap<String, Object> hValuesKeys = new HashMap<String, Object>();
 	protected HashMap<Object, String> hKeysValues = new HashMap<Object, String>();
 	protected HashMap<String, String> hValuesCodes = new HashMap<String, String>();
+	protected HashMap<String, String> hCodesValues = new HashMap<String, String>();
 	protected DBComboBox parent = null;
 	private Vector<ComboBoxSelectionListener> listeners = new Vector<ComboBoxSelectionListener>();
 
@@ -78,6 +79,18 @@ public class DBComboBoxModel extends DefaultComboBoxModel<String> {
 				break;
 			}
 		}
+		String sOld = (String)getSelectedItem();
+		// This is not a mistake. Testing identity objects, not equality of values.
+		if( (sOld != null && sItem == null) || (sOld == null && sItem != null) || (sOld != null && !sOld.equals(sItem)) ) {
+			for( ComboBoxSelectionListener listener: listeners ) {
+				listener.selectionChanged( new SelectionChangeEvent( parent, sOld, sItem) );
+			}
+		}
+		super.setSelectedItem(sItem);
+	}
+	
+	public void setSelectedCode( String sCode ) {
+		String sItem = hCodesValues.get(sCode);
 		String sOld = (String)getSelectedItem();
 		// This is not a mistake. Testing identity objects, not equality of values.
 		if( (sOld != null && sItem == null) || (sOld == null && sItem != null) || (sOld != null && !sOld.equals(sItem)) ) {

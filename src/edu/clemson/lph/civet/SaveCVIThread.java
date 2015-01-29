@@ -289,25 +289,23 @@ public class SaveCVIThread extends Thread {
 			// This could be greatly improved to better coordinate with CO/KS list of animals and the standard's group concept.
 			for( SpeciesRecord sr : aSpecies ) {
 				// Only add group lot if not officially IDd so count ids and subtract
-				int iSpecies = sr.iSpeciesKey;
+				String sSpeciesCode = sr.sSpeciesCode;
 				int iCountIds = 0;
 				if( aAnimalIDs != null ) {
 					for( AnimalIDRecord ar : aAnimalIDs ) {
-						if( ar.iSpeciesKey == iSpecies ) {
+						if( ar.sSpeciesCode.equals(sSpeciesCode) ) {
 							iCountIds++;
 						}
 					}
 				}
 				if( iCountIds < sr.iNumber ) {
-					SpeciesLookup luSpecies = new SpeciesLookup( iSpecies );
-					xmlBuilder.addGroup(sr.iNumber - iCountIds, "Group Lot", luSpecies.getSpeciesCode(), null, null );
+					xmlBuilder.addGroup(sr.iNumber - iCountIds, "Group Lot", sSpeciesCode, null, null );
 				}
 			}
 			if( aAnimalIDs != null ) {
 				for( AnimalIDRecord ar : aAnimalIDs ) {
-					SpeciesLookup luSpecies = new SpeciesLookup(ar.iSpeciesKey);
 					String sType = IDTypeGuesser.getTagType(ar.sTag);
-					xmlBuilder.addAnimal( luSpecies.getSpeciesCode(),dDateIssued,null,null,null,sType,ar.sTag);
+					xmlBuilder.addAnimal( ar.sSpeciesCode, dDateIssued,null,null,null,sType,ar.sTag);
 				}
 			}
 		} // End if !bXFA
@@ -325,7 +323,6 @@ public class SaveCVIThread extends Thread {
 		if( sErrorNotes != null && sErrorNotes.trim().length() > 0 )
 			metaData.setErrorNote(sErrorNotes);
 		xmlBuilder.addMetadataAttachement(metaData);
-		System.out.println(metaData.getXmlString());
 		return xmlBuilder.getXMLString();
 	}
 	

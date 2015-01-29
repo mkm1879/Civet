@@ -34,10 +34,8 @@ import edu.clemson.lph.utils.LabeledCSVParser;
 @SuppressWarnings("serial")
 public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private Integer iSpeciesKey = -1;
 	private HashMap<String, Spp> sppNameMap = null;
 	private HashMap<String, Spp> sppCodeMap = null;
-	private HashMap<Integer, Spp> sppKeyMap = null;
 	// TODO: Once we dump the DB stuff entirely, get rid of temporary member variables and return from Spp directly.
 	private String sSpeciesCode = null;
 	private String sSpeciesName = null;
@@ -49,44 +47,40 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 	 * for all lookups from this object.  Including its function as a DBComboBoxModel based on iKey
 	 */
 	public SpeciesLookup() {
-		if( sppCodeMap == null || sppKeyMap == null )
+		if( sppCodeMap == null || sppCodeMap == null )
 			readSppTable();		
 	}
 	
 	public SpeciesLookup( String sSppCode ) {
-		if( sppCodeMap == null || sppKeyMap == null )
+		if( sppCodeMap == null || sppCodeMap == null )
 			readSppTable();
 		Spp spp = sppCodeMap.get(sSppCode);
 		if( spp == null ) {
 			MessageDialog.messageLater(null, "Civet Error: Missing Species Code", "Species code " + sSppCode + " not found in lookup table.");
-			this.iSpeciesKey = -1;
 			this.sSpeciesName = "Missing Species Code";
 			this.sSpeciesCode = sSppCode;
 			return;
 		}
-		this.iSpeciesKey = spp.iSppKey;
 		this.sSpeciesName = spp.sSppName;
 		this.sSpeciesCode = spp.sSppCode;
 	}
 	
-	public SpeciesLookup( int iSppKey ) {
-		if( sppCodeMap == null || sppKeyMap == null )
+	public SpeciesLookup( int iSppKey, String sSpeciesCode ) {
+		if( sppCodeMap == null || sppNameMap == null )
 			readSppTable();
-		Spp spp = sppKeyMap.get(iSppKey);
+		Spp spp = sppNameMap.get(sSpeciesCode);
 		if( spp == null ) {
 			MessageDialog.messageLater(null, "Civet Error: Missing Species Key", "Species key " + iSppKey + " not found in lookup table.");
-			this.iSpeciesKey = iSppKey;
 			this.sSpeciesName = "Missing Species Code";
 			this.sSpeciesCode = "ERROR";
 			return;
 		}
-		this.iSpeciesKey = spp.iSppKey;
 		this.sSpeciesName = spp.sSppName;
-		this.sSpeciesCode = spp.sSppCode;
+		this.sSpeciesCode = sSpeciesCode;
 	}
 	
 	public Integer getKey() {
-		return iSpeciesKey;
+		return -1;
 	}
 
 	public String getSpeciesName() {
@@ -104,10 +98,12 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 			parser.sort( parser.getLabelIdx("USDACode") );
 			sppNameMap = new HashMap<String, Spp>();
 			sppCodeMap = new HashMap<String, Spp>();
-			sppKeyMap = new HashMap<Integer, Spp>();
 			lSearchRows = new ArrayList<ArrayList<Object>>();
+			// Clear the keys from parent even though ignored here.
 			hValuesKeys.clear();
 			hKeysValues.clear();
+			hValuesCodes.clear();
+			hCodesValues.clear();
 			super.removeAllElements();
 			if( bBlank ) {
 				super.addElement("");
@@ -116,25 +112,21 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 			}
 			List<String> line = parser.getNext();
 			while( line != null ) {
-				 String sSppKey = line.get( parser.getLabelIdx( "AnimalClassHierarchyKey" ) );
-				 int iSppKey = Integer.parseInt(sSppKey);
 				 String sSppCode = line.get( parser.getLabelIdx( "USDACode" ) );
 				 if( sSppCode == null || sSppCode.trim().length() == 0 ) {
 					 line = parser.getNext();
 					 continue;
 				 }
 				 String sSppName = line.get( parser.getLabelIdx( "USDADescription" ) );
-				 Spp spp = new Spp(iSppKey, sSppCode, sSppName);
+				 Spp spp = new Spp(sSppCode, sSppName);
 				 if( sppNameMap.get(sSppName) == null ) {
 					 sppNameMap.put(sSppName, spp);
-					 sppKeyMap.put(iSppKey, spp);
 					 sppCodeMap.put(sSppCode, spp);
 					 super.addElement(sSppName);
-					 hValuesKeys.put(sSppName, iSppKey);
-					 hKeysValues.put(iSppKey, sSppName);
-					 hValuesCodes.put(sSppName,  sSppCode);
+					 hValuesCodes.put(sSppName, sSppCode);
+					 hCodesValues.put(sSppCode, sSppName);
 					 ArrayList<Object> aRow = new ArrayList<Object>();
-					 aRow.add(Integer.toString(iSppKey));
+					 aRow.add(sSppCode);
 					 aRow.add(sSppName);
 					 lSearchRows.add(aRow);
 				 }
@@ -146,12 +138,10 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 	}
 	
 	private class Spp {
-		public Integer iSppKey;
 		public String sSppCode;
 		public String sSppName;
 		
-		public Spp( int iSppKey, String sSppCode, String sSppName ) {
-			this.iSppKey = iSppKey;
+		public Spp( String sSppCode, String sSppName ) {
 			this.sSppCode = sSppCode;
 			this.sSppName = sSppName;
 		}

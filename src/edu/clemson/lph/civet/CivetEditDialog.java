@@ -1162,7 +1162,7 @@ public final class CivetEditDialog extends JFrame {
 					ArrayList<String> aSpeciesStrings = new ArrayList<String>();
 					if( aSpecies.size() > 0 ) {
 						for( SpeciesRecord r : aSpecies ) {
-							aSpeciesStrings.add(cbSpecies.getValueForKey(r.iSpeciesKey));
+							aSpeciesStrings.add(cbSpecies.getValueForKey(r.sSpeciesCode));
 						}
 					}
 					if( cbSpecies.getSelectedKeyInt() >= 0 ) {
@@ -1171,10 +1171,11 @@ public final class CivetEditDialog extends JFrame {
 							aSpeciesStrings.add(sSpecies);
 						}
 					}
-					HashMap<Integer, String> hSpecies = new HashMap<Integer, String>();
+					HashMap<String, String> hSpecies = new HashMap<String, String>();
 					for( String sSp : aSpeciesStrings ) {
-						int iKey = cbSpecies.getKeyForValue(sSp);
-						hSpecies.put(iKey,sSp);
+						SpeciesLookup spp = new SpeciesLookup( -1, sSp );
+						String sKey = spp.getSpeciesCode();
+						hSpecies.put(sKey,sSp);
 					}
 					AddAnimalsDialog dlg = new AddAnimalsDialog( hSpecies, idListModel );
 					dlg.setModal(true);
@@ -2005,22 +2006,22 @@ public final class CivetEditDialog extends JFrame {
 	private void loadSpeciesFromStdXml(StdeCviXml std) {
 		aSpecies = new ArrayList<SpeciesRecord>();
 		NodeList animals = std.listAnimals();
-		int iKey = -1;
+		String sKey = null;
+		String sSpeciesName = null;
 		for( int i = 0; i < animals.getLength(); i++ ) {
-			String sSpecies = std.getSpeciesCode(animals.item(i));
+			String sSpeciesCode = std.getSpeciesCode(animals.item(i));
 			String sAnimalID = std.getAnimalID(animals.item(i));
 			boolean bSet = false;
-			SpeciesLookup sppLookup = new SpeciesLookup( sSpecies );
-			int iNextKey = sppLookup.getKey();
-			if( iKey < 0 )
-				iKey = iNextKey;
-			String sSpeciesValue = sppLookup.getSpeciesName();
-			if( iNextKey > 0 && sAnimalID != null && sAnimalID.trim().length() > 0 ) {
-				idListModel.addRow(iKey, sSpeciesValue, sAnimalID);
+			SpeciesLookup sppLookup = new SpeciesLookup( sSpeciesCode );
+			if( sKey == null )
+				sKey = sSpeciesCode;
+			sSpeciesName = sppLookup.getSpeciesName();
+			if( sSpeciesCode != null && sAnimalID != null && sAnimalID.trim().length() > 0 ) {
+				idListModel.addRow(sKey, sSpeciesName, sAnimalID);
 			}
 			if( aSpecies.size() > 0 ) {
 				for( SpeciesRecord r : aSpecies ) {
-					if( r.iSpeciesKey == iNextKey ) {
+					if( r.sSpeciesCode == sSpeciesCode ) {
 						r.iNumber++;
 						bSet = true;
 						break;
@@ -2028,23 +2029,23 @@ public final class CivetEditDialog extends JFrame {
 				}
 			}
 			if( !bSet ) {
-				SpeciesRecord sp = new SpeciesRecord( iNextKey, 1 );
+				SpeciesRecord sp = new SpeciesRecord( sSpeciesCode, 1 );
 				aSpecies.add(sp);
 			}
 		}
 		NodeList groups = std.listGroups();
 		for( int i = 0; i < groups.getLength(); i++ ) {
-			String sSpecies = std.getSpeciesCode(groups.item(i));
+			String sSpeciesCode = std.getSpeciesCode(groups.item(i));
 			int iQuantity = std.getQuantity(groups.item(i));
-			int iNextKey = -1;
-			SpeciesLookup sppLookup = new SpeciesLookup( sSpecies );
-			iNextKey = sppLookup.getKey();
-			if( iKey < 0 )
-				iKey = iNextKey;
+			String sNextKey = null;
+			SpeciesLookup sppLookup = new SpeciesLookup( sSpeciesCode );
+			sNextKey = sppLookup.getSpeciesCode();
+			if( sKey == null )
+				sKey = sNextKey;
 			boolean bSet = false;
 			if( aSpecies.size() > 0 ) {
 				for( SpeciesRecord r : aSpecies ) {
-					if( r.iSpeciesKey == iNextKey ) {
+					if( r.sSpeciesCode == sNextKey ) {
 						r.iNumber += iQuantity;
 						bSet = true;
 						break;
@@ -2054,7 +2055,7 @@ public final class CivetEditDialog extends JFrame {
 					break;
 			}
 			if( !bSet ) {
-				SpeciesRecord sp = new SpeciesRecord( iNextKey, iQuantity );
+				SpeciesRecord sp = new SpeciesRecord( sNextKey, iQuantity );
 				aSpecies.add(sp);
 			}
 		}
@@ -2063,10 +2064,10 @@ public final class CivetEditDialog extends JFrame {
 		for( SpeciesRecord r : aSpecies ) {
 			if( r.iNumber > iMax ) {
 				iMax = r.iNumber;
-				iKey = r.iSpeciesKey;
+				sKey = r.sSpeciesCode;
 			}
 		}
-		cbSpecies.setSelectedKey(iKey);
+		cbSpecies.setSelectedCode(sKey);
 		jtfNumber.setText(Integer.toString(iMax));
 		bMultiSpecies = (aSpecies.size() > 1);
 		lMultipleSpecies.setVisible( bMultiSpecies );
@@ -2315,8 +2316,8 @@ public final class CivetEditDialog extends JFrame {
 
 	private void updateSpeciesList( boolean bClear )  {
 		String sNum = jtfNumber.getText();
-		int iSpecies = cbSpecies.getSelectedKeyInt();
-		if( iSpecies >= 0 ) {
+		String sSpeciesCode = cbSpecies.getSelectedCode();
+		if( sSpeciesCode != null ) {
 			int iNum = -1;
 			try {
 				iNum = Integer.parseInt(sNum);
@@ -2325,7 +2326,7 @@ public final class CivetEditDialog extends JFrame {
 				// Will trigger later error.
 				return;
 			}
-			SpeciesRecord rSpecies = new SpeciesRecord(iSpecies, iNum);
+			SpeciesRecord rSpecies = new SpeciesRecord(sSpeciesCode, iNum);
 			if( aSpecies.contains(rSpecies) ) {
 				aSpecies.remove(rSpecies);
 			}

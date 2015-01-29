@@ -122,9 +122,18 @@ public class DBComboBox extends JComboBox<String> {
 	public void setSelectedKey( Object oKey ) {
 		model.setSelectedKey(oKey);
 	}
+	
+	public void setSelectedCode( String sCode ) {
+		model.setSelectedCode(sCode);
+	}
+
 
 	public String getSelectedValue() {
 		return model.getSelectedValue();
+	}
+	
+	public String getSelectedCode() {
+		return model.getSelectedCode();
 	}
 	
 	public ArrayList<String> getValues() {

@@ -29,13 +29,13 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 public class AnimalIDRecord {
 	static int iMaxID = 0;
 	public int iRowID;
-	public int iSpeciesKey;
+	public String sSpeciesCode;
 	public String sSpecies;
 	public String sTag;
 	
-	public AnimalIDRecord( int iSpeciesKey, String sSpecies, String sTag ) {
+	public AnimalIDRecord( String sSpeciesCode, String sSpecies, String sTag ) {
 		this.iRowID = iMaxID++;
-		this.iSpeciesKey = iSpeciesKey; 
+		this.sSpeciesCode = sSpeciesCode; 
 		this.sSpecies = sSpecies;
 		this.sTag = sTag;
 	}
@@ -44,11 +44,11 @@ public class AnimalIDRecord {
 	public boolean equals( Object o ) {
 		if( !( o instanceof AnimalIDRecord ) ) return false;
 		AnimalIDRecord rOther = (AnimalIDRecord)o;
-		return ( rOther.iSpeciesKey == this.iSpeciesKey && rOther.sTag.equals(sTag) );
+		return ( rOther.sSpeciesCode == this.sSpeciesCode && rOther.sTag.equals(sTag) );
 	}
 
 	@Override
 	public int hashCode() {
-		return iSpeciesKey;
+		return sSpeciesCode.hashCode();
 	}
 }

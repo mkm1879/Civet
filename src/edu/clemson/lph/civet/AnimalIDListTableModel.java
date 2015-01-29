@@ -77,8 +77,8 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 		return iMax;
 	}
 	
-	public void addRow( int iSpeciesKey, String sSpecies, String sTag ) {
-		rows.add( new AnimalIDRecord( iSpeciesKey, sSpecies, sTag ) );
+	public void addRow( String sSpeciesCode, String sSpecies, String sTag ) {
+		rows.add( new AnimalIDRecord( sSpeciesCode, sSpecies, sTag ) );
 		fireTableDataChanged();
 	}
 	
@@ -154,12 +154,12 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 			return null;
 	}
 
-	public int getSpeciesKeyAt(int iRow) {
+	public String getSpeciesCodeAt(int iRow) {
 		if( iRow >=0 && iRow < rows.size() ) {
-			return rows.get(iRow).iSpeciesKey;
+			return rows.get(iRow).sSpeciesCode;
 		}
 		else
-			return -1;
+			return null;
 	}
 
 	public int getRowIDAt(int iRow) {

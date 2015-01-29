@@ -19,20 +19,21 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 public class SpeciesRecord {
-  public int iSpeciesKey;
+  public String sSpeciesCode;
   public int iNumber;
-  public SpeciesRecord( int iSpeciesKey, int num ) {
-    this.iSpeciesKey = iSpeciesKey; this.iNumber = num;
+  public SpeciesRecord( String sSpeciesCode, int num ) {
+    this.sSpeciesCode = sSpeciesCode; 
+    this.iNumber = num;
   }
   @Override
   public boolean equals( Object o ) {
 	  if( !( o instanceof SpeciesRecord ) ) return false;
 	  SpeciesRecord rOther = (SpeciesRecord)o;
-	  return rOther.iSpeciesKey == this.iSpeciesKey;
+	  return rOther.sSpeciesCode == this.sSpeciesCode;
   }
   
   @Override
   public int hashCode() {
-	  return iSpeciesKey;
+	  return sSpeciesCode.hashCode();
   }
 }
