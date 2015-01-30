@@ -1967,6 +1967,7 @@ public final class CivetEditDialog extends JFrame {
 				cbPurpose.setSelectedValue(xStd.getMovementPurpose());
 				// Load data from included XmlMetaData "file"
 				CviMetaDataXml meta = xStd.getMetaData();
+//			System.out.println( meta.getXmlString() );
 				if( meta != null ) {
 					// Make no assumption about received date.
 					java.util.Date dReceived = meta.getBureauReceiptDate();

@@ -34,7 +34,6 @@ import org.w3c.dom.Element;
 import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
 import edu.clemson.lph.civet.lookup.PremisesLocalStore;
 import edu.clemson.lph.civet.lookup.PurposeLookup;
-import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXml;
@@ -46,6 +45,7 @@ import edu.clemson.lph.utils.IDTypeGuesser;
 
 public class SaveCVIThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final long MAX_SANE_SIZE = 1000000;
 	private CivetEditDialog dlg;
 	private ProgressDialog prog;
 	private StdeCviXml stdXml = null;
@@ -308,10 +308,14 @@ public class SaveCVIThread extends Thread {
 					xmlBuilder.addAnimal( ar.sSpeciesCode, dDateIssued,null,null,null,sType,ar.sTag);
 				}
 			}
+			// Also, don't check size on XFA PDFs because we don't control those.
+			if( bAttachmentFileBytes != null ) {
+				xmlBuilder.addPDFAttachement(bAttachmentFileBytes, sAttachmentFileName);
+				if( bAttachmentFileBytes.length > MAX_SANE_SIZE ) {
+					MessageDialog.messageWait(dlg, "Civet Warning", "The PDF attachment is larger than normal.\nCheck your scanner settings");
+				}
+			}
 		} // End if !bXFA
-		if( bAttachmentFileBytes != null ) {
-			xmlBuilder.addPDFAttachement(bAttachmentFileBytes, sAttachmentFileName);
-		}
 		CviMetaDataXml metaData = new CviMetaDataXml();
 		metaData.setCertificateNbr(sCVINo);
 		metaData.setBureauReceiptDate(dDateReceived);

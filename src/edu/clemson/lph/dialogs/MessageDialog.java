@@ -198,10 +198,10 @@ public class MessageDialog extends JDialog {
 	}
 
 	public static void messageWait( Window parent, String sTitle, String sMessage ) {
-		messageLater( parent, sTitle, sMessage, BOTH_BUTTONS );
+		messageWait( parent, sTitle, sMessage, BOTH_BUTTONS );
 	}	
 
-	public static void messageWait( JFrame parent, String sTitle, String sMessage, int iButtons ) {
+	public static void messageWait( Window parent, String sTitle, String sMessage, int iButtons ) {
 		final Window fParent = parent;
 		final String fTitle = sTitle;
 		final String fMessage = sMessage;
