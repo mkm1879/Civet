@@ -162,7 +162,7 @@ public class CVIFileController {
 			iPageNo = iPage;
 			try {
 				dlg.getPdfDecoder().decodePage(iPageNo);
-				dlg.updateDisplay();
+				dlg.updatePdfDisplay();
 				dlg.setupForm(currentFileName, iPageNo, iPages, iFileNo, iFiles, isPageComplete(iPageNo));
 			}
 			catch (Exception e1) {
@@ -212,7 +212,7 @@ public class CVIFileController {
 			iPageNo--;
 			try {
 				dlg.getPdfDecoder().decodePage(iPageNo);
-				dlg.updateDisplay();
+				dlg.updatePdfDisplay();
 			}
 			catch (Exception e1) {
 				logger.error(e1.getMessage() + "\nError moving back one page");
@@ -241,7 +241,7 @@ public class CVIFileController {
 			iPageNo++;
 			try {
 				dlg.getPdfDecoder().decodePage(iPageNo);
-				dlg.updateDisplay();
+				dlg.updatePdfDisplay();
 				dlg.setupForm(currentFileName, iPageNo, iPages, iFileNo, iFiles, isPageComplete(iPageNo));
 			}
 			catch (Exception e1) {
@@ -385,7 +385,7 @@ public class CVIFileController {
 					else {
 						try {
 							dlg.getPdfDecoder().decodePage(iPageNo);
-							dlg.updateDisplay();
+							dlg.updatePdfDisplay();
 							dlg.setupForm(currentFileName, iPageNo, iPages, iFileNo, iFiles, isPageComplete(iPageNo));
 							// Successfully read page
 							return;
@@ -438,7 +438,7 @@ public class CVIFileController {
 					else {
 						try {
 							dlg.getPdfDecoder().decodePage(iPageNo);
-							dlg.updateDisplay();
+							dlg.updatePdfDisplay();
 							dlg.setupForm(currentFileName, iPageNo, iPages, iFileNo, iFiles, isPageComplete(iPageNo));
 							// Successfully read page
 							return;
@@ -624,7 +624,7 @@ public class CVIFileController {
 				mPagesComplete.put(currentFilePath, new ArrayList<Integer>());
 			aPagesInCurrent.clear();
 			if( isXFADocument() ) {
-				dlg.setRotation(0);
+				dlg.setRotation(180);  // Always rotate 180 (actually 0) since we know they are right that way
 				dlg.populateFromPDF();
 			}
 			else {
@@ -632,7 +632,7 @@ public class CVIFileController {
 			}
 			dlg.setupForm(currentFileName, iPageNo, iPagesInFile, iFileNo, iFiles, isPageComplete(iPageNo));
 			dlg.setVisible(true);
-			dlg.updateDisplay();
+			dlg.updatePdfDisplay();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error(e);

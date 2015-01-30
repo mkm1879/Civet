@@ -234,21 +234,31 @@ public final class CivetEditDialog extends JFrame {
 			bGotoPage.setEnabled(false);		
 	}
 	
-	public void updateDisplay() {
-		updateDisplay(true);
+	public void updatePdfDisplay() {
+		updatePdfDisplay(true);
 	}
 		
-	public void updateDisplay(boolean bGUI) {
+	public void updatePdfDisplay(boolean bGUI) {
 	      //wait to ensure decoded
 		pdfDecoder.setPageParameters(getScale(),
 									controller.getCurrentPageNo(),
-									getRotation()); //values scaling (1=100%). page number
+									getRotation()); //values scaling (1=100%). page number, rotation + 180
 		pdfDecoder.waitForDecodingToFinish();
 		if( bGUI ) {
 			pdfDecoder.invalidate();
 			pdfDecoder.updateUI();
 			pdfDecoder.validate();
 		}
+	}
+	
+	public void refreshPdfDisplay() {
+		pdfDecoder.setPageParameters(getScale(),
+				controller.getCurrentPageNo(),
+				getRotation()); //values scaling (1=100%). page number
+		pdfDecoder.waitForDecodingToFinish();
+		pdfDecoder.invalidate();
+		pdfDecoder.updateUI();
+		pdfDecoder.validate();
 	}
 
 	/**
@@ -373,6 +383,14 @@ public final class CivetEditDialog extends JFrame {
 			}
 		});
 		mnView.add(mntmMinimizeAll);
+		
+		JMenuItem mntmRefresh = new JMenuItem("Refresh Display");
+		mntmRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				refreshPdfDisplay();
+			}
+		});
+		mnView.add(mntmRefresh);
 
 	}
 	
@@ -1347,8 +1365,13 @@ public final class CivetEditDialog extends JFrame {
 	public PdfDecoder getPdfDecoder() { return pdfDecoder; }
 	public CVIFileController getController() { return controller; }
 	public float getScale() { return fScale; }
-	public int getRotation() { return iRotation; }
-	public void setRotation( int iRotation ) { this.iRotation = iRotation; }
+	public int getRotation() { 
+		return iRotation; 
+	}
+	// Actual value has to be 180 off of that actually displayed in Acrobat, etc.
+	public void setRotation( int iRotation ) { 
+		this.iRotation = ( iRotation + 180 ) % 360; 
+	}
 	public String getViewerTitle() { return viewerTitle; }
 	public int getPageNo() { return controller.getCurrentPageNo(); }
 	

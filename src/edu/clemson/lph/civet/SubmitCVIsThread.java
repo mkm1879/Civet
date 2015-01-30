@@ -47,7 +47,6 @@ public class SubmitCVIsThread extends ProcessFilesThread {
 			reader.close();
 			String sXML = sb.toString();
 			String sRet = service.sendCviXML(sXML);
-	System.out.println( sRet );
 			if( sRet == null || sRet.toLowerCase().contains("error") )
 				throw new Exception( "Error from web service\n" + sRet);
 			

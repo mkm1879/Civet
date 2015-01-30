@@ -265,24 +265,26 @@ public class MailMan {
 
 	private static Properties setupProperties() {
 		Properties props = new Properties();
+		// Works with newer email such as gmail
 		if( "STARTTLS".equalsIgnoreCase(sSecurity) ) {
 			props.put("mail.smtp.auth", "true");
 			props.put("mail.smtp.starttls.enable", "true");
 			props.put("mail.smtp.host", "smtp.gmail.com");
 			props.put("mail.smtp.port", "587");
 		}
+		// Works with older SMTP over SSL
 		else if( "SSL".equalsIgnoreCase(sSecurity) ) {
-			props.put("mail.smtps.user", sUserID);
-			props.put("mail.smtps.host", sHost);
-			props.put("mail.smtps.port", iPort);
-			props.put("mail.transport.protocol","smtps");
-			props.put("mail.smtps.socketFactory.port", iPort);
-			props.put("mail.smtps.auth", "true");
-			props.put("mail.smtps.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-			props.put("mail.smtps.starttls.enable","true");
-			props.put("mail.smtps.socketFactory.fallback", "false");
-			props.put("mail.smtps.ssl.trust", sHost);
+			props.put("mail.smtp.user", sUserID);
+		    props.put("mail.smtp.host", sHost);
+		    props.put("mail.smtp.port", iPort);
+		    props.put("mail.smtp.starttls.enable","true");
+		    props.put("mail.smtp.debug", "true");
+		    props.put("mail.smtp.auth", "true");
+		    props.put("mail.smtp.socketFactory.port", iPort);
+		    props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+		    props.put("mail.smtp.socketFactory.fallback", "false");
 		}
+		// Works with open port 25! yikes
 		else {
 			props.put("mail.smtp.user", sUserID);
 			props.put("mail.smtp.host", sHost);

@@ -17,13 +17,21 @@ standAlone=no
 herdsWebServiceURL=http://lphstage/usaherds/WebService/ExternalMessages.asmx
 
 #Email setup
-smtpHost=smtp.googlemail.com
-smtpPort=587
+smtpHost=mail.clemson.edu
+# Use for gmail
+#smtpPort=587
+smtpPort=465
+# Use for old fashioned unsecure email
 #smtpPort=25
-smtpSecurity=STARTTLS
-smtpDomain=@gmail.com
+# Use for gmail
+#smtpSecurity=STARTTLS
+# Use for older SMTP over SSL
+smtpSecurity=SSL
+# Use for old fashioned unsecure email
+#smtpSecurity=NONE
+smtpDomain=@clemson.edu
 #If emailTestTo is set emails do NOT go to destination state but to this address for testing!!!!!!
-emailTestTo=mmarti5@clemson.edu
+emailTestTo=mkm1879@gmail.com
 emailCopyTo=
 #Limit size of all email attachments on one email 
 #May be in bytes, K or M
@@ -38,7 +46,7 @@ OutputDirPath=E:\\Documents\\Civet\\CivetOutbox\\
 bulkLoadDirPath=E:\\Documents\\Epi\\Swine\\
 CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
 StdSchema=E:\\Documents\\Civet\\ecviDraftRelaxed.xsd
-rotation=90
+rotation=0
 
 #Template files for generated emails
 ExportEmailTemplate=E:\\Documents\\Civet\\CivetExportsEmailMessage.txt

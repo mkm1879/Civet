@@ -89,7 +89,7 @@ public class Validator extends org.xml.sax.helpers.DefaultHandler {
 	      System.exit(1);
 	    }
 	    catch (IllegalArgumentException x) {
-	      System.out.println( "Parser not supported" );
+	      System.err.println( "Parser not supported" );
 	      System.exit(1);
 	    }
 	  }

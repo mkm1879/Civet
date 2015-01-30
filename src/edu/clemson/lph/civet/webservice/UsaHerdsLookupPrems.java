@@ -71,7 +71,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 	public UsaHerdsLookupPrems() throws WebServiceException {
 		CivetWebServices service = new CivetWebServices();
 		Document doc = service.getCivetPremises(null, null, null, null, "CO", null, null, null, null, null);
-		System.out.println(XMLUtility.domToString(doc));
+//		System.out.println(XMLUtility.domToString(doc));
 		populateRows(doc);
 		iCurrentRow = -1;
 	}

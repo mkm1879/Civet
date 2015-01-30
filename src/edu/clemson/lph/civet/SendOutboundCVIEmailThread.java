@@ -151,6 +151,8 @@ public class SendOutboundCVIEmailThread extends Thread {
 			}
 		} catch (AuthenticationFailedException e) {
 			logger.error(e.getMessage() + "\nEmail Authentication Error");
+			MailMan.setDefaultPassword(null);
+			MailMan.setDefaultUserID(null);
 		} catch (javax.mail.MessagingException e) {
 			logger.error(e.getMessage() + "\nEmail Connection Error");
 		} catch (Exception ex) {
