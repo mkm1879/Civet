@@ -38,6 +38,7 @@ public class StateVetLookupGenerator implements AddOn {
 				"av.LastName AS LName, av.FirstName AS FName, av.AddressLine1 AS MailAddress,  \n" +
 				"av.City AS [Mail City], av.ZipCode AS MailZip, c.StateCode AS MailState, c.StateName AS State, \n" +
 				"av.Email AS Email, ap.Email AS CVIEmail, \n" +
+				"CASE WHEN c.StateCode = 'TX' THEN 'tahc_disapproved_cvi@tahc.texas.gov' ELSE '' END AS CVIErrorEmail, \n" +
 				"CASE WHEN EXISTS (select * from Notes n  \n" +
 				"		where n.GenericKey = p.PracticeKey \n" +
 				"		and n.ApplicationAreaKey = (select top 1 ApplicationAreaKey  \n" +

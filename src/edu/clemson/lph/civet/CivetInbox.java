@@ -55,7 +55,7 @@ import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.04";
+	public static final String VERSION = "3.05";
 	private static final String IDRLICENSE = "\n\nContains material copyrighted by IDRSolutions for the sole purpose" +
 	"of evaluating its JPedalXFA library in this application.\n\n" +
 	"Reuse or redistribution of this application is prohibited.\n\n" +
@@ -446,13 +446,17 @@ public class CivetInbox extends JFrame {
 			ask.setPassword(true);
 			ask.setVisible(true);
 			if( ask.isExitOK() ) {
-				MailMan.setDefaultUserID(ask.getAnswerOne());
+				String sUserID = ask.getAnswerOne();
+				if( sUserID.contains("@")) {
+					sUserID = sUserID.substring(0, sUserID.indexOf('@'));
+				}
+				MailMan.setDefaultUserID(sUserID);
 				MailMan.setDefaultPassword(ask.getAnswerTwo());
 				MailMan.setDefaultHost(CivetConfig.getSmtpHost());
 				MailMan.setDefaultPort(CivetConfig.getSmtpPortInt());
 				String sSecurity = CivetConfig.getSmtpSecurity();
 				MailMan.setSecurity(sSecurity);
-				MailMan.setDefaultFrom(ask.getAnswerOne() + CivetConfig.getSmtpDomain() );
+				MailMan.setDefaultFrom(sUserID + CivetConfig.getSmtpDomain() );
 			}
 			else {
 				return;

@@ -104,7 +104,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 			for( String sState : mStateMap.keySet() ) {
 				sCurrentState = sState;
 				stateVet = new StateVetLookup( sState );
-				String sCurrentEmail = stateVet.getCVIEmail(); 
+				String sCurrentEmail = stateVet.getCVIErrorEmail(); 
 				ArrayList<File> aCVIsIn = mStateMap.get(sState);
 				ArrayList<byte[]> aLetterBytes = new ArrayList<byte[]>();
 				ArrayList<StdeCviXml> aCVIsOut = new ArrayList<StdeCviXml>();

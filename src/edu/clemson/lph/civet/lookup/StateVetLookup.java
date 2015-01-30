@@ -48,6 +48,7 @@ public class StateVetLookup implements DBTableSource {
 		lSearchColumns.add("ZipCode");
 		lSearchColumns.add("Email");
 		lSearchColumns.add("CVIEmail");
+		lSearchColumns.add("CVIErrorEmail");
 		lSearchColumns.add("FileType");
 	}
 
@@ -112,6 +113,12 @@ public class StateVetLookup implements DBTableSource {
 		return vet.sCVIEmail;
 	}
 	
+	public String getCVIErrorEmail() {
+		String sRet = vet.sCVIErrorEmail;
+		if( sRet == null || sRet.trim().length() == 0 ) sRet = vet.sCVIEmail;
+		return sRet;
+	}
+	
 	public String getFileType() {
 		return vet.sFileType;
 	}
@@ -137,9 +144,10 @@ public class StateVetLookup implements DBTableSource {
 					String sVetZipCode = line.get( parser.getLabelIdx( "MailZip" ) );
 					String sVetEmail = line.get( parser.getLabelIdx( "Email" ) );
 					String sVetCVIEmail = line.get( parser.getLabelIdx( "CVIEmail" ) );
+					String sVetCVIErrorEmail = line.get( parser.getLabelIdx( "CVIErrorEmail" ) );
 					String sVetFileType = line.get( parser.getLabelIdx( "FileType" ) );
 					StateVet vet = new StateVet(sVetPrefix,sVetFirstName,sVetLastName,sVetAddress,sVetCity,
-							sVetStateCode,sVetState,sVetZipCode,sVetEmail,sVetCVIEmail,sVetFileType);
+							sVetStateCode,sVetState,sVetZipCode,sVetEmail,sVetCVIEmail,sVetCVIErrorEmail,sVetFileType);
 					vetStateMap.put(sVetStateCode, vet);
 					ArrayList<Object> aRow = new ArrayList<Object>();
 					aRow.add(sVetPrefix);
@@ -152,6 +160,7 @@ public class StateVetLookup implements DBTableSource {
 					aRow.add(sVetZipCode);
 					aRow.add(sVetEmail);
 					aRow.add(sVetCVIEmail);
+					aRow.add(sVetCVIErrorEmail);
 					aRow.add(sVetFileType);
 					lSearchRows.add(aRow);
 					line = parser.getNext();
@@ -173,11 +182,12 @@ public class StateVetLookup implements DBTableSource {
 		public String sZipCode;
 		public String sEmail;
 		public String sCVIEmail;
+		public String sCVIErrorEmail;
 		public String sFileType;
 		
 		public StateVet( String sVetPrefix, String sVetFirstName, String sVetLastName, 
 				    String sVetAddress, String sVetCity, String sVetStateCode, String sVetState, 
-				    String sVetZipCode, String sVetEmail, String sVetCVIEmail, String sFileType ) {
+				    String sVetZipCode, String sVetEmail, String sVetCVIEmail, String sVetCVIErrorEmail, String sFileType ) {
 			this.sFirstName = sVetFirstName;
 			this.sLastName = sVetLastName;
 			this.sAddress = sVetAddress;
@@ -187,6 +197,7 @@ public class StateVetLookup implements DBTableSource {
 			this.sZipCode = sVetZipCode;
 			this.sEmail = sVetEmail;
 			this.sCVIEmail = sVetCVIEmail;
+			this.sCVIErrorEmail = sVetCVIErrorEmail;
 			this.sFileType = sFileType;
 		}
 	}
