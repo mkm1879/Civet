@@ -35,7 +35,7 @@ public class QuestionDialog extends JDialog {
 	private String sAnswer;
 
 	private JLabel lQuestion = new JLabel();
-	private JTextField jtfAnswer = new JTextField();
+	private JTextArea jtfAnswer = new JTextArea();
 
 	/**
 	@wbp.parser.constructor 
@@ -132,10 +132,13 @@ public class QuestionDialog extends JDialog {
 		contentPanel.setLayout(null);
 
 		lQuestion.setText(sQuestion);
-		lQuestion.setBounds(27, 58, 337, 14);
+		lQuestion.setBounds(27, 11, 337, 14);
 		contentPanel.add(lQuestion);
+		jtfAnswer.setLineWrap(true);
+		jtfAnswer.setBorder(new EtchedBorder() );
 		jtfAnswer.setText("");
-		jtfAnswer.setBounds(27, 84, 337, 20);
+		jtfAnswer.setWrapStyleWord(true);
+		jtfAnswer.setBounds(27, 46, 385, 165);
 		contentPanel.add(jtfAnswer);
 		{
 			JPanel buttonPane = new JPanel();
@@ -152,7 +155,6 @@ public class QuestionDialog extends JDialog {
 					}
 				});
 				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
 			}
 			{
 				JButton cancelButton = new JButton("Cancel");

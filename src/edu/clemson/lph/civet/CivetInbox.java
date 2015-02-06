@@ -350,10 +350,12 @@ public class CivetInbox extends JFrame {
 	private void doMailLogFile() {
 		File fLog = new File( "Civet.log");
 		if( fLog.exists() ) {
-			initEmail();
+			String sMsg = QuestionDialog.ask(this, "Civet Send Log", "Describe your problem:");
+			if( !initEmail() )
+				return;
 			try {
 				if( MailMan.sendIt("mmarti5@clemson.edu", null, "Civet Error Log", 
-						"Here is the error log file from Civet", fLog.getAbsolutePath()) ) {
+						sMsg, fLog.getAbsolutePath()) ) {
 					MessageDialog.showMessage(this, "Civet Log Sent:", "You can delete the Civet.log file after you exit if you like.");
 				}
 				else {
@@ -478,7 +480,7 @@ public class CivetInbox extends JFrame {
 		return bRet;
 	}
 
-	private void initEmail() {
+	private boolean initEmail() {
 		if(MailMan.getDefaultUserID() == null || MailMan.getDefaultPassword() == null ) {
 			TwoLineQuestionDialog ask = new TwoLineQuestionDialog( this, "Civet Email Login:",
 					"Email UserID:", "Email Password:", true);
@@ -501,15 +503,18 @@ public class CivetInbox extends JFrame {
 				else {
 					MailMan.setDefaultFrom(sUserID);
 				}
+				return true;
 			}
 			else {
-				return;
+				return false;
 			}
 		}
+		return true;
 	}
 
 	void sendOutboundCVIs() {
-		initEmail();
+		if( !initEmail() )
+			return;
 		ProgressDialog prog = new ProgressDialog(this, "Civet", "Emailing Outbound CVIs");
 		prog.setAuto(true);
 		prog.setVisible(true);
@@ -518,7 +523,8 @@ public class CivetInbox extends JFrame {
 	}
 
 	void sendInboundErrors() {
-		initEmail();
+		if( !initEmail() )
+			return;
 		ProgressDialog prog = new ProgressDialog(this, "Civet", "Emailing Inbound Errors");
 		prog.setAuto(true);
 		prog.setVisible(true);
