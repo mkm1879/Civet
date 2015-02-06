@@ -29,6 +29,9 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 
+import javax.mail.AuthenticationFailedException;
+import javax.mail.MessagingException;
+import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -55,7 +58,7 @@ import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.07";
+	public static final String VERSION = "3.07 local";
 	private static final String IDRLICENSE = "\n\nContains material copyrighted by IDRSolutions for the sole purpose" +
 	"of evaluating its JPedalXFA library in this application.\n\n" +
 	"Reuse or redistribution of this application is prohibited.\n\n" +
@@ -106,6 +109,7 @@ public class CivetInbox extends JFrame {
 	JMenu menuAddOns = new JMenu();
 	JMenu menuHelp = new JMenu();
 	JMenuItem menuItemAbout = new JMenuItem();
+	private AbstractButton menuItemSendLog;
 
 
 	// for design time only remove before distribution
@@ -240,6 +244,16 @@ public class CivetInbox extends JFrame {
 			}
 		});
 		menuHelp.add(menuItemAbout);
+		
+		menuItemSendLog = new JMenuItem();
+		menuItemSendLog.setText("Send Civet Error Log");
+		menuItemSendLog.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				doMailLogFile();
+			}
+		});
+		menuHelp.add(menuItemSendLog);
 
 		this.setJMenuBar(menuBar1);
 		statusPanel.setLayout(new FlowLayout());
@@ -333,6 +347,31 @@ public class CivetInbox extends JFrame {
 
 	}
 	
+	private void doMailLogFile() {
+		File fLog = new File( "Civet.log");
+		if( fLog.exists() ) {
+			initEmail();
+			try {
+				if( MailMan.sendIt("mmarti5@clemson.edu", null, "Civet Error Log", 
+						"Here is the error log file from Civet", fLog.getAbsolutePath()) ) {
+					MessageDialog.showMessage(this, "Civet Log Sent:", "You can delete the Civet.log file after you exit if you like.");
+				}
+				else {
+					MessageDialog.showMessage(this, "Civet Error:", "Failed to send Civet.log.  Please email manually.");
+				}
+			} catch (AuthenticationFailedException e) {
+				MessageDialog.showMessage(this, "Civet Error:", "Email login failed");
+				logger.error(e);
+			} catch (MessagingException e) {
+				MessageDialog.showMessage(this, "Civet Error:", "Failed to send Civet.log.  Please email manually.");
+				logger.error(e);
+			}
+		}
+		else {
+			MessageDialog.showMessage(this, "Civet Error:", "Cannot find Civet.log.  Please email manually.");
+		}
+	}
+
 	void refreshTables() {
 		sourceModel.refresh();
 		toFileModel.refresh();
