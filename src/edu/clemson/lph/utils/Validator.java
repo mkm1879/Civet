@@ -132,7 +132,7 @@ public class Validator extends org.xml.sax.helpers.DefaultHandler {
 		  try {
 			  initializeFactory();  // I don't know why this needs to be intialized every time!
 			  saxParser.parse( is, this );
-			  System.out.println("Validation successful");
+//			  System.out.println("Validation successful");
 			  bRet = true;
 			  sLastError = null;
 		  }

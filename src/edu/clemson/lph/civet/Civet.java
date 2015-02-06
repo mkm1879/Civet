@@ -75,6 +75,7 @@ public class Civet {
 				CivetConfig.setHERDSPassword( args[1] );
 			}
 			StdErrLog.tieSystemErrToLog();
+			System.setProperty("org.jpedal.jai","true");
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					try {

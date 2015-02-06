@@ -20,21 +20,50 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Scanner;
 
-public class FileUtils {
+import org.apache.log4j.Logger;
 
-	public static String readTextFile( File fIn ) throws FileNotFoundException {
+import edu.clemson.lph.civet.Civet;
+
+public class FileUtils {
+	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+
+	public static String readTextFile( File fIn ) throws Exception {
 	    StringBuilder text = new StringBuilder();
 	    String NL = System.getProperty("line.separator");
-	    Scanner scanner = new Scanner(new FileInputStream(fIn), "UTF-8");
+	    FileInputStream fsIn = null;
+	    Scanner scanner = null;
 	    try {
+	    	fsIn = new FileInputStream(fIn);
+	    	scanner =new Scanner(fsIn, "UTF-8"); 
 	      while (scanner.hasNextLine()){
 	        text.append(scanner.nextLine() + NL);
 	      }
 	    }
+	    catch( Exception e ) {
+			logger.error( "Error reading file " + fIn.getAbsolutePath(), e );
+			throw e;
+	    }
 	    finally{
-	      scanner.close();
+	    	try {
+	    		if( scanner != null ) {
+	    			scanner.close();
+	    			scanner = null;
+	    		}
+	    	} catch( Exception e2 ) {
+				logger.error("Failure to close file " + fIn.getAbsolutePath(), e2);
+	    	}
+	    	try {
+	    		if( fsIn != null ) {
+	    			fsIn.close();
+	    			fsIn = null;
+	    		}
+	    	} catch( Exception e3 ) {
+				logger.error("Failure to close file " + fIn.getAbsolutePath(), e3);
+	    	}
 	    }
 	    return text.toString();
 	}
@@ -47,14 +76,62 @@ public class FileUtils {
 	public static byte[] readBinaryFile( File fThis ) throws Exception {
 		byte[] bytes = null;
 		long len = fThis.length();
-		FileInputStream r;
-		r = new FileInputStream( fThis );
-		bytes = new byte[(int)len];
-		int iRead = r.read(bytes);
-		r.close();
+		int iRead = -1;
+		FileInputStream r = null;
+		try {
+			r = new FileInputStream( fThis );
+			bytes = new byte[(int)len];
+			iRead = r.read(bytes);
+		}
+		catch( Exception e ) {
+			logger.error( "Error reading file " + fThis.getAbsolutePath(), e );
+			throw e;
+		}
+		finally {
+			try {
+				if( r != null ) {
+					r.close();
+					r = null;
+				}
+			} catch( Exception e2 ) {
+				logger.error("Failure to close file " + fThis.getAbsolutePath(), e2);
+			}
+		}
 		if( iRead != len ) 
 			throw new Exception("File " + fThis.getName() + " size = " + len + " read = " + iRead);
 		return bytes;
+	}
+	
+	public static File copyBinaryFile( File fIn ) {
+		File fOut = null;
+		String sFileOut = null;
+		FileOutputStream fsOut = null;
+		try {
+			byte[] bytes = readBinaryFile(fIn);
+			try {
+				fOut = File.createTempFile("TempFileCVI", ".pdf");
+				sFileOut = fOut.getAbsolutePath();
+				fsOut = new FileOutputStream( sFileOut );
+				fsOut.write(bytes);
+			}
+			catch (IOException ex1) {
+				logger.error(ex1.getMessage() + "\nError writing " + sFileOut + " temporary file");
+			}
+			finally { 
+				try {
+					if( fsOut != null ) {
+						fsOut.close();
+						fsOut = null;
+					}
+				} catch( Exception ex2 ) {
+					logger.error("Error closing " + sFileOut + " temporary file", ex2);
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+		return fOut;
 	}
 	
 	public static String replaceInvalidFileNameChars( String sFileName ) {

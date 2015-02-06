@@ -13,7 +13,9 @@ Class-Path: .
  lib/commons-logging-1.1.1.jar 
  lib/httpcore-4.0.jar 
  lib/itextpdf-5.5.4.jar 
- lib/jai_imageio_idrsolutionsBuild.jar 
+ lib/jai_codec.jar
+ lib/jai_core.jar
+ lib/jai_imageio_idrsolutionBuild.jar 
  lib/jpedalXFA.jar 
  lib/jpedal-standard.jar 
  lib/jpedal_LGPL.jar 

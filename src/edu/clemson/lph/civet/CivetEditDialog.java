@@ -1173,17 +1173,17 @@ public final class CivetEditDialog extends JFrame {
 		bAddIDs.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if( cbSpecies.getSelectedKeyInt() <= 0 && aSpecies.size() == 0 ) {
+				if( ( cbSpecies.getSelectedCode() == null || cbSpecies.getSelectedCode().trim().length() == 0 ) && aSpecies.size() == 0 ) {
 					MessageDialog.showMessage( CivetEditDialog.this, "Civet Error", "Species must be added before IDs" );
 				}
 				else {
 					ArrayList<String> aSpeciesStrings = new ArrayList<String>();
 					if( aSpecies.size() > 0 ) {
 						for( SpeciesRecord r : aSpecies ) {
-							aSpeciesStrings.add(cbSpecies.getValueForKey(r.sSpeciesCode));
+							aSpeciesStrings.add(cbSpecies.getValueForCode(r.sSpeciesCode));
 						}
 					}
-					if( cbSpecies.getSelectedKeyInt() >= 0 ) {
+					if( cbSpecies.getSelectedCode() != null ) {
 						String sSpecies = cbSpecies.getSelectedValue();
 						if( !aSpeciesStrings.contains(sSpecies) ) {
 							aSpeciesStrings.add(sSpecies);
@@ -1191,9 +1191,9 @@ public final class CivetEditDialog extends JFrame {
 					}
 					HashMap<String, String> hSpecies = new HashMap<String, String>();
 					for( String sSp : aSpeciesStrings ) {
-						SpeciesLookup spp = new SpeciesLookup( -1, sSp );
-						String sKey = spp.getSpeciesCode();
-						hSpecies.put(sKey,sSp);
+						SpeciesLookup spp = new SpeciesLookup( sSp, true );
+						String sCode = spp.getSpeciesCode();
+						hSpecies.put(sCode,sSp);
 					}
 					AddAnimalsDialog dlg = new AddAnimalsDialog( hSpecies, idListModel );
 					dlg.setModal(true);
@@ -1427,17 +1427,26 @@ public final class CivetEditDialog extends JFrame {
 	
 	private void moveCompleteFiles( File[] completeFiles ) {
     	// Destination for files 
+		File dirIn =  new File(CivetConfig.getInputDirPath());
+		String sDirIn = dirIn.getAbsolutePath();
     	File dir = new File(CivetConfig.getOutputDirPath());
     	int iFiles = 0;
     	for( File fCurrent : completeFiles ) {
-    		// Move file to new directory
-    		File fNew = new File(dir, fCurrent.getName());
-    		boolean success = fCurrent.renameTo(fNew);
-    		if (!success) {
-    			MessageDialog.showMessage(this, "Civet Error", "Could not move " + fCurrent.getAbsolutePath() + " to " + fNew.getAbsolutePath() );
-    		}
-    		else {
-    			iFiles++; 
+    		// Don't move opened and saved files waiting to upload.
+    		if( fCurrent.getAbsolutePath().startsWith(sDirIn) ) {
+    			// Move file to new directory
+    			File fNew = new File(dir, fCurrent.getName());
+    			if( fNew.exists() ) {
+    				MessageDialog.showMessage(this, "Civet Error", fNew.getAbsolutePath() + " already exists in OutBox.\n" +
+    							"Check that it really is a duplicate and manually delete.");
+    			}
+    			boolean success = fCurrent.renameTo(fNew);
+    			if (!success) {
+    				MessageDialog.showMessage(this, "Civet Error", "Could not move " + fCurrent.getAbsolutePath() + " to " + fNew.getAbsolutePath() );
+    			}
+    			else {
+    				iFiles++; 
+    			}
     		}
     	}
     	if( iFiles > 0 )
@@ -1987,7 +1996,12 @@ public final class CivetEditDialog extends JFrame {
 				jtfCVINo.setText(xStd.getCertificateNumber());
 				// Species multiples are an issue
 				loadSpeciesFromStdXml(xStd);
-				cbPurpose.setSelectedValue(xStd.getMovementPurpose());
+				// Overly simplistic.  Only works if spelling matches
+				String sPurposeCode = xStd.getMovementPurpose();
+				if( sPurposeCode != null )
+					sPurposeCode = sPurposeCode.toLowerCase();
+				PurposeLookup purpose = new PurposeLookup(sPurposeCode, true);
+				cbPurpose.setSelectedValue(purpose.getPurposeName());
 				// Load data from included XmlMetaData "file"
 				CviMetaDataXml meta = xStd.getMetaData();
 //			System.out.println( meta.getXmlString() );
@@ -2011,8 +2025,12 @@ public final class CivetEditDialog extends JFrame {
 					
 				}
 				else {
-					// Make no assumption about received date.
-					jtfDateReceived.setText("");
+					if( jtfDateReceived.getDate() == null ) {
+						if( CivetConfig.isDefaultReceivedDate() ) 
+							jtfDateReceived.setDate(new java.util.Date());
+						else
+							jtfDateReceived.setText("");
+					}
 					aErrorKeys = new ArrayList<String>();
 					lError.setVisible(false);					
 				}
@@ -2030,18 +2048,16 @@ public final class CivetEditDialog extends JFrame {
 	private void loadSpeciesFromStdXml(StdeCviXml std) {
 		aSpecies = new ArrayList<SpeciesRecord>();
 		NodeList animals = std.listAnimals();
-		String sKey = null;
+		String sSpeciesCode = null;
 		String sSpeciesName = null;
 		for( int i = 0; i < animals.getLength(); i++ ) {
-			String sSpeciesCode = std.getSpeciesCode(animals.item(i));
+			sSpeciesCode = std.getSpeciesCode(animals.item(i));
 			String sAnimalID = std.getAnimalID(animals.item(i));
 			boolean bSet = false;
 			SpeciesLookup sppLookup = new SpeciesLookup( sSpeciesCode );
-			if( sKey == null )
-				sKey = sSpeciesCode;
 			sSpeciesName = sppLookup.getSpeciesName();
 			if( sSpeciesCode != null && sAnimalID != null && sAnimalID.trim().length() > 0 ) {
-				idListModel.addRow(sKey, sSpeciesName, sAnimalID);
+				idListModel.addRow(sSpeciesCode, sSpeciesName, sAnimalID);
 			}
 			if( aSpecies.size() > 0 ) {
 				for( SpeciesRecord r : aSpecies ) {
@@ -2053,23 +2069,18 @@ public final class CivetEditDialog extends JFrame {
 				}
 			}
 			if( !bSet ) {
-				SpeciesRecord sp = new SpeciesRecord( sSpeciesCode, 1 );
+				SpeciesRecord sp = new SpeciesRecord( sSpeciesCode, animals.getLength() );
 				aSpecies.add(sp);
 			}
 		}
 		NodeList groups = std.listGroups();
 		for( int i = 0; i < groups.getLength(); i++ ) {
-			String sSpeciesCode = std.getSpeciesCode(groups.item(i));
+			sSpeciesCode = std.getSpeciesCode(groups.item(i));
 			int iQuantity = std.getQuantity(groups.item(i));
-			String sNextKey = null;
-			SpeciesLookup sppLookup = new SpeciesLookup( sSpeciesCode );
-			sNextKey = sppLookup.getSpeciesCode();
-			if( sKey == null )
-				sKey = sNextKey;
 			boolean bSet = false;
 			if( aSpecies.size() > 0 ) {
 				for( SpeciesRecord r : aSpecies ) {
-					if( r.sSpeciesCode == sNextKey ) {
+					if( r.sSpeciesCode == sSpeciesCode ) {
 						r.iNumber += iQuantity;
 						bSet = true;
 						break;
@@ -2079,7 +2090,7 @@ public final class CivetEditDialog extends JFrame {
 					break;
 			}
 			if( !bSet ) {
-				SpeciesRecord sp = new SpeciesRecord( sNextKey, iQuantity );
+				SpeciesRecord sp = new SpeciesRecord( sSpeciesCode, iQuantity );
 				aSpecies.add(sp);
 			}
 		}
@@ -2088,10 +2099,10 @@ public final class CivetEditDialog extends JFrame {
 		for( SpeciesRecord r : aSpecies ) {
 			if( r.iNumber > iMax ) {
 				iMax = r.iNumber;
-				sKey = r.sSpeciesCode;
+				sSpeciesCode = r.sSpeciesCode;
 			}
 		}
-		cbSpecies.setSelectedCode(sKey);
+		cbSpecies.setSelectedCode(sSpeciesCode);
 		jtfNumber.setText(Integer.toString(iMax));
 		bMultiSpecies = (aSpecies.size() > 1);
 		lMultipleSpecies.setVisible( bMultiSpecies );
@@ -2118,6 +2129,9 @@ public final class CivetEditDialog extends JFrame {
 			}
 			else {
 				populateFromStdXml( std );
+				if( jtfDateReceived.getDate() == null && CivetConfig.isDefaultReceivedDate() ) {
+					jtfDateReceived.setDate(new java.util.Date());
+				}
 			}
 
 		}

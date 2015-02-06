@@ -20,6 +20,8 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -44,7 +46,9 @@ public class CivetConfig {
 	private static String sHERDSUserName = null;
 	private static String sHERDSPassword = null;
 	private static Boolean bStandAlone = null;
+	private static Boolean bDefaultReceivedDate = null;
 	private static Boolean bBrokenLIDs = null;
+	private static Boolean bSaveCopies = null;
 	// Only used in local direct DB add-ons
 	private static String sDBUserName = null;
 	private static String sDBPassword = null;
@@ -80,6 +84,36 @@ public class CivetConfig {
 			}
 		}
 		return bStandAlone;
+	}	
+	
+	public static boolean isDefaultReceivedDate() {
+		if( bDefaultReceivedDate == null ) {
+			String sVal = props.getProperty("defaultReceivedDate");
+			if( sVal == null )
+				bDefaultReceivedDate = false;
+			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bDefaultReceivedDate = true;
+			}
+			else {
+				bDefaultReceivedDate = false;
+			}
+		}
+		return bDefaultReceivedDate;
+	}	
+	
+	public static boolean isSaveCopies() {
+		if( bSaveCopies  == null ) {
+			String sVal = props.getProperty("saveCopies");
+			if( sVal == null )
+				bSaveCopies = true;
+			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bSaveCopies = true;
+			}
+			else {
+				bSaveCopies = false;
+			}
+		}
+		return bSaveCopies;
 	}	
 	
 	public static boolean hasBrokenLIDs() {
@@ -219,6 +253,23 @@ public class CivetConfig {
 		return sRet;
 	}
 	
+	/**
+	 * Get the URL for USAHERDS web services
+	 * @return
+	 */
+	public static String getHERDSWebServiceHost() {
+		String sRet = props.getProperty("herdsWebServiceURL");
+		if( sRet == null ) exitError("herdsWebServiceURL");
+		try {
+			URI uri = new URI(sRet);
+			sRet = uri.getHost();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+		return sRet;
+	}
+	
 	
 	/**
 	 * Get the UserName USAHERDS web services
@@ -252,7 +303,7 @@ public class CivetConfig {
 			if( CivetConfig.getHERDSUserName() == null || CivetConfig.getHERDSPassword() == null ) {
 				boolean bValid = false;
 				while( !bValid ) {
-					TwoLineQuestionDialog dlg = new TwoLineQuestionDialog( "USAHERDS Login", "UserID", "Password", true );
+					TwoLineQuestionDialog dlg = new TwoLineQuestionDialog( "USAHERDS Login: " + getHERDSWebServiceHost(), "UserID", "Password", true );
 					dlg.setIntro("USAHERDS Login Settings");
 					dlg.setPassword(true);
 					if( sUser != null )

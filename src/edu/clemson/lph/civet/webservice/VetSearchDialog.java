@@ -159,7 +159,7 @@ public class VetSearchDialog extends JDialog implements SearchDialog<Integer> {
 		if( (sFirstName != null && sFirstName.trim().length() > 0) ||
 				(sLastName != null && sLastName.trim().length() > 0) ||
 				(sAddress != null && sAddress.trim().length() > 0) ||
-				(sCity != null && sCity.trim().length() > 0) &&
+				(sCity != null && sCity.trim().length() > 0) ||
 				(sStateCode != null && sStateCode.trim().length() > 0) ||
 				(sZipCode != null && sZipCode.trim().length() > 0) ||
 				(sPhone != null && sPhone.trim().length() > 0) ||

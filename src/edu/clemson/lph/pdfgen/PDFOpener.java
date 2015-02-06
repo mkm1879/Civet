@@ -19,6 +19,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.dialogs.*;
+import edu.clemson.lph.utils.FileUtils;
 
 import java.awt.Window;
 import java.io.*;
@@ -53,7 +54,9 @@ public class PDFOpener {
 	 * Opens the current Page in default PDF reader
 	 */
 	public void openPDFFileInAcrobat( String sFileName ) {
-		Thread t = new OpenRecordInAcrobat(sFileName);
+		File fIn = new File( sFileName );
+		File fTemp = FileUtils.copyBinaryFile(fIn);
+		Thread t = new OpenRecordInAcrobat(fTemp.getAbsolutePath());
 		t.start();
 	}
 
@@ -144,7 +147,7 @@ public class PDFOpener {
 					myRuntime.exec(sCmd);
 				}
 				catch (IOException ex) {
-					logger.error(ex.getMessage() + "\nError in UNIDENTIFIED");
+					logger.error(ex.getMessage() + "\nError in PDFOpener run()");
 				}
 			}
 		}
@@ -152,10 +155,10 @@ public class PDFOpener {
 		String extractPageToTempPDF(String sFilePath, int iPage) {
 			String sFileOut = null;
 			File fOut = null;
+			PdfReader reader = null;
 			try {
 				fOut = File.createTempFile("TempFileCVI", ".pdf");
 				sFileOut = fOut.getAbsolutePath();
-				PdfReader reader = null;
 				reader = new PdfReader(sFilePath);
 				com.itextpdf.text.Document document = new com.itextpdf.text.Document();
 				PdfCopy writer = null;
@@ -167,10 +170,19 @@ public class PDFOpener {
 				PdfImportedPage pip = writer.getImportedPage(reader, iPageNo);
 				writer.addPage(pip);
 				document.close();
+				writer.close();
 			}
 			catch (DocumentException ex) {
+				logger.error(ex.getMessage() + "\nError in extractPageToTempPDF");
 			}
 			catch (IOException ex1) {
+				logger.error(ex1.getMessage() + "\nError in extractPageToTempPDF");
+			}
+			finally {
+				if( reader != null ) {
+					reader.close();
+					reader = null;
+				}
 			}
 			return sFileOut;
 		}// End decode pages to new PDF

@@ -24,6 +24,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 
 public abstract class ProcessFilesThread extends Thread {
@@ -57,8 +58,22 @@ public abstract class ProcessFilesThread extends Thread {
 				});		
 				sCurrentFilePath = fThis.getAbsolutePath();
 				processFile( fThis );
-				File fOut = new File( sOutPath + sName );
-				fThis.renameTo(fOut);
+				if( CivetConfig.isSaveCopies() ) {
+					File fOut = new File( sOutPath + sName );
+	    			if( fOut.exists() ) {
+	    				MessageDialog.messageLater(parent, "Civet Error", fOut.getAbsolutePath() + " already exists in OutBox.\n" +
+	    							"Check that it really is a duplicate and manually delete.");
+	    			}
+	    			else {
+	    				boolean success = fThis.renameTo(fOut);
+	    				if (!success) {
+	    					MessageDialog.messageLater(parent, "Civet Error", "Could not move " + fThis.getAbsolutePath() + " to " + fOut.getAbsolutePath() );
+	    				}
+	    			}
+				}
+				else {
+					fThis.delete();
+				}
 			}
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {

@@ -172,6 +172,11 @@ public class DBComboBoxModel extends DefaultComboBoxModel<String> {
 		return sValue;
 	}
 	
+	public String getValueForCode( String sCode ) {
+		String sValue = hCodesValues.get(sCode);
+		return sValue;
+	}
+	
 	public void refresh() {
 		if( (factory == null || sQuery == null) ) {
 			logger.error("DBComboBoxModel not initialized", new Exception( "Combo Box Model Exception "));

@@ -45,7 +45,7 @@ import edu.clemson.lph.utils.IDTypeGuesser;
 
 public class SaveCVIThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private static final long MAX_SANE_SIZE = 1000000;
+	private static final long MAX_SANE_SIZE = 5000000;
 	private CivetEditDialog dlg;
 	private ProgressDialog prog;
 	private StdeCviXml stdXml = null;
@@ -94,7 +94,7 @@ public class SaveCVIThread extends Thread {
 			String sThisAddress, String sThisCity, String sZipcode,
 			java.util.Date dDateIssued, java.util.Date dDateReceived, Integer iIssuedByKey, String sIssuedByName, String sCVINo,
 			String sMovementPurpose,
-			ArrayList<SpeciesRecord> aSpecies,
+			ArrayList<SpeciesRecord> aSpeciesIn,
 			ArrayList<String> aErrorKeysIn, String sErrorNotes,
 			ArrayList<AnimalIDRecord> aAnimalIDs) {
 		this.bImport = bImport;
@@ -150,8 +150,8 @@ public class SaveCVIThread extends Thread {
 		}
 		 // Deep copy aSpecies to avoid thread issues.  (do the same for update later)
 		this.aSpecies = new ArrayList<SpeciesRecord>();
-		if( aSpecies != null ) // Should NEVER be null
-			for( Iterator<SpeciesRecord> iter = aSpecies.iterator(); iter.hasNext(); )
+		if( aSpeciesIn != null ) // Should NEVER be null
+			for( Iterator<SpeciesRecord> iter = aSpeciesIn.iterator(); iter.hasNext(); )
 				this.aSpecies.add( iter.next() );
 		this.aErrorKeys = new ArrayList<String>();
 		if( aErrorKeysIn != null )
@@ -310,7 +310,6 @@ public class SaveCVIThread extends Thread {
 			}
 			// Also, don't check size on XFA PDFs because we don't control those.
 			if( bAttachmentFileBytes != null ) {
-				xmlBuilder.addPDFAttachement(bAttachmentFileBytes, sAttachmentFileName);
 				if( bAttachmentFileBytes.length > MAX_SANE_SIZE ) {
 					MessageDialog.messageWait(dlg, "Civet Warning", "The PDF attachment is larger than normal.\nCheck your scanner settings");
 				}
@@ -327,6 +326,7 @@ public class SaveCVIThread extends Thread {
 		if( sErrorNotes != null && sErrorNotes.trim().length() > 0 )
 			metaData.setErrorNote(sErrorNotes);
 		xmlBuilder.addMetadataAttachement(metaData);
+		xmlBuilder.addPDFAttachement(bAttachmentFileBytes, sAttachmentFileName);
 		return xmlBuilder.getXMLString();
 	}
 	

@@ -4,13 +4,21 @@ homeState=SOUTH CAROLINA
 homeStateAbbr=SC
 homeStateKey=56
 
+# Still working on dealing with USAHERDS StateIdentifiers that look like LIDS
 brokenLIDs=true
+
+# When importing CO/KS PDFs, automatically set received date as today?
+defaultReceivedDate=true
 
 # Import or Export selected by default?
 defaultDirection=Import
 
 # Days to expiration following inspection date
 cviValidDays=30
+
+# Keep copies of generated .cvi files in OutBox along with originals?
+# Can be helpful for early debugging.  Uses space.  You may want to set to false later.
+saveCopies=true
 
 #Web Service Settings
 standAlone=no

@@ -62,7 +62,6 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 	private String sPremisesId = null;
 	private JTable tblResults;
 	private JTextField jtfAddress1;
-	private JTextField jtfAddress2;
 	private JTextField jtfCity;
 	private JTextField jtfCounty;
 	private JTextField jtfState;
@@ -198,7 +197,6 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 	public void clear() {
 			sPremisesId = null;
 		 jtfAddress1.setText(null);
-		 jtfAddress2.setText(null);
 		 jtfCity.setText(null);
 		 jtfCounty.setText(null);
 		 jtfState.setText(null);
@@ -224,7 +222,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 		
 		// Only search if something to search for!
 		if( (sAddress1 != null && sAddress1.trim().length() > 0) ||
-				(sCity != null && sCity.trim().length() > 0) &&
+				(sCity != null && sCity.trim().length() > 0) ||
 				(sStateCode != null && sStateCode.trim().length() > 0) ||
 				(sZipCode != null && sZipCode.trim().length() > 0) ||
 				(sCounty != null && sCounty.trim().length() > 0) ||
@@ -390,12 +388,12 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 		
 		GridBagLayout gbl_pParameters = new GridBagLayout();
 		gbl_pParameters.columnWidths = new int[] {0, 0, 0, 0, 0, };
-		gbl_pParameters.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0};
+		gbl_pParameters.rowHeights = new int[] {0, 0, 0, 0, 0, 0};
 		gbl_pParameters.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
-		gbl_pParameters.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_pParameters.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		pParameters.setLayout(gbl_pParameters);
 		{
-			JLabel lblAddressLine = new JLabel("Address Line 1:");
+			JLabel lblAddressLine = new JLabel("Address:");
 			GridBagConstraints gbc_lblAddressLine = new GridBagConstraints();
 			gbc_lblAddressLine.anchor = GridBagConstraints.EAST;
 			gbc_lblAddressLine.insets = new Insets(0, 0, 5, 5);
@@ -416,33 +414,12 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			setMinimumSize(jtfAddress1);
 		}
 		{
-			JLabel lblAddressLine_1 = new JLabel("Address Line 2:");
-			GridBagConstraints gbc_lblAddressLine_1 = new GridBagConstraints();
-			gbc_lblAddressLine_1.anchor = GridBagConstraints.EAST;
-			gbc_lblAddressLine_1.insets = new Insets(0, 0, 5, 5);
-			gbc_lblAddressLine_1.gridx = 0;
-			gbc_lblAddressLine_1.gridy = 2;
-			pParameters.add(lblAddressLine_1, gbc_lblAddressLine_1);
-		}
-		{
-			jtfAddress2 = new JTextField();
-			GridBagConstraints gbc_textField_2 = new GridBagConstraints();
-			gbc_textField_2.insets = new Insets(0, 0, 5, 0);
-			gbc_textField_2.anchor = GridBagConstraints.WEST;
-			gbc_textField_2.gridx = 1;
-			gbc_textField_2.gridy = 2;
-			gbc_textField_2.gridwidth = 3;
-			pParameters.add(jtfAddress2, gbc_textField_2);
-			jtfAddress2.setColumns(50);
-			setMinimumSize(jtfAddress2);
-		}
-		{
 			JLabel lblCity = new JLabel("City:");
 			GridBagConstraints gbc_lblCity = new GridBagConstraints();
 			gbc_lblCity.anchor = GridBagConstraints.EAST;
 			gbc_lblCity.insets = new Insets(0, 0, 5, 5);
 			gbc_lblCity.gridx = 0;
-			gbc_lblCity.gridy = 3;
+			gbc_lblCity.gridy = 2;
 			pParameters.add(lblCity, gbc_lblCity);
 		}
 		{
@@ -451,7 +428,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			gbc_textField_3.insets = new Insets(0, 0, 5, 5);
 			gbc_textField_3.anchor = GridBagConstraints.WEST;
 			gbc_textField_3.gridx = 1;
-			gbc_textField_3.gridy = 3;
+			gbc_textField_3.gridy = 2;
 			pParameters.add(jtfCity, gbc_textField_3);
 			jtfCity.setColumns(25);
 			setMinimumSize(jtfCity);
@@ -462,7 +439,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			gbc_lblCounty.anchor = GridBagConstraints.EAST;
 			gbc_lblCounty.insets = new Insets(0, 0, 5, 5);
 			gbc_lblCounty.gridx = 2;
-			gbc_lblCounty.gridy = 3;
+			gbc_lblCounty.gridy = 2;
 			pParameters.add(lblCounty, gbc_lblCounty);
 		}
 		{
@@ -472,7 +449,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			gbc_textField_4.insets = new Insets(0, 0, 5, 0);
 			gbc_textField_4.anchor = GridBagConstraints.WEST;
 			gbc_textField_4.gridx = 3;
-			gbc_textField_4.gridy = 3;
+			gbc_textField_4.gridy = 2;
 			pParameters.add(jtfCounty, gbc_textField_4);
 			jtfCounty.setColumns(25);
 			setMinimumSize(jtfCounty);
@@ -483,7 +460,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			gbc_lblState.anchor = GridBagConstraints.EAST;
 			gbc_lblState.insets = new Insets(0, 0, 5, 5);
 			gbc_lblState.gridx = 0;
-			gbc_lblState.gridy = 4;
+			gbc_lblState.gridy = 3;
 			pParameters.add(lblState, gbc_lblState);
 		}
 		{
@@ -492,7 +469,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			gbc_textField_7.anchor = GridBagConstraints.WEST;
 			gbc_textField_7.insets = new Insets(0, 0, 5, 5);
 			gbc_textField_7.gridx = 1;
-			gbc_textField_7.gridy = 4;
+			gbc_textField_7.gridy = 3;
 			pParameters.add(jtfState, gbc_textField_7);
 			jtfState.setColumns(10);
 			setMinimumSize(jtfState);
@@ -503,7 +480,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			gbc_lblZip.anchor = GridBagConstraints.EAST;
 			gbc_lblZip.insets = new Insets(0, 0, 5, 5);
 			gbc_lblZip.gridx = 2;
-			gbc_lblZip.gridy = 4;
+			gbc_lblZip.gridy = 3;
 			pParameters.add(lblZip, gbc_lblZip);
 		}
 		{
@@ -512,7 +489,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			gbc_textField_8.anchor = GridBagConstraints.WEST;
 			gbc_textField_8.insets = new Insets(0, 0, 5, 0);
 			gbc_textField_8.gridx = 3;
-			gbc_textField_8.gridy = 4;
+			gbc_textField_8.gridy = 3;
 			pParameters.add(jtfZip, gbc_textField_8);
 			jtfZip.setColumns(10);
 			setMinimumSize(jtfZip);
@@ -523,7 +500,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			gbc_lblPhone.anchor = GridBagConstraints.EAST;
 			gbc_lblPhone.insets = new Insets(0, 0, 5, 5);
 			gbc_lblPhone.gridx = 0;
-			gbc_lblPhone.gridy = 5;
+			gbc_lblPhone.gridy = 4;
 			pParameters.add(lblPhone, gbc_lblPhone);
 		}
 		{
@@ -532,7 +509,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			gbc_textField_5.anchor = GridBagConstraints.WEST;
 			gbc_textField_5.insets = new Insets(0, 0, 5, 5);
 			gbc_textField_5.gridx = 1;
-			gbc_textField_5.gridy = 5;
+			gbc_textField_5.gridy = 4;
 			pParameters.add(jtfPhone, gbc_textField_5);
 			jtfPhone.setColumns(12);
 			setMinimumSize(jtfPhone);
@@ -543,7 +520,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			gbc_lblFax.anchor = GridBagConstraints.EAST;
 			gbc_lblFax.insets = new Insets(0, 0, 5, 5);
 			gbc_lblFax.gridx = 2;
-			gbc_lblFax.gridy = 5;
+			gbc_lblFax.gridy = 4;
 			pParameters.add(lblFax, gbc_lblFax);
 		}
 		{
@@ -552,7 +529,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			gbc_textField_6.anchor = GridBagConstraints.WEST;
 			gbc_textField_6.insets = new Insets(0, 0, 5, 0);
 			gbc_textField_6.gridx = 3;
-			gbc_textField_6.gridy = 5;
+			gbc_textField_6.gridy = 4;
 			pParameters.add(jtfFax, gbc_textField_6);
 			jtfFax.setColumns(12);
 			setMinimumSize(jtfFax);
@@ -574,7 +551,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			GridBagConstraints gbc_btnSearch = new GridBagConstraints();
 			gbc_btnSearch.insets = new Insets(10, 0, 10, 0);
 			gbc_btnSearch.gridx = 3;
-			gbc_btnSearch.gridy = 7;
+			gbc_btnSearch.gridy = 5;
 			pParameters.add(btnSearch, gbc_btnSearch);
 		}
 		

@@ -171,6 +171,7 @@ public class OpenFileThread extends Thread {
 						dlg.setMode(CivetEditDialog.PDF_MODE);
 				}
 				prog.setVisible(false);
+				dlg.toFront();
 			}
 		});
 	}

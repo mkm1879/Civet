@@ -180,6 +180,10 @@ public class SendOutboundCVIEmailThread extends Thread {
 				MessageDialog.messageLater(prog.getWindowParent(), "Civet: Template File Missing",
                                        "Cannot find template file " + sTemplateFile);
 				return false;
+			} catch (Exception e) {
+				MessageDialog.messageLater(prog.getWindowParent(), "Civet: Template File Error",
+                        "Cannot read template file " + sTemplateFile);
+				return false;
 			}
 		}
 		String sFileName = null;

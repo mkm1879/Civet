@@ -110,12 +110,19 @@ public class StateVetLookup implements DBTableSource {
 	}
 	
 	public String getCVIEmail() {
-		return vet.sCVIEmail;
+		String sRet = null;
+		sRet = vet.sCVIEmail;
+		if( sRet == null || sRet.trim().length() == 0 )
+			sRet = vet.sEmail;
+		return sRet;
 	}
 	
 	public String getCVIErrorEmail() {
 		String sRet = vet.sCVIErrorEmail;
-		if( sRet == null || sRet.trim().length() == 0 ) sRet = vet.sCVIEmail;
+		if( sRet == null || sRet.trim().length() == 0 ) 
+			sRet = vet.sCVIEmail;
+		if( sRet == null || sRet.trim().length() == 0 )
+			sRet = vet.sEmail;
 		return sRet;
 	}
 	

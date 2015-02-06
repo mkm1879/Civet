@@ -178,7 +178,7 @@ public class CivetWebServices {
 	 * @return DOM Document of Premises List
 	 */
 	public Document getCivetPremises( String sStatePremID, String sFedPremID, 
-			String sAddress1, String sCity, String sStateCode, String sZipCode, 
+			String sAddress, String sCity, String sStateCode, String sZipCode, 
 			String sCounty, String sCountry, String sPhone, String sClassType  ) throws WebServiceException {
 		Document dOut = null;
 		String sURL = null;
@@ -195,8 +195,8 @@ public class CivetWebServices {
 				sbParms.append("<premId>" + sStatePremID + "</premId>");
 			else if( sFedPremID != null )
 				sbParms.append("<premId>" + sFedPremID + "</premId>");
-			if( sAddress1 != null )
-				sbParms.append("<address1>" + sAddress1 + "</address1>");
+			if( sAddress != null )
+				sbParms.append("<address>" + sAddress + "</address>");
 			if( sCity != null )
 				sbParms.append("<city>" + sCity + "</city>");
 			if( sStateCode != null )

@@ -169,6 +169,8 @@ public class StdeCviXmlBuilder {
 	
 	public Element setVet( String sName ) {
 		Element eVet = null;
+		if( sName == null || sName.trim().length() == 0 )
+			sName = "Not Entered";
 		if( isValidDoc() && sName != null && sName.trim().length() > 0 ) {
 			eVet = doc.createElement("Veterinarian");
 			Node after = childNodeByNames(root,"MovementPurpose,Origin,Destination,Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");

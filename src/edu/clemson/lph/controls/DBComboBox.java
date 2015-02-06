@@ -152,6 +152,10 @@ public class DBComboBox extends JComboBox<String> {
 		return model.getValueForKey(oKey);
 	}
 	
+	public String getValueForCode( String sCode ) {
+		return model.getValueForCode( sCode );
+	}
+	
 	public void setLimitToList( boolean bLimit ) {
 		bLimitToList = bLimit;
 	}
