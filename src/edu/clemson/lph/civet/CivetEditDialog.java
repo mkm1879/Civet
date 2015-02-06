@@ -29,6 +29,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.beans.Beans;
@@ -36,6 +37,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -698,6 +701,15 @@ public final class CivetEditDialog extends JFrame {
 		lOtherZipCode.setHorizontalAlignment(SwingConstants.RIGHT);
 
 		jtfOtherZip = new JTextField();
+		jtfOtherZip.addFocusListener( new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent arg0) {
+			}
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				checkZipcode( jtfOtherZip );
+			}
+		});
 		GridBagConstraints gbc_jtfOtherZipCode = new GridBagConstraints();
 		gbc_jtfOtherZipCode.fill = GridBagConstraints.BOTH;
 		gbc_jtfOtherZipCode.insets = new Insets(0, 0, 0, 0);
@@ -725,6 +737,21 @@ public final class CivetEditDialog extends JFrame {
 	}
 
 	
+	protected void checkZipcode(JTextField jtfZip) {
+		if( jtfZip == null ) return;
+		String sZip = jtfZip.getText();
+		if( sZip == null || sZip.trim().length() == 0 )
+			return;
+	      Pattern r = Pattern.compile("^\\d{5}(-?\\d{4})?$");
+
+	      // Now create matcher object.
+	      Matcher m = r.matcher(sZip);
+	      if( !m.find() ) {
+	    	  MessageDialog.showMessage(this, "Civet Error:", sZip + " is not a valid zipcode");
+	    	  jtfZip.requestFocus();
+	      }
+	}
+
 	private void setupThisStatePanel(JPanel pEdit ) {
 		pThisState = new JPanel();
 		tbThisState = new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "To:", TitledBorder.LEADING, TitledBorder.TOP, null, null);
@@ -890,6 +917,15 @@ public final class CivetEditDialog extends JFrame {
 		lThisZipCode.setHorizontalAlignment(SwingConstants.RIGHT);
 
 		jtfZip = new JTextField();
+		jtfZip.addFocusListener( new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent arg0) {
+			}
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				checkZipcode( jtfZip );
+			}
+		});
 		GridBagConstraints gbc_jtfThisZipCode = new GridBagConstraints();
 		gbc_jtfThisZipCode.fill = GridBagConstraints.BOTH;
 		gbc_jtfThisZipCode.insets = new Insets(0, 0, 0, 0);
