@@ -44,7 +44,6 @@ public class States extends DBComboBoxModel implements DBTableSource {
 		states.put("CT", "CONNECTICUT");
 		states.put("DE", "DELAWARE");
 		states.put("DC", "DISTRICT OF COLUMBIA");
-		states.put("EEP", "EQUINE EVENT PERMIT");
 		states.put("FL", "FLORIDA");
 		states.put("GA", "GEORGIA");
 		states.put("GU", "GUAM");
@@ -83,7 +82,6 @@ public class States extends DBComboBoxModel implements DBTableSource {
 		states.put("SD", "SOUTH DAKOTA");
 		states.put("TN", "TENNESSEE");
 		states.put("TX", "TEXAS");
-		states.put("UNKNOWN", "UNKNOWN");
 		states.put("UT", "UTAH");
 		states.put("VT", "VERMONT");
 		states.put("VI", "VIRGIN ISLANDS OF THE U.S.");

@@ -38,6 +38,7 @@ import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.StringUtils;
 import edu.clemson.lph.civet.lookup.ErrorTypeLookup;
 import edu.clemson.lph.civet.lookup.StateVetLookup;
+import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.dialogs.*;

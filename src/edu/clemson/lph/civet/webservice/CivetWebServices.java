@@ -160,7 +160,7 @@ public class CivetWebServices {
 			resp.serialize(parentElement, writer, false);
 			writer.flush();
 			String sOut = swOut.toString();
-//			System.out.println(sOut);
+			System.out.println(sOut);
 			if( sOut.contains("Invalid Username/Password"))
 				bRet = false;
 			writer.close();

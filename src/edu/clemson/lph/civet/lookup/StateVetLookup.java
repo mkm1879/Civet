@@ -70,46 +70,57 @@ public class StateVetLookup implements DBTableSource {
 	}
 	
 	public String getPrefix() {
+		if( vet == null ) return null;
 		return vet.sPrefix;
 	}
 	
 	public String getName() {
+		if( vet == null ) return null;
 		String sFullName = vet.sPrefix + " " + vet.sFirstName + " " + vet.sLastName;
 		return sFullName;
 	}
 	
 	public String getFirstName() {
+		if( vet == null ) return null;
 		return vet.sFirstName;
 	}
 	
 	public String getLastName() {
+		if( vet == null ) return null;
 		return vet.sLastName;
 	}
 	public String getAddress() {
+		if( vet == null ) return null;
 		return vet.sAddress;
 	}
 	
 	public String getCity() {
+		if( vet == null ) return null;
 		return vet.sCity;
 	}
 	
 	public String getStateCode() {
+		if( vet == null ) return null;
 		return vet.sStateCode;
 	}
 	
 	public String getState() {
+		if( vet == null ) return null;
 		return vet.sState;
 	}
 	
 	public String getZipCode() {
+		if( vet == null ) return null;
 		return vet.sZipCode;
 	}
 	
 	public String getEmail() {
+		if( vet == null ) return null;
 		return vet.sEmail;
 	}
 	
 	public String getCVIEmail() {
+		if( vet == null ) return null;
 		String sRet = null;
 		sRet = vet.sCVIEmail;
 		if( sRet == null || sRet.trim().length() == 0 )
@@ -118,6 +129,7 @@ public class StateVetLookup implements DBTableSource {
 	}
 	
 	public String getCVIErrorEmail() {
+		if( vet == null ) return null;
 		String sRet = vet.sCVIErrorEmail;
 		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = vet.sCVIEmail;
@@ -127,6 +139,7 @@ public class StateVetLookup implements DBTableSource {
 	}
 	
 	public String getFileType() {
+		if( vet == null ) return null;
 		return vet.sFileType;
 	}
 	
