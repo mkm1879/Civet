@@ -20,10 +20,12 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.dialogs.MessageDialog;
 
@@ -36,8 +38,10 @@ public class SubmitCVIsThread extends ProcessFilesThread {
 
 	@Override
 	protected void processFile(File fThis) {
+		BufferedReader reader = null;
 		try {
-			BufferedReader reader = new BufferedReader( new FileReader( fThis ) );
+			// TODO:  Replace reader with FileUtils.readTextFile() let it deal with resource freeing.
+			reader = new BufferedReader( new FileReader( fThis ) );
 			StringBuffer sb = new StringBuffer();
 			String sLine = reader.readLine();
 			while( sLine != null ) {
@@ -46,6 +50,13 @@ public class SubmitCVIsThread extends ProcessFilesThread {
 			}
 			reader.close();
 			String sXML = sb.toString();
+			String sCertNbr = getCertNbr( sXML );
+			if( !CertificateNbrLookup.addCertificateNbr(sCertNbr) ) {
+				MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " already exists.\n" +
+						"Resolve conflict and try again.");
+				reader.close();
+				return;
+			}
 			String sRet = service.sendCviXML(sXML);
 			if( sRet == null || sRet.toLowerCase().contains("error") )
 				throw new Exception( "Error from web service\n" + sRet);
@@ -59,8 +70,21 @@ public class SubmitCVIsThread extends ProcessFilesThread {
 					}
 				}
 			});		
+		} finally {
+			if( reader != null )
+				try {
+					reader.close();
+				} catch (IOException e) {
+					logger.error(e);
+				}
 		}
-		
+	}
+	
+	private String getCertNbr( String sXML ) {
+		if( sXML == null || sXML.trim().length() == 0 ) return null;
+		int iStart = sXML.indexOf("CviNumber=") + 11;
+		int iEnd = sXML.substring(iStart).indexOf('\"');
+		return sXML.substring(iStart, iStart+iEnd);
 	}
 
 	@Override

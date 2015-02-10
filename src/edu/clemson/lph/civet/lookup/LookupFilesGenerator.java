@@ -43,6 +43,7 @@ public class LookupFilesGenerator {
 		
 	public synchronized void generateAllLookups(java.awt.Window parent) {
 		try {
+			new CertificateNbrLookup();  // Build Set from File
 			generateSpeciesFile();
 			generateErrorTypesFile();
 			generatePurposeTypesFile();

@@ -66,6 +66,7 @@ import org.jpedal.PdfDecoder;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.lookup.ErrorTypeLookup;
 import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
 import edu.clemson.lph.civet.lookup.PurposeLookup;
@@ -1075,6 +1076,18 @@ public final class CivetEditDialog extends JFrame {
 		lblCviNumber.setFont(new Font("Tahoma", java.awt.Font.BOLD, 11));
 
 		jtfCVINo = new JTextField();
+		jtfCVINo.addFocusListener( new FocusListener() {
+			public void focusGained(FocusEvent arg0) {
+			}
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				String sCertNbr = jtfCVINo.getText();
+				if( CertificateNbrLookup.certficateNbrExists(sCertNbr) ) {
+					MessageDialog.showMessage(CivetEditDialog.this, "Civet Error", "Certificate number " + sCertNbr + " already exists");
+					jtfCVINo.requestFocus();
+				}
+			}
+		});
 		GridBagConstraints gbc_jtfCviNumber = new GridBagConstraints();
 		gbc_jtfCviNumber.fill = GridBagConstraints.BOTH;
 		gbc_jtfCviNumber.insets = new Insets(0, 0, 0, 0);
