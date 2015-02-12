@@ -37,7 +37,7 @@ public class VspsCvi {
 	private List<String> aCols;
 	private List<VspsCviAnimal> lAnimals;
 	private int iCurrent = 0;
-	private DateFormat df = new SimpleDateFormat( "dd-MMM-yy");
+	private DateFormat df = new SimpleDateFormat( "dd-MMM-yyyy");
 
 	VspsCvi( List<String> aColsIn, LabeledCSVParser parserIn ) {
 		aCols = aColsIn;
@@ -214,6 +214,23 @@ public class VspsCvi {
 			return null;
 		else
 			return  aCols.get(iCol);
+	}
+	
+	public String getPurpose() throws IOException {
+		String sRet = "Interstate";
+		int iCol = parser.getLabelIdx("Purpose");
+		if( iCol < 0 || iCol >= aCols.size() )
+			return null;
+		else if( aCols.get(iCol).trim().length() == 0 )
+			return null;
+		else {
+			String sPurpose = aCols.get(iCol);
+			if( "Transit".equals(sPurpose) )
+				sRet = "Interstate";
+			else 
+				sRet = sPurpose;
+		}
+		return sRet; 
 	}
 	
 	public String getAnimalUnitType() throws IOException {

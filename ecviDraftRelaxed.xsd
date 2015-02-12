@@ -282,6 +282,11 @@
                     <xs:documentation>Oysters</xs:documentation>
                 </xs:annotation>
             </xs:enumeration>
+            <xs:enumeration value="PGN">
+                <xs:annotation>
+                    <xs:documentation>Pigeon</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
             <xs:enumeration value="POR">
                 <xs:annotation>
                     <xs:documentation>Porcine (Swine)</xs:documentation>

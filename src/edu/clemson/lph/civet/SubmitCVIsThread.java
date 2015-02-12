@@ -28,6 +28,7 @@ import javax.swing.SwingUtilities;
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.dialogs.MessageDialog;
+import edu.clemson.lph.utils.FileUtils;
 
 public class SubmitCVIsThread extends ProcessFilesThread {
 	private CivetWebServices service = null;
@@ -38,23 +39,12 @@ public class SubmitCVIsThread extends ProcessFilesThread {
 
 	@Override
 	protected void processFile(File fThis) {
-		BufferedReader reader = null;
 		try {
-			// TODO:  Replace reader with FileUtils.readTextFile() let it deal with resource freeing.
-			reader = new BufferedReader( new FileReader( fThis ) );
-			StringBuffer sb = new StringBuffer();
-			String sLine = reader.readLine();
-			while( sLine != null ) {
-				sb.append(sLine);
-				sLine = reader.readLine();
-			}
-			reader.close();
-			String sXML = sb.toString();
+			String sXML = FileUtils.readTextFile(fThis);
 			String sCertNbr = getCertNbr( sXML );
 			if( !CertificateNbrLookup.addCertificateNbr(sCertNbr) ) {
 				MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " already exists.\n" +
 						"Resolve conflict and try again.");
-				reader.close();
 				return;
 			}
 			String sRet = service.sendCviXML(sXML);
@@ -70,14 +60,7 @@ public class SubmitCVIsThread extends ProcessFilesThread {
 					}
 				}
 			});		
-		} finally {
-			if( reader != null )
-				try {
-					reader.close();
-				} catch (IOException e) {
-					logger.error(e);
-				}
-		}
+		} 
 	}
 	
 	private String getCertNbr( String sXML ) {

@@ -145,6 +145,7 @@ public class InsertVspsCviThread extends Thread {
 							"@consigneeZipCode = ?, " +
 							"@consigneePhone = ?, " +
 							"@remarks = ?, " +
+							"@purpose = ?, " +
 							"@CVIKey = ? ) } ";
 			String sQuery = sInsCVIQuery;
 			CallableStatement cs = newConn.prepareCall(sQuery);
@@ -197,6 +198,7 @@ public class InsertVspsCviThread extends Thread {
 			setStringOrNull(cs, iFieldNo++, consignee.getPostalCode() );
 			setStringOrNull(cs, iFieldNo++, consignee.getPhone() );
 			setStringOrNull(cs, iFieldNo++, cvi.getRemarks() );
+			setStringOrNull(cs, iFieldNo++, cvi.getPurpose() );
 			cs.registerOutParameter(iFieldNo, java.sql.Types.INTEGER);
 			cs.execute();
 			int iCurrentCVIKey = cs.getInt(iFieldNo);

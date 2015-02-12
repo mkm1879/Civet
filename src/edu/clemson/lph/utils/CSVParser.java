@@ -20,6 +20,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -161,6 +162,15 @@ public class CSVParser {
 		iRows = aRows.size();
 	}
 	
+	public boolean back() {
+		if( aRows != null && iCurrent > 0 ) {
+			iCurrent--;
+			return true;
+		}
+		else
+			return false;
+	}
+	
 	/**
 	 * Better version of getting next row
 	 * @return
@@ -268,6 +278,52 @@ public class CSVParser {
 		return sb.toString();
 	}
 
+	private static void stripNewLines( File fIn, File fOut ) {
+		FileReader rIn = null;
+		FileWriter wOut = null;
+		try {
+			rIn = new FileReader( fIn );
+			wOut = new FileWriter( fOut );
+			int iQuoteCount = 0;
+			char cLast = '\0';
+			char cThis = '\0';
+			int iThis = rIn.read();
+			while( iThis >= 0 ) {
+				cThis = (char)iThis;
+				if( cThis == '\"' ) {
+					iQuoteCount++;
+				}
+				if( cThis == '\n' || cThis == '\r'  ) {
+					if( (iQuoteCount % 2) > 0 ) {
+						//					System.err.println("Removed new line after " + iQuoteCount + " quotes");
+						//					new Exception("Removed new line after " + iQuoteCount + " quotes").printStackTrace();
+						//					System.exit(1);
+						cThis = ' ';
+					}
+					else {
+						iQuoteCount = 0;
+					}
+				}
+				wOut.append(cThis);
+				cLast = cThis;
+				iThis = rIn.read();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		} finally {
+			try {
+			if( rIn != null )
+				rIn.close();
+			if( wOut != null ) {
+				wOut.flush();
+				wOut.close();
+			}
+			} catch( IOException e ) {
+				logger.error(e);
+			}
+		}
+	}
 
 	
 	private String readReaderAsString(BufferedReader reader) throws IOException {

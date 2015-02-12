@@ -68,7 +68,7 @@ public class VspsCviFile implements AddOn {
 	
 	private void saveme(Window parent, DatabaseConnectionFactory factory, File fIn) {
 		try {
-			parser = new LabeledCSVParser( new FileReader( fIn ) );
+			parser = new LabeledCSVParser( fIn );
 			aCols = parser.getNext();
 		} catch (FileNotFoundException e) {
 			logger.error(e.getMessage() + "\nCould not read file: " + fIn.getName() );
@@ -77,6 +77,11 @@ public class VspsCviFile implements AddOn {
 		}
 		InsertVspsCviThread thread = new InsertVspsCviThread( parent, factory, this );
 		thread.start();
+	}
+	
+	public static void main( String args[] ) {
+		VspsCviFile me = new VspsCviFile();
+		me.printme(new File("E:\\Documents\\Downloads\\cviExport_20150211135059 - Copy.csv"));
 	}
 	
 	/**
@@ -98,9 +103,11 @@ public class VspsCviFile implements AddOn {
 				if( cvi.getStatus().equals("SAVED") )
 					continue;
 				VspsCviEntity orig = cvi.getOrigin();
-				VspsCviEntity dest = cvi.getCarrier();
-				System.out.println( cvi.getCVINumber() + " created: " + cvi.getCreateDate() + " origin = " + orig.getName()+ orig.getPhone()+ orig.getAddress1() + " destination = " + dest.getName()+ dest.getPhone()+ dest.getAddress1());
-				System.out.println( cvi.getRemarks() );
+				VspsCviEntity dest = cvi.getDestination();
+				System.out.println( cvi.getCVINumber() + " created: " + cvi.getCreateDate() );
+				System.out.println( "  origin = " + orig.getName()+" "+ orig.getPhone()+" "+ orig.getAddress1() );
+				System.out.println( "  destination = " + dest.getName()+" "+ dest.getPhone()+" "+ dest.getAddress1());
+				System.out.println( cvi.getOriginState() + " " + orig.getState() );
 				System.out.println( cvi.getVeterinarianName() + ": " + cvi.getVetFirstName() + " " + cvi.getVetLastName() );
 				System.out.println( cvi.getAnimals().size() + " Animals in CVI");
 				for( List<String> aKey : cvi.getSpecies().keySet() ) {
@@ -133,6 +140,7 @@ public class VspsCviFile implements AddOn {
 			if( aCols == null ) break;
 			sNextCVINumber = aCols.get(parser.getLabelIdx("Certificate Number"));
 		} while( sCVINumber.equals(sNextCVINumber) );
+		parser.back();
 		return thisCVI;
 	}
 
