@@ -63,6 +63,7 @@ import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 import org.jpedal.PdfDecoder;
+import org.jpedal.objects.PdfPageData;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -1419,7 +1420,10 @@ public final class CivetEditDialog extends JFrame {
 	}
 	// Actual value has to be 180 off of that actually displayed in Acrobat, etc.
 	public void setRotation( int iRotation ) { 
-		this.iRotation = ( iRotation + 180 ) % 360; 
+		PdfPageData pd = pdfDecoder.getPdfPageData();
+		int iThisPage = controller.getCurrentPageNo();
+		int iPageRotation = pd.getRotation(iThisPage);
+		this.iRotation = ( iPageRotation + iRotation ) % 360; 
 	}
 	public String getViewerTitle() { return viewerTitle; }
 	public int getPageNo() { return controller.getCurrentPageNo(); }
