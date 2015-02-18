@@ -24,8 +24,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.DataFormatException;
+
 import javax.swing.event.TableModelListener;
+
 import org.apache.log4j.Logger;
+
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.webservice.PremisesTableModel;
 import edu.clemson.lph.utils.CSVWriter;
@@ -323,6 +326,18 @@ public class LocalPremisesTableModel implements PremisesTableModel {
 	@Override
 	public void setValueAt(Object arg0, int arg1, int arg2) {
 		return;
+	}
+
+	@Override
+	public String getPremClassAt(int iRow) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getPremClass() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -77,7 +77,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 	 */
 	public PremisesSearchDialog() {
 		setModal(true);
-		setBounds(100, 100, 618, 624);
+		setBounds(100, 100, 700, 624);
 		setTitle("Civet: Premises Search");
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(2, 2, 2, 2));

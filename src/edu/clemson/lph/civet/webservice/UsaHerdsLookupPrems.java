@@ -283,6 +283,11 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 		return sPremId;
 	}
 	
+	public String getPremClassAt( int iRow ) {
+		WebServicePremisesRow row = rows.get(iRow);
+		return row.sClassType;
+	}
+	
 	private String getStateIdAt( int iRow ) {
 		WebServicePremisesRow row = rows.get(iRow);
 		return row.sStatePremID;
@@ -358,6 +363,11 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 	private String getStatePremId() {
 		if( currentRow == null) return null;
 		return currentRow.sStatePremID;
+	}
+	
+	public String getPremClass() {
+		if( currentRow == null) return null;
+		return currentRow.sClassType;
 	}
 	
 	private String getFedPremId() {
@@ -475,7 +485,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 	
 	@Override
 	public int getColumnCount() {
-		return 6;
+		return 7;
 	}
 
 	@Override
@@ -487,6 +497,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 		case 3: return "Address";
 		case 4: return "City";
 		case 5: return "County";
+		case 6: return "Classification";
 		}
 		return null;
 	}
@@ -506,6 +517,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 		case 3: return row.sAddress;
 		case 4: return row.sCity;
 		case 5: return row.sCounty;
+		case 6: return row.sClassType;
 		}
 		return null;
 	}
@@ -520,6 +532,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 		case 3: row.sAddress = (String)aValue;
 		case 4: row.sCity = (String)aValue;
 		case 5: row.sCounty = (String)aValue;
+		case 6: row.sClassType = (String)aValue;
 		}
 	}
 
