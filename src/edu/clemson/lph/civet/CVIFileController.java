@@ -624,7 +624,7 @@ public class CVIFileController {
 				mPagesComplete.put(currentFilePath, new ArrayList<Integer>());
 			aPagesInCurrent.clear();
 			if( isXFADocument() ) {
-				dlg.setRotation(180);  // Always rotate 180 (actually 0) since we know they are right that way
+				dlg.setRotation(0);  // Always rotate 180 (actually 0) since we know they are right that way
 				dlg.populateFromPDF();
 			}
 			else {
