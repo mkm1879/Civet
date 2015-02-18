@@ -118,7 +118,7 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 					 line = parser.getNext();
 					 continue;
 				 }
-				 String sSppName = line.get( parser.getLabelIdx( "USDADescription" ) );
+				 String sSppName = line.get( parser.getLabelIdx( "Description" ) );
 				 Spp spp = new Spp(sSppCode, sSppName);
 				 if( sppNameMap.get(sSppName) == null ) {
 					 sppNameMap.put(sSppName, spp);
@@ -129,6 +129,8 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 					 ArrayList<Object> aRow = new ArrayList<Object>();
 					 aRow.add(sSppCode);
 					 aRow.add(sSppName);
+					 String sSppUSDAName = line.get( parser.getLabelIdx( "USDADescription" ) );
+					 aRow.add(sSppUSDAName);
 					 lSearchRows.add(aRow);
 				 }
 				 line = parser.getNext();
@@ -160,6 +162,7 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 			lSearchColumns.add("AnimalClassHierarchyKey");
 			lSearchColumns.add("SpeciesCode");
 			lSearchColumns.add("SpeciesName");
+			lSearchColumns.add("SpeciesUSDAName");
 		}
 		return lSearchColumns;
 	}

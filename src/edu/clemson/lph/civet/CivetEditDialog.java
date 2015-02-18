@@ -41,6 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.ButtonGroup;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -152,6 +153,7 @@ public final class CivetEditDialog extends JFrame {
 	private ImageIcon iconPDF = null;
 	private ImageIcon iconXML = null;
 	private ImageIcon iconMAIL = null;
+	private Icon iconPDFPage;
 	DBComboBox cbOtherState;
 	DBComboBox cbSpecies;
 	JRadioButton rbImport;
@@ -203,6 +205,7 @@ public final class CivetEditDialog extends JFrame {
 	private JButton bGotoPage;
 	private JButton bAddIDs;
 	private JButton bEditLast;
+	private JButton bPDFViewFile;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -445,6 +448,7 @@ public final class CivetEditDialog extends JFrame {
 		topBar.add(new JPanel());
 		bRotate = new JButton();
 		bRotate.setIcon( new ImageIcon(getClass().getResource("/edu/clemson/lph/civet/res/rotate.gif")));
+		bRotate.setToolTipText("Rotate Viewer");
 		bRotate.addActionListener( new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				iRotation = (iRotation + 90) % 360;
@@ -458,14 +462,28 @@ public final class CivetEditDialog extends JFrame {
 		topBar.add(new JPanel());
 		bPDFView = new JButton();
 		bPDFView.setFont(new java.awt.Font("Dialog", 1, 14));
-		//    bPDFView.setText("View In Acrobat");  // Change to icon for rotate.
-		bPDFView.setIcon(iconPDF);
+		//    bPDFView.setText("View Page In Acrobat");  
+		iconPDFPage = new ImageIcon(getClass().getResource("/edu/clemson/lph/civet/res/pdfPage.gif"));
+		bPDFView.setIcon(iconPDFPage);
+		bPDFView.setToolTipText("Open Page in Acrobat");
 		bPDFView.addActionListener( new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				pdfView();
 			}
 		});
 		topBar.add(bPDFView);
+		
+		bPDFViewFile = new JButton();
+		bPDFViewFile.setFont(new java.awt.Font("Dialog", 1, 14));
+		//    bPDFView.setText("View File In Acrobat");  
+		bPDFViewFile.setIcon(iconPDF);
+		bPDFViewFile.setToolTipText("Open File in Acrobat");
+		bPDFViewFile.addActionListener( new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pdfViewFile();
+			}
+		});
+		topBar.add(bPDFViewFile);
 		
 		pCounters = new CountersPanel( this );
 		topBar.add(pCounters);
@@ -494,7 +512,7 @@ public final class CivetEditDialog extends JFrame {
 		topBar.add(bEditLast);
 		
 	}
-	
+
 	void doEditLast() {
 		File fLast = controller.getLastSavedFile();
 		File aFiles[] = new File[1];
@@ -2404,6 +2422,11 @@ public final class CivetEditDialog extends JFrame {
 		opener.openPDFContentInAcrobat(pdfBytes);
 	}
 
+	
+	protected void pdfViewFile() {
+		PDFOpener opener = new PDFOpener(this);
+		opener.openPDFContentInAcrobat(controller.getCurrentPdfBytes());
+	}
 
 	private void updateSpeciesList( boolean bClear )  {
 		String sNum = jtfNumber.getText();

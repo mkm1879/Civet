@@ -150,6 +150,10 @@ public class UsaHerdsWebServiceLookup {
 		return bRet;
 	}
 	
+	public void reset() {
+		iCurrentRow = -1;
+	}
+	
 	public Integer getKeyValue() {
 		if( currentRow == null ) return null;
 		return currentRow.iKeyValue;

@@ -21,8 +21,11 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.zip.DataFormatException;
+
 import org.apache.log4j.Logger;
+
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.civet.webservice.UsaHerdsLookupVets;
@@ -175,18 +178,34 @@ public class LookupFilesGenerator {
 	
 	private void generateSpeciesLookup( String sName, UsaHerdsWebServiceLookup lookup, ArrayList<String> aColNames ) {
 		CSVWriter writer = new CSVWriter();
+		HashMap<String, Integer> hCodeKeys = new HashMap<String, Integer>();
 		try {
 			writer.setHeader(aColNames);
 			while( lookup.next() ) {
-				ArrayList<Object> aValues = new ArrayList<Object>();
-				aValues.add(lookup.getKeyValue());
-				aValues.add(lookup.getDescription());
-				aValues.add(lookup.getUSDADescription());
-				if(aColNames.size() == 4)
-					aValues.add(lookup.getMappedValue());
-				for( int i = 4; i < aColNames.size(); i++ ) 
-					aValues.add("");
-				writer.addRow(aValues);
+				String sCode = lookup.getMappedValue();
+				Integer iKey = lookup.getKeyValue();
+				Integer iLastKey = hCodeKeys.get(sCode);
+				if( iLastKey == null || iLastKey > iKey ) {
+					hCodeKeys.put(sCode, iKey);
+				}
+			}
+			lookup.reset();
+			while( lookup.next() ) {
+				String sCode = lookup.getMappedValue();
+				Integer iKey = lookup.getKeyValue();
+				Integer iFirstKey = hCodeKeys.get(sCode);
+				if( iKey.equals( iFirstKey ) ) {
+					ArrayList<Object> aValues = new ArrayList<Object>();
+					aValues.add(lookup.getKeyValue());
+					aValues.add(lookup.getDescription());
+					aValues.add(lookup.getUSDADescription());
+					if(aColNames.size() == 4)
+						aValues.add(lookup.getMappedValue());
+					for( int i = 4; i < aColNames.size(); i++ ) 
+						aValues.add("");
+					writer.addRow(aValues);
+				}
+
 			}
 			writer.write(sName);
 		} catch (FileNotFoundException e) {
