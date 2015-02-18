@@ -17,28 +17,88 @@ GNU General Public License for more details.
 You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
+
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.dialogs.MessageDialog;
+import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.FileUtils;
 
-public class SubmitCVIsThread extends ProcessFilesThread {
+public class SubmitCVIsThread extends Thread {
 	private CivetWebServices service = null;
 	public SubmitCVIsThread(CivetInbox parent, List<File> files) {
-		super(parent, files);
+		this.parent = parent;
+		this.allFiles = files;
+		sOutPath = CivetConfig.getOutputDirPath();
+		prog = new ProgressDialog(parent, sProgTitle, sProgPrompt );
+		prog.setAuto(true);
+		prog.setVisible(true);
 		service = new CivetWebServices();
 	}
-
+	protected static final Logger logger = Logger.getLogger(Civet.class.getName());
+	protected List<File> allFiles = null;
+	protected String sCurrentFilePath = "";
+	protected ProgressDialog prog;
+	protected String sProgTitle = "Civet: Processing File";
+	protected String sProgPrompt = "File: ";
+	protected String sOutPath;
+	CivetInbox parent = null;
+	
 	@Override
-	protected void processFile(File fThis) {
+	public void run() {
+		try {
+			for( File fThis : allFiles ) {
+				final String sName = fThis.getName();
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						prog.setMessage(sProgPrompt + sName);
+					}
+				});		
+				sCurrentFilePath = fThis.getAbsolutePath();
+				processFile( fThis );
+				if( CivetConfig.isSaveCopies() ) {
+					File fOut = new File( sOutPath + sName );
+	    			if( fOut.exists() ) {
+	    				MessageDialog.messageLater(parent, "Civet Error", fOut.getAbsolutePath() + " already exists in OutBox.\n" +
+	    							"Check that it really is a duplicate and manually delete.");
+	    			}
+	    			else {
+	    				boolean success = fThis.renameTo(fOut);
+	    				if (!success) {
+	    					MessageDialog.messageLater(parent, "Civet Error", "Could not move " + fThis.getAbsolutePath() + " to " + fOut.getAbsolutePath() );
+	    				}
+	    			}
+				}
+				else {
+					fThis.delete();
+				}
+			}
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					doLater();
+				}
+			});		
+		} catch(Exception e){
+			logger.error("\nError processing file " + sCurrentFilePath, e );
+		}
+		finally {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					parent.refreshTables();
+					prog.setVisible(false);
+				}
+			});		
+		}
+		doLater();
+	}
+
+	private void processFile(File fThis) {
 		try {
 			String sXML = FileUtils.readTextFile(fThis);
 			String sCertNbr = getCertNbr( sXML );
@@ -70,8 +130,7 @@ public class SubmitCVIsThread extends ProcessFilesThread {
 		return sXML.substring(iStart, iStart+iEnd);
 	}
 
-	@Override
-	protected void doLater() {
+	private void doLater() {
 		// TODO Auto-generated method stub
 
 	}
