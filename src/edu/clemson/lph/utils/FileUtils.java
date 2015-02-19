@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
@@ -102,6 +103,41 @@ public class FileUtils {
 		return bytes;
 	}
 	
+	
+	public static File writeBinaryFile( byte[] bytes, String sFileOut ) {
+		File fOut = null;
+		FileOutputStream fsOut = null;
+		try {
+			try {
+				fOut = new File(sFileOut);
+				fsOut = new FileOutputStream( fOut );
+				fsOut.write(bytes);
+			}
+			catch (IOException ex1) {
+				logger.error("\nError writing " + sFileOut, ex1);
+			}
+			finally { 
+				try {
+					if( fsOut != null ) {
+						fsOut.close();
+						fsOut = null;
+					}
+				} catch( Exception ex2 ) {
+					logger.error("Error closing " + sFileOut, ex2);
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+		return fOut;
+	}
+
+	/**
+	 * This should be named copyBinaryFileToTemp.
+	 * @param fIn
+	 * @return
+	 */
 	public static File copyBinaryFile( File fIn ) {
 		File fOut = null;
 		String sFileOut = null;
@@ -152,5 +188,35 @@ public class FileUtils {
 		}
 		return sFileName;
 	}
+	
+	public static File writeTextFile( String sText, String sFileOut ) {
+		File fOut = null;
+		PrintWriter pwOut = null;
+		try {
+			try {
+				fOut = new File(sFileOut);
+				pwOut = new PrintWriter( fOut );
+				pwOut.write(sText);
+			}
+			catch (IOException ex1) {
+				logger.error("\nError writing " + sFileOut, ex1);
+			}
+			finally { 
+				try {
+					if( pwOut != null ) {
+						pwOut.close();
+						pwOut = null;
+					}
+				} catch( Exception ex2 ) {
+					logger.error("Error closing " + sFileOut, ex2);
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+		return fOut;
+	}
+
 
 }
