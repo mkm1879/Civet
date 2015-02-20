@@ -18,6 +18,7 @@ pPDFLoaded=ReceivedDate
 ZoomPlusButton=
 ZoomMinusButton=
 RotateButton=
+ViewPageInAcrobatButton=
 ViewInAcrobatButton=
 PreviousFileButton=
 PreviousPageButton=
