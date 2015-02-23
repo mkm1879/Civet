@@ -28,9 +28,13 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import com.Ostermiller.util.ExcelCSVParser;
 
 import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
@@ -68,7 +72,8 @@ public class VspsCviFile implements AddOn {
 	
 	private void saveme(Window parent, DatabaseConnectionFactory factory, File fIn) {
 		try {
-			parser = new LabeledCSVParser( fIn );
+			ExcelCSVParser parserIn = new ExcelCSVParser( new FileReader(fIn) );
+			parser = new LabeledCSVParser( parserIn );
 			aCols = parser.getNext();
 		} catch (FileNotFoundException e) {
 			logger.error(e.getMessage() + "\nCould not read file: " + fIn.getName() );
@@ -80,8 +85,13 @@ public class VspsCviFile implements AddOn {
 	}
 	
 	public static void main( String args[] ) {
+		// BasicConfigurator replaced with PropertyConfigurator.
+		PropertyConfigurator.configure("CivetConfig.txt");
+		// Fail now so config file and required files can be fixed before work is done.
+		CivetConfig.checkAllConfig();
+		logger.setLevel(CivetConfig.getLogLevel());
 		VspsCviFile me = new VspsCviFile();
-		me.printme(new File("E:\\Documents\\Downloads\\cviExport_20150211135059 - Copy.csv"));
+		me.printme(new File("cviExport_VSPS_ComplexRemarks.csv"));
 	}
 	
 	/**
@@ -90,7 +100,8 @@ public class VspsCviFile implements AddOn {
 	@SuppressWarnings("unused")
 	private void printme(File fIn) {
 		try {
-			parser = new LabeledCSVParser( new FileReader( fIn ) );
+			ExcelCSVParser parserIn = new ExcelCSVParser( new FileReader(fIn) );
+			parser = new LabeledCSVParser( parserIn );
 			aCols = parser.getNext();
 		} catch (FileNotFoundException e) {
 			logger.error(e.getMessage() + "\nCould not read file: " + fIn.getName() );
@@ -110,6 +121,7 @@ public class VspsCviFile implements AddOn {
 				System.out.println( cvi.getOriginState() + " " + orig.getState() );
 				System.out.println( cvi.getVeterinarianName() + ": " + cvi.getVetFirstName() + " " + cvi.getVetLastName() );
 				System.out.println( cvi.getAnimals().size() + " Animals in CVI");
+				System.out.println(cvi.getRemarks());
 				for( List<String> aKey : cvi.getSpecies().keySet() ) {
 					Integer iCount = cvi.getSpecies().get(aKey);
 					System.out.println( iCount + " " + aKey.get(0) + " (" + aKey.get(1) + ")" );

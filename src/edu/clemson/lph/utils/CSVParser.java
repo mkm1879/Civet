@@ -33,6 +33,8 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
+import com.Ostermiller.util.ExcelCSVParser;
+
 import edu.clemson.lph.civet.Civet;
 
 /**
@@ -47,6 +49,8 @@ public class CSVParser {
 	private char cQuoteChar = '"';
 	
 	private BufferedReader reader = null;
+	private ExcelCSVParser excelParser = null;
+	
 	protected ArrayList<List<String>> aRows = new ArrayList<List<String>>();
 	protected int iRows = -1;
 	protected int iCurrent = 0;
@@ -67,6 +71,22 @@ public class CSVParser {
 		reader = new BufferedReader( rIn );
 		readLines();
 	}
+	
+	public CSVParser(ExcelCSVParser excelParserIn) throws IOException {
+		excelParser = excelParserIn;
+		String[][] allRows = excelParser.getAllValues();
+		for( String[] fields : allRows ) {
+			ArrayList<String> row = new ArrayList<String>();
+			for( String sField : fields ) {
+				row.add(sField);
+			}
+			aRows.add(row);
+		}
+		iRows = aRows.size();
+		iCurrent = 1;
+		excelParser.close();
+	}
+
 	
 	public void setSepChar( char c ) {
 		cSepChar = c;

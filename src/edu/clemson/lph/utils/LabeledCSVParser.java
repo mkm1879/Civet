@@ -26,6 +26,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
+import com.Ostermiller.util.ExcelCSVParser;
+
 
 /**
  * @author mmarti5
@@ -48,6 +50,9 @@ public class LabeledCSVParser extends CSVParser {
 	}
 	public LabeledCSVParser(InputStream isIn) throws IOException {
 		super(isIn);
+	}
+	public LabeledCSVParser(ExcelCSVParser parserIn) throws IOException {
+		super(parserIn);
 	}
 
 	public int getLabelIdx( String sLabel ) throws IOException {
