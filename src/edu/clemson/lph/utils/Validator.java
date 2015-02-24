@@ -22,7 +22,12 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+
+import sun.misc.Regexp;
+
 import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.SAXParser;
 
@@ -55,6 +60,15 @@ public class Validator extends org.xml.sax.helpers.DefaultHandler {
 	  public void fatalError( SAXParseException ex ) throws SAXParseException {
 	    throw(ex);
 	  }
+	  
+	  public static void main( String[] args ) {
+		  Validator v = new Validator("ecviDraftRelaxed.xsd");
+		  if( v.isValidXMLFile("TestErrors.cvi") )
+			  System.out.println("Valid");
+		  else {
+			  System.out.println( v.getLastError() );
+		  }
+	  }
 
 	  /**
 	   * Initialize the validator with the appropriate schema.
@@ -69,7 +83,94 @@ public class Validator extends org.xml.sax.helpers.DefaultHandler {
 	   * Access the last error message if the previous validation returned false.
 	   * @return String with last error or null if last was successful.
 	   */
-	  public String getLastError() { return sLastError; }
+	  public String getLastError() { return formatDatatypeError(formatPatternError(formatElementError(formatEnumerationError(sLastError)))); }
+	  
+	  private String formatEnumerationError( String sError ) {
+		  String sRet = null;
+		  String sRegex = "Value '(.*)' is not facet-valid with respect to enumeration '\\[(.*)\\]";
+		  Pattern pat = Pattern.compile(sRegex);
+		  Matcher mat = pat.matcher(sError);
+		  if( mat.find() ) {
+			  int iStart = mat.start(1);
+			  int iEnd = mat.end(1);
+			  sRet = "Schema Validation Error:\nInvalid value: \"";
+			  sRet += sError.substring(iStart,iEnd);
+			  sRet += "\" not in list [" ;
+			  iStart = mat.start(2);
+			  iEnd = mat.end(2);
+			  sRet += sError.substring(iStart,iEnd);
+			  sRet += "].";
+		  }
+		  else 
+			  sRet = sError;
+		  return sRet;
+	  }
+	  
+	  private String formatElementError( String sError ) {
+		  String sRet = null;
+		  String sRegex = "Invalid content was found starting with element '(.*)'. One of '\\{\"http://www.usaha.org/xmlns/ecvi\":(.*)\\}' is expected.";
+
+		  Pattern pat = Pattern.compile(sRegex);
+		  Matcher mat = pat.matcher(sError);
+		  if( mat.find() ) {
+			  int iStart = mat.start(1);
+			  int iEnd = mat.end(1);
+			  sRet = "Schema Validation Error:\nInvalid or missing element: \"";
+			  sRet += sError.substring(iStart,iEnd);
+			  sRet += "\" found before [" ;
+			  iStart = mat.start(2);
+			  iEnd = mat.end(2);
+			  sRet += sError.substring(iStart,iEnd).replace("\"http://www.usaha.org/xmlns/ecvi\":", "");
+			  sRet += "].";
+		  }
+		  else 
+			  sRet = sError;
+		  return sRet;
+	  }
+	  	  
+	  private String formatPatternError( String sError ) {
+		  String sRet = null;
+		  String sRegex = "pattern-valid: Value '(.*)' is not facet-valid with respect to pattern '(.*)' for type '#AnonType_NumberPhoneNumType'.";
+
+		  Pattern pat = Pattern.compile(sRegex);
+		  Matcher mat = pat.matcher(sError);
+		  if( mat.find() ) {
+			  int iStart = mat.start(1);
+			  int iEnd = mat.end(1);
+			  sRet = "Schema Validation Error:\nInvalid data: \"";
+			  sRet += sError.substring(iStart,iEnd);
+			  sRet += "\" does not match the required pattern \"" ;
+			  iStart = mat.start(2);
+			  iEnd = mat.end(2);
+			  sRet += sError.substring(iStart,iEnd).replace("\"http://www.usaha.org/xmlns/ecvi\":", "");
+			  sRet += "\".";
+		  }
+		  else 
+			  sRet = sError;
+		  return sRet;
+	  }
+	  
+	  private String formatDatatypeError( String sError ) {
+		  String sRet = null;
+		  String sRegex = "datatype-valid.1.2.1: '(.*)' is not a valid value for '(.*)'.";
+
+		  Pattern pat = Pattern.compile(sRegex);
+		  Matcher mat = pat.matcher(sError);
+		  if( mat.find() ) {
+			  int iStart = mat.start(1);
+			  int iEnd = mat.end(1);
+			  sRet = "Schema Validation Error:\nInvalid data: \"";
+			  sRet += sError.substring(iStart,iEnd);
+			  sRet += "\" does not match the required data type \"" ;
+			  iStart = mat.start(2);
+			  iEnd = mat.end(2);
+			  sRet += sError.substring(iStart,iEnd).replace("\"http://www.usaha.org/xmlns/ecvi\":", "");
+			  sRet += "\".";
+		  }
+		  else 
+			  sRet = sError;
+		  return sRet;
+	  }
 
 	  private void initializeFactory() {
 	    factory = SAXParserFactory.newInstance();
