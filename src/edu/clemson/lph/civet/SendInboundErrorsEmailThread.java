@@ -220,7 +220,8 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 				aFiles.add(new MIMEFile( sCVINo + "_Cover.pdf","application/pdf",letterBytes));
 				aFiles.add(new MIMEFile(sCVINo + "_Not_Accepted.pdf","application/pdf",pdfBytes));
 			}
-			bRet = MailMan.sendIt(sEmail, null, "CVIs With Errors From " + sState + " to South Carolina " + (iPart>1?" Part " + iPart:""),
+			String sFileCopyAddress = CivetConfig.getEmailCopyTo();
+			bRet = MailMan.sendIt(sEmail, sFileCopyAddress, "CVIs With Errors From " + sState + " to South Carolina " + (iPart>1?" Part " + iPart:""),
 					sInBoundCVIErrorMessage, aFiles);
 		} catch (AuthenticationFailedException e1) {
 			MessageDialog.messageWait( prog.getWindowParent(), "Civet: Invalid UserID/Password", "Authentication failure to Email system");
