@@ -26,14 +26,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
-import com.Ostermiller.util.ExcelCSVParser;
+import org.apache.commons.csv.CSVParser;
+
 
 
 /**
  * @author mmarti5
  *
  */
-public class LabeledCSVParser extends CSVParser {
+public class LabeledCSVParser extends CSVParserWrapper {
 
 	/**
 	 * @param reader
@@ -51,8 +52,8 @@ public class LabeledCSVParser extends CSVParser {
 	public LabeledCSVParser(InputStream isIn) throws IOException {
 		super(isIn);
 	}
-	public LabeledCSVParser(ExcelCSVParser parserIn) throws IOException {
-		super(parserIn);
+	public LabeledCSVParser(CSVParser pIn) throws IOException {
+		super(pIn);
 	}
 
 	public int getLabelIdx( String sLabel ) throws IOException {

@@ -31,9 +31,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
-
-import com.Ostermiller.util.ExcelCSVParser;
 
 import edu.clemson.lph.civet.Civet;
 
@@ -43,48 +43,46 @@ import edu.clemson.lph.civet.Civet;
  *                           New line character in side " quotes is not supported as used by Excel
  *
  */
-public class CSVParser {
+public class CSVParserWrapper {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private char cSepChar = ',';
 	private char cQuoteChar = '"';
 	
 	private BufferedReader reader = null;
-	private ExcelCSVParser excelParser = null;
 	
 	protected ArrayList<List<String>> aRows = new ArrayList<List<String>>();
 	protected int iRows = -1;
 	protected int iCurrent = 0;
 	
-	public CSVParser(String sFileName) throws IOException {
+	public CSVParserWrapper(String sFileName) throws IOException {
 		reader = new BufferedReader( new FileReader( sFileName ) );
 		readLines();
 	}
-	public CSVParser(File file) throws IOException {
+	public CSVParserWrapper(File file) throws IOException {
 		reader = new BufferedReader( new FileReader( file ) );
 		readLines();
 	}
-	public CSVParser(InputStream isIn) throws IOException {
+	public CSVParserWrapper(InputStream isIn) throws IOException {
 		reader = new BufferedReader( new InputStreamReader( isIn ) );
 		readLines();
 	}
-	public CSVParser(Reader rIn) throws IOException {
+	public CSVParserWrapper(Reader rIn) throws IOException {
 		reader = new BufferedReader( rIn );
 		readLines();
 	}
-	
-	public CSVParser(ExcelCSVParser excelParserIn) throws IOException {
-		excelParser = excelParserIn;
-		String[][] allRows = excelParser.getAllValues();
-		for( String[] fields : allRows ) {
-			ArrayList<String> row = new ArrayList<String>();
-			for( String sField : fields ) {
-				row.add(sField);
+	public CSVParserWrapper(CSVParser pIn) throws IOException {
+		if( pIn == null ) return;
+		for( CSVRecord r : pIn.getRecords() ) {
+			List<String> aRow = new ArrayList<String>();
+			for( int i = 0; i < r.size(); i++ ) {
+				String sField = r.get(i);
+				aRow.add(sField);
 			}
-			aRows.add(row);
+			aRows.add(aRow);
 		}
 		iRows = aRows.size();
 		iCurrent = 1;
-		excelParser.close();
+
 	}
 
 	

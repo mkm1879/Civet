@@ -24,7 +24,7 @@ import java.util.*;
 
 import org.apache.log4j.Logger;
 
-import edu.clemson.lph.utils.CSVParser;
+import edu.clemson.lph.utils.CSVParserWrapper;
 
 
 /**
@@ -32,7 +32,7 @@ import edu.clemson.lph.utils.CSVParser;
  * The CSVFile class represents the raw data file being imported.
  * Need for commas in fields such as dates made me go looking for
  * a more robust CSV file parser.  This version uses the Ostermiller
- * Java Utilities CSVParser class.
+ * Java Utilities CSVParserWrapper class.
  * Note: Company name must be first part of filename followed by an underscore character.
  */
 public class CSVDataFile {
@@ -66,7 +66,7 @@ public class CSVDataFile {
 				sCompany = "MurphyBrown";
 		}
 		FileReader fr = new FileReader( f );
-		CSVParser parser = new CSVParser(fr);
+		CSVParserWrapper parser = new CSVParserWrapper(fr);
 		for( String sField : parser.getHeader() ) {
 			if(sField != null) {
 				sField = sField.toUpperCase();

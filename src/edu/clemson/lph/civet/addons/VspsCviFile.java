@@ -27,10 +27,10 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-
-import com.Ostermiller.util.ExcelCSVParser;
 
 import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.Civet;
@@ -72,7 +72,7 @@ public class VspsCviFile implements AddOn {
 	
 	private void saveme(Window parent, DatabaseConnectionFactory factory, File fIn) {
 		try {
-			ExcelCSVParser parserIn = new ExcelCSVParser( new FileReader(fIn) );
+			CSVParser parserIn = new CSVParser( new FileReader(fIn), CSVFormat.EXCEL );
 			parser = new LabeledCSVParser( parserIn );
 			aCols = parser.getNext();
 		} catch (FileNotFoundException e) {
@@ -100,7 +100,7 @@ public class VspsCviFile implements AddOn {
 	@SuppressWarnings("unused")
 	private void printme(File fIn) {
 		try {
-			ExcelCSVParser parserIn = new ExcelCSVParser( new FileReader(fIn) );
+			CSVParser parserIn = new CSVParser( new FileReader(fIn), CSVFormat.EXCEL );
 			parser = new LabeledCSVParser( parserIn );
 			aCols = parser.getNext();
 		} catch (FileNotFoundException e) {
