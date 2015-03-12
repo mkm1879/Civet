@@ -22,7 +22,7 @@ saveCopies=true
 
 #Web Service Settings
 standAlone=no
-herdsWebServiceURL=http://lphstage/usaherds/WebService/ExternalMessages.asmx
+herdsWebServiceURL=http://lphapps/usaherds/WebService/ExternalMessages.asmx
 
 #Email setup
 smtpHost=mail.clemson.edu
@@ -40,7 +40,7 @@ smtpSecurity=SSL
 smtpDomain=@clemson.edu
 #If emailTestTo is set emails do NOT go to destination state but to this address for testing!!!!!!
 emailTestTo=mkm1879@gmail.com
-emailCopyTo=
+emailCopyTo=mmarti5@clemson.edu
 #Limit size of all email attachments on one email 
 #May be in bytes, K or M
 maxAttachSize=5M
@@ -81,7 +81,7 @@ stateVetTableFile=StateVetTable.csv
 #Network settings used to check for live network
 localNetAddresses=130.127.169.236,130.127.169.248
 #SQL Server USAHERDS Settings (Only needed if SQL add ons are used)
-dbServer=lphstage
+dbServer=lphql
 dbPort=1433
 dbDatabaseName=USAHerds
 dbHerdsSchemaName=dbo
