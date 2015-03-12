@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -41,6 +42,7 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 	private String sSpeciesName = null;
 	private ArrayList<String> lSearchColumns;
 	private ArrayList<ArrayList<Object>> lSearchRows;
+	private HashMap<String, String> hStdSpecies = null;
 
 	/**
 	 * Default constructor assumes existence of a SppTable in CivetConfig and will use that 
@@ -94,6 +96,7 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 		
 	private void readSppTable() {
 		String sVetFile = CivetConfig.getSppTableFile();
+		populateStdMap();
 		try {
 			LabeledCSVParser parser = new LabeledCSVParser(sVetFile);
 			parser.sort( parser.getLabelIdx("USDACode") );
@@ -112,9 +115,10 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 				hKeysValues.put(-1, "");
 			}
 			List<String> line = parser.getNext();
+			Set<String> sStdSpp = hStdSpecies.keySet();
 			while( line != null ) {
 				 String sSppCode = line.get( parser.getLabelIdx( "USDACode" ) );
-				 if( sSppCode == null || sSppCode.trim().length() == 0 ) {
+				 if( sSppCode == null || sSppCode.trim().length() == 0 || !sStdSpp.contains(sSppCode) ) {
 					 line = parser.getNext();
 					 continue;
 				 }
@@ -170,6 +174,48 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 	@Override
 	public ArrayList<ArrayList<Object>> getRows() {
 		return lSearchRows;
+	}
+	
+	private void populateStdMap() {
+		if( hStdSpecies == null ) {
+			hStdSpecies = new HashMap<String, String>();
+			hStdSpecies.put("AQU", "Aquaculture");
+			hStdSpecies.put("AVI", "Avian");
+			hStdSpecies.put("BEF", "Beef");
+			hStdSpecies.put("BIS", "Bison");
+			hStdSpecies.put("BOV", "Bovine (Bison and Cattle)");
+			hStdSpecies.put("CAM", "Camelid (Alpacas, Llamas, etc.)");
+			hStdSpecies.put("CAN", "Canine");
+			hStdSpecies.put("CAP", "Caprine (Goats)");
+			hStdSpecies.put("CER", "Cervids");
+			hStdSpecies.put("CHI", "Chickens");
+			hStdSpecies.put("CLM", "Clams");
+			hStdSpecies.put("CRA", "Crawfish");
+			hStdSpecies.put("CTF", "Catfish");
+			hStdSpecies.put("DAI", "Dairy");
+			hStdSpecies.put("DEE", "Deer");
+			hStdSpecies.put("DUC", "Ducks");
+			hStdSpecies.put("ELK", "Elk");
+			hStdSpecies.put("EQU", "Equine (Horses, Mules, Donkeys, Burros)");
+			hStdSpecies.put("FEL", "Feline");
+			hStdSpecies.put("GEE", "Geese");
+			hStdSpecies.put("GUI", "Guineas");
+			hStdSpecies.put("MSL", "Mussels");
+			hStdSpecies.put("OTH", "Other");
+			hStdSpecies.put("OVI", "Ovine (Sheep)");
+			hStdSpecies.put("OYS", "Oysters");
+			hStdSpecies.put("PGN", "Pigeon");
+			hStdSpecies.put("POR", "Porcine (Swine)");
+			hStdSpecies.put("QUA", "Quail");
+			hStdSpecies.put("RTT", "Ratites (Emus, Ostriches, etc.)");
+			hStdSpecies.put("SAL", "Salmon");
+			hStdSpecies.put("SBA", "Striped Bass");
+			hStdSpecies.put("SHR", "Shrimp");
+			hStdSpecies.put("SLP", "Scallops");
+			hStdSpecies.put("TIL", "Tilapia");
+			hStdSpecies.put("TRO", "Trout");
+			hStdSpecies.put("TUR", "Turkeys");
+		}
 	}
 
 }
