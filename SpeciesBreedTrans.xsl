@@ -62,58 +62,59 @@
                         >LH</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Maine Anjou', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
-                    <!-- TODO Map the rest of them! -->
+                        >MA</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Red Angus', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >AR</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Salers', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >SA</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Beefmaster', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >BM</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Scottish Highland', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >SH</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Shorthorn', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >SS</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Simmental', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >SM</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Unknown', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >UK</xsl:when>
+                    <xsl:otherwise>OTH</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
             <xsl:when test="translate($species, $smallcase, $uppercase)='DBOV'">
                 <xsl:choose>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Brown Swiss', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >SB</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Guernesey', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >GU</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Holstein', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >HO</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Jersey', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >JE</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Unknown', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >UK</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Other PB', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >OTH</xsl:when>
+                    <xsl:otherwise>OTH</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
             <xsl:when test="translate($species, $smallcase, $uppercase)='EQU'">
                 <xsl:choose>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Grade', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >GX</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Appaloosa', $smallcase, $uppercase)"
                         >AP</xsl:when>
@@ -131,10 +132,10 @@
                         >DK</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Miniature', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >OTH</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Morgan', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >MN</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Mule', $smallcase, $uppercase)"
                         >ML</xsl:when>
@@ -143,16 +144,16 @@
                         >MT</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Paint', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >PT</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Percheron', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >PH</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Pinto', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >PN</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Pony', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >PY</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Quarter Horse', $smallcase, $uppercase)"
                         >QH</xsl:when>
@@ -164,22 +165,20 @@
                         >TW</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Thoroughbred', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
-                    <xsl:when
-                        test="translate($breed, $smallcase, $uppercase)=translate('Pinto', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
-                    <xsl:when
+                        >TH</xsl:when>
+                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Warmblood', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >WM</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Zebra', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >OTH</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Unknown', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >OTH</xsl:when>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Other PB', $smallcase, $uppercase)"
-                        >BRD</xsl:when>
+                        >OTH</xsl:when>
+                    <xsl:otherwise>OTH</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
             <xsl:when test="translate($species, $smallcase, $uppercase)='OVI'">
@@ -259,6 +258,7 @@
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Other PB', $smallcase, $uppercase)"
                         >BRD</xsl:when>
+                    <xsl:otherwise>OTH</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
             <xsl:when test="translate($species, $smallcase, $uppercase)='CAP'">
@@ -314,6 +314,7 @@
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Other', $smallcase, $uppercase)"
                         >BRD</xsl:when>
+                    <xsl:otherwise>OTH</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
             <xsl:when test="translate($species, $smallcase, $uppercase)='POR'">
@@ -360,13 +361,14 @@
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Other PB', $smallcase, $uppercase)"
                         >BRD</xsl:when>
+                    <xsl:otherwise>OTH</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
             <xsl:when test="translate($species, $smallcase, $uppercase)='OTH'">
                 <xsl:choose>
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Other', $smallcase, $uppercase)"
-                        >???</xsl:when>
+                        >OTH</xsl:when>
                 </xsl:choose>
             </xsl:when>
             <xsl:when test="translate($species, $smallcase, $uppercase)='POU'">
@@ -392,6 +394,7 @@
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Water Fowl', $smallcase, $uppercase)"
                         >BRD</xsl:when>
+                    <xsl:otherwise>OTH</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
             <xsl:when test="translate($species, $smallcase, $uppercase)='CER'">
@@ -432,6 +435,7 @@
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('White-Tailed Deer', $smallcase, $uppercase)"
                         >BRD</xsl:when>
+                    <xsl:otherwise>OTH</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
             <xsl:when test="translate($species, $smallcase, $uppercase)='CAM'">
@@ -451,6 +455,7 @@
                     <xsl:when
                         test="translate($breed, $smallcase, $uppercase)=translate('Other', $smallcase, $uppercase)"
                         >OTH</xsl:when>
+                    <xsl:otherwise>OTH</xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
             <xsl:otherwise>OTH</xsl:otherwise>

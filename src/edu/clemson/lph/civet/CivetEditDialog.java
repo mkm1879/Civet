@@ -303,8 +303,8 @@ public final class CivetEditDialog extends JFrame {
 
 			}
 			catch( Exception e ) {
-				logger.error(e.getMessage() + "\nError in DB Components",e);
-				MessageDialog.showMessage(CivetEditDialog.this, "Civet Error: Database", "Error in DB Components" );
+				logger.error(e.getMessage() + "\nError loading values from lookup tables",e);
+				MessageDialog.showMessage(CivetEditDialog.this, "Civet Error: Database", "Error loading values from lookup tables" );
 				e.printStackTrace();
 			}
 		}

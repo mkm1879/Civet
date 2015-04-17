@@ -486,16 +486,15 @@ public class StdeCviXmlBuilder {
 		if( animal == null || sNumber == null ) return;
 		Element tag = getAnimalTagByNumber( animal, sNumber );
 		if( tag == null ) {
-				
-		tag = doc.createElement("AnimalTag");
-		if( isValidDoc() && animal != null ) {
-			animal.appendChild(tag);
-			if( sType == null || sType.trim().length() == 0 ) {
-				sType = IDTypeGuesser.getTagType(sNumber);
+			tag = doc.createElement("AnimalTag");
+			if( isValidDoc() && animal != null ) {
+				animal.appendChild(tag);
+				if( sType == null || sType.trim().length() == 0 ) {
+					sType = IDTypeGuesser.getTagType(sNumber);
+				}
+				tag.setAttribute("Type", sType);
+				tag.setAttribute("Number", sNumber);
 			}
-			tag.setAttribute("Type", sType);
-			tag.setAttribute("Number", sNumber);
-		}
 		}
 	}
 	
