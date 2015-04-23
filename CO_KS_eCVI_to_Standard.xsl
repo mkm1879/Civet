@@ -36,7 +36,26 @@
             <xsl:apply-templates select="vetInspection/cviPG1/consignor/ownerAdd"/>
             <xsl:apply-templates select="vetInspection/cviPG1/consignee/ownerAdd"/>
             <xsl:call-template name="Accessions"/>
-            <xsl:apply-templates select="vetInspection/cviPG1/species/large/table"/>
+            <xsl:if test="vetInspection/cviPG1/species/large/table/item/headCt!=''">
+                <xsl:call-template name="LargeAnimal">
+                    <xsl:with-param name="table" select="vetInspection/cviPG1/species/large/table"/>
+                </xsl:call-template> 
+            </xsl:if>
+            <xsl:if test="vetInspection/cviPG1/species/large/table/item/headCt!=''">
+                <xsl:call-template name="LargeAnimalGroup">
+                    <xsl:with-param name="table" select="vetInspection/cviPG1/species/large/table"/>
+                </xsl:call-template>
+            </xsl:if>
+            <xsl:if test="vetInspection/cviPG1/species/small/table/item/headCt!=''">
+                <xsl:call-template name="SmallAnimal">
+                    <xsl:with-param name="table" select="vetInspection/cviPG1/species/small/table"/>
+                </xsl:call-template>
+            </xsl:if>
+            <xsl:if test="vetInspection/cviPG1/species/small/table/item/headCt!=''">
+                <xsl:call-template name="SmallAnimalGroup">
+                    <xsl:with-param name="table" select="vetInspection/cviPG1/species/small/table"/>
+                </xsl:call-template>
+            </xsl:if>
         </xsl:element>
     </xsl:template>
 
@@ -194,8 +213,9 @@
         </xsl:if>
     </xsl:template>
 
-    <xsl:template match="eCVI/vetInspection/cviPG1/species/large/table">
-        <xsl:for-each select="item">
+    <xsl:template name="LargeAnimal">
+        <xsl:param name="table"/>
+        <xsl:for-each select="$table/item">
             <xsl:variable name="head" select="headCt"/>
             <xsl:if test="number($head) = 1">
                 <xsl:element name="Animal">
@@ -227,7 +247,6 @@
                     <xsl:attribute name="InspectionDate">
                         <xsl:value-of select="../../../../inspDate"/>
                     </xsl:attribute>
-
                     <xsl:element name="AnimalTag">
                         <xsl:attribute name="Number">
                             <xsl:value-of select="./offID"/>
@@ -261,6 +280,13 @@
                     </xsl:if>
                 </xsl:element>
             </xsl:if>
+        </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template name="LargeAnimalGroup">
+        <xsl:param name="table"/>
+        <xsl:for-each select="$table/item">
+            <xsl:variable name="head" select="headCt"/>
             <xsl:if test="number($head) > 1">
                 <xsl:element name="GroupLot">
                     <xsl:attribute name="Quantity">
@@ -292,42 +318,108 @@
                         <xsl:value-of select="../../../../inspDate"/>
                     </xsl:attribute>
                     -->
-                    <xsl:element name="Description">
+                    <xsl:attribute name="Description">
                         <xsl:value-of select="description"/>
+                    </xsl:attribute>
+                </xsl:element>
+            </xsl:if>
+        </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template name="SmallAnimal">
+        <xsl:param name="table"/>
+        <xsl:for-each select="$table/item">
+            <xsl:variable name="head" select="headCt"/>
+            <xsl:if test="number($head) = 1">
+                <xsl:element name="Animal">
+                    <!-- CO/KS Small Animal Age is unstructured so not reliably translateable -->
+                    <xsl:attribute name="SpeciesCode">
+                        <xsl:call-template name="Species">
+                            <xsl:with-param name="species" select="spp"/>
+                        </xsl:call-template>
+                    </xsl:attribute>
+                    <xsl:attribute name="Sex">
+                        <xsl:call-template name="Sex">
+                            <xsl:with-param name="sex" select="sex"/>
+                        </xsl:call-template>
+                    </xsl:attribute>
+                    <xsl:attribute name="InspectionDate">
+                        <xsl:value-of select="../../../../inspDate"/>
+                    </xsl:attribute>
+                    
+                    <xsl:element name="AnimalTag">
+                        <xsl:attribute name="Number">
+                            <xsl:value-of select="rabiesTag"/>
+                        </xsl:attribute>
                     </xsl:element>
                 </xsl:element>
             </xsl:if>
-
+         </xsl:for-each>
+    </xsl:template>
+    
+    <xsl:template name="SmallAnimalGroup">
+        <xsl:param name="table"/>
+        <xsl:for-each select="$table/item">
+            <xsl:variable name="head" select="headCt"/>
+             <xsl:if test="number($head) > 1">
+                <xsl:element name="GroupLot">
+                    <xsl:attribute name="Quantity">
+                        <xsl:value-of select="headCt"/>
+                    </xsl:attribute>
+                    <xsl:attribute name="SpeciesCode">
+                        <xsl:call-template name="Species">
+                            <xsl:with-param name="species" select="spp"/>
+                        </xsl:call-template>
+                    </xsl:attribute>
+                    <xsl:attribute name="Sex">
+                        <xsl:call-template name="Sex">
+                            <xsl:with-param name="sex" select="sex"/>
+                        </xsl:call-template>
+                    </xsl:attribute>
+                    <!-- Why did we leave this out?
+                    <xsl:attribute name="InspectionDate">
+                        <xsl:value-of select="../../../../inspDate"/>
+                    </xsl:attribute>
+                    -->
+                    <xsl:attribute name="Description">
+                        <xsl:if test="not(description) or description=''">No Description Entered</xsl:if>
+                        <xsl:value-of select="description"/>
+                    </xsl:attribute>
+                </xsl:element>
+            </xsl:if>
         </xsl:for-each>
     </xsl:template>
-
+    
     <xsl:template name="Age">
         <xsl:param name="item"/>
         <xsl:value-of select="$item/ageNum"/>
-        <xsl:apply-templates select="$item/ageTime"/>
+        <xsl:call-template name="AgeTime">
+            <xsl:with-param name="ageTime" select="$item/ageTime"/>
+        </xsl:call-template>
     </xsl:template>
-
+    
     <!-- Translate from simple English time interval abbreviations to UCUM units -->
-    <xsl:template match="ageTime">
+    <xsl:template name="AgeTime">
+        <xsl:param name="ageTime"/>
         <xsl:choose>
-            <xsl:when test=". = 'Y'">
+            <xsl:when test="$ageTime = 'Y'">
                 <xsl:text>a</xsl:text>
             </xsl:when>
-            <xsl:when test=". = 'M'">
+            <xsl:when test="$ageTime = 'M'">
                 <xsl:text>mo</xsl:text>
             </xsl:when>
-            <xsl:when test=". = 'W'">
+            <xsl:when test="$ageTime = 'W'">
                 <xsl:text>wk</xsl:text>
             </xsl:when>
-            <xsl:when test=". = 'D'">
+            <xsl:when test="$ageTime = 'D'">
                 <xsl:text>d</xsl:text>
             </xsl:when>
             <!-- Is this the appropriate way to react to no age units? -->
-            <xsl:when test=". = null or . = ''">
+            <xsl:when test="$ageTime = null or $ageTime = ''">
                 <xsl:text>a</xsl:text>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:value-of select="."/>
+                <xsl:value-of select="$ageTime"/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
