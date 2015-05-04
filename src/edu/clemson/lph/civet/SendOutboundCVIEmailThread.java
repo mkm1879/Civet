@@ -94,10 +94,18 @@ public class SendOutboundCVIEmailThread extends Thread {
 			}
 			// Now state by state process them.
 			for( String sState : mStateMap.keySet() ) {
-				StateVetLookup stateVet = new StateVetLookup( sState );
-				String sCurrentEmail = stateVet.getCVIEmail(); 
-				String sCurrentFileType = stateVet.getFileType();
-				ArrayList<File> aCVIsIn = mStateMap.get(sState);
+				StateVetLookup stateVet = null;
+				String sCurrentEmail = null; 
+				String sCurrentFileType = null;
+				ArrayList<File> aCVIsIn = null;
+				try {
+					stateVet = new StateVetLookup( sState );
+					sCurrentEmail = stateVet.getCVIEmail(); 
+					sCurrentFileType = stateVet.getFileType();
+					aCVIsIn = mStateMap.get(sState);
+				} catch( Exception e ) {
+					logger.error("Error getting destination info for state: " + sState, e);
+				}
 				ArrayList<File> aCVIFilesOut = new ArrayList<File>();
 				ArrayList<StdeCviXml> aCVIsOut = new ArrayList<StdeCviXml>();
 				long lPDFSize = 0;

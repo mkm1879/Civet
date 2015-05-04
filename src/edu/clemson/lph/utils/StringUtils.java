@@ -1,4 +1,11 @@
 package edu.clemson.lph.utils;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+
 /*
 Copyright 2014 Michael K Martin
 
@@ -32,5 +39,25 @@ public class StringUtils {
 		return sb.toString();
 	}
 
-
+	public static List<String> getStringLines( String sInput ) throws Exception {
+		List<String> lRet = new ArrayList<String>();
+		if( sInput != null ) {
+			BufferedReader rdr = new BufferedReader(new StringReader(sInput));
+			try {
+				for (String line = rdr.readLine(); line != null; line = rdr.readLine()) {
+				    lRet.add(line);
+				}
+			} catch (IOException e) {
+				throw( e );
+			} finally {
+				if( rdr != null )
+				try {
+					rdr.close();
+				} catch (IOException e) {
+					throw(e);
+				}
+			}
+		}
+		return lRet;
+	}
 }
