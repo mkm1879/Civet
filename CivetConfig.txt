@@ -25,19 +25,10 @@ standAlone=no
 herdsWebServiceURL=http://lphapps/usaherds/WebService/ExternalMessages.asmx
 
 #Email setup
-smtpHost=mail.clemson.edu
-# Use for gmail
-#smtpPort=587
-smtpPort=465
-# Use for old fashioned unsecure email
-#smtpPort=25
-# Use for gmail
-#smtpSecurity=STARTTLS
-# Use for older SMTP over SSL
-smtpSecurity=SSL
-# Use for old fashioned unsecure email
-#smtpSecurity=NONE
-smtpDomain=@clemson.edu
+smtpHost=smtp.googlemail.com
+smtpPort=587
+smtpSecurity=STARTTLS
+smtpDomain=@gmail.com
 #If emailTestTo is set emails do NOT go to destination state but to this address for testing!!!!!!
 emailTestTo=mkm1879@gmail.com
 emailCopyTo=mmarti5@clemson.edu
@@ -81,7 +72,7 @@ stateVetTableFile=StateVetTable.csv
 #Network settings used to check for live network
 localNetAddresses=130.127.169.236,130.127.169.248
 #SQL Server USAHERDS Settings (Only needed if SQL add ons are used)
-dbServer=lphql
+dbServer=lphsql
 dbPort=1433
 dbDatabaseName=USAHerds
 dbHerdsSchemaName=dbo
