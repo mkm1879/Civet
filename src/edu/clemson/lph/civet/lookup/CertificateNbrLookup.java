@@ -127,20 +127,4 @@ public class CertificateNbrLookup {
 		}
 	}
 
-	/**
-	 * Main just for temporary unit testing.
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		String[] names = {"fred", "john", "ted","alice","bob","robert"};
-		CertificateNbrLookup lu = new CertificateNbrLookup();
-		for( String name : names ) {
-			if( lu.certficateNbrExists(name))
-				System.err.println(name +" exists");
-			if( !lu.addCertificateNbr(name) ) 
-				System.err.println(name +" exists already");
-		}
-
-	}
-
 }
