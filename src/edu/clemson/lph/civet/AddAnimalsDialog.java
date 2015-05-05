@@ -35,9 +35,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import edu.clemson.lph.controls.DBNumericField;
 import edu.clemson.lph.dialogs.MessageDialog;
+import edu.clemson.lph.utils.ClipboardUtils;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -130,6 +132,16 @@ public class AddAnimalsDialog extends JDialog {
 			{
 				JButton btnAddNum = new JButton("Add #");
 				panel.add(btnAddNum);
+				{
+					JButton btnPasteIds = new JButton("Paste IDs");
+					btnPasteIds.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							pasteIDs();
+						}
+					});
+					panel.add(btnPasteIds);
+				}
 				btnAddNum.addActionListener( new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
@@ -267,6 +279,19 @@ public class AddAnimalsDialog extends JDialog {
 			jtfNewId.setText("");
 		}
 		jtfNewId.requestFocus();
+	}
+	
+	private void pasteIDs() {
+		List<String> sIDs = ClipboardUtils.getClipStringList();
+		if( sIDs == null || sIDs.size() == 0 ) return;
+		String sSpecies = (String)cbSpecies.getSelectedItem();
+		String sSpeciesCode = getCodeForSpecies( sSpecies );
+		for( String sID : sIDs ) {
+			AnimalIDRecord r = new AnimalIDRecord( sSpeciesCode, sSpecies, sID );
+			if( sID != null && sID.trim().length() > 0 ) {
+				model.addRow(r);
+			}
+		}
 	}
 
 }
