@@ -25,9 +25,9 @@ standAlone=no
 herdsWebServiceURL=http://lphapps/usaherds/WebService/ExternalMessages.asmx
 
 #Email setup
-smtpHost=smtp.googlemail.com
+smtpHost=mail.clemson.edu
 smtpPort=587
-smtpSecurity=STARTTLS
+smtpSecurity=STARTTLS_NO_CA
 smtpDomain=@gmail.com
 #If emailTestTo is set emails do NOT go to destination state but to this address for testing!!!!!!
 emailTestTo=mkm1879@gmail.com

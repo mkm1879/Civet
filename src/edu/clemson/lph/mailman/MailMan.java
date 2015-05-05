@@ -17,15 +17,33 @@ GNU General Public License for more details.
 You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
+import java.security.GeneralSecurityException;
 import java.util.*;
 import java.io.*;
 
-import javax.activation.*;
-import javax.mail.*;
-import javax.mail.internet.*;
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
+import javax.mail.AuthenticationFailedException;
+import javax.mail.Authenticator;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+//import javax.activation.*;
+//import javax.mail.*;
+//import javax.mail.internet.*;
 import javax.mail.util.ByteArrayDataSource;
 
 import org.apache.log4j.Logger;
+
+import com.sun.mail.util.MailSSLSocketFactory;
 
 import edu.clemson.lph.civet.Civet;
 
@@ -271,6 +289,23 @@ public class MailMan {
 			props.put("mail.smtp.starttls.enable", "true");
 			props.put("mail.smtp.host", sHost);
 			props.put("mail.smtp.port", iPort);
+		}
+		// Works with newer email such as gmail
+		else if( "STARTTLS_NO_CA".equalsIgnoreCase(sSecurity) ) {
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.smtp.host", sHost);
+			props.put("mail.smtp.port", iPort);
+			try {
+				MailSSLSocketFactory factory = new MailSSLSocketFactory();
+				factory.setTrustAllHosts(true);
+				props.put("mail.smtp.socketFactory", factory);			
+			} catch (GeneralSecurityException e) {
+				// TODO Auto-generated catch block
+				logger.error(e);
+			}
+//			props.put("mail.smtp.ssl.trust", sHost);
+//			props.put("mail.smtp.ssl.trust", "*");
 		}
 		// Works with older SMTP over SSL
 		else if( "SSL".equalsIgnoreCase(sSecurity) ) {
