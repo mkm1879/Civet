@@ -290,22 +290,13 @@ public class MailMan {
 			props.put("mail.smtp.host", sHost);
 			props.put("mail.smtp.port", iPort);
 		}
-		// Works with newer email such as gmail
+		// Works with newer email but with self-signed or other untrusted certificate
 		else if( "STARTTLS_NO_CA".equalsIgnoreCase(sSecurity) ) {
 			props.put("mail.smtp.auth", "true");
 			props.put("mail.smtp.starttls.enable", "true");
 			props.put("mail.smtp.host", sHost);
 			props.put("mail.smtp.port", iPort);
-			try {
-				MailSSLSocketFactory factory = new MailSSLSocketFactory();
-				factory.setTrustAllHosts(true);
-				props.put("mail.smtp.socketFactory", factory);			
-			} catch (GeneralSecurityException e) {
-				// TODO Auto-generated catch block
-				logger.error(e);
-			}
-//			props.put("mail.smtp.ssl.trust", sHost);
-//			props.put("mail.smtp.ssl.trust", "*");
+			props.put("mail.smtp.ssl.trust", sHost);
 		}
 		// Works with older SMTP over SSL
 		else if( "SSL".equalsIgnoreCase(sSecurity) ) {
