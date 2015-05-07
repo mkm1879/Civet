@@ -163,8 +163,11 @@ public class StateVetLookup implements DBTableSource {
 					String sVetState = line.get( parser.getLabelIdx( "State" ) );
 					String sVetZipCode = line.get( parser.getLabelIdx( "MailZip" ) );
 					String sVetEmail = line.get( parser.getLabelIdx( "Email" ) );
+					sVetEmail = sVetEmail.replace(';', ',');
 					String sVetCVIEmail = line.get( parser.getLabelIdx( "CVIEmail" ) );
+					sVetCVIEmail = sVetCVIEmail.replace(';', ',');
 					String sVetCVIErrorEmail = line.get( parser.getLabelIdx( "CVIErrorEmail" ) );
+					sVetCVIErrorEmail = sVetCVIErrorEmail.replace(';', ',');
 					String sVetFileType = line.get( parser.getLabelIdx( "FileType" ) );
 					StateVet vet = new StateVet(sVetPrefix,sVetFirstName,sVetLastName,sVetAddress,sVetCity,
 							sVetStateCode,sVetState,sVetZipCode,sVetEmail,sVetCVIEmail,sVetCVIErrorEmail,sVetFileType);
