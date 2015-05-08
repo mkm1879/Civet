@@ -20,6 +20,9 @@ cviValidDays=30
 # Can be helpful for early debugging.  Uses space.  You may want to set to false later.
 saveCopies=true
 
+#adds scrollbar to left pane with editing fields.
+#smallScreen=true
+
 #Web Service Settings
 standAlone=no
 herdsWebServiceURL=http://lphapps/usaherds/WebService/ExternalMessages.asmx

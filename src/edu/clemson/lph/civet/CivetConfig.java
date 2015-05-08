@@ -52,6 +52,7 @@ public class CivetConfig {
 	// Only used in local direct DB add-ons
 	private static String sDBUserName = null;
 	private static String sDBPassword = null;
+	private static Boolean bSmall;
 	
 
 	/**
@@ -84,6 +85,21 @@ public class CivetConfig {
 			}
 		}
 		return bStandAlone;
+	}	
+	
+	public static boolean isSmallScreen() {
+		if( bSmall == null ) {
+			String sVal = props.getProperty("smallScreen");
+			if( sVal == null ) 
+				bSmall = false;
+			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bSmall = true;
+			}
+			else {
+				bSmall = false;
+			}
+		}
+		return bSmall;
 	}	
 	
 	public static boolean isDefaultReceivedDate() {

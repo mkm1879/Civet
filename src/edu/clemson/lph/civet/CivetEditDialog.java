@@ -55,6 +55,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
@@ -563,7 +564,17 @@ public final class CivetEditDialog extends JFrame {
 		pEdit = new JPanel();
 		pEdit.setLayout(null);
 		pEdit.setBorder(null);
-		getContentPane().add(pEdit, BorderLayout.WEST);
+		if( CivetConfig.isSmallScreen() ) {
+			pEdit.setPreferredSize(new Dimension(290,700));
+			JScrollPane jspEdit = new JScrollPane();
+			jspEdit.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			jspEdit.setViewportView(pEdit);
+			getContentPane().add(jspEdit, BorderLayout.WEST);
+		}
+		else {
+			pEdit.setPreferredSize(new Dimension(275,700));
+			getContentPane().add(pEdit, BorderLayout.WEST);
+		}
 
 		rbImport = new JRadioButton("Import");
 		rbImport.setFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 11));
@@ -596,7 +607,6 @@ public final class CivetEditDialog extends JFrame {
 		rbGroup.add(rbExport);
 		rbGroup.add(rbInState);
 
-		pEdit.setPreferredSize(new Dimension(275,250));
 		pEdit.add(rbImport);
 		pEdit.add(rbInState);
 		pEdit.add(rbExport);
