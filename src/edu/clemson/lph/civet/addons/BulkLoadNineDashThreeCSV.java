@@ -115,7 +115,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 						String sSpecies = data.getSpecies();
 						String sConsignorState = data.getConsignorState();
 						if( sConsignorState == null || sConsignorState.trim().length() == 0 )
-							sConsignorState = "SC";
+							sConsignorState = CivetConfig.getHomeStateAbbr();
 
 						String sSourcePIN = data.getConsignorPIN();
 						try {

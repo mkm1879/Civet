@@ -249,6 +249,12 @@ public class CivetConfig {
 		return sRet;
 	}
 	
+	public static String getEmailFrom() {
+		String sRet = null;
+		sRet = props.getProperty("emailFrom");
+		return sRet;
+	}
+	
 	/**
 	 * return the email address for testing to override real state vet CVI addresses
 	 * This getter does not issue an error if not found because that is normal.

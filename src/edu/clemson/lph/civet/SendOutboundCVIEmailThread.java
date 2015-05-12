@@ -223,8 +223,9 @@ public class SendOutboundCVIEmailThread extends Thread {
 				}
 			}
 			String sFileCopyAddress = CivetConfig.getEmailCopyTo();
+			String sHomeState = CivetConfig.getHomeState();
 			bRet = MailMan.sendIt(sEmail, sFileCopyAddress,
-					 "CVIs From South Carolina to " + sState + (iPart>1?" Part " + iPart:""),
+					 "CVIs From " + sHomeState + " to " + sState + (iPart>1?" Part " + iPart:""),
 					sOutBoundCVIMessage, aFiles);
 			logger.info("Email sent to: " + sEmail + " at " + sState + " returned " + bRet);
 		} catch (AuthenticationFailedException e1) {

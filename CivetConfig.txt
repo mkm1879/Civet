@@ -35,6 +35,7 @@ smtpSecurity=STARTTLS_NO_CA
 #STARTTLS for modern email with "good" certificate
 #SSL for old email
 #NONE for no security over port 25 (very old but used sometimes with IP verification)
+#emailFrom=whoever@gmail.com
 smtpDomain=@gmail.com
 #If emailTestTo is set emails do NOT go to destination state but to this address for testing!!!!!!
 emailTestTo=mkm1879@gmail.com
