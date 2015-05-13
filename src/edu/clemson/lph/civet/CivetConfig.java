@@ -249,9 +249,24 @@ public class CivetConfig {
 		return sRet;
 	}
 	
+	/**
+	 * Optional configuration setting overrides normal logic
+	 * to generate the From line (login containing @ or login + domain)
+	 * @return String with Email From or NULL
+	 */
 	public static String getEmailFrom() {
 		String sRet = null;
 		sRet = props.getProperty("emailFrom");
+		return sRet;
+	}
+	
+	/**
+	 * Optional configuration setting to provide a Reply-to different from From
+	 * @return String with Email From or NULL
+	 */
+	public static String getEmailReplyTo() {
+		String sRet = null;
+		sRet = props.getProperty("emailReplyTo");
 		return sRet;
 	}
 	

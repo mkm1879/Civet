@@ -58,7 +58,7 @@ import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.09b";
+	public static final String VERSION = "3.09c";
 	private static final String IDRLICENSE = "\n\nContains material copyrighted by IDRSolutions for the sole purpose" +
 	"of evaluating its JPedalXFA library in this application.\n\n" +
 	"Reuse or redistribution of this application is prohibited.\n\n" +
@@ -506,6 +506,10 @@ public class CivetInbox extends JFrame {
 				else {
 					MailMan.setDefaultFrom(sUserID);
 				}
+				String sReplyTo = CivetConfig.getEmailReplyTo();
+				if( sReplyTo != null )
+					MailMan.setDefaultReplyTo(sReplyTo);
+
 				return true;
 			}
 			else {

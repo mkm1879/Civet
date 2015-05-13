@@ -32,6 +32,7 @@ import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -55,6 +56,7 @@ public class MailMan {
 	private static String sHost = null;
 	private static int iPort = -1;
 	private static String sFrom = null;
+	private static InternetAddress[] aReplyTo = null;
 	private static String sSecurity = "NONE";
 
 	public MailMan() {
@@ -252,6 +254,10 @@ public class MailMan {
 			msg.setContent(multipart);
 			msg.setSubject(sSubject);
 			msg.setFrom(new InternetAddress(sFrom));
+			InternetAddress[] aReplyTo = getDefaultReplyTo();
+			if( aReplyTo != null ) {
+				msg.setReplyTo(aReplyTo);
+			}
 			if( sTo.contains(",") ) {
 				StringTokenizer tok = new StringTokenizer(sTo,",");
 				while( tok.hasMoreTokens() ) {
@@ -369,8 +375,36 @@ public class MailMan {
 		MailMan.sFrom = sFrom;
 	}
 
+	public static void setDefaultReplyTo(String sReplyTo) {
+		MailMan.aReplyTo = parseReplyTo( sReplyTo );
+	}
+
 	public static String getDefaultFrom() {
 		return sFrom;
+	}
+
+	public static InternetAddress[] getDefaultReplyTo() {
+		return aReplyTo;
+	}
+		
+	public static InternetAddress[] parseReplyTo( String sReplyTo ) {
+		InternetAddress[] aReplyTo = null;
+		if( sReplyTo != null ) {
+			ArrayList<InternetAddress> aAddresses = new ArrayList<InternetAddress>();
+			String sDelims = "[;,]+";
+			String aReplyStrings[] = sReplyTo.split(sDelims);
+			aReplyTo = new InternetAddress[aReplyStrings.length];
+			for( String sReply : aReplyStrings ) {
+				try {
+					aAddresses.add( new InternetAddress(sReply) );
+				} catch (AddressException e) {
+					logger.error("Invalid ReplyTo Address " + sReply, e);
+				}
+			}
+			if( aAddresses.size() > 0 )
+				aReplyTo = aAddresses.toArray(aReplyTo);
+		}
+		return aReplyTo;
 	}
 
 }
