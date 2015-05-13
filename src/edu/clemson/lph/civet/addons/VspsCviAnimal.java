@@ -33,6 +33,7 @@ public class VspsCviAnimal {
 	private List<String> aCols;
 	private LabeledCSVParser parser;
 	private DateFormat df = new SimpleDateFormat( "dd-MMM-yy");
+	private DateFormat df2 = new SimpleDateFormat( "d-MMM-yy");
 	private String sFirstOfficial = null;
 	private boolean bCheckedIds = false;
 	
@@ -130,8 +131,12 @@ public class VspsCviAnimal {
 			try {
 				return df.parse(sDate);
 			} catch (ParseException e) {
-				logger.error( aCols.get(iCol) + " cannot be read as a date" );
-				return null;
+				try {
+					return df2.parse(sDate);
+				} catch (ParseException e2) {
+					logger.error(e2);
+					return null;
+				}
 			}
 		}
 	}

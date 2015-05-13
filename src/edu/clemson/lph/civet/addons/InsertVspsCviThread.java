@@ -255,7 +255,7 @@ public class InsertVspsCviThread extends Thread {
 
 	void setDateOrNull( PreparedStatement ps, int parameterIndex, java.util.Date dValue )
 			throws SQLException	{
-		if( dValue == null ) {
+		if( dValue == null || dValue.getTime() < 1) {
 			ps.setNull( parameterIndex, Types.DATE );
 		}
 		else {

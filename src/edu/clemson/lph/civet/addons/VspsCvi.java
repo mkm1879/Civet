@@ -38,6 +38,7 @@ public class VspsCvi {
 	private List<VspsCviAnimal> lAnimals;
 	private int iCurrent = 0;
 	private DateFormat df = new SimpleDateFormat( "dd-MMM-yyyy");
+	private DateFormat df2 = new SimpleDateFormat( "dd-MMM-yyyy");
 
 	VspsCvi( List<String> aColsIn, LabeledCSVParser parserIn ) {
 		aCols = aColsIn;
@@ -84,8 +85,12 @@ public class VspsCvi {
 			try {
 				return df.parse(sDate);
 			} catch (ParseException e) {
-				logger.error(e);
-				return null;
+				try {
+					return df2.parse(sDate);
+				} catch (ParseException e2) {
+					logger.error(e2);
+					return null;
+				}
 			}
 		}
 	}
@@ -141,8 +146,12 @@ public class VspsCvi {
 			try {
 				return df.parse(sDate);
 			} catch (ParseException e) {
-				logger.error(e);
-				return null;
+				try {
+					return df2.parse(sDate);
+				} catch (ParseException e2) {
+					logger.error(e2);
+					return null;
+				}
 			}
 		}
 	}
