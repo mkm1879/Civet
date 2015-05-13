@@ -2352,10 +2352,27 @@ public final class CivetEditDialog extends JFrame {
 				aSpecies,
 				aErrorKeys, sErrorNotes,
 				idListModel.getRows()	);
-		if( isReopened() )
-			thread.setNoEmail();
+		if( isReopened() ) {
+			String sExistingFileName = controller.getCurrentFileName();
+			if( !sExistingFileName.startsWith( "CVI_" + CivetConfig.getHomeStateAbbr() + "_To_" + sOtherStateCode ) &&
+					!sExistingFileName.startsWith( "CVI_" + sOtherStateCode + "_To_" + CivetConfig.getHomeStateAbbr() ) ) {
+				deleteFile( sExistingFileName );
+			}
+		}
 		thread.start();
 		return true;
+	}
+	
+	private void deleteFile( String sFileName ) {
+		File fToFile = new File( CivetConfig.getToFileDirPath() + sFileName );
+		File fToEmailOut = new File( CivetConfig.getEmailOutDirPath() + sFileName );
+		File fToEmailErr = new File( CivetConfig.getEmailErrorsDirPath() + sFileName );
+		if( fToFile.exists() )
+			fToFile.delete();
+		if( fToEmailOut.exists() )
+			fToEmailOut.delete();
+		if( fToEmailErr.exists() )
+			fToEmailErr.delete();
 	}
 		
 	public void saveComplete() {
