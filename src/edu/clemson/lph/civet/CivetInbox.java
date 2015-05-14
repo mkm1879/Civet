@@ -556,8 +556,8 @@ public class CivetInbox extends JFrame {
 			toFileModel = new StdXMLFilesTableModel( new File( CivetConfig.getToFileDirPath() ) );
 		else
 			toFileModel.refresh();
-		if( sourceModel == null )
-			sourceModel = new SourceFilesTableModel( new File( CivetConfig.getOutputDirPath() ) );
+		if( sourceModel == null ) // never happens but was a silent bug.
+			sourceModel = new SourceFilesTableModel( new File( CivetConfig.getInputDirPath() ) );
 		else
 			sourceModel.refresh();		
 	}
