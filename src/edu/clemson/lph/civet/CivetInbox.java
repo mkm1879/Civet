@@ -253,8 +253,6 @@ public class CivetInbox extends JFrame {
 		this.setJMenuBar(menuBar1);
 		statusPanel.setLayout(new FlowLayout());
 		mainPanel.setLayout(borderLayout2);
-		viewNew();
-		tblInBox.setRowSorter( currentModel.getSorter() );
 		tblInBox.setDefaultRenderer(java.util.Date.class, new DateCellRenderer() );
 		tblInBox.setAutoCreateRowSorter(true);
 		tblInBox.setRowSelectionAllowed(true);
@@ -511,11 +509,19 @@ public class CivetInbox extends JFrame {
 		tThread.start();
 	}
 
+
 	private void viewUnsentOutbound() {
 		this.setTitle(sTitleBase + "Outbound CVIs to Email");
 		currentModel = new EmailFilesTableModel( new File( CivetConfig.getEmailOutDirPath() ) );
 		tblInBox.setModel(currentModel);
 		tblInBox.setRowSorter( currentModel.getSorter() );
+		menuItemSubmitSelectedCVIs.setEnabled(false);
+		menuItemSubmitAllCVIs.setEnabled(false);
+		if( currentModel.getRowCount() > 0 )
+			menuItemSendOutboundCVIs.setEnabled(true);	
+		else
+			menuItemSendOutboundCVIs.setEnabled(false);
+		menuItemSendInboundErrors.setEnabled(false);			
 	}
 
 	private void viewUnsentInboundErrors() {
@@ -523,6 +529,13 @@ public class CivetInbox extends JFrame {
 		currentModel = new EmailFilesTableModel( new File( CivetConfig.getEmailErrorsDirPath() ) );
 		tblInBox.setModel(currentModel);
 		tblInBox.setRowSorter( currentModel.getSorter() );
+		menuItemSubmitSelectedCVIs.setEnabled(false);
+		menuItemSubmitAllCVIs.setEnabled(false);
+		menuItemSendOutboundCVIs.setEnabled(false);			
+		if( currentModel.getRowCount() > 0 )
+			menuItemSendInboundErrors.setEnabled(true);	
+		else
+			menuItemSendInboundErrors.setEnabled(false);			
 	}
 
 	private void viewToBeFiled() {
@@ -530,6 +543,16 @@ public class CivetInbox extends JFrame {
 		currentModel = new StdXMLFilesTableModel( new File( CivetConfig.getToFileDirPath() ) );
 		tblInBox.setModel(currentModel);
 		tblInBox.setRowSorter( currentModel.getSorter() );
+		if( currentModel.getRowCount() > 0 && !CivetConfig.isStandAlone() ) {
+			menuItemSubmitSelectedCVIs.setEnabled(true);
+			menuItemSubmitAllCVIs.setEnabled(true);
+		}
+		else {
+			menuItemSubmitSelectedCVIs.setEnabled(false);
+			menuItemSubmitAllCVIs.setEnabled(false);			
+		}
+		menuItemSendOutboundCVIs.setEnabled(false);			
+		menuItemSendInboundErrors.setEnabled(false);			
 	}
 
 	private void viewNew() {
@@ -537,6 +560,10 @@ public class CivetInbox extends JFrame {
 		currentModel = new SourceFilesTableModel( new File( CivetConfig.getInputDirPath() ) );
 		tblInBox.setModel(currentModel);
 		tblInBox.setRowSorter( currentModel.getSorter() );
+		menuItemSubmitSelectedCVIs.setEnabled(false);
+		menuItemSubmitAllCVIs.setEnabled(false);
+		menuItemSendOutboundCVIs.setEnabled(false);			
+		menuItemSendInboundErrors.setEnabled(false);			
 	}
 	
 
