@@ -74,10 +74,6 @@ public class CivetInbox extends JFrame {
 	private JPanel statusPanel = new JPanel();
 	private BorderLayout borderLayout2 = new BorderLayout();
 	private JTable tblInBox = new JTable();
-	private SourceFilesTableModel sourceModel = null;
-	private StdXMLFilesTableModel toFileModel = null;
-	private EmailFilesTableModel toEmailOutModel = null;
-	private EmailFilesTableModel toEmailErrorsModel = null;
 	private FilesTableModel currentModel = null;
 	private final JScrollPane scrollPane = new JScrollPane();
 	private String sTitleBase = "Civet: Certificate of Veterinary Inspection Document Management System for USAHERDS -- ";
@@ -137,7 +133,6 @@ public class CivetInbox extends JFrame {
 		contentPane.setLayout(borderLayout1);
 		this.setSize(new Dimension(813, 404));
 		this.setExtendedState(Frame.MAXIMIZED_BOTH);
-		initModels();
 		menuFile.setText("File");
 		bOpen.setIcon(new ImageIcon(getClass().getResource("res/open.png")));
 		bOpen.addActionListener(new ActionListener() {
@@ -258,9 +253,8 @@ public class CivetInbox extends JFrame {
 		this.setJMenuBar(menuBar1);
 		statusPanel.setLayout(new FlowLayout());
 		mainPanel.setLayout(borderLayout2);
-		sourceModel = new SourceFilesTableModel( new File( CivetConfig.getInputDirPath() ) );
-		tblInBox.setModel(sourceModel);
-		tblInBox.setRowSorter( sourceModel.getSorter() );
+		viewNew();
+		tblInBox.setRowSorter( currentModel.getSorter() );
 		tblInBox.setDefaultRenderer(java.util.Date.class, new DateCellRenderer() );
 		tblInBox.setAutoCreateRowSorter(true);
 		tblInBox.setRowSelectionAllowed(true);
@@ -375,10 +369,6 @@ public class CivetInbox extends JFrame {
 	}
 
 	void refreshTables() {
-		sourceModel.refresh();
-		toFileModel.refresh();
-		toEmailOutModel.refresh();
-		toEmailErrorsModel.refresh();
 		setMenuItems();
 	}
 	
@@ -395,28 +385,6 @@ public class CivetInbox extends JFrame {
 			menuItemFileOpen.setEnabled(true);
 			bOpenAll.setEnabled(true);
 			menuItemFileOpenAll.setEnabled(true);
-		}
-		
-		// Set items that only appear when viewing specific table
-		if( currentModel == toFileModel && toFileModel.getRowCount() > 0 && !CivetConfig.isStandAlone() ) {
-			menuItemSubmitSelectedCVIs.setEnabled(true);
-			menuItemSubmitAllCVIs.setEnabled(true);
-		}
-		else {
-			menuItemSubmitSelectedCVIs.setEnabled(false);
-			menuItemSubmitAllCVIs.setEnabled(false);
-		}
-		if( currentModel == toEmailOutModel && toEmailOutModel.getRowCount() > 0 ) {
-			menuItemSendOutboundCVIs.setEnabled(true);
-		}
-		else {
-			menuItemSendOutboundCVIs.setEnabled(false);			
-		}
-		if( currentModel == toEmailErrorsModel && toEmailErrorsModel.getRowCount() > 0 ) {
-			menuItemSendInboundErrors.setEnabled(true);
-		}
-		else {
-			menuItemSendInboundErrors.setEnabled(false);			
 		}
 	}
 
@@ -445,7 +413,9 @@ public class CivetInbox extends JFrame {
 	}
 	
 	private void doSubmitAll() {
-		List<File> aStdXmlFiles = toFileModel.getAllFiles();
+		if( !currentModel.getAbsolutePath().equals(CivetConfig.getToFileDirPath()) )
+			currentModel = new StdXMLFilesTableModel( new File( CivetConfig.getToFileDirPath() ) );
+		List<File> aStdXmlFiles = currentModel.getAllFiles();
 		if( validateCVIs( aStdXmlFiles ) ) {
 			SubmitCVIsThread t = new SubmitCVIsThread( this, aStdXmlFiles );
 			t.start();
@@ -453,7 +423,9 @@ public class CivetInbox extends JFrame {
 	}
 	
 	private void doSubmitSelected() {
-		List<File> aStdXmlFiles = toFileModel.getSelectedFiles(tblInBox);
+		if( !currentModel.getAbsolutePath().equals(CivetConfig.getToFileDirPath()) )
+			currentModel = new StdXMLFilesTableModel( new File( CivetConfig.getToFileDirPath() ) );
+		List<File> aStdXmlFiles = currentModel.getSelectedFiles(tblInBox);
 		if( validateCVIs( aStdXmlFiles ) ) {
 			SubmitCVIsThread t = new SubmitCVIsThread( this, aStdXmlFiles );
 			t.start();
@@ -538,60 +510,33 @@ public class CivetInbox extends JFrame {
 		SendInboundErrorsEmailThread tThread = new SendInboundErrorsEmailThread(this, prog);
 		tThread.start();
 	}
-	
-	private void initModels() {
-		if( toEmailOutModel == null )
-			toEmailOutModel = new EmailFilesTableModel( new File( CivetConfig.getEmailOutDirPath() ) );
-		else
-			toEmailOutModel.refresh();
-		if( toEmailErrorsModel == null )
-			toEmailErrorsModel = new EmailFilesTableModel( new File( CivetConfig.getEmailErrorsDirPath() ) );
-		else
-			toEmailErrorsModel.refresh();
-		if( toFileModel == null )
-			toFileModel = new StdXMLFilesTableModel( new File( CivetConfig.getToFileDirPath() ) );
-		else
-			toFileModel.refresh();
-		if( toFileModel == null )
-			toFileModel = new StdXMLFilesTableModel( new File( CivetConfig.getToFileDirPath() ) );
-		else
-			toFileModel.refresh();
-		if( sourceModel == null )
-			sourceModel = new SourceFilesTableModel( new File( CivetConfig.getOutputDirPath() ) );
-		else
-			sourceModel.refresh();		
-	}
 
 	private void viewUnsentOutbound() {
 		this.setTitle(sTitleBase + "Outbound CVIs to Email");
-		currentModel = toEmailOutModel;
-		tblInBox.setModel(toEmailOutModel);
-		tblInBox.setRowSorter( toEmailOutModel.getSorter() );
-		refreshTables();
+		currentModel = new EmailFilesTableModel( new File( CivetConfig.getEmailOutDirPath() ) );
+		tblInBox.setModel(currentModel);
+		tblInBox.setRowSorter( currentModel.getSorter() );
 	}
 
 	private void viewUnsentInboundErrors() {
 		this.setTitle(sTitleBase + "Inbound Error CVIs to Email");
-		currentModel = toEmailErrorsModel;
-		tblInBox.setModel(toEmailErrorsModel);
-		tblInBox.setRowSorter( toEmailErrorsModel.getSorter() );
-		refreshTables();
+		currentModel = new EmailFilesTableModel( new File( CivetConfig.getEmailErrorsDirPath() ) );
+		tblInBox.setModel(currentModel);
+		tblInBox.setRowSorter( currentModel.getSorter() );
 	}
 
 	private void viewToBeFiled() {
 		this.setTitle(sTitleBase + "CVI Data Ready to Submit to USAHERDS");
-		currentModel = toFileModel;
-		refreshTables();
-		tblInBox.setModel(toFileModel);
-		tblInBox.setRowSorter( toFileModel.getSorter() );
+		currentModel = new StdXMLFilesTableModel( new File( CivetConfig.getToFileDirPath() ) );
+		tblInBox.setModel(currentModel);
+		tblInBox.setRowSorter( currentModel.getSorter() );
 	}
 
 	private void viewNew() {
 		this.setTitle(sTitleBase + "Source Files Ready to Enter");
-		currentModel = sourceModel;
-		tblInBox.setModel(sourceModel);
-		tblInBox.setRowSorter( sourceModel.getSorter() );
-		refreshTables();
+		currentModel = new SourceFilesTableModel( new File( CivetConfig.getInputDirPath() ) );
+		tblInBox.setModel(currentModel);
+		tblInBox.setRowSorter( currentModel.getSorter() );
 	}
 	
 
