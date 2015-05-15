@@ -19,10 +19,8 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.File;
 import java.io.FileFilter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
@@ -33,7 +31,9 @@ import edu.clemson.lph.civet.xml.StdeCviXml;
 @SuppressWarnings("serial")
 public class StdXMLFilesTableModel extends FilesTableModel {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private ArrayList<StdeCviXml> xFiles = new ArrayList<StdeCviXml>();
+//	private ArrayList<StdeCviXml> aRows = new ArrayList<StdeCviXml>();
+	private ArrayList<String[]> aRows = new ArrayList<String[]>();
+	private SimpleDateFormat df = new SimpleDateFormat( "MMM d, yyyy");
 
 	public StdXMLFilesTableModel(File fDirectory) {
 		super(fDirectory, new FileFilter() {
@@ -53,7 +53,20 @@ public class StdXMLFilesTableModel extends FilesTableModel {
 	private void buildDocuments() {
 		for( File f : allFiles ) {
 			StdeCviXml thisStd = new StdeCviXml( f );
-			xFiles.add(thisStd);
+			String aRow[] = new String[8];
+			aRow[0] = thisStd.getCertificateNumber();
+			aRow[1] = thisStd.getOriginState();
+			aRow[2] = thisStd.getDestinationState();
+			aRow[3] = thisStd.getSpeciesCodes();
+			aRow[4] = thisStd.getVetName();
+			aRow[5] = df.format(thisStd.getIssueDate());
+			aRow[6] = df.format(thisStd.getBureauReceiptDate());
+			String sErrors = thisStd.getErrorsString();
+			if( sErrors == null ) 
+				sErrors = "None";
+			aRow[7]= sErrors;
+			aRows.add(aRow);	
+			//			aRows.add(thisStd);
 		}
 	}
 	
@@ -96,56 +109,20 @@ public class StdXMLFilesTableModel extends FilesTableModel {
 
 	@Override
 	public Object getValueAt(int iRow, int iColumn) {
-		if( xFiles == null || iRow < 0 || iRow >= xFiles.size() )
+		if( aRows == null || iRow < 0 || iRow >= aRows.size() )
 			return null;
 		else {
-			StdeCviXml xThis = xFiles.get(iRow);
-			switch( iColumn ) {
-			case 0: return xThis.getCertificateNumber();
-			case 1: return xThis.getOriginState();
-			case 2: return xThis.getDestinationState();
-			case 3: return xThis.getSpeciesCodes();
-			case 4: return xThis.getVetName();
-			case 5: return xThis.getIssueDate();
-			case 6: return xThis.getBureauReceiptDate();
-			case 7: 
-				String sErrors = xThis.getErrorsString();
-				if( sErrors == null ) 
-					sErrors = "None";
-				return sErrors;
-			default: return "Error";
-			}
+			String aRow[] = aRows.get(iRow);
+			if( iColumn >= 0 && iColumn <= 7 )
+				return aRow[iColumn];
+			else
+				return "Error";
 		}
-	}
-	
-	public StdeCviXml getSelectedStdXml(JTable tblParent) {
-		if( xFiles == null || tblParent == null )
-			return null;
-		StdeCviXml std = null;
-		int iRow = tblParent.convertRowIndexToModel(tblParent.getSelectedRow());
-		if( iRow >= 0 )
-			std = xFiles.get(iRow);
-		return std;	
-	}
-	
-	public List<StdeCviXml> getSelectedStdXmls(JTable tblParent ) {
-		if( xFiles == null || tblParent == null )
-			return null;
-		ArrayList<StdeCviXml> afRet = new ArrayList<StdeCviXml>();
-		int iRows[] = tblParent.getSelectedRows();
-		for( int i = 0; i < iRows.length; i++ ) {
-			int iRow = tblParent.convertRowIndexToModel(iRows[i]);
-			if( iRow >= 0 ) {
-				StdeCviXml fRet = xFiles.get(iRow);
-				afRet.add(fRet);
-			}
-		}
-		return afRet;
 	}
 
 	@Override
 	public void refresh() {
-		xFiles.clear();
+		aRows.clear();
 		readFiles();
 		buildDocuments();
 		this.fireTableDataChanged();		
