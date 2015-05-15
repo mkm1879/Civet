@@ -110,6 +110,7 @@ import java.awt.Insets;
 public final class CivetEditDialog extends JFrame {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private Window parent;
+	private CivetEditDialog dialogParent;
 	private String viewerTitle="Civet: ";
 	static final String sFileCopyAddress = CivetConfig.getEmailCopyTo();
 	public static final int PDF_MODE = 0;
@@ -213,14 +214,24 @@ public final class CivetEditDialog extends JFrame {
 	 * @wbp.parser.constructor
 	 */
 	public CivetEditDialog( Window parent ){
-		this.parent = parent;
+		if( parent instanceof CivetEditDialog ) {
+			this.dialogParent = (CivetEditDialog)parent;
+			this.parent = dialogParent.parent;
+		}
+		else {
+			this.parent = parent;
+			this.dialogParent = null;
+		}
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		controller = new CVIFileController( this ); 
 		initializeDisplay();
 		initializeDBComponents();
-
 	}
-
+	
+	CivetEditDialog getDialogParent() {
+		return dialogParent;
+	}
+	
 	private void make90Percent() {
 	    // Center the window (will take effect when normalized)
 	    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -518,7 +529,7 @@ public final class CivetEditDialog extends JFrame {
 		File fLast = controller.getLastSavedFile();
 		File aFiles[] = new File[1];
 		aFiles[0] = fLast;
-		CivetEditDialog dlgLast = new CivetEditDialog(parent);
+		CivetEditDialog dlgLast = new CivetEditDialog(this);
 		dlgLast.openFiles(aFiles, false);
 		dlgLast.setVisible(true);
 	}
@@ -2354,10 +2365,7 @@ public final class CivetEditDialog extends JFrame {
 				idListModel.getRows()	);
 		if( isReopened() ) {
 			String sExistingFileName = controller.getCurrentFileName();
-			if( !sExistingFileName.startsWith( "CVI_" + CivetConfig.getHomeStateAbbr() + "_To_" + sOtherStateCode ) &&
-					!sExistingFileName.startsWith( "CVI_" + sOtherStateCode + "_To_" + CivetConfig.getHomeStateAbbr() ) ) {
-				deleteFile( sExistingFileName );
-			}
+			deleteFile( sExistingFileName );
 		}
 		thread.start();
 		return true;

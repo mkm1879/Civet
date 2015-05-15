@@ -57,6 +57,10 @@ public abstract class FilesTableModel extends AbstractTableModel {
 		readFiles();
 	}
 	
+	public String getAbsolutePath() {
+		return fDir.getAbsolutePath();
+	}
+	
 	protected void readFiles() {
 		allFiles = new ArrayList<File>();
 		for( File f : fDir.listFiles(fileFilter) ) {
