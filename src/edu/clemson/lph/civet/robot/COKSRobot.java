@@ -108,6 +108,8 @@ public class COKSRobot extends Thread {
 									logger.info("Processed File: " + file.getName() + " to: " + fXML.getName() );
 									bLoggedIn = false;
 								}
+								logger.info("Processed File: " + file.getName() + " with CVI: " + stdXml.getCertificateNumber() +
+										" issued in " + stdXml.getOriginState() );
 							} catch( RemoteException re ) {
 								saveToXml(fXML, sXML);
 								logger.error("Could not submit to HERDS\nSaving to Robot XML folder", re);
@@ -117,6 +119,8 @@ public class COKSRobot extends Thread {
 						}
 						else {
 							saveToXml(fXML, sXML);
+							logger.info("Processed File: " + file.getName() + " with CVI: " + stdXml.getCertificateNumber() +
+									" issued in " + stdXml.getOriginState() );
 						}
 					}
 					else {
@@ -131,6 +135,10 @@ public class COKSRobot extends Thread {
 				// Move Completed File to the compDir
 				File fPathOut = new File( compDir.getAbsolutePath() );
 				File fout = new File( fPathOut, file.getName() );
+				if( fout.exists() ) {
+					String sFOutPath = FileUtils.incrementFileName(fout.getAbsolutePath());
+					fout = new File( sFOutPath );
+				}
 				file.renameTo(fout);
 			} catch (IOException e) {
 				logger.error("Error writing xml file " + fXML.getAbsolutePath(), e);
@@ -159,8 +167,7 @@ public class COKSRobot extends Thread {
               catch (InterruptedException ex) {
               }
             }
-          }
-
+        }
 	}
 
 }

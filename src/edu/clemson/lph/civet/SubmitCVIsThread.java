@@ -67,6 +67,9 @@ public class SubmitCVIsThread extends Thread {
 	    			if( fOut.exists() ) {
 	    				MessageDialog.messageLater(parent, "Civet Error", fOut.getAbsolutePath() + " already exists in OutBox.\n" +
 	    							"Check that it really is a duplicate and manually delete.");
+	    				String sOutPath = fOut.getAbsolutePath();
+	    				sOutPath = FileUtils.incrementFileName(sOutPath);
+	    				fOut = new File( sOutPath );
 	    			}
 	    			else {
 	    				boolean success = fThis.renameTo(fOut);

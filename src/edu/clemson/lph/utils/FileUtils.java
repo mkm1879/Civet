@@ -189,6 +189,46 @@ public class FileUtils {
 		return sFileName;
 	}
 	
+	/**
+	 * Take a filename or path and add (1) until unique
+	 * @param sFileName
+	 * @return
+	 */
+	public static String incrementFileName( String sFileName ) {
+		if( sFileName == null || sFileName.trim().length() == 0 ) return null;
+		String sName = null;
+		String sExt = null;
+		File f = new File( sFileName );
+		while( f.exists() ) {
+			sName = getLeftPart(sFileName);
+			sExt = getExt(sFileName);
+			if( !sName.endsWith(")") ) {
+				sName = sName + "(1)";
+				sFileName = sName + sExt;
+			}
+			else {
+				String sNum = sName.substring(sName.lastIndexOf('(')+1, sName.lastIndexOf(')'));
+				int iNum = Integer.parseInt(sNum) + 1;
+				sName = sName.substring(0,sName.lastIndexOf('(')) + "(" + iNum + ")";
+				sFileName = sName + sExt;
+			}
+			f = new File( sFileName );
+		}
+		return sFileName;
+	}
+	
+	private static String getLeftPart( String sFileName ) {
+		if( !sFileName.contains(".") ) return sFileName;
+		return sFileName.substring(0,sFileName.lastIndexOf('.'));
+	}
+	
+	private static String getExt( String sFileName ) {
+		if( !sFileName.contains(".") ) return "";
+		return sFileName.substring(sFileName.lastIndexOf('.'));
+	}
+	
+	
+	
 	public static File writeTextFile( String sText, String sFileOut ) {
 		File fOut = null;
 		PrintWriter pwOut = null;

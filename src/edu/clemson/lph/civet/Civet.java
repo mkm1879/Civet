@@ -64,6 +64,7 @@ public class Civet {
 			try {
 				robbie = new COKSRobot();
 				robbie.start();
+				System.out.println("Running in Robot Mode\nMinimize but do not close this Command Window");
 			} catch (IOException e) {
 				logger.error("Failed to start robot", e);
 				System.exit(1);

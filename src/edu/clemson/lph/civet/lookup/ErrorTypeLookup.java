@@ -75,11 +75,15 @@ public class ErrorTypeLookup {
 				 String sDescription = line.get( parser.getLabelIdx( "Description" ) );
 				 String sDisplaySequence = line.get( parser.getLabelIdx( "DisplaySequence" ) );
 				 Integer iDisplaySequence = null;
+				 try {
 					 iDisplaySequence = Integer.parseInt(sDisplaySequence);
-					 Error error = new Error(sShortName, sDescription, iDisplaySequence);
-					 keyErrorMap.put(sShortName, error);
-					 descriptionKeyMap.put(sDescription, sShortName);
-					 aErrorTypes.add(sDescription);
+				 } catch( Exception e ) {
+					 iDisplaySequence = 90;
+				 }
+				 Error error = new Error(sShortName, sDescription, iDisplaySequence);
+				 keyErrorMap.put(sShortName, error);
+				 descriptionKeyMap.put(sDescription, sShortName);
+				 aErrorTypes.add(sDescription);
 				 line = parser.getNext();
 			}
 		} catch (IOException e) {

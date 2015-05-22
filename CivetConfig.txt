@@ -25,7 +25,7 @@ saveCopies=true
 
 #Web Service Settings
 standAlone=no
-herdsWebServiceURL=http://lphapps/usaherds/WebService/ExternalMessages.asmx
+herdsWebServiceURL=http://lphstage/usaherds/WebService/ExternalMessages.asmx
 
 #Email setup
 smtpHost=mail.clemson.edu

@@ -114,7 +114,12 @@ public class PurposeLookup extends DBComboBoxModel implements DBTableSource {
 					 sUSAHACode = sUSAHACode.toLowerCase();
 				 String sPurposeName = line.get( parser.getLabelIdx( "Description" ) );
 				 String sDisplaySequence = line.get( parser.getLabelIdx( "DisplaySequence" ) );
-				 int iDisplaySequence = Integer.parseInt(sDisplaySequence);
+				 int iDisplaySequence = 90;
+				 try {
+					 iDisplaySequence = Integer.parseInt(sDisplaySequence);
+				 } catch( Exception e ) {
+					 iDisplaySequence = 90;
+				 }
 				 Purpose purpose = new Purpose(iPurposeKey, sUSAHACode, sPurposeName, iDisplaySequence);
 				 purposeNameMap.put(sPurposeName, purpose);
 				 purposeCodeMap.put(sUSAHACode, purpose);

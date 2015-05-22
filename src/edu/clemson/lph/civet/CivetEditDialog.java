@@ -96,6 +96,7 @@ import edu.clemson.lph.dialogs.QuestionDialog;
 import edu.clemson.lph.dialogs.YesNoDialog;
 import edu.clemson.lph.pdfgen.PDFOpener;
 import edu.clemson.lph.pdfgen.PDFUtils;
+import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.PremCheckSum;
 
 import javax.swing.border.TitledBorder;
@@ -1531,6 +1532,9 @@ public final class CivetEditDialog extends JFrame {
     			if( fNew.exists() ) {
     				MessageDialog.showMessage(this, "Civet Error", fNew.getAbsolutePath() + " already exists in OutBox.\n" +
     							"Check that it really is a duplicate and manually delete.");
+    				String sOutPath = fNew.getAbsolutePath();
+    				sOutPath = FileUtils.incrementFileName(sOutPath);
+    				fNew = new File( sOutPath );
     			}
     			boolean success = fCurrent.renameTo(fNew);
     			if (!success) {
