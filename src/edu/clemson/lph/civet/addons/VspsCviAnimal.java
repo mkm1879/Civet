@@ -91,7 +91,7 @@ public class VspsCviAnimal {
 	}
 	
 	public String getBreed() throws IOException {
-		int iCol = parser.getLabelIdx("Type");
+		int iCol = parser.getLabelIdx("Breed");
 		if( iCol < 0 || iCol >= aCols.size() )
 			return null;
 		else if( aCols.get(iCol).trim().length() == 0 )

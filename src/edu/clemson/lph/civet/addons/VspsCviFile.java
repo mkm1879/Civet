@@ -36,6 +36,7 @@ import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
+import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
 public class VspsCviFile implements AddOn {
@@ -91,7 +92,36 @@ public class VspsCviFile implements AddOn {
 		CivetConfig.checkAllConfig();
 		logger.setLevel(CivetConfig.getLogLevel());
 		VspsCviFile me = new VspsCviFile();
-		me.printme(new File("cviExport_VSPS_ComplexRemarks.csv"));
+		me.printme(fixCSV(new File("./VSPSData/FixID/cviExport_Apr-Jun13BovImport.csv")));
+	}
+	
+	private static File fixCSV( File fIn ) {
+		String sFileName = fIn.getAbsolutePath();
+		String sFileNameOut = sFileName.substring(0,sFileName.lastIndexOf('.'))+"Fix.csv";
+		File fOut = new File(sFileNameOut);
+		try {
+			String sContent = FileUtils.readTextFile(fIn);
+			String sNewContent = fixString( sContent );
+			FileUtils.writeTextFile(sNewContent, fOut.getAbsolutePath());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+		return fOut;
+	}
+	
+	private static String fixString( String sIn ) {
+		StringBuffer sb = new StringBuffer();
+		char cThis, cNext;
+		for( int i = 0; i < sIn.length()-1; i++ ) {
+			cThis = sIn.charAt(i);
+			cNext = sIn.charAt(i+1);
+			if( (cThis == '\n' || cThis == '\r') && cNext != '"' ) 
+				cThis = ' ';
+			sb.append(cThis);
+		}
+		sb.append( sIn.charAt(sIn.length()-1) );
+		return sb.toString();
 	}
 	
 	/**
@@ -149,10 +179,10 @@ public class VspsCviFile implements AddOn {
 			VspsCviAnimal animal = new VspsCviAnimal( aCols, parser );
 			thisCVI.addCVIAnimal(animal);
 			aCols = parser.getNext();
+			// End of file
 			if( aCols == null ) break;
 			sNextCVINumber = aCols.get(parser.getLabelIdx("Certificate Number"));
 		} while( sCVINumber.equals(sNextCVINumber) );
-		parser.back();
 		return thisCVI;
 	}
 
