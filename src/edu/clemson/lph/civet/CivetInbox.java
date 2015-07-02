@@ -58,7 +58,7 @@ import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.10d";
+	public static final String VERSION = "3.10d Local";
 	private static final String IDRLICENSE = "\n\nContains material copyrighted by IDRSolutions for the sole purpose" +
 	"of evaluating its JPedalXFA library in this application.\n\n" +
 	"Reuse or redistribution of this application is prohibited.\n\n" +
@@ -325,7 +325,7 @@ public class CivetInbox extends JFrame {
 		// Only include add ons in local version
 		// This is a kluge until I figure out how to package add ons differently for local use
 		// in a better build cycle.
-		if( VERSION.endsWith("local") ) {
+		if( VERSION.toLowerCase().endsWith("local") ) {
 			menuAddOns = new JMenu( "Add Ons");
 			menuBar1.add(menuAddOns);
 			// Once we set it up right, the package edu.clemson.lph.civet.addons will

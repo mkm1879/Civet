@@ -72,17 +72,21 @@ public class CSVParserWrapper {
 	}
 	public CSVParserWrapper(CSVParser pIn) throws IOException {
 		if( pIn == null ) return;
-		for( CSVRecord r : pIn.getRecords() ) {
-			List<String> aRow = new ArrayList<String>();
-			for( int i = 0; i < r.size(); i++ ) {
-				String sField = r.get(i);
-				aRow.add(sField);
+		try {
+			for( CSVRecord r : pIn.getRecords() ) {
+				List<String> aRow = new ArrayList<String>();
+				for( int i = 0; i < r.size(); i++ ) {
+					String sField = r.get(i);
+					aRow.add(sField);
+				}
+				aRows.add(aRow);
 			}
-			aRows.add(aRow);
+			iRows = aRows.size();
+			iCurrent = 1;
 		}
-		iRows = aRows.size();
-		iCurrent = 1;
-
+		finally {
+			pIn.close();
+		}
 	}
 
 	

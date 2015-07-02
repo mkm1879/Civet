@@ -73,7 +73,8 @@ public class VspsCviFile implements AddOn {
 	
 	private void saveme(Window parent, DatabaseConnectionFactory factory, File fIn) {
 		try {
-			CSVParser parserIn = new CSVParser( new FileReader(fIn), CSVFormat.EXCEL );
+			File fOut = fixCSV(fIn);
+			CSVParser parserIn = new CSVParser( new FileReader(fOut), CSVFormat.EXCEL );
 			parser = new LabeledCSVParser( parserIn );
 			aCols = parser.getNext();
 		} catch (FileNotFoundException e) {
@@ -92,7 +93,7 @@ public class VspsCviFile implements AddOn {
 		CivetConfig.checkAllConfig();
 		logger.setLevel(CivetConfig.getLogLevel());
 		VspsCviFile me = new VspsCviFile();
-		me.printme(fixCSV(new File("./VSPSData/FixID/cviExport_Apr-Jun13BovImport.csv")));
+		me.printme(fixCSV(new File("./VSPSData/TestLineBreakVSPSCVI_NOEXCEL.csv")));
 	}
 	
 	private static File fixCSV( File fIn ) {

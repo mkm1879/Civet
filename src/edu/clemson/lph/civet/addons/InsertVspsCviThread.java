@@ -217,7 +217,7 @@ public class InsertVspsCviThread extends Thread {
 					ps.executeUpdate();
 				}
 				ps.close();
-				sQuery = "exec "+CivetConfig.getDbDatabaseName()+"."+CivetConfig.getDbCivetSchemaName()+".InsVspsCVIAnimal ?, ?, ?, ?, ?, ?, ?";
+				sQuery = "exec "+CivetConfig.getDbDatabaseName()+"."+CivetConfig.getDbCivetSchemaName()+".InsVspsCVIAnimal ?, ?, ?, ?, ?, ?, ?, ?";
 				ps = newConn.prepareStatement(sQuery);
 				for( VspsCviAnimal animal : cvi.getAnimals() ) {
 					if( "A single animal".equalsIgnoreCase(animal.getType()) ) {
@@ -225,6 +225,7 @@ public class InsertVspsCviThread extends Thread {
 						ps.setInt(iFieldNo++, iCurrentCVIKey);
 						setStringOrNull(ps, iFieldNo++, animal.getSpecies());
 						setStringOrNull(ps, iFieldNo++, animal.getGender());
+						setStringOrNull(ps, iFieldNo++, animal.getFirstOfficialIdType());						
 						setStringOrNull(ps, iFieldNo++, animal.getFirstOfficialId());
 						setStringOrNull(ps, iFieldNo++, animal.getFirstOtherId());
 						setStringOrNull(ps, iFieldNo++, animal.getBreed());

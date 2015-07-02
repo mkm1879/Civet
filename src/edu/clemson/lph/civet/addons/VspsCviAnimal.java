@@ -35,6 +35,7 @@ public class VspsCviAnimal {
 	private DateFormat df = new SimpleDateFormat( "dd-MMM-yy");
 	private DateFormat df2 = new SimpleDateFormat( "d-MMM-yy");
 	private String sFirstOfficial = null;
+	private String sFirstOfficialType = null;
 	private boolean bCheckedIds = false;
 	
 	VspsCviAnimal( List<String> aColsIn, LabeledCSVParser parserIn ) {
@@ -207,20 +208,46 @@ public class VspsCviAnimal {
 	 * @throws IOException
 	 */
 	public String getFirstOfficialId() throws IOException {
-		if( !bCheckedIds ) {
-		for( int i = 1; i <= 5; i++ ) {
-			String sIdType = getIdentifierType(i);
-			String sId = getIdentifier(i);
-			if( ( sIdType != null && isOfficialIdType(sIdType) ) || ( sId != null && isOfficialId( sId ) ) ) { 
-				sFirstOfficial = sId.trim();
-				break;
-			}
-		}
-		bCheckedIds = true;
-		}
+		checkIds();
 		return sFirstOfficial;
 	}
 	
+	/**
+	 * Look for Id that fits a common official id pattern.
+	 * @return one Id string or null if nothing "looks" like an official id
+	 * @throws IOException
+	 */
+	public String getFirstOfficialIdType() throws IOException {
+		checkIds();
+		return sFirstOfficialType;
+	}
+	
+	/**
+	 * Look for Id that fits a common official id pattern.
+	 * Store the ID in sFirstOfficial and type in sFirstOfficialType
+	 * @throws IOException
+	 */
+	private void checkIds()  throws IOException {
+		if( !bCheckedIds ) {
+			for( int i = 1; i <= 5; i++ ) {
+				String sIdType = getIdentifierType(i);
+				String sId = getIdentifier(i);
+				if( ( sIdType != null && isOfficialIdType(sIdType) ) || ( sId != null && isOfficialId( sId ) ) ) { 
+					sFirstOfficial = sId.trim();
+					if( "USDA Metal Tag".equalsIgnoreCase(sIdType) ) {
+						if( sId.trim().length() == 9 ) 
+							sIdType = "NUES9";
+						else if( sId.trim().length() == 8 )
+							sIdType = "NUES8";
+					}
+					sFirstOfficialType = sIdType;
+					break;
+				}
+			}
+			bCheckedIds = true;
+		}
+	}
+
 	
 	/**
 	 * Look for Id that fits a common official id pattern.
@@ -261,8 +288,25 @@ public class VspsCviAnimal {
 			return null;
 		else if( aCols.get(iCol).trim().length() == 0 )
 			return null;
-		else
-			return  aCols.get(iCol);
+		else {
+			String sId = aCols.get(iCol);
+			if( "RFID".equalsIgnoreCase(getIdentifierType(iIdNum)) ) {
+				sId = digitsOnly( sId );
+			}
+			return sId;
+		}
+	}
+	
+	public String digitsOnly( String sIn ) {
+		StringBuffer sb = new StringBuffer();
+		char cNext;
+		for( int i = 0; i < sIn.length(); i++ ) {
+			cNext = sIn.charAt(i);
+			if( Character.isDigit(cNext) ) {
+				sb.append(cNext);
+			}
+		}
+		return sb.toString();
 	}
 
 }
