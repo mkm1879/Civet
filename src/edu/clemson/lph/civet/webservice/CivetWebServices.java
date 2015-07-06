@@ -161,8 +161,10 @@ public class CivetWebServices {
 			writer.flush();
 			String sOut = swOut.toString();
 //			System.out.println(sOut);
-			if( sOut.contains("Invalid Username/Password"))
+			if( sOut.contains("Invalid Username/Password")) {
+				logger.error(sOut);
 				bRet = false;
+			}
 			writer.close();
 		} catch (Exception e) {
 			throw new WebServiceException(e);
