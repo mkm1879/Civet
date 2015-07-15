@@ -282,6 +282,45 @@ public class CviMetaDataXml {
 		
 	}
 
+	
+	public void setCVINumberSource( String sCVINumberSource ) {
+		if( sCVINumberSource == null || sCVINumberSource.trim().length() == 0 ) return;
+		if( doc == null ) {
+			logger.error(new Exception("setCVINumberSource called with null Document"));
+			return;
+		}
+		Element rootE = doc.getDocumentElement();
+		if( rootE == null ) {
+			logger.error(new Exception("setCVINumberSource could not find document element"));		
+			return;
+		}
+		Element eCVINumberSource = XMLUtility.findFirstChildElementByName(rootE, "errorNote");
+		if( eCVINumberSource == null ) {
+			eCVINumberSource = doc.createElement("CVINumberSource");
+			rootE.appendChild(eCVINumberSource);
+		}
+		eCVINumberSource.setTextContent(sCVINumberSource);
+	}
+	
+	public String getCVINumberSource() {
+		String sRet = null;
+		if( doc == null ) {
+			logger.error(new Exception("setCVINumberSource called with null Document"));
+			return null;
+		}
+		Element rootE = doc.getDocumentElement();
+		if( rootE == null ) {
+			logger.error(new Exception("setCVINumberSource could not find document element"));		
+			return null;
+		}
+		Element eCVINumberSource = XMLUtility.findFirstChildElementByName(rootE, "CVINumberSource");
+		if( eCVINumberSource != null )
+			sRet = eCVINumberSource.getTextContent();
+		return sRet;
+		
+	}
+
+	
 	public Document getDocument() {
 		return doc;
 	}
