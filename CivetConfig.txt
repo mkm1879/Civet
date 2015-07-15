@@ -6,6 +6,7 @@ homeStateKey=56
 
 # Still working on dealing with USAHERDS StateIdentifiers that look like LIDS
 brokenLIDs=true
+stateIDChecksum=false
 
 # When importing CO/KS PDFs, automatically set received date as today?
 defaultReceivedDate=true

@@ -53,6 +53,7 @@ public class CivetConfig {
 	private static String sDBUserName = null;
 	private static String sDBPassword = null;
 	private static Boolean bSmall;
+	private static boolean bStateIDChecksum;
 	
 
 	/**
@@ -146,6 +147,21 @@ public class CivetConfig {
 		return bBrokenLIDs;
 	}	
 	
+	
+	public static boolean hasStateIDChecksum() {
+		if( bBrokenLIDs == null ) {
+			String sVal = props.getProperty("stateIDChecksum");
+			// default to true;
+			if( sVal == null || sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bStateIDChecksum = true;
+			}
+			else {
+				bStateIDChecksum = false;
+			}
+		}
+		return bStateIDChecksum;
+	}	
+
 	public static void setStandAlone( boolean standAlone ) {
 		bStandAlone = standAlone;
 	}

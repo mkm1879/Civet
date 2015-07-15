@@ -1,5 +1,7 @@
 package edu.clemson.lph.utils;
 
+import edu.clemson.lph.civet.CivetConfig;
+
 /*
 Copyright 2014 Michael K Martin
 
@@ -78,6 +80,7 @@ public class PremCheckSum {
    */
   public static boolean isValid( String sID ) throws Exception {
     if( sID == null || sID.trim().length() == 0 || sID.startsWith("*") ) return true;  // Ignore temporary numbers
+    if( sID.trim().length() == 8 && !CivetConfig.hasStateIDChecksum() ) return true;  // Ignore State IDs in states without checksums
     if( sID.startsWith("OO") ) return false; // 'O' conflicts with 0 and is not allowed any longer
     char cCheckSum2 = sID.charAt( sID.length() -1 );
     String sID2 = sID.substring( 0, sID.length() - 1 );
@@ -136,6 +139,10 @@ public class PremCheckSum {
       return null;
     }
 
+  }
+  
+  public static void main( String args[] ) {
+	  System.out.println( findTypo( "IN73007P") );
   }
   
 
