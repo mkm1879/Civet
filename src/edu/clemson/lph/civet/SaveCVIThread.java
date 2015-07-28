@@ -337,6 +337,7 @@ public class SaveCVIThread extends Thread {
 		if( sErrorNotes != null && sErrorNotes.trim().length() > 0 )
 			metaData.setErrorNote(sErrorNotes);
 		metaData.setCVINumberSource(sCVINbrSource);
+	System.out.println(metaData.getXmlString());
 		xmlBuilder.addMetadataAttachement(metaData);
 		xmlBuilder.addPDFAttachement(bAttachmentFileBytes, sAttachmentFileName);
 		return xmlBuilder.getXMLString();

@@ -294,9 +294,9 @@ public class CviMetaDataXml {
 			logger.error(new Exception("setCVINumberSource could not find document element"));		
 			return;
 		}
-		Element eCVINumberSource = XMLUtility.findFirstChildElementByName(rootE, "errorNote");
+		Element eCVINumberSource = XMLUtility.findFirstChildElementByName(rootE, "cviNumberSource");
 		if( eCVINumberSource == null ) {
-			eCVINumberSource = doc.createElement("CVINumberSource");
+			eCVINumberSource = doc.createElement("cviNumberSource");
 			rootE.appendChild(eCVINumberSource);
 		}
 		eCVINumberSource.setTextContent(sCVINumberSource);
@@ -313,7 +313,7 @@ public class CviMetaDataXml {
 			logger.error(new Exception("setCVINumberSource could not find document element"));		
 			return null;
 		}
-		Element eCVINumberSource = XMLUtility.findFirstChildElementByName(rootE, "CVINumberSource");
+		Element eCVINumberSource = XMLUtility.findFirstChildElementByName(rootE, "cviNumberSource");
 		if( eCVINumberSource != null )
 			sRet = eCVINumberSource.getTextContent();
 		return sRet;

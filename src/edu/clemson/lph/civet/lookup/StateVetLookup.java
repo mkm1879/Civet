@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetConfig;
@@ -57,6 +58,14 @@ public class StateVetLookup implements DBTableSource {
 			readStateVetTable();
 		vet = vetStateMap.get(CivetConfig.getHomeState());
 	}
+//	
+//	public static void main( String sArgs[] ) {
+//		PropertyConfigurator.configure("CivetConfig.txt");
+//		// Fail now so config file and required files can be fixed before work is done.
+//		CivetConfig.checkAllConfig();
+//		StateVetLookup lu = new StateVetLookup( "TN" );
+//		System.out.println(lu.getFileType() );
+//	}
 
 	public StateVetLookup( String sStateCode ) {
 		if( vetStateMap == null )
