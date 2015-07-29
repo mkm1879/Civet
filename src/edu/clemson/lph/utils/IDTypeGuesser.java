@@ -45,26 +45,28 @@ public class IDTypeGuesser {
 	
 	public static String getTagType( String sTag ) {
 		String sRet = "UN";
-		for( String sRegex : mTypeMap.keySet() ) {
-			Pattern pattern = Pattern.compile(sRegex);
-			Matcher matcher = pattern.matcher(sTag.trim());
-		    if( matcher.find() ) {
-		    	String sType = mTypeMap.get(sRegex);
-		    	try {
-					if( sType.equals("NPIN") && !PremCheckSum.isValid(sTag.toUpperCase()) ) {
+		if( sTag != null && sTag.trim().length() > 0 ) {
+			for( String sRegex : mTypeMap.keySet() ) {
+				Pattern pattern = Pattern.compile(sRegex);
+				Matcher matcher = pattern.matcher(sTag.trim());
+				if( matcher.find() ) {
+					String sType = mTypeMap.get(sRegex);
+					try {
+						if( sType.equals("NPIN") && !PremCheckSum.isValid(sTag.toUpperCase()) ) {
+							sRet = "UN";
+							break;
+						}
+						else if( sType.equals("TAT") && States.getState( sTag.substring(0,2) ) == null ) {
+							sRet = "UN";
+							break;
+						}
+						sRet = sType;
+					} catch (Exception e) {
 						sRet = "UN";
-						break;
 					}
-					else if( sType.equals("TAT") && States.getState( sTag.substring(0,2) ) == null ) {
-						sRet = "UN";
-						break;
-					}
-					sRet = sType;
-				} catch (Exception e) {
-					sRet = "UN";
-				}
-		    }	
+				}	
 
+			}
 		}
 		return sRet;
 	}

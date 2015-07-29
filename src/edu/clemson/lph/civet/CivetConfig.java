@@ -440,7 +440,7 @@ public class CivetConfig {
 		}
 		return sRet;
 	}
-		
+	
 	public static String getBulkLoadDirPath() {
 		String sRet = props.getProperty("bulkLoadDirPath");
 		if( sRet == null ) exitError("bulkLoadDirPath");
@@ -448,6 +448,18 @@ public class CivetConfig {
 		if( !f.exists() || !f.isDirectory() ) {
 			logger.error( "bulkLoadDirPath " + sRet + " does not exist or is not a folder");
 			System.exit(1);
+		}
+		return sRet;
+	}
+
+	public static String getVspsDirPath() {
+		String sRet = props.getProperty("vspsDirPath");
+		if( sRet == null ) 
+			logger.error( "vspsLoadDirPath not set using install folder");
+		File f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			logger.error( "vspsLoadDirPath " + sRet + " does not exist or is not a folder");
+			sRet = ".";
 		}
 		return sRet;
 	}

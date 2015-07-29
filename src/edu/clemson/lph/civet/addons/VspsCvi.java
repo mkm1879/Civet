@@ -36,7 +36,6 @@ public class VspsCvi {
 	private LabeledCSVParser parser = null;
 	private List<String> aCols;
 	private List<VspsCviAnimal> lAnimals;
-	private int iCurrent = 0;
 	private DateFormat df = new SimpleDateFormat( "dd-MMM-yyyy");
 	private DateFormat df2 = new SimpleDateFormat( "dd-MMM-yyyy");
 
@@ -60,7 +59,7 @@ public class VspsCvi {
 			Integer iCount = animal.getCount();
 			if( iCount == null ) 
 				iCount = 1;
-			String sSpecies = animal.getSpecies();
+			String sSpecies = VspsCodeLookup.getSpCode(animal.getSpecies());
 			String sGender = animal.getGender();
 			if( "Intact Male".equals(sGender) )
 				sGender = "Male";
@@ -226,7 +225,7 @@ public class VspsCvi {
 	}
 	
 	public String getPurpose() throws IOException {
-		String sRet = "Interstate";
+		String sRet = "other";
 		int iCol = parser.getLabelIdx("Purpose");
 		if( iCol < 0 || iCol >= aCols.size() )
 			return null;
@@ -235,10 +234,16 @@ public class VspsCvi {
 		else {
 			String sPurpose = aCols.get(iCol);
 			if( "Transit".equals(sPurpose) )
-				sRet = "Interstate";
+				sRet = "other";
 			else 
 				sRet = sPurpose;
 		}
+		return sRet; 
+	}
+	
+	public String getStdPurpose() throws IOException {
+		String sRet = getPurpose();
+		//TODO: Convert to standard.
 		return sRet; 
 	}
 	
@@ -270,14 +275,6 @@ public class VspsCvi {
 	
 	public VspsCviEntity getCarrier() {
 		return new VspsCviEntity( aCols, parser, "Carrier");
-	}
-
-	
-	public VspsCviAnimal nextAnimal() {
-		if( iCurrent >= lAnimals.size() )
-			return null;
-		else
-			return lAnimals.get(iCurrent++);
 	}
 
 }

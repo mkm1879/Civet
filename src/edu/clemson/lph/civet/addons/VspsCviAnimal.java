@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.utils.IDTypeGuesser;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
 public class VspsCviAnimal {
@@ -240,7 +241,16 @@ public class VspsCviAnimal {
 						else if( sId.trim().length() == 8 )
 							sIdType = "NUES8";
 					}
-					sFirstOfficialType = sIdType;
+					else if( "Registered Name of Animal".equalsIgnoreCase(sIdType) ) {
+						sIdType = "NAME";
+					}
+					else if( "Tattoo".equalsIgnoreCase(sIdType) ) {
+						sIdType = "TAT";
+					}
+					else if( "Call Name".equalsIgnoreCase(sIdType) ) {
+						sIdType = "OTH";
+					}
+					sFirstOfficialType = IDTypeGuesser.getTagType(sId);
 					break;
 				}
 			}

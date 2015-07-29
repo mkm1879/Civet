@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetConfig;

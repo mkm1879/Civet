@@ -21,9 +21,11 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -31,11 +33,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.utils.XMLUtility;
 
 public class CviMetaDataXml {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+	public static final String CVI_SRC_CIVET = "Civet";
+	public static final String CVI_SRC_VSPS = "VSPS";
 	private Document doc = null;
 	
 	public CviMetaDataXml() {

@@ -46,9 +46,7 @@ import edu.clemson.lph.utils.IDTypeGuesser;
 public class SaveCVIThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private static final long MAX_SANE_SIZE = 5000000;
-	private static final String CVI_SRC_CIVET = "Civet";
-	private static final String CVI_SRC_VSPS = "VSPS";
-	private String sCVINbrSource = CVI_SRC_CIVET;
+	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_CIVET;
 	private CivetEditDialog dlg;
 	private ProgressDialog prog;
 	private StdeCviXml stdXml = null;
@@ -167,14 +165,7 @@ public class SaveCVIThread extends Thread {
 				this.aAnimalIDs.add( rID );
 		this.bXFA = bXFAIn;
 	}
-	
-	public void setSrcCivet() {
-		sCVINbrSource = CVI_SRC_CIVET;
-	}
-	
-	public void setSrcVSPS() {
-		sCVINbrSource = CVI_SRC_VSPS;
-	}
+
 
 	@Override
 	public void run() {
