@@ -154,6 +154,7 @@ public class InsertVspsCviThread extends Thread {
 		CviMetaDataXml metaData = new CviMetaDataXml();
 		metaData.setCertificateNbr(cvi.getCVINumber());
 		metaData.setBureauReceiptDate(cvi.getCreateDate());
+		metaData.setErrorNote("VSPS Download");
 		metaData.setCVINumberSource(sCVINbrSource);
 	System.out.println(metaData.getXmlString());
 		xmlBuilder.addMetadataAttachement(metaData);

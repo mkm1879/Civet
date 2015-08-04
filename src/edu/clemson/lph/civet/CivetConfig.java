@@ -454,8 +454,10 @@ public class CivetConfig {
 
 	public static String getVspsDirPath() {
 		String sRet = props.getProperty("vspsDirPath");
-		if( sRet == null ) 
+		if( sRet == null ) {
 			logger.error( "vspsLoadDirPath not set using install folder");
+			return ".";
+		}
 		File f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
 			logger.error( "vspsLoadDirPath " + sRet + " does not exist or is not a folder");
