@@ -110,13 +110,13 @@ public class SendOutboundCVIEmailThread extends Thread {
 				ArrayList<StdeCviXml> aCVIsOut = new ArrayList<StdeCviXml>();
 				long lPDFSize = 0;
 				int iPart = 1;
-				int iPdf = 1; // count to bail on last one.
+				int iPdf = 0; // count to bail on last one.
 				for( File fNext : aCVIsIn ) {
 					String sXml = FileUtils.readTextFile(fNext);
 					StdeCviXml stdXml = new StdeCviXml( sXml );
 					byte[] pdfBytes = stdXml.getOriginalCVI();
 					if( pdfBytes == null || pdfBytes.length < 1 )
-						throw new Exception("Missing CVI attachment in send errors");
+						throw new Exception("Missing CVI attachment in send email");
 					aCVIsOut.add(stdXml);
 					aCVIFilesOut.add(fNext);
 					lPDFSize += pdfBytes.length;
