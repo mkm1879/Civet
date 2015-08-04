@@ -24,6 +24,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -35,7 +36,6 @@ import org.apache.log4j.PropertyConfigurator;
 import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetConfig;
-import edu.clemson.lph.db.DatabaseConnectionFactory;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
@@ -44,7 +44,6 @@ public class VspsCviFile implements AddOn {
 	
 	private LabeledCSVParser parser = null;
 	private List<String> aCols = null;
-	private DatabaseConnectionFactory factory = null;
 
 
 	/**
@@ -55,9 +54,11 @@ public class VspsCviFile implements AddOn {
 
 	// To be called from CVIHerdsFiler frame
 	public void importVspsFile(Window parent) {
-		File fDir = new File( "E:\\EclipseJava" );
+		String sVspsDir = CivetConfig.getVspsDirPath();
+		File fDir = new File( sVspsDir );
 		JFileChooser open = new JFileChooser( fDir );
-		open.setDialogTitle("Civet: Open PDF File");
+		Action details = open.getActionMap().get("viewTypeDetails");
+		details.actionPerformed(null);		open.setDialogTitle("Civet: Open PDF File");
 		open.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		open.setFileFilter(new FileNameExtensionFilter(
 		        "CSV Files", "csv"));
@@ -65,13 +66,13 @@ public class VspsCviFile implements AddOn {
 		int resultOfFileSelect = open.showOpenDialog(parent);
 		if(resultOfFileSelect==JFileChooser.APPROVE_OPTION){
 			File fIn = open.getSelectedFile();
-			saveme(parent, factory, fIn);
+			saveme(parent, fIn);
 //		    vsps.printme();
 		}
 
 	}
 	
-	private void saveme(Window parent, DatabaseConnectionFactory factory, File fIn) {
+	private void saveme(Window parent, File fIn) {
 		try {
 			File fOut = fixCSV(fIn);
 			CSVParser parserIn = new CSVParser( new FileReader(fOut), CSVFormat.EXCEL );
@@ -82,7 +83,7 @@ public class VspsCviFile implements AddOn {
 		} catch (IOException e) {
 			logger.error(e.getMessage() + "\nCould not read file: " + fIn.getName() );
 		}
-		InsertVspsCviThread thread = new InsertVspsCviThread( parent, factory, this );
+		InsertVspsCviThread thread = new InsertVspsCviThread( parent, this );
 		thread.start();
 	}
 	
@@ -128,7 +129,6 @@ public class VspsCviFile implements AddOn {
 	/**
 	 * Test only
 	 */
-	@SuppressWarnings("unused")
 	private void printme(File fIn) {
 		try {
 			CSVParser parserIn = new CSVParser( new FileReader(fIn), CSVFormat.EXCEL );
@@ -194,8 +194,6 @@ public class VspsCviFile implements AddOn {
 
 	@Override
 	public void execute(Window parent) {
-		if( factory == null )
-			factory = InitAddOns.getFactory();
 		importVspsFile(parent);	}
 
 }

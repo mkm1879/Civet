@@ -54,6 +54,7 @@ EmailOutDirPath=E:\\Documents\\Civet\\CivetToBeMailedOut\\
 EmailErrorsDirPath=E:\\Documents\\Civet\\CivetToBeMailedErrors\\
 OutputDirPath=E:\\Documents\\Civet\\CivetOutbox\\
 bulkLoadDirPath=E:\\Documents\\Epi\\Swine\\
+vspsDirPath=E:\\EclipseJava\\Civet\\VSPSData\\
 CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
 StdSchema=E:\\Documents\\Civet\\ecviDraftRelaxed.xsd
 rotation=0

@@ -173,6 +173,21 @@ public class VspsCviEntity {
 		else
 			return  aCols.get(iCol);
 	}
+	
+	public String getPhoneDigits() throws IOException {
+		String sRet = null;
+		String sPhone = getPhone();
+		if( sPhone != null && sPhone.trim().length() >= 10 ) {
+			StringBuffer sb = new StringBuffer();
+			for( int i = 0; i < sPhone.length(); i++ ) {
+				char cNext = sPhone.charAt(i);
+				if( Character.isDigit(cNext) )
+					sb.append(cNext);
+			}
+			sRet = sb.toString();
+		}
+		return sRet;
+	}
 
 	public String getFax() throws IOException {
 		int iCol = iDelta + parser.getLabelIdx("Origin Fax");

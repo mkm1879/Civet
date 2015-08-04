@@ -110,7 +110,10 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 				rows.add( v );
 			}
 		}
-		vet = rows.get(0);
+		if( rows != null && rows.size() > 0 )
+			vet = rows.get(0);
+		else
+			vet = null;
 	}
 
 	private boolean bMatch( Vet v, String sLastName, String sFirstName, 
