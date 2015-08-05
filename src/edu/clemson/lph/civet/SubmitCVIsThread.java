@@ -23,6 +23,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
@@ -31,6 +32,10 @@ import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.FileUtils;
 
 public class SubmitCVIsThread extends Thread {
+	protected static final Logger logger = Logger.getLogger(Civet.class.getName());
+	static {
+	     logger.setLevel(CivetConfig.getLogLevel());
+	}
 	private CivetWebServices service = null;
 	public SubmitCVIsThread(CivetInbox parent, List<File> files) {
 		this.parent = parent;
@@ -41,7 +46,6 @@ public class SubmitCVIsThread extends Thread {
 		prog.setVisible(true);
 		service = new CivetWebServices();
 	}
-	protected static final Logger logger = Logger.getLogger(Civet.class.getName());
 	protected List<File> allFiles = null;
 	protected String sCurrentFilePath = "";
 	protected ProgressDialog prog;
@@ -111,7 +115,14 @@ public class SubmitCVIsThread extends Thread {
 				return;
 			}
 			String sRet = service.sendCviXML(sXML);
-			if( sRet == null || sRet.toLowerCase().contains("error") )
+			final String sReturn = sRet;
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					logger.info("Return code from Civet WS: " + sReturn);
+				}
+			});		
+
+			if( sRet == null || sRet.toLowerCase().contains("error") || !sRet.startsWith("00") )
 				throw new Exception( "Error from web service\n" + sRet);
 			
 		} catch (final Exception e) {
