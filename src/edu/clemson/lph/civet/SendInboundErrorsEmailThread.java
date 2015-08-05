@@ -135,7 +135,8 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 					aLetterBytes.add(letterBytes);
 					lAttachmentsSize += pdfBytes.length + letterBytes.length;
 					// Three reasons to pack up and send.  #, Total Size, No more.
-					if( aCVIsOut.size() >= 5 || lAttachmentsSize > CivetConfig.getMaxAttachSize() || iPdf++ >= aCVIsIn.size() ) {					
+					iPdf++;
+					if( aCVIsOut.size() >= 5 || lAttachmentsSize > CivetConfig.getMaxAttachSize() || iPdf >= aCVIsIn.size() ) {					
 						if( sCurrentEmail == null || !sCurrentEmail.contains("@") ) {
 							MessageDialog.messageWait(prog.getWindowParent(), "Civet: Email", "No email address for state " +
 									sState + " be sure to mail physical copies");

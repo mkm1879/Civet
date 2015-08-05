@@ -57,8 +57,6 @@ import edu.clemson.lph.utils.XMLUtility;
 public class CivetWebServices {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
-		// BasicConfigurator replaced with PropertyConfigurator.
-	     PropertyConfigurator.configure("CivetConfig.txt");
 	     logger.setLevel(Level.ERROR);
 	}
 	public static final String CVI_UPLOAD_MESSAGE_TYPE = "Civet XML";

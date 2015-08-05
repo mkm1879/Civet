@@ -58,12 +58,15 @@ import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.10e";
+	public static final String VERSION = "3.11";
 	private static final String IDRLICENSE = "\n\nContains material copyrighted by IDRSolutions for the sole purpose" +
 	"of evaluating its JPedalXFA library in this application.\n\n" +
 	"Reuse or redistribution of this application is prohibited.\n\n" +
 	"An LGPL version is available at http://github.com/mkm1879/civet";
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+	static {
+	     logger.setLevel(CivetConfig.getLogLevel());
+	}
 	private JPanel contentPane;
 	private JMenuBar menuBar1 = new JMenuBar();
 	private ImageIcon appIcon;
@@ -369,6 +372,8 @@ public class CivetInbox extends JFrame {
 	void refreshTables() {
 		if( currentModel != null ) {
 			currentModel.refresh();
+			tblInBox.setModel(currentModel);
+			tblInBox.setRowSorter( currentModel.getSorter() );
 		}
 		setMenuItems();
 	}
