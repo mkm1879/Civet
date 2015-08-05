@@ -37,9 +37,6 @@ import edu.clemson.lph.dialogs.TwoLineQuestionDialog;
 
 public class CivetConfig {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
-	static {
-	     logger.setLevel(CivetConfig.getLogLevel());
-	}
 	// initialized in Civet.main via checkAllConfig
 	private static Properties props;
 	private static final int UNK = -1;
