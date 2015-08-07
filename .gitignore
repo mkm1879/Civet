@@ -28,4 +28,34 @@ antbin
 .project
 .properties
 Publish/*
+CertNbrs.txt
+CivetConfig - Copy.txt
+CivetXFA.jar
+CivetXFA.zip
+CivetXFANoCa.jar
+CivetXFANoCa2.jar
+CivetXFATrustHost.jar
+CivetXFAVerbose.jar
+CivetXFAx.jar
+Indiana/
+Logo.png
+OtherUserData/
+PublishCivetLocal.bat
+PublishCivetXFA.bat
+Purposes.txt
+SavedStdXMLFilesTableModel.txt
+TestErrors.cvi
+TestVSPSCvis.txt
+VSPSData/
+clemson.jar
+jpedal-xfa-daily.jar
+jpedalbin/
+jpedalbinbak/
+lib/clemson.jar
+lib/jpedal-standard_expired.jar
+lib/jpedalXFAbak.jar
+lib/jpedalXFAbak2.jar
+lib/jpedalbak.jar
+test.cvi
+webServiceXML/
 
