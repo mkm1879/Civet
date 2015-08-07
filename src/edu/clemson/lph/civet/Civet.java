@@ -76,7 +76,7 @@ public class Civet {
 				CivetConfig.setHERDSPassword( args[1] );
 			}
 			StdErrLog.tieSystemErrToLog();
-			if( !CivetInbox.VERSION.contains("XFA") )
+//			if( !CivetInbox.VERSION.contains("XFA") )
 				System.setProperty("org.jpedal.jai","true");
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
