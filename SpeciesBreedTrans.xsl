@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
+    <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
+    <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
+
     <!-- This is a placeholder for a lookup table to standard species codes -->
     <xsl:template name="Species">
         <xsl:param name="species"/>
@@ -14,6 +17,7 @@
             <xsl:when test="$species ='BOV'">BOV</xsl:when>
             <xsl:when test="$species ='CAM'">CAM</xsl:when>
             <xsl:when test="$species ='CAN'">CAN</xsl:when>
+<xsl:when test="translate($species, $smallcase, $uppercase)='canine'">CAN</xsl:when>
             <xsl:when test="$species ='CAP'">CAP</xsl:when>
             <xsl:when test="$species ='CER'">CER</xsl:when>
             <xsl:when test="$species ='CHI'">CHI</xsl:when>
@@ -48,9 +52,6 @@
     </xsl:template>
 
     <!-- This is a placeholder for a lookup table to standard codes -->
-    <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
-    <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
-
     <xsl:template name="Breed">
         <xsl:param name="species"/>
         <xsl:param name="breed"/>
