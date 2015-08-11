@@ -17,7 +17,7 @@
             <xsl:when test="$species ='BOV'">BOV</xsl:when>
             <xsl:when test="$species ='CAM'">CAM</xsl:when>
             <xsl:when test="$species ='CAN'">CAN</xsl:when>
-<xsl:when test="translate($species, $smallcase, $uppercase)='canine'">CAN</xsl:when>
+<xsl:when test="translate($species, $smallcase, $uppercase)='CANINE'">CAN</xsl:when>
             <xsl:when test="$species ='CAP'">CAP</xsl:when>
             <xsl:when test="$species ='CER'">CER</xsl:when>
             <xsl:when test="$species ='CHI'">CHI</xsl:when>
