@@ -348,6 +348,37 @@ public class StdeCviXmlBuilder {
 		return origin;
 	}
 	
+
+	public Element setOrigin( String sPIN, String sPremName, String sState ) {
+		if( !isValidDoc() )
+			return null;
+		Element origin = null;
+		origin = childElementByName(root,"Origin");
+		if( origin == null ) {
+			origin = doc.createElement("Origin");
+			Node after = childNodeByNames(root,"Destination,Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");
+			root.insertBefore(origin,after);
+			if( sPIN != null && sPIN.trim().length() > 0 ) {
+				Element pin = doc.createElement("PremId");
+				origin.appendChild(pin);
+				pin.setTextContent(sPIN);
+			}
+			if( sPremName != null && sPremName.trim().length() > 0 ) {
+				Element premName = doc.createElement("PremName");
+				origin.appendChild(premName);
+				premName.setTextContent(sPremName);
+			}
+			Element person = doc.createElement("Person");
+			origin.appendChild(person);
+			Element name = doc.createElement("Name");
+			person.appendChild(name);
+			name.setTextContent("NI");
+			setAddress(origin, "NI", "NI", sState, "00000");
+		}
+		return origin;
+	}
+
+	
 	public Element setDestination( String sPIN, String sPremName, String sName, String sPhone ) {
 		if( !isValidDoc() )
 			return null;
@@ -382,6 +413,35 @@ public class StdeCviXmlBuilder {
 		return destination;
 	}
 	
+	public Element setDestination( String sPIN, String sPremName, String sState ) {
+		if( !isValidDoc() )
+			return null;
+		Element destination = null;
+		destination = childElementByName(root,"Destination");
+		if( destination == null ) {
+			destination = doc.createElement("Destination");
+			Node after = childNodeByNames(root,"Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");
+			root.insertBefore(destination, after);
+			if( sPIN != null && sPIN.trim().length() > 0 ) {
+				Element pin = doc.createElement("PremId");
+				destination.appendChild(pin);
+				pin.setTextContent(sPIN);
+			}
+			if( sPremName != null && sPremName.trim().length() > 0 ) {
+				Element premName = doc.createElement("PremName");
+				destination.appendChild(premName);
+				premName.setTextContent(sPremName);
+			}
+			Element person = doc.createElement("Person");
+			destination.appendChild(person);
+			Element name = doc.createElement("Name");
+			person.appendChild(name);
+			name.setTextContent("NI");
+			setAddress(destination, "NI", "NI", sState, "00000");
+		}
+		return destination;
+	}
+
 	public Element setConsignor( String sPremName, String sName, String sPhone ) {
 		if( !isValidDoc() )
 			return null;

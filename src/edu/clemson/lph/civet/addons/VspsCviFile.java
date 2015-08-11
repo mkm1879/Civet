@@ -58,7 +58,8 @@ public class VspsCviFile implements AddOn {
 		File fDir = new File( sVspsDir );
 		JFileChooser open = new JFileChooser( fDir );
 		Action details = open.getActionMap().get("viewTypeDetails");
-		details.actionPerformed(null);		open.setDialogTitle("Civet: Open PDF File");
+		details.actionPerformed(null);		
+		open.setDialogTitle("Civet: Open VSPS CSV File");
 		open.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		open.setFileFilter(new FileNameExtensionFilter(
 		        "CSV Files", "csv"));

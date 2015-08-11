@@ -35,6 +35,7 @@ import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 
 public class InsertVspsCviThread extends Thread {
@@ -70,9 +71,13 @@ public class InsertVspsCviThread extends Thread {
 					continue;
 				prog.setMessage( sProgMsg + cvi.getCVINumber() );
 				String sXML = buildXml ( cvi );
-				System.out.println(sXML);
+//		System.out.println(sXML);
 				// Send it!
-				service.sendCviXML(sXML);
+				String sRet = service.sendCviXML(sXML);
+				if( sRet == null || !sRet.trim().startsWith("00") ) {
+					logger.error( new Exception("Error submitting swine spreadsheet CVI to USAHERDS: ") );
+					MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting to USAHERDS: " + sRet);
+				}
 			}
 		} catch (IOException e) {
 			logger.error(e);
