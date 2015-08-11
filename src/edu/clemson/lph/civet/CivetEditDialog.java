@@ -1022,6 +1022,7 @@ public final class CivetEditDialog extends JFrame {
 
 		jtfNumber = new edu.clemson.lph.controls.DBNumericField();
 		jtfNumber.setSQLType(java.sql.Types.INTEGER);
+		jtfNumber.setRange(1L, CivetConfig.getMaxAnimals());
 		GridBagConstraints gbc_jtfNumber = new GridBagConstraints();
 		gbc_jtfNumber.fill = GridBagConstraints.BOTH;
 		gbc_jtfNumber.insets = new Insets(0, 0, 0, 0);
