@@ -256,32 +256,15 @@ public final class CivetEditDialog extends JFrame {
 	}
 	
 	public void updatePdfDisplay() {
-		updatePdfDisplay(true);
-	}
-		
-	public void updatePdfDisplay(boolean bGUI) {
-	      //wait to ensure decoded
-		pdfDecoder.setPageParameters(getScale(),
-									controller.getCurrentPageNo(),
-									getRotation()); //values scaling (1=100%). page number, rotation + 180
-		pdfDecoder.waitForDecodingToFinish();
-		if( bGUI ) {
-			pdfDecoder.invalidate();
-			pdfDecoder.updateUI();
-			pdfDecoder.validate();
-		}
-	}
-	
-	public void refreshPdfDisplay() {
 		pdfDecoder.setPageParameters(getScale(),
 				controller.getCurrentPageNo(),
-				getRotation()); //values scaling (1=100%). page number
+				getRotation()); //values scaling (1=100%). page number, rotation + 180
 		pdfDecoder.waitForDecodingToFinish();
 		pdfDecoder.invalidate();
 		pdfDecoder.updateUI();
 		pdfDecoder.validate();
 	}
-
+	
 	/**
 	 * This is misnamed now that we have no actual database connection.
 	 * The idea is to isolate those actions that interfere with GUI design.
@@ -408,7 +391,7 @@ public final class CivetEditDialog extends JFrame {
 		JMenuItem mntmRefresh = new JMenuItem("Refresh Display");
 		mntmRefresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				refreshPdfDisplay();
+				updatePdfDisplay();
 			}
 		});
 		mnView.add(mntmRefresh);
