@@ -47,9 +47,11 @@
                 </xsl:call-template>
             </xsl:if>
             <!-- Don't test for number, just assume one if not provided. -->
-            <xsl:call-template name="SmallAnimal">
-                <xsl:with-param name="table" select="vetInspection/cviPG1/species/small/table"/>
-            </xsl:call-template>
+            <xsl:if test="vetInspection/cviPG1/species/samll/table/item/spp!=''">
+                <xsl:call-template name="SmallAnimal">
+                    <xsl:with-param name="table" select="vetInspection/cviPG1/species/small/table"/>
+                </xsl:call-template>
+            </xsl:if> 
             <xsl:if test="vetInspection/cviPG1/species/small/table/item/headCt!=''">
                 <xsl:call-template name="SmallAnimalGroup">
                     <xsl:with-param name="table" select="vetInspection/cviPG1/species/small/table"/>
