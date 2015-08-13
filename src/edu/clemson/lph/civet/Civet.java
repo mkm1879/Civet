@@ -40,6 +40,7 @@ public class Civet {
 	     logger.setLevel(Level.INFO);
 	}
 	private static ProgressDialog prog;
+	private static String sFile = null;
 
 	/**
 	 * Launch the application.
@@ -71,6 +72,12 @@ public class Civet {
 			}
 		}
 		else {
+			if( args.length == 1) {
+				String sFile = args[0];
+				if( sFile != null && ( sFile.toLowerCase().endsWith(".cvi") || sFile.toLowerCase().endsWith(".pdf")) ) {
+					Civet.sFile = sFile;
+				}
+			}
 			if( args.length >= 2 ) {
 				CivetConfig.setHERDSUserName( args[0] );
 				CivetConfig.setHERDSPassword( args[1] );
@@ -103,7 +110,7 @@ public class Civet {
 							System.exit(1);
 						}
 						else {
-							new CivetInbox();
+							new CivetInbox(sFile);
 						}
 					}
 					else {
@@ -119,7 +126,7 @@ public class Civet {
 									SwingUtilities.invokeLater(new Runnable() {
 										public void run() {
 											prog.setVisible(false);
-											new CivetInbox();
+											new CivetInbox(sFile);
 										}
 									});
 								} catch (Exception e) {

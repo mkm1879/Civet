@@ -58,7 +58,7 @@ import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.11a XFA";
+	public static final String VERSION = "3.11b XFA";
 	private static final String IDRLICENSE = "\n\nContains material copyrighted by IDRSolutions for the sole purpose" +
 	"of evaluating its JPedalXFA library in this application.\n\n" +
 	"Reuse or redistribution of this application is prohibited.\n\n" +
@@ -112,7 +112,7 @@ public class CivetInbox extends JFrame {
 
 
 	// for design time only remove before distribution
-	public CivetInbox() {
+	public CivetInbox( String sFile ) {
 		try {
 			initGui();
 			if( !LookupFilesGenerator.isNewThisSession() ) {
@@ -122,7 +122,9 @@ public class CivetInbox extends JFrame {
 		} catch( Throwable t ) {
 			logger.error("Unexpected error in initGui", t);
 		}
-		
+		if( sFile != null ) {
+			doOpenFile( sFile );
+		}
 	}
 	
 	/**
@@ -392,6 +394,23 @@ public class CivetInbox extends JFrame {
 			bOpenAll.setEnabled(true);
 			menuItemFileOpenAll.setEnabled(true);
 		}
+	}
+
+	private void doOpenFile( String sFile ) {
+		if( sFile == null || sFile.trim().length() == 0 ) return;
+		CivetEditDialog dlg = new CivetEditDialog( CivetInbox.this );
+		File fFile = new File(sFile);
+		if( !fFile.exists() ) return;
+		String sFileName = fFile.getName();
+		String sInbox = CivetConfig.getInputDirPath();
+		String sMoveTo = sInbox + sFileName;
+		if( !(sMoveTo.equalsIgnoreCase(sFile)) ){
+			File fMoveTo = new File( sMoveTo );
+			fFile.renameTo(fMoveTo);
+			fFile = fMoveTo;
+		}
+		File selectedFiles[] = {fFile};
+		dlg.openFiles(selectedFiles, false);
 	}
 
 	private void doOpenFiles() {
