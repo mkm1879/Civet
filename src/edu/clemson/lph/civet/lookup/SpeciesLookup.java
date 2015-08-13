@@ -59,9 +59,11 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 		Spp spp = sppCodeMap.get(sSppCode);
 		if( spp == null ) {
 			MessageDialog.messageLater(null, "Civet Error: Missing Species Code", "Species code " + sSppCode + " not found in lookup table.");
-			this.sSpeciesName = "Missing Species Code";
-			this.sSpeciesCode = sSppCode;
+			spp = new Spp("Invalid Species Code",null);
 			return;
+		}
+		if( sSppCode.equalsIgnoreCase("OTH") ) {
+			MessageDialog.messageLater(null, "Civet Warning: Other Species", "Importing Species OTHER. \nUpdate in database later if possible.");
 		}
 		this.sSpeciesName = spp.sSppName;
 		this.sSpeciesCode = spp.sSppCode;
