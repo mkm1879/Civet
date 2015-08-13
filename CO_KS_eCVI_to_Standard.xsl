@@ -47,7 +47,7 @@
                 </xsl:call-template>
             </xsl:if>
             <!-- Don't test for number, just assume one if not provided. -->
-            <xsl:if test="vetInspection/cviPG1/species/samll/table/item/spp!=''">
+            <xsl:if test="vetInspection/cviPG1/species/small/table/item/spp!=''">
                 <xsl:call-template name="SmallAnimal">
                     <xsl:with-param name="table" select="vetInspection/cviPG1/species/small/table"/>
                 </xsl:call-template>
@@ -331,7 +331,7 @@
         <xsl:param name="table"/>
         <xsl:for-each select="$table/item">
             <xsl:variable name="head" select="headCt"/>
-            <xsl:if test="headCt = '' or number($head) = 1">
+            <xsl:if test="$head = '' or number($head) = 1">
                 <xsl:element name="Animal">
                     <!-- CO/KS Small Animal Age is unstructured so not reliably translateable -->
                     <!-- CO/KS Small Animal Species allows free text!!! -->
