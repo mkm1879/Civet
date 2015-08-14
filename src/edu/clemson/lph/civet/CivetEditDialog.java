@@ -209,6 +209,7 @@ public final class CivetEditDialog extends JFrame {
 	private JButton bAddIDs;
 	private JButton bEditLast;
 	private JButton bPDFViewFile;
+	private boolean bPreview;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -231,6 +232,10 @@ public final class CivetEditDialog extends JFrame {
 	
 	CivetEditDialog getDialogParent() {
 		return dialogParent;
+	}
+	
+	public void setPreview( boolean bPreview ) {
+		this.bPreview = bPreview;
 	}
 	
 	private void make90Percent() {
@@ -321,7 +326,7 @@ public final class CivetEditDialog extends JFrame {
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				if( iMode == VIEW_MODE || YesNoDialog.ask(CivetEditDialog.this, "Civet: Close", "Close without saving?") ) {
+				if( iMode == VIEW_MODE || bPreview || YesNoDialog.ask(CivetEditDialog.this, "Civet: Close", "Close without saving?") ) {
 					doCleanup();
 					setVisible(false);
 					dispose();

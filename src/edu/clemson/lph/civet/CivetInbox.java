@@ -112,7 +112,7 @@ public class CivetInbox extends JFrame {
 
 
 	// for design time only remove before distribution
-	public CivetInbox( String sFile ) {
+	public CivetInbox() {
 		try {
 			initGui();
 			if( !LookupFilesGenerator.isNewThisSession() ) {
@@ -121,9 +121,6 @@ public class CivetInbox extends JFrame {
 			}
 		} catch( Throwable t ) {
 			logger.error("Unexpected error in initGui", t);
-		}
-		if( sFile != null ) {
-			doOpenFile( sFile );
 		}
 	}
 	

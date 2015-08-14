@@ -18,13 +18,16 @@ You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.awt.EventQueue;
+import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 import edu.clemson.lph.civet.robot.COKSRobot;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.StdErrLog;
 
@@ -51,7 +54,13 @@ public class Civet {
 		// Fail now so config file and required files can be fixed before work is done.
 		CivetConfig.checkAllConfig();
 		logger.setLevel(CivetConfig.getLogLevel());
-		if( args.length >= 1 && args[0].toLowerCase().equals("-robot") ) {
+		if( args.length == 1) {
+			String sFile = args[0];
+			if( sFile != null && ( sFile.toLowerCase().endsWith(".cvi") || sFile.toLowerCase().endsWith(".pdf")) ) {
+				previewFile( sFile );
+			}
+		}
+		else if( args.length >= 1 && args[0].toLowerCase().equals("-robot") ) {
 			logger.info("Starting in Robot Mode");
 			if( !CivetConfig.isJPedalXFA() ) {
 				logger.error("Robot mode requires JPedalXFA" );
@@ -72,12 +81,6 @@ public class Civet {
 			}
 		}
 		else {
-			if( args.length == 1) {
-				String sFile = args[0];
-				if( sFile != null && ( sFile.toLowerCase().endsWith(".cvi") || sFile.toLowerCase().endsWith(".pdf")) ) {
-					Civet.sFile = sFile;
-				}
-			}
 			if( args.length >= 2 ) {
 				CivetConfig.setHERDSUserName( args[0] );
 				CivetConfig.setHERDSPassword( args[1] );
@@ -110,7 +113,7 @@ public class Civet {
 							System.exit(1);
 						}
 						else {
-							new CivetInbox(sFile);
+							new CivetInbox();
 						}
 					}
 					else {
@@ -126,7 +129,7 @@ public class Civet {
 									SwingUtilities.invokeLater(new Runnable() {
 										public void run() {
 											prog.setVisible(false);
-											new CivetInbox(sFile);
+											new CivetInbox();
 										}
 									});
 								} catch (Exception e) {
@@ -138,6 +141,26 @@ public class Civet {
 				}
 			});
 	     }
+	}
+	
+	private static void previewFile( String sFile ) {
+		if( sFile == null || sFile.trim().length() == 0 ) return;
+		CivetEditDialog dlg = new CivetEditDialog( null );
+		dlg.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		File fFile = new File(sFile);
+		if( !fFile.exists() ) return;
+		String sFileName = fFile.getName();
+		String sInbox = CivetConfig.getInputDirPath();
+		String sMoveTo = sInbox + sFileName;
+		if( !(sMoveTo.equalsIgnoreCase(sFile)) ){
+			File fMoveTo = new File( sMoveTo );
+			fFile.renameTo(fMoveTo);
+			fFile = fMoveTo;
+		}
+		File selectedFiles[] = {fFile};
+		dlg.openFiles(selectedFiles, true);
+		dlg.setVisible(true);
+		MessageDialog.showMessage(dlg, "Civet: Preview", "File\n" + sFile + "\n\tmoved to Civet InBox\nOpening in Preview");
 	}
 	
 	/**
