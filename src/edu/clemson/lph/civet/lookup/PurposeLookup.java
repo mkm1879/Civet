@@ -110,8 +110,6 @@ public class PurposeLookup extends DBComboBoxModel implements DBTableSource {
 				 String sPurposeKey = line.get( parser.getLabelIdx( "CVIPurposeTypeKey" ) );
 				 int iPurposeKey = Integer.parseInt(sPurposeKey);
 				 String sUSAHACode = line.get( parser.getLabelIdx( "USAHACode" ) );
-				 if( sUSAHACode != null )
-					 sUSAHACode = sUSAHACode.toLowerCase();
 				 String sPurposeName = line.get( parser.getLabelIdx( "Description" ) );
 				 String sDisplaySequence = line.get( parser.getLabelIdx( "DisplaySequence" ) );
 				 int iDisplaySequence = 90;
