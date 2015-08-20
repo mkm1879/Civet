@@ -430,10 +430,8 @@
     <xsl:template name="Accessions">
         <xsl:if
             test="/eCVI/vetInspection/cviPG1/species/large/table/item and (
-            (/eCVI/vetInspection/cviPG1/species/large/table/item/eiaTestDate != 'N/A' and
-                 /eCVI/vetInspection/cviPG1/species/large/table/item/eiaTestDate != '')
-             or (/eCVI/vetInspection/cviPG1/species/large/table/item/brucTestDate != 'N/A' and
-                 /eCVI/vetInspection/cviPG1/species/large/table/item/brucTestDate != '') )">
+               /eCVI/vetInspection/cviPG1/species/large/table/item[eiaTestDate != 'N/A' and eiaTestDate != 'n/a' and eiaTestDate != '']
+            or /eCVI/vetInspection/cviPG1/species/large/table/item[brucTestDate != 'N/A' and brucTestDate != 'n/a' and brucTestDate != ''] )">
 
             <xsl:element name="Accessions">
                 <xsl:for-each

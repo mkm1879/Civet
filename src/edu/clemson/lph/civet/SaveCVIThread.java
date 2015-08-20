@@ -112,10 +112,16 @@ public class SaveCVIThread extends Thread {
 		this.iIssuedByKey = iIssuedByKey;
 		this.sIssuedByName = sIssuedByName;
 		this.sMovementPurpose = sMovementPurpose;
-		PurposeLookup purpose = new PurposeLookup( sMovementPurpose );
-		this.sStdPurpose = purpose.getUSAHACode();
-		if( sStdPurpose == null || sStdPurpose.trim().length() == 0 )
-			sStdPurpose = "other";
+		if( PurposeLookup.isStdCode(sMovementPurpose) ) {
+			this.sStdPurpose = sMovementPurpose;
+		}
+		else {
+			// Do we ever end up here?  Why
+			PurposeLookup purpose = new PurposeLookup( sMovementPurpose );
+			this.sStdPurpose = purpose.getUSAHACode();
+			if( sStdPurpose == null || sStdPurpose.trim().length() == 0 )
+				sStdPurpose = "other";
+		}
 		this.sCVINo = sCVINo;
 		if( bImport ) {
 			this.sOriginPIN = sOtherPIN;
@@ -279,9 +285,10 @@ public class SaveCVIThread extends Thread {
 				eVet = xmlBuilder.setVet(sVetName, vet.getLicenseNo(), vet.getNAN(), vet.getPhoneDigits());
 				xmlBuilder.setAddress(eVet, vet.getAddress(), vet.getCity(), vet.getState(), vet.getZipCode());
 			}
+			// Use std if XFA
+			xmlBuilder.setPurpose(sStdPurpose);
 		} // End if !bXFA
 		// Expiration date will be set automatically from getXML();
-		xmlBuilder.setPurpose(sStdPurpose);
 		// We don't enter the person name, normally  or add logic to tell prem name from person name.
 		Element eOrigin = xmlBuilder.setOrigin(sOriginPIN, sOriginName, null, sOriginPhone);
 		xmlBuilder.setAddress(eOrigin, sOriginAddress, sOriginCity, sOriginStateCode, sOriginZipCode);
