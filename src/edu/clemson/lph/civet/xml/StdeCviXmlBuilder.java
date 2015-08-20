@@ -310,7 +310,7 @@ public class StdeCviXmlBuilder {
 				purpose = doc.createElement("MovementPurpose");
 				purposes.appendChild(purpose);
 			}
-			purpose.setTextContent(sPurpose.toLowerCase());
+			purpose.setTextContent(sPurpose);
 		}
 	}
 
