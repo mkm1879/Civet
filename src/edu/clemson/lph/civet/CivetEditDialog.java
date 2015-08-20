@@ -256,32 +256,15 @@ public final class CivetEditDialog extends JFrame {
 	}
 	
 	public void updatePdfDisplay() {
-		updatePdfDisplay(true);
-	}
-		
-	public void updatePdfDisplay(boolean bGUI) {
-	      //wait to ensure decoded
-		pdfDecoder.setPageParameters(getScale(),
-									controller.getCurrentPageNo(),
-									getRotation()); //values scaling (1=100%). page number, rotation + 180
-		pdfDecoder.waitForDecodingToFinish();
-		if( bGUI ) {
-			pdfDecoder.invalidate();
-			pdfDecoder.updateUI();
-			pdfDecoder.validate();
-		}
-	}
-	
-	public void refreshPdfDisplay() {
 		pdfDecoder.setPageParameters(getScale(),
 				controller.getCurrentPageNo(),
-				getRotation()); //values scaling (1=100%). page number
+				getRotation()); //values scaling (1=100%). page number, rotation + 180
 		pdfDecoder.waitForDecodingToFinish();
 		pdfDecoder.invalidate();
 		pdfDecoder.updateUI();
 		pdfDecoder.validate();
 	}
-
+	
 	/**
 	 * This is misnamed now that we have no actual database connection.
 	 * The idea is to isolate those actions that interfere with GUI design.
@@ -408,7 +391,7 @@ public final class CivetEditDialog extends JFrame {
 		JMenuItem mntmRefresh = new JMenuItem("Refresh Display");
 		mntmRefresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				refreshPdfDisplay();
+				updatePdfDisplay();
 			}
 		});
 		mnView.add(mntmRefresh);
@@ -2152,6 +2135,12 @@ public final class CivetEditDialog extends JFrame {
 			String sAnimalID = std.getAnimalID(animals.item(i));
 			boolean bSet = false;
 			SpeciesLookup sppLookup = new SpeciesLookup( sSpeciesCode );
+			if( sppLookup == null || sppLookup.getSpeciesCode() == null ) {
+				sSpeciesCode = null;
+				sSpeciesName = null;
+				continue;  // Without a valid code, we cannot create a valid animal.
+				// TODO: Replace giving up with a dialog to select species
+			}
 			sSpeciesName = sppLookup.getSpeciesName();
 			if( sSpeciesCode != null && sAnimalID != null && sAnimalID.trim().length() > 0 ) {
 				idListModel.addRow(sSpeciesCode, sSpeciesName, sAnimalID);
@@ -2191,7 +2180,6 @@ public final class CivetEditDialog extends JFrame {
 				aSpecies.add(sp);
 			}
 		}
-
 		int iMax = 0;
 		for( SpeciesRecord r : aSpecies ) {
 			if( r.iNumber > iMax ) {
@@ -2199,10 +2187,18 @@ public final class CivetEditDialog extends JFrame {
 				sSpeciesCode = r.sSpeciesCode;
 			}
 		}
-		cbSpecies.setSelectedCode(sSpeciesCode);
-		jtfNumber.setText(Integer.toString(iMax));
-		bMultiSpecies = (aSpecies.size() > 1);
-		lMultipleSpecies.setVisible( bMultiSpecies );
+		if( sSpeciesCode != null ) {
+			cbSpecies.setSelectedCode(sSpeciesCode);
+			jtfNumber.setText(Integer.toString(iMax));
+			bMultiSpecies = (aSpecies.size() > 1);
+			lMultipleSpecies.setVisible( bMultiSpecies );
+		}
+		else {
+			cbSpecies.setSelectedCode(null);
+			jtfNumber.setText("");
+			bMultiSpecies = false;
+			lMultipleSpecies.setVisible( bMultiSpecies );
+		}
 
 	}
 	
@@ -2312,7 +2308,7 @@ public final class CivetEditDialog extends JFrame {
 			CoKsXML coks = new CoKsXML( xmlNode );
 			stdXml = coks.getStdeCviXml();
 			bXFA = true;  // this will prevent overwriting some values
-				// Should really disable those controls.
+				// Should really disable those controls.  But some want to override!
 		}
 		if( sOtherState == null || sOtherState.trim().length() == 0 || aSpecies.size() == 0 
 				|| dDateIssued == null || dDateReceived == null ) {

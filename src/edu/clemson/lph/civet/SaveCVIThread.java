@@ -264,6 +264,7 @@ public class SaveCVIThread extends Thread {
 	}
 	
 	private String buildXml() {
+		// NOTE: Starting with everything in original.
 		StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder(stdXml);
 		VetLookup vet = new VetLookup( iIssuedByKey );
 		xmlBuilder.setCviNumber(sCVINo);
@@ -286,31 +287,31 @@ public class SaveCVIThread extends Thread {
 		xmlBuilder.setAddress(eOrigin, sOriginAddress, sOriginCity, sOriginStateCode, sOriginZipCode);
 		Element eDestination = xmlBuilder.setDestination(sDestinationPIN, sDestinationName, null, sDestinationPhone);
 		xmlBuilder.setAddress(eDestination, sDestinationAddress, sDestinationCity, sDestinationStateCode, sDestinationZipCode);
-		if( !bXFA ) { // CO/KS doesn't do animals and groups the way we do.  Don't override.
-			// Add animals and groups.  This logic is tortured!
-			// This could be greatly improved to better coordinate with CO/KS list of animals and the standard's group concept.
-			for( SpeciesRecord sr : aSpecies ) {
-				// Only add group lot if not officially IDd so count ids and subtract
-				String sSpeciesCode = sr.sSpeciesCode;
-				int iCountIds = 0;
-				if( aAnimalIDs != null ) {
-					for( AnimalIDRecord ar : aAnimalIDs ) {
-						if( ar.sSpeciesCode.equals(sSpeciesCode) ) {
-							iCountIds++;
-						}
-					}
-				}
-				if( iCountIds < sr.iNumber ) {
-					xmlBuilder.addGroup(sr.iNumber - iCountIds, "Group Lot", sSpeciesCode, null, null );
-				}
-			}
+		// Add animals and groups.  This logic is tortured!
+		// This could be greatly improved to better coordinate with CO/KS list of animals and the standard's group concept.
+		for( SpeciesRecord sr : aSpecies ) {
+			// Only add group lot if not officially IDd so count ids and subtract
+			String sSpeciesCode = sr.sSpeciesCode;
+			int iCountIds = 0;
 			if( aAnimalIDs != null ) {
 				for( AnimalIDRecord ar : aAnimalIDs ) {
-					String sType = IDTypeGuesser.getTagType(ar.sTag);
-					xmlBuilder.addAnimal( ar.sSpeciesCode, dDateIssued,null,null,null,sType,ar.sTag);
+					if( ar.sSpeciesCode.equals(sSpeciesCode) ) {
+						iCountIds++;
+					}
 				}
 			}
-			// Also, don't check size on XFA PDFs because we don't control those.
+			if( iCountIds < sr.iNumber ) {
+				xmlBuilder.addGroup(sr.iNumber - iCountIds, "Group Lot", sSpeciesCode, null, null );
+			}
+		}
+		if( aAnimalIDs != null ) {
+			for( AnimalIDRecord ar : aAnimalIDs ) {
+				String sType = IDTypeGuesser.getTagType(ar.sTag);
+				xmlBuilder.addAnimal( ar.sSpeciesCode, dDateIssued,null,null,null,sType,ar.sTag);
+			}
+		}
+		if( !bXFA ) { // CO/KS doesn't do animals and groups the way we do.  Don't override.
+			// Don't check size on XFA PDFs because we don't control those.
 			if( bAttachmentFileBytes != null ) {
 				if( bAttachmentFileBytes.length > MAX_SANE_SIZE ) {
 					MessageDialog.messageWait(dlg, "Civet Warning", "The PDF attachment is larger than normal.\nCheck your scanner settings");
@@ -328,7 +329,7 @@ public class SaveCVIThread extends Thread {
 		if( sErrorNotes != null && sErrorNotes.trim().length() > 0 )
 			metaData.setErrorNote(sErrorNotes);
 		metaData.setCVINumberSource(sCVINbrSource);
-	System.out.println(metaData.getXmlString());
+//	System.out.println(metaData.getXmlString());
 		xmlBuilder.addMetadataAttachement(metaData);
 		xmlBuilder.addPDFAttachement(bAttachmentFileBytes, sAttachmentFileName);
 		return xmlBuilder.getXMLString();
