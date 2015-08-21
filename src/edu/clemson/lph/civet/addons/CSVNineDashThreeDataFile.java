@@ -34,6 +34,7 @@ public class CSVNineDashThreeDataFile {
 	private int iCurrentRow;
 	private int iNumRows;
 	private String sHomeState;
+	private Date dSaved;
 	private final static int MAX_COLS = 21;
 
 	/**
@@ -48,6 +49,8 @@ public class CSVNineDashThreeDataFile {
 		ArrayList<String> aKeys = new ArrayList<String>();
 		aaValues = new ArrayList<HashMap<String,String>>();
 		File f = new File( sFileName );
+		dSaved = new java.util.Date( f.lastModified() );
+
 		FileReader fr = new FileReader( f );
 		LabeledCSVParser parser = new LabeledCSVParser(fr);
 		int iField = 0;
@@ -147,6 +150,10 @@ public class CSVNineDashThreeDataFile {
 			logger.error( "Cannot parse " + sDate + " as a date" );
 		}
 		return dRet;
+	}
+	
+	public java.util.Date getSavedDate() {
+		return dSaved;
 	}
 	
 	public String getConsigneePIN() {
