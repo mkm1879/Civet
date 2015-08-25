@@ -112,8 +112,8 @@ public class SaveCVIThread extends Thread {
 		this.iIssuedByKey = iIssuedByKey;
 		this.sIssuedByName = sIssuedByName;
 		this.sMovementPurpose = sMovementPurpose;
-		PurposeLookup purpose = new PurposeLookup( sMovementPurpose );
-		this.sStdPurpose = purpose.getUSAHACode();
+		PurposeLookup purpose = new PurposeLookup();
+		this.sStdPurpose = purpose.getCodeForValue(sMovementPurpose);
 		if( sStdPurpose == null || sStdPurpose.trim().length() == 0 )
 			sStdPurpose = "other";
 		this.sCVINo = sCVINo;

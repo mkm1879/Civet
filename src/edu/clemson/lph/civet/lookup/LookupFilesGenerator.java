@@ -49,7 +49,6 @@ public class LookupFilesGenerator {
 			new CertificateNbrLookup();  // Build Set from File
 			generateSpeciesFile();
 			generateErrorTypesFile();
-			generatePurposeTypesFile();
 			generateVetTableFile();
 			bNewThisSession = true;
 		} catch ( WebServiceException e) {
@@ -69,12 +68,6 @@ public class LookupFilesGenerator {
 		f = new File( sName );
 		if( !f.exists() || !f.isFile() ) {
 			logger.error( "Error type lookup table: " + sName + " does not exist or is not a file");
-			bRet = false;
-		}
-		sName = CivetConfig.getPurposeTableFile();
-		f = new File( sName );
-		if( !f.exists() || !f.isFile() ) {
-			logger.error( "CVI purpose lookup table: " + sName + " does not exist or is not a file");
 			bRet = false;
 		}
 		sName = CivetConfig.getStateVetTableFile();
@@ -149,20 +142,6 @@ public class LookupFilesGenerator {
 		} 
 	}
 
-
-	
-	
-	public void generatePurposeTypesFile() throws WebServiceException {
-//		if( isCurrent( CivetConfig.getPurposeTableFile() ) ) return;
-		UsaHerdsWebServiceLookup purposeLookup = new UsaHerdsWebServiceLookup(UsaHerdsWebServiceLookup.LOOKUP_PURPOSES);
-		String sName = CivetConfig.getPurposeTableFile();
-		ArrayList<String> aColNames = new ArrayList<String>();
-		aColNames.add("CVIPurposeTypeKey");
-		aColNames.add("Description");
-		aColNames.add("DisplaySequence");
-		aColNames.add("USAHACode");
-		generateLookup( sName, purposeLookup, aColNames );
-	}
 	
 	// NOTE: StateVetTable generator pulls directly from USAHERDS using SC logic and db connection
 	// As such, it has been moved to the AddOns package in StateVetLookupGenerator class.  This 

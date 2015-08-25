@@ -513,7 +513,10 @@
                 >other</xsl:when>
             <xsl:when
                 test="translate($purpose, $smallcase, $uppercase) = translate('Pet', $smallcase, $uppercase) "
-                >other</xsl:when>
+                >pet</xsl:when>
+            <xsl:when
+                test="translate($purpose, $smallcase, $uppercase) = translate('Pet Movement', $smallcase, $uppercase) "
+                >pet</xsl:when>
             <xsl:when
                 test="translate($purpose, $smallcase, $uppercase) = translate('Production', $smallcase, $uppercase) "
                 >other</xsl:when>
@@ -541,6 +544,7 @@
             <xsl:when
                 test="translate($purpose, $smallcase, $uppercase) = translate('Transit', $smallcase, $uppercase) "
                 >other</xsl:when>
+            <xsl:otherwise>other</xsl:otherwise>
         </xsl:choose>
     </xsl:template>
 

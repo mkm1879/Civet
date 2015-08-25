@@ -19,6 +19,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,74 +30,24 @@ import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.db.DBComboBoxModel;
 import edu.clemson.lph.db.DBTableSource;
 import edu.clemson.lph.utils.LabeledCSVParser;
+import edu.clemson.lph.utils.StringUtils;
 
 @SuppressWarnings("serial")
-public class PurposeLookup extends DBComboBoxModel implements DBTableSource {
+public class PurposeLookup extends DBComboBoxModel {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private HashMap<String, Purpose> purposeNameMap = null;
-	private HashMap<String, Purpose> purposeCodeMap = null;
-	private Purpose purpose = null;
-	private ArrayList<String> lSearchColumns;
-	private ArrayList<ArrayList<Object>> lSearchRows;
+	private static final ArrayList<String> aStdCodes = 
+			new ArrayList<String>(Arrays.asList("breeding","feeding","grazing","medicalTreatment",
+					                            "pet","race","rodeo","sale","show","slaughter","training","other"));
 
 	/**
 	 * Default constructor assumes existence of a PurposeTable in CivetConfig and will use that 
 	 * for all lookups from this object.  Including its function as a DBComboBoxModel based on iKey
 	 */
 	public PurposeLookup() {
-		if( purposeNameMap == null || purposeCodeMap == null )
-			readPurposeTable();		
-	}
-	
-	public PurposeLookup( String sPurposeCode, boolean bCode ) {
-		if( purposeNameMap == null || purposeCodeMap == null )
-			readPurposeTable();
-		purpose = purposeCodeMap.get(sPurposeCode);
-	}
-	
-	public PurposeLookup( String sPurposeName ) {
-		if( purposeNameMap == null || purposeCodeMap == null )
-			readPurposeTable();
-		purpose = purposeNameMap.get(sPurposeName);
-	}
-	
-	public Integer getKey() {
-		if( purpose == null )
-			return -1;
-		else
-			return purpose.iPurposeKey;
-	}
-	
-	public String getUSAHACode() {
-		if( purpose == null )
-			return null;
-		else
-			return purpose.sUSAHACode;
-	}
-
-	public String getPurposeName() {
-		if( purpose == null )
-			return null;
-		else
-			return purpose.sPurposeName;
-	}
-	
-	public Integer getDisplaySequence() {
-		if( purpose == null )
-			return 99;
-		else
-			return purpose.iDisplaySequence;
+		readPurposeTable();		
 	}
 	
 	private void readPurposeTable() {
-		String sPurposeFile = CivetConfig.getPurposeTableFile();
-		try {
-			LabeledCSVParser parser = new LabeledCSVParser(sPurposeFile);
-			// This is a numeric, non-unique sort
-			parser.sort( parser.getLabelIdx("DisplaySequence"), true, false );
-			purposeNameMap = new HashMap<String, Purpose>();
-			purposeCodeMap = new HashMap<String, Purpose>();
-			lSearchRows = new ArrayList<ArrayList<Object>>();
 			hValuesKeys.clear();
 			hKeysValues.clear();
 			super.removeAllElements();
@@ -105,51 +56,14 @@ public class PurposeLookup extends DBComboBoxModel implements DBTableSource {
 				hValuesCodes.put("", "");
 				hCodesValues.put("", "");
 			}
-			List<String> line = parser.getNext();
-			while( line != null ) {
-				 String sPurposeKey = line.get( parser.getLabelIdx( "CVIPurposeTypeKey" ) );
-				 int iPurposeKey = Integer.parseInt(sPurposeKey);
-				 String sUSAHACode = line.get( parser.getLabelIdx( "USAHACode" ) );
-				 if( sUSAHACode != null )
-					 sUSAHACode = sUSAHACode.toLowerCase();
-				 String sPurposeName = line.get( parser.getLabelIdx( "Description" ) );
-				 String sDisplaySequence = line.get( parser.getLabelIdx( "DisplaySequence" ) );
-				 int iDisplaySequence = 90;
-				 try {
-					 iDisplaySequence = Integer.parseInt(sDisplaySequence);
-				 } catch( Exception e ) {
-					 iDisplaySequence = 90;
-				 }
-				 Purpose purpose = new Purpose(iPurposeKey, sUSAHACode, sPurposeName, iDisplaySequence);
-				 purposeNameMap.put(sPurposeName, purpose);
-				 purposeCodeMap.put(sUSAHACode, purpose);
-				 super.addElement(sPurposeName);
-				 hValuesCodes.put(sPurposeName, sUSAHACode);
-				 hKeysValues.put(iPurposeKey, sPurposeName);
-				 ArrayList<Object> aRow = new ArrayList<Object>();
-				 aRow.add(Integer.toString(iPurposeKey));
-				 aRow.add(sPurposeName);
-				 aRow.add(iDisplaySequence);
-				 lSearchRows.add(aRow);
-				 line = parser.getNext();
+			for( String sCode : aStdCodes ) {
+				String sName = StringUtils.toTitleCase(sCode);
+				if( "medicalTreatment".equals(sCode) )
+					sName = "Medical Treatment";
+				 super.addElement(sName);
+				 hValuesCodes.put(sName, sCode);
+				 hKeysValues.put(sCode, sName);
 			}
-		} catch (IOException e) {
-			logger.error(sPurposeFile + "\nFailed to read Purpose Table", e);
-		}
-	}
-	
-	private class Purpose {
-		public Integer iPurposeKey;
-		public String sUSAHACode;
-		public String sPurposeName;
-		public Integer iDisplaySequence;
-		
-		public Purpose( int iPurposeKey, String sUSAHACode, String sPurposeName, int iDisplaySequence ) {
-			this.iPurposeKey = iPurposeKey;
-			this.sUSAHACode = sUSAHACode;
-			this.sPurposeName = sPurposeName;
-			this.iDisplaySequence = iDisplaySequence;
-		}
 	}
 	
 	@Override
@@ -157,21 +71,6 @@ public class PurposeLookup extends DBComboBoxModel implements DBTableSource {
 		readPurposeTable();
 	}
 
-	@Override
-	public ArrayList<String> getColumnNames() {
-		if( lSearchColumns == null ) {
-			lSearchColumns = new ArrayList<String>();
-			lSearchColumns.add("PurposeKey");
-			lSearchColumns.add("PurposeCode");
-			lSearchColumns.add("PurposeName");
-		}
-		return lSearchColumns;
-	}
-
-	@Override
-	public ArrayList<ArrayList<Object>> getRows() {
-		return lSearchRows;
-	}
 
 }
 

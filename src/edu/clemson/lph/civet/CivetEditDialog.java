@@ -2077,10 +2077,7 @@ public final class CivetEditDialog extends JFrame {
 				loadSpeciesFromStdXml(xStd);
 				// Overly simplistic.  Only works if spelling matches
 				String sPurposeCode = xStd.getMovementPurpose();
-				if( sPurposeCode != null )
-					sPurposeCode = sPurposeCode.toLowerCase();
-				PurposeLookup purpose = new PurposeLookup(sPurposeCode, true);
-				cbPurpose.setSelectedValue(purpose.getPurposeName());
+				cbPurpose.setSelectedKey(sPurposeCode);
 				// Load data from included XmlMetaData "file"
 				CviMetaDataXml meta = xStd.getMetaData();
 //			System.out.println( meta.getXmlString() );

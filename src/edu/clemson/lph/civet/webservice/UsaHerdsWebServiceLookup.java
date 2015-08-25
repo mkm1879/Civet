@@ -54,7 +54,6 @@ public class UsaHerdsWebServiceLookup {
 	// Here or in the CivetWebServices class have the list of lookup types as constants.
 	public final static String LOOKUP_ERRORS = "CVIErrorTypes"; 
 	public final static String LOOKUP_SPECIES = "CVISpeciesTypes"; 
-	public final static String LOOKUP_PURPOSES = "CVIPurposeTypes"; 
 	
 	
 	private ArrayList<WebServiceLookupRow> rows;

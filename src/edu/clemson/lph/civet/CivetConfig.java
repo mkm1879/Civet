@@ -536,12 +536,6 @@ public class CivetConfig {
 		return sRet;
 	}
 
-	public static String getPurposeTableFile() {
-		String sRet = props.getProperty("purposeTableFile");
-		if( sRet == null ) exitError("purposeTableFile");
-		return sRet;
-	}
-
 	public static String getErrorTypeTableFile() {
 		String sRet = props.getProperty("errorTypeTableFile");
 		if( sRet == null ) exitError("errorTypeTableFile");
