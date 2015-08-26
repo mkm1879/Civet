@@ -21,31 +21,36 @@ import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.CSVFilter;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.lookup.SpeciesLookup;
+import edu.clemson.lph.civet.webservice.CivetWebServices;
+import edu.clemson.lph.civet.xml.CviMetaDataXml;
+import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.db.*;
 import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.utils.PremCheckSum;
+import edu.clemson.lph.utils.StringUtils;
 
 import java.awt.Window;
 import java.io.File;
 import java.io.IOException;
-import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 import javax.swing.*;
 
 import org.apache.log4j.*;
+import org.w3c.dom.Element;
 
 public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private DatabaseConnectionFactory factory;
+	private StdeCviXml stdXml;
+	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_9dash3;
+	private static final String sProgMsg = "Loading 9-3: ";
 	
 	public BulkLoadNineDashThreeCSV() {
 	}
 
 	public void import93CSV( Window parent ) {
-		if( factory == null )
-			factory = InitAddOns.getFactory();
 		String sFilePath = "E:\\EclipseJava\\Civet\\NPIP93Data.csv";  //null;
 	    JFileChooser fc = new JFileChooser();
 	    fc.setCurrentDirectory(new File(CivetConfig.getBulkLoadDirPath()));
@@ -64,8 +69,8 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 	}
 	
 	private void importNineDashThreeCSVFile( Window parent, String sFilePath ) {
-		ProgressDialog prog = new ProgressDialog(parent, "Civet", "Loading CVIs");
-		prog.setAuto(false);
+		ProgressDialog prog = new ProgressDialog(parent, "Civet", sProgMsg);
+		prog.setAuto(true);
 		prog.setVisible(true);
 		TWork93CSV tWork = new TWork93CSV( prog, sFilePath, parent );
 		tWork.start();
@@ -76,11 +81,13 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 		String sFilePath;
 		ProgressDialog prog;
 		Window parent;
+		CivetWebServices service;
 		
 		public TWork93CSV( ProgressDialog prog, String sFilePath, Window parent ) {
 			this.prog = prog;
 			this.sFilePath = sFilePath;
 			this.parent = parent;
+			service = new CivetWebServices();
 		}
 		
 		private String formatMessage( int iRow, int iMax ) {
@@ -98,158 +105,20 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 				int iRow = 0;
 				prog.setValue(iRow);
 				prog.setMessage( formatMessage( iRow, iMax) );
-				
-				String sQuery = null;
-				Connection newConn = factory.makeDBConnection();
-				if( newConn == null ) {
-					logger.error("Null newConn in openDBRecord");
-					MessageDialog.messageLater((Window)null, "Civet: Database Error", "Could not connect to database");
-					exitThread(false);
-				}
-				try {
 					// Iterate over the CSV file
 					while( data.nextRow() ) {
-						String sCVINumber = data.getCVINumber();
-						String sImport = data.isInbound()?"Y":"N";
-						String sDate = (new SimpleDateFormat( "MM/dd/yyyy")).format( data.getInspectionDate() );
-						String sSpecies = data.getSpecies();
-						String sConsignorState = data.getConsignorState();
-						if( sConsignorState == null || sConsignorState.trim().length() == 0 )
-							sConsignorState = CivetConfig.getHomeStateAbbr();
+						prog.setMessage(sProgMsg + data.getCVINumber() );
+						String sXML = buildXml( data );
+//			System.out.println(sXML);
+						// Send it!
+						String sRet = service.sendCviXML(sXML);
+						if( sRet == null || !sRet.trim().startsWith("00") ) {
+							logger.error( sRet, new Exception("Error submitting NPIP 9-3 spreadsheet CVI to USAHERDS: ") );
+							MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting to USAHERDS: " + sRet);
+						}
 
-						String sSourcePIN = data.getConsignorPIN();
-						try {
-							if( !PremCheckSum.isValid(sSourcePIN) ) {
-								sSourcePIN = null;
-							}
-						} catch (Exception e1) {
-							sSourcePIN = null;
-						}
-						String sDestinationPIN = data.getConsigneePIN();
-						try {
-							if( !PremCheckSum.isValid(sDestinationPIN) ) {
-								sDestinationPIN = null;
-							}
-						} catch (Exception e1) {
-							sDestinationPIN = null;
-						}
-						String sDupeCheckQuery = "SELECT * FROM USAHERDS.dbo.CVIs \n" +
-								"WHERE CertificateNbr = ? and BureauInternalNote = ?";
-						sQuery = sDupeCheckQuery;
-						PreparedStatement ps = newConn.prepareStatement(sQuery);
-						ps.setString(1, sCVINumber);
-						ps.setString(2,  "9-3 Spreadsheet import");
-						ResultSet rs = ps.executeQuery();
-						if( rs.next() ) {
-							MessageDialog.messageLater(parent, "Civet: Duplicate Insert",
-											"A 9-3 form appears to be a duplicate.  Skipping.\n" +
-											"CVINumber = " + sCVINumber + "\n" +
-											"Consignor PIN = " + data.getConsignorPIN() + "\n" +
-											"Inspection Date = " + sDate );
-							continue;
-						}
-						ps.close();
-						String sSpeciesCheckQuery = "SELECT * FROM USAHERDS.dbo.AnimalClassHierarchy \n" +
-								"WHERE CVISpeciesInd = 1 AND CommonName = ?";
-						sQuery = sSpeciesCheckQuery;
-						ps = newConn.prepareStatement(sQuery);
-						ps.setString(1, sSpecies);
-						rs = ps.executeQuery();
-						if( !rs.next() ) {
-							MessageDialog.messageLater(parent, "Civet: Species Missing",
-									"Species " + sSpecies + " is not a USAHERDS CVISpecies" );
-							continue;
-						}
-						ps.close();
-						String sInsCVIQuery = 
-								"{ CALL " +CivetConfig.getDbDatabaseName()+"."+CivetConfig.getDbCivetSchemaName()+".Ins93CVI( " +
-										"@import = ?, " +
-										"@cviNumber = ?, " +
-										"@consignorCountry = ?, " +
-										"@consignorState = ?, " +
-										"@consignorPIN = ?, " +
-										"@consignorName = ?, " +
-										"@consignorBusinessName = ?, " +
-										"@consignorAddress = ?, " +
-										"@consignorCity = ?, " +
-										"@consignorZipCode = ?, " +
-										"@consigneeCountry = ?, " +
-										"@consigneeState = ?, " +
-										"@consigneePIN = ?, " +
-										"@consigneeName = ?, " +
-										"@consigneeBusinessName = ?, " +
-										"@consigneeAddress = ?, " +
-										"@consigneeCity = ?, " +
-										"@consigneeZipCode = ?, " +
-										"@issuedDate = ?, " +
-										"@species = ?, " +
-										"@number = ?, " +
-										"@product = ?, " +
-										"@CVIKey = ? ) } ";
-						sQuery = sInsCVIQuery;
-						CallableStatement cs = newConn.prepareCall(sInsCVIQuery);
-						cs = newConn.prepareCall(sQuery);
-						setStringOrNull(cs, 1, sImport);
-						setStringOrNull(cs, 2, sCVINumber);
-						setStringOrNull(cs, 3, data.getConsignorCountry());
-						setStringOrNull(cs, 4, sConsignorState);
-						setStringOrNull(cs, 5, data.getConsignorPIN());
-						setStringOrNull(cs, 6, data.getConsignorName());
-						setStringOrNull(cs, 7, data.getConsignorBusiness());
-						setStringOrNull(cs, 8, data.getConsignorStreet());
-						setStringOrNull(cs, 9, data.getConsignorCity());
-						setStringOrNull(cs, 10, data.getConsignorZip());
-						setStringOrNull(cs, 11, data.getConsigneeCountry());
-						setStringOrNull(cs, 12, data.getConsigneeState());
-						setStringOrNull(cs, 13, data.getConsigneePIN());
-						setStringOrNull(cs, 14, data.getConsigneeName());
-						setStringOrNull(cs, 15, data.getConsigneeBusiness());
-						setStringOrNull(cs, 16, data.getConsigneeStreet());
-						setStringOrNull(cs, 17, data.getConsigneeCity());
-						setStringOrNull(cs, 18, data.getConsigneeZip());
-						setDateOrNull(cs, 19, data.getInspectionDate());
-						setStringOrNull(cs, 20, data.getSpecies());
-						setIntOrNull(cs, 21, data.getAnimalCount());
-						setStringOrNull(cs, 22, data.getProduct());
-						cs.registerOutParameter(23, java.sql.Types.INTEGER);
-						cs.execute();
-						int iCurrentCVIKey = cs.getInt(23);
-						cs.close();
-						if( iCurrentCVIKey > 0 ) {
-							List<String> lTags = data.listTagIds();
-							String sIns93TagQuery = "EXEC " +CivetConfig.getDbDatabaseName()+"."+CivetConfig.getDbCivetSchemaName()+".Ins93CVITag ?, ?, ?";
-							sQuery = sIns93TagQuery;
-							ps = newConn.prepareStatement(sQuery);
-							if( lTags != null) {
-								for( String sTag : lTags ) {
-									ps.setInt(1, iCurrentCVIKey);
-									ps.setString(2, data.getSpecies());
-									ps.setString(3, sTag);
-									ps.executeUpdate();
-								}
-							}
-							ps.close();
-						}
-						iRow++;
-						if( iRow % 10 == 0 ) {
-							prog.setValue(iRow);
-							prog.setMessage( formatMessage( iRow, iMax) );
-						}
 					} // Next Row
 
-				}
-				catch (SQLException ex) {
-					System.err.println( sQuery );
-					logger.error(ex);
-				}
-				finally {
-					try {
-						if( newConn != null && !newConn.isClosed() )
-							newConn.close();
-					} catch (SQLException e) {
-						// Oh well, we tried.
-					}
-				}
 			} catch (IOException e2) {
 				// File Error on the data file to be read
 				logger.error(e2);
@@ -270,39 +139,80 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			});
 		}
 		
+		private String buildXml( CSVNineDashThreeDataFile data ) throws IOException {
+			StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder(stdXml);
+			String sCVINumber = data.getCVINumber();
+			String sSpecies = data.getSpecies();
+			String sSpeciesCode = null;
+			if( sSpecies == null || sSpecies.trim().equalsIgnoreCase("Poultry") ) {
+				sSpeciesCode = "OTH";
+			}
+			else if( sSpecies.trim().length() == 3 ) {
+				sSpeciesCode = sSpecies;
+			}
+			else {
+				SpeciesLookup spLu = new SpeciesLookup( StringUtils.toTitleCase(sSpecies.trim()), true );
+				sSpeciesCode = spLu.getSpeciesCode();
+				if( sSpeciesCode.equals("ERROR") ) {
+					sSpeciesCode = "POU";
+				}
+			}
+			String sConsignorState = data.getConsignorState();
+			String sSourcePIN = data.getConsignorPIN();
+			try {
+				if( !PremCheckSum.isValid(sSourcePIN) ) {
+					sSourcePIN = null;
+				}
+			} catch (Exception e1) {
+				sSourcePIN = null;
+			}
+			if( sSourcePIN != null && sSourcePIN.trim().length() == 8 ) {
+				sConsignorState = sSourcePIN.substring(0, 2);
+			}
+			else if( sConsignorState == null || sConsignorState.trim().length() == 0 )
+				sConsignorState = CivetConfig.getHomeStateAbbr();
+			
+			String sConsigneeState = data.getConsigneeState();
+			String sDestinationPIN = data.getConsigneePIN();
+			try {
+				if( !PremCheckSum.isValid(sDestinationPIN) ) {
+					sDestinationPIN = null;
+				}
+			} catch (Exception e1) {
+				sDestinationPIN = null;
+			}
+			if( sDestinationPIN != null && sDestinationPIN.trim().length() == 8 ) {
+				sConsigneeState = sDestinationPIN.substring(0, 2);
+			}
+			else if( sConsigneeState == null || sConsigneeState.trim().length() == 0 )
+				sConsigneeState = CivetConfig.getHomeStateAbbr();
+			xmlBuilder.setCviNumber(sCVINumber);
+			xmlBuilder.setIssueDate(data.getInspectionDate());
+			xmlBuilder.setVet("NPIP");
+			// Expiration date will be set automatically from getXML();
+			xmlBuilder.setPurpose("other");
+			// We don't enter the person name, normally  or add logic to tell prem name from person name.
+			Element origin = xmlBuilder.setOrigin(sSourcePIN, data.getConsignorName(), sConsignorState );
+			xmlBuilder.setAddress(origin, data.getConsignorStreet(), data.getConsignorCity(), sConsignorState, data.getConsignorZip());
+			Element destination = xmlBuilder.setDestination(sDestinationPIN, data.getConsigneeName(), sConsigneeState );
+			xmlBuilder.setAddress(destination, data.getConsigneeStreet(), data.getConsigneeCity(), sConsigneeState, data.getConsigneeZip());
+
+			int iNum = data.getAnimalCount();
+			String sGender = "Gender Unknown";
+			xmlBuilder.addGroup(iNum, "Poultry Lot Under NPIP 9-3", sSpeciesCode, null, sGender);
+			CviMetaDataXml metaData = new CviMetaDataXml();
+			metaData.setCertificateNbr(sCVINumber);
+			metaData.setBureauReceiptDate(data.getSavedDate());
+			metaData.setErrorNote("NPIP 9-3 Form Spreadsheet");
+			metaData.setCVINumberSource(sCVINbrSource);
+//		System.out.println(metaData.getXmlString());
+			xmlBuilder.addMetadataAttachement(metaData);
+			return xmlBuilder.getXMLString();
+		}
+
 	
 	}// end inner class TWorkSave
 	
-	private void setStringOrNull( CallableStatement cs, int parameterIndex, String sValue ) 
-			throws SQLException	{
-		if( sValue == null ) {
-			cs.setNull( parameterIndex, Types.VARCHAR );
-		}
-		else {
-			cs.setString( parameterIndex, sValue );
-		}
-	}
-
-	private void setDateOrNull( CallableStatement cs, int parameterIndex, java.util.Date dValue )
-			throws SQLException	{
-		if( dValue == null ) {
-			cs.setNull( parameterIndex, Types.DATE );
-		}
-		else {
-			java.sql.Date dSqlValue = new java.sql.Date( dValue.getTime() );
-			cs.setDate( parameterIndex, dSqlValue );
-		}
-	}
-
-	private void setIntOrNull( CallableStatement cs, int parameterIndex, Integer iValue )
-			throws SQLException	{
-		if( iValue == null ) {
-			cs.setNull( parameterIndex, Types.INTEGER );
-		}
-		else {
-			cs.setInt( parameterIndex, iValue );
-		}
-	}
 
 
 	@Override

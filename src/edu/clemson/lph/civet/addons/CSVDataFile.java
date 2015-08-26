@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet;
+package edu.clemson.lph.civet.addons;
 /*
 Copyright 2014 Michael K Martin
 
@@ -24,6 +24,8 @@ import java.util.*;
 
 import org.apache.log4j.Logger;
 
+import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.utils.CSVParserWrapper;
 
 
@@ -43,6 +45,7 @@ public class CSVDataFile {
 	private boolean bRowInbound;
 	private String sHomeState;
 	private String sCompany = null;
+	private java.util.Date dSaved = null;
 // Normal Column Order
 //	private final static String[] aColNames = { "Date", "SourceFarm", "SourcePIN", "SourceState", 
 //		                                     "Vet", "DestFarm", "DestPin", "DestState", "Number" };
@@ -59,11 +62,13 @@ public class CSVDataFile {
 		ArrayList<String> aKeys = new ArrayList<String>();
 		aaValues = new ArrayList<HashMap<String,String>>();
 		File f = new File( sFileName );
+		dSaved = new java.util.Date( f.lastModified() );
 		int iUnderscore = f.getName().indexOf('_');
 		if( iUnderscore > 0 ) {
 			sCompany = f.getName().substring(0, iUnderscore);
-			if( sCompany.equals("MB"))
-				sCompany = "MurphyBrown";
+		}
+		else {
+			sCompany = "UN";
 		}
 		FileReader fr = new FileReader( f );
 		CSVParserWrapper parser = new CSVParserWrapper(fr);
@@ -124,6 +129,10 @@ public class CSVDataFile {
 		String sRet = aRow.get(sKey);
 		if( sRet != null && sRet.trim().length() == 0 ) sRet = null;
 		return aRow.get(sKey);
+	}
+	
+	public java.util.Date getSavedDate() {
+		return dSaved;
 	}
 
 	/**

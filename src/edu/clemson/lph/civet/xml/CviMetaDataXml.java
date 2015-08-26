@@ -41,6 +41,8 @@ public class CviMetaDataXml {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	public static final String CVI_SRC_CIVET = "Civet";
 	public static final String CVI_SRC_VSPS = "VSPS";
+	public static final String CVI_SRC_SWINE = "SWINE_SS";
+	public static final String CVI_SRC_9dash3 = "9_Dash_3";
 	private Document doc = null;
 	
 	public CviMetaDataXml() {
