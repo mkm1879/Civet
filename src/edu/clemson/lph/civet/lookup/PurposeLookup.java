@@ -17,29 +17,22 @@ GNU General Public License for more details.
 You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.db.DBComboBoxModel;
-import edu.clemson.lph.db.DBTableSource;
-import edu.clemson.lph.utils.LabeledCSVParser;
 import edu.clemson.lph.utils.StringUtils;
 
 @SuppressWarnings("serial")
 public class PurposeLookup extends DBComboBoxModel {
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private static final ArrayList<String> aStdCodes = 
 			new ArrayList<String>(Arrays.asList("breeding","feeding","grazing","medicalTreatment",
 					                            "pet","race","rodeo","sale","show","slaughter","training","other"));
-	private ArrayList<String> lSearchColumns;
-	private ArrayList<ArrayList<Object>> lSearchRows;
 
 	public static boolean isStdCode( String sCode ) {
 		return aStdCodes.contains(sCode);

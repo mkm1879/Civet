@@ -62,9 +62,6 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 			spp = new Spp("Invalid Species Code",null);
 			return;
 		}
-		if( sSppCode.equalsIgnoreCase("OTH") ) {
-			MessageDialog.messageLater(null, "Civet Warning: Other Species", "Importing Species OTHER. \nUpdate in database later if possible.");
-		}
 		this.sSpeciesName = spp.sSppName;
 		this.sSpeciesCode = spp.sSppCode;
 	}

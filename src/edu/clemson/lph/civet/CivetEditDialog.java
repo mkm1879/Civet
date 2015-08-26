@@ -2223,6 +2223,22 @@ public final class CivetEditDialog extends JFrame {
 						CivetConfig.getCoKsXSLTFile());
 			}
 			else {
+				String sPurposeCode = std.getMovementPurpose();
+				if( sPurposeCode != null && sPurposeCode.equalsIgnoreCase("other") ) {
+					String sMsg = "Importing Purpose OTHER. \nUpdate in database later if possible.\nPurpose in PDF: ";
+					String sPurpose =  coks.getPurposeCode();
+						sMsg = sMsg + sPurpose;
+					sMsg = sMsg.substring(0,sMsg.length());
+					MessageDialog.messageLater(null, "Civet Warning: Other Purpose", sMsg );					
+				}
+				String sSppCodes = std.getSpeciesCodes();
+				if( sSppCodes != null && sSppCodes.contains("OTH") ) {
+					String sMsg = "Importing Species OTHER. \nUpdate in database later if possible.\nSpecies Codes in PDF: ";
+					for( String sSpp : coks.listSpeciesCodes() )
+						sMsg = sMsg + sSpp + ", ";
+					sMsg = sMsg.substring(0,sMsg.length()-2);
+					MessageDialog.messageLater(null, "Civet Warning: Other Species", sMsg );
+				}
 				populateFromStdXml( std );
 				if( jtfDateReceived.getDate() == null && CivetConfig.isDefaultReceivedDate() ) {
 					jtfDateReceived.setDate(new java.util.Date());

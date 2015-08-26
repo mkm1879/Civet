@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -262,6 +263,30 @@ public class CoKsXML {
 			logger.error("nodeToString Transformer Exception", te);
 		}
 		return sw.toString();
+	}
+	
+	public ArrayList<String> listSpeciesCodes() {
+		ArrayList<String> aRet = new ArrayList<String>();
+		String sXML = toAcrobatXMLString();
+		int iStart = sXML.indexOf("<spp>");
+		while( iStart > 0 ) {
+			int iEnd = sXML.indexOf("</spp>", iStart+5);
+			String sSpp = sXML.substring(iStart+5, iEnd);
+			aRet.add(sSpp);
+			iStart = sXML.indexOf("<spp>", iEnd + 5);
+		}
+		return aRet;
+	}
+	
+	public String getPurposeCode() {
+		String sRet = null;
+		String sXML = toAcrobatXMLString();
+		int iStart = sXML.indexOf("<purpose>");
+		if( iStart > 0 ) {
+			int iEnd = sXML.indexOf("</purpose>", iStart+5);
+			sRet = sXML.substring(iStart+9, iEnd);
+		}
+		return sRet;
 	}
 	
 
