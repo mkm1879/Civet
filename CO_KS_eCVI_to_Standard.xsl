@@ -536,6 +536,12 @@
                 test="translate($purpose, $smallcase, $uppercase) = translate('Show/Exhibition', $smallcase, $uppercase) "
                 >show</xsl:when>
             <xsl:when
+                test="translate($purpose, $smallcase, $uppercase) = translate('Show', $smallcase, $uppercase) "
+                >show</xsl:when>
+            <xsl:when
+                test="translate($purpose, $smallcase, $uppercase) = translate('Show/Sale', $smallcase, $uppercase) "
+                >show</xsl:when>
+            <xsl:when
                 test="translate($purpose, $smallcase, $uppercase) = translate('Slaughter', $smallcase, $uppercase) "
                 >slaughter</xsl:when>
             <xsl:when
