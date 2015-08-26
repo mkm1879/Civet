@@ -42,6 +42,7 @@ public class CivetConfig {
 	private static final int UNK = -1;
 	private static final int LGPL = 0;
 	private static final int XFA = 1;
+	private static final long DEFAULT_MAX_ANIMALS = 100;
 	private static int iJPedalType = UNK;
 	private static String sHERDSUserName = null;
 	private static String sHERDSPassword = null;
@@ -642,6 +643,21 @@ public class CivetConfig {
 		return iRet;
 	}
 	
+	public static long getMaxAnimals() {
+		long iRet = -1;
+		String sRet = props.getProperty("maxAnimals");
+		if( sRet == null ) { 
+			return DEFAULT_MAX_ANIMALS;
+		}
+		try {
+			iRet = Integer.parseInt(sRet);
+		} catch( NumberFormatException nfe ) {
+			logger.error( "Cannot read maxAnimals " + sRet + " as an integer number");
+			logger.error(nfe);
+			return DEFAULT_MAX_ANIMALS;
+		}
+		return iRet;
+	}
 	public static boolean isJPedalXFA() {
 		boolean bRet = false;
 		if( iJPedalType == UNK ) {

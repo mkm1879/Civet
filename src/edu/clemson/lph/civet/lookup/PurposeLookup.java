@@ -38,7 +38,12 @@ public class PurposeLookup extends DBComboBoxModel {
 	private static final ArrayList<String> aStdCodes = 
 			new ArrayList<String>(Arrays.asList("breeding","feeding","grazing","medicalTreatment",
 					                            "pet","race","rodeo","sale","show","slaughter","training","other"));
+	private ArrayList<String> lSearchColumns;
+	private ArrayList<ArrayList<Object>> lSearchRows;
 
+	public static boolean isStdCode( String sCode ) {
+		return aStdCodes.contains(sCode);
+	}
 	/**
 	 * Default constructor assumes existence of a PurposeTable in CivetConfig and will use that 
 	 * for all lookups from this object.  Including its function as a DBComboBoxModel based on iKey

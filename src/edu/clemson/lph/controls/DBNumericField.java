@@ -33,7 +33,10 @@ import edu.clemson.lph.dialogs.MessageDialog;
 @SuppressWarnings("serial")
 public class DBNumericField extends JTextField{
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private int iType = java.sql.Types.INTEGER;
+	private int iType = java.sql.Types.INTEGER;  // Someday handle other types
+	private long lMin = Long.MIN_VALUE;
+	private long lMax = Long.MAX_VALUE;
+	
 
 	public DBNumericField() {
 		try {
@@ -118,6 +121,11 @@ public class DBNumericField extends JTextField{
 		sText = stripCommas(sText.trim());
 		return sText;
 	}
+	
+	public void setRange( long lMin, long lMax ) {
+		this.lMin = lMin;
+		this.lMax = lMax;
+	}
 
 	boolean isNumber( String sText ) {
 		// Ignore empty or leading minus sign
@@ -165,6 +173,14 @@ public class DBNumericField extends JTextField{
 					while( !(parent instanceof JDialog) && parent != null ) parent = parent.getParent();
 					MessageDialog.showMessage( (JDialog)parent, "Number Format Error", "Cannot read " + sText + " as a number" );
 				}
+				Long lValue = Long.parseLong(sText);
+				if( lValue < lMin || lValue > lMax ) {
+					java.awt.Container parent = getParent();
+					while( !(parent instanceof JDialog) && parent != null ) parent = parent.getParent();
+					MessageDialog.showMessage( (JDialog)parent, "Number Range Error", sText + " is " + ((lValue < lMin) ? "small" : "large") +
+							"\nNormal range is " + lMin + " to " + lMax );
+				}
+				
 			}
 		});
 		this.addKeyListener( new KeyAdapter() {
