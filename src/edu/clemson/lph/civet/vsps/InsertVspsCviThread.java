@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.addons;
+package edu.clemson.lph.civet.vsps;
 /*
 Copyright 2014 Michael K Martin
 
@@ -31,17 +31,13 @@ import org.w3c.dom.Element;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.civet.lookup.VetLookup;
-import edu.clemson.lph.civet.vsps.VspsCodeLookup;
-import edu.clemson.lph.civet.vsps.VspsCvi;
-import edu.clemson.lph.civet.vsps.VspsCviAnimal;
-import edu.clemson.lph.civet.vsps.VspsCviEntity;
-import edu.clemson.lph.civet.vsps.VspsCviFile;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
+import edu.clemson.lph.utils.FileUtils;
 
 public class InsertVspsCviThread extends Thread {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
@@ -80,8 +76,10 @@ public class InsertVspsCviThread extends Thread {
 				// Send it!
 				String sRet = service.sendCviXML(sXML);
 				if( sRet == null || !sRet.trim().startsWith("00") ) {
-					logger.error( new Exception("Error submitting swine spreadsheet CVI to USAHERDS: ") );
-					MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting to USAHERDS: " + sRet);
+					String sCVINbr = cvi.getCVINumber();
+					logger.error( new Exception("Error submitting VSPS spreadsheet CVI " + sCVINbr + " to USAHERDS: ") );
+					FileUtils.writeTextFile(sXML, sCVINbr + "_Error.xml");
+					MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting CVI " + sCVINbr + " to USAHERDS: " + sRet);
 				}
 			}
 		} catch (IOException e) {

@@ -80,6 +80,7 @@ public class PremCheckSum {
    */
   public static boolean isValid( String sID ) throws Exception {
     if( sID == null || sID.trim().length() == 0 || sID.startsWith("*") ) return true;  // Ignore temporary numbers
+    if( sID.trim().length() < 7 || sID.trim().length() > 8 ) return false;
     if( sID.trim().length() == 8 && !CivetConfig.hasStateIDChecksum() ) return true;  // Ignore State IDs in states without checksums
     if( sID.startsWith("OO") ) return false; // 'O' conflicts with 0 and is not allowed any longer
     char cCheckSum2 = sID.charAt( sID.length() -1 );

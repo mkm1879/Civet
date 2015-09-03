@@ -27,6 +27,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.utils.LabeledCSVParser;
+import edu.clemson.lph.utils.PremCheckSum;
 
 
 public class VspsCviEntity {
@@ -75,13 +76,23 @@ public class VspsCviEntity {
 	}
 
 	public String getPremisesId() throws IOException {
+		String sRet = null;
 		int iCol = iDelta + parser.getLabelIdx("Origin Premises Id");
 		if( iCol < 0 || iCol >= aCols.size() )
 			return null;
 		else if( aCols.get(iCol).trim().length() == 0 )
 			return null;
-		else
-			return  aCols.get(iCol);
+		else {
+			sRet = aCols.get(iCol);
+			try {
+				if( PremCheckSum.isValid(sRet) )
+					return sRet;
+				else 
+					return null;
+			} catch (Exception e) {
+				return null;
+			}
+		}
 	}
 
 	public String getAddress1() throws IOException {
