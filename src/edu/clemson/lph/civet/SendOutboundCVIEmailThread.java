@@ -42,6 +42,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 	private CivetInbox parent;
 	private HashMap<String, ArrayList<File>> mStateMap;
 	private ArrayList<File> aSentCVIFiles = new ArrayList<File>();
+	private String sCurrentEmailError = "";
 	
 	public SendOutboundCVIEmailThread( CivetInbox parent, ProgressDialog prog ) {
 		this.parent = parent;
@@ -136,7 +137,8 @@ public class SendOutboundCVIEmailThread extends Thread {
 								}
 								else {
 									MessageDialog.messageWait(prog.getWindowParent(), "Civet: Message Failed",
-											"EMail Failed to " + sState + " at " + sCurrentEmail);
+											"EMail Failed to " + sState + " at " + sCurrentEmail + "\n" + sCurrentEmailError );
+									sCurrentEmailError = "";
 								}
 						}
 						aCVIsOut.clear();
@@ -230,6 +232,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 					sOutBoundCVIMessage, aFiles);
 			logger.info("Email sent to: " + sEmail + " at " + sState + " returned " + bRet);
 		} catch (AuthenticationFailedException e1) {
+			sCurrentEmailError = e1.getMessage();
 			MessageDialog.messageWait( prog.getWindowParent(), "Civet: Invalid UserID/Password", "Authentication failure to Email system");
 			MailMan.setDefaultUserID( null );
 			MailMan.setDefaultPassword( null );
@@ -238,9 +241,11 @@ public class SendOutboundCVIEmailThread extends Thread {
 			throw( e1 );
 		} catch (MailException me) {
 			logger.error(me.getMessage() + "\nInvalid MIMEFile Specification" );
+			sCurrentEmailError = me.getMessage();
 			bRet = false;
 		} catch (Exception e) {
 			logger.error("Could not send file " + sFileName, e);
+			sCurrentEmailError = e.getMessage();
 			bRet = false;
 		}
 		return bRet;

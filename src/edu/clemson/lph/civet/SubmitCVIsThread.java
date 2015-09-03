@@ -109,7 +109,8 @@ public class SubmitCVIsThread extends Thread {
 		try {
 			String sXML = FileUtils.readTextFile(fThis);
 			String sCertNbr = getCertNbr( sXML );
-			if( !CertificateNbrLookup.addCertificateNbr(sCertNbr) ) {
+			// Check but don't add yet.
+			if( CertificateNbrLookup.certficateNbrExists(sCertNbr) ) {
 				MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " already exists.\n" +
 						"Resolve conflict and try again.");
 				return;
@@ -121,10 +122,17 @@ public class SubmitCVIsThread extends Thread {
 					logger.info("Return code from Civet WS: " + sReturn);
 				}
 			});		
-
-			if( sRet == null || sRet.toLowerCase().contains("error") || !sRet.startsWith("00") )
+			// If successfully sent, record the number in CertNbrs.txt
+			if( sRet != null && !sRet.toLowerCase().contains("error") && sRet.startsWith("00") ) {
+				if( !CertificateNbrLookup.addCertificateNbr(sCertNbr) ) {
+					MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " Added twice.\n" +
+							"Please report to developer.");
+					return;
+				}
+			}
+			else {
 				throw new Exception( "Error from web service\n" + sRet);
-			
+			}
 		} catch (final Exception e) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {

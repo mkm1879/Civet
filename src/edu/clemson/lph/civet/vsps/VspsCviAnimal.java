@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.addons;
+package edu.clemson.lph.civet.vsps;
 /*
 Copyright 2014 Michael K Martin
 

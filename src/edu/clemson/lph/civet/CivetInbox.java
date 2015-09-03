@@ -55,10 +55,11 @@ import edu.clemson.lph.civet.files.FilesTableModel;
 import edu.clemson.lph.civet.files.SourceFilesTableModel;
 import edu.clemson.lph.civet.files.StdXMLFilesTableModel;
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
+import edu.clemson.lph.civet.vsps.VspsCviFile;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.12";
+	public static final String VERSION = "3.12 XFA";
 	private static final String IDRLICENSE = "\n\nContains material copyrighted by IDRSolutions for the sole purpose" +
 	"of evaluating its JPedalXFA library in this application.\n\n" +
 	"Reuse or redistribution of this application is prohibited.\n\n" +
@@ -105,10 +106,12 @@ public class CivetInbox extends JFrame {
 	private JMenuItem menuItemSubmitAllCVIs;
 	private JMenuItem menuItemSendOutboundCVIs;
 	private JMenuItem menuItemSendInboundErrors;
+	JMenu menuExperimental = new JMenu();
 	JMenu menuAddOns = new JMenu();
+	private JMenuItem menuItemVSPS = new JMenuItem();
 	JMenu menuHelp = new JMenu();
 	JMenuItem menuItemAbout = new JMenuItem();
-	private AbstractButton menuItemSendLog;
+	private JMenuItem menuItemSendLog;
 
 
 	// for design time only remove before distribution
@@ -229,6 +232,7 @@ public class CivetInbox extends JFrame {
 			}
 		});
 		menuView.add(menuItemViewRefresh);
+		
 		menuHelp.setText("Help");
 		menuItemAbout.setText("About Civet");
 		menuItemAbout.addActionListener( new ActionListener() {
@@ -335,6 +339,19 @@ public class CivetInbox extends JFrame {
 			// Clemson DB stuff for us.
 			AddOnLoader.populateMenu(this, menuAddOns);
 		}
+		
+		menuExperimental.setText("Experimental");
+		menuItemVSPS.setText("Import VSPS eCVI CSV File");
+		menuItemVSPS.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				VspsCviFile me = new VspsCviFile();
+				me.importVspsFile(CivetInbox.this);
+			}
+		});
+		menuExperimental.add(menuItemVSPS);
+		menuBar1.add(menuExperimental);
+		
 		menuBar1.add(menuHelp);
 		viewNew();
 		setVisible( true );

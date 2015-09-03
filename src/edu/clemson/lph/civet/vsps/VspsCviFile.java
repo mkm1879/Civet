@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.addons;
+package edu.clemson.lph.civet.vsps;
 /*
 Copyright 2014 Michael K Martin
 
@@ -36,10 +36,11 @@ import org.apache.log4j.PropertyConfigurator;
 import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.addons.InsertVspsCviThread;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
-public class VspsCviFile implements AddOn {
+public class VspsCviFile {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	
 	private LabeledCSVParser parser = null;
@@ -187,14 +188,5 @@ public class VspsCviFile implements AddOn {
 		} while( sCVINumber.equals(sNextCVINumber) );
 		return thisCVI;
 	}
-
-	@Override
-	public String getMenuText() {
-		return "Import VSPS eCVI CSV File";
-	}
-
-	@Override
-	public void execute(Window parent) {
-		importVspsFile(parent);	}
 
 }

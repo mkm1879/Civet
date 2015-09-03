@@ -492,62 +492,62 @@
         <xsl:param name="purpose"/>
         <xsl:choose>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Backgrounding', $smallcase, $uppercase) "
-                >other</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Backgrounding', $smallcase, $uppercase) ">other</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Breeding', $smallcase, $uppercase) "
-                >breeding</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Breeding', $smallcase, $uppercase) ">breeding</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Feeding', $smallcase, $uppercase) "
-                >feeding</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Feeding', $smallcase, $uppercase) ">feeding</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Grazing', $smallcase, $uppercase) "
-                >grazing</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Grazing', $smallcase, $uppercase) ">grazing</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Medical Treatment', $smallcase, $uppercase) "
-                >medicalTreatment</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Medical Treatment', $smallcase, $uppercase) ">medicalTreatment</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Other (specify)', $smallcase, $uppercase) "
-                >other</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Other (specify)', $smallcase, $uppercase) ">other</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Pet', $smallcase, $uppercase) "
-                >pet</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Pet', $smallcase, $uppercase) ">pet</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Pet Movement', $smallcase, $uppercase) "
-                >pet</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Pet Movement', $smallcase, $uppercase) ">pet</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Production', $smallcase, $uppercase) "
-                >other</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Production', $smallcase, $uppercase) ">other</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Race', $smallcase, $uppercase) "
-                >race</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Race', $smallcase, $uppercase) ">race</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Recreational', $smallcase, $uppercase) "
-                >other</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Recreational', $smallcase, $uppercase) ">other</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Rodeo', $smallcase, $uppercase) "
-                >rodeo</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Rodeo', $smallcase, $uppercase) ">rodeo</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Sale', $smallcase, $uppercase) "
-                >sale</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Sale', $smallcase, $uppercase) ">sale</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Show/Exhibition', $smallcase, $uppercase) "
-                >show</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Show/Exhibition', $smallcase, $uppercase) ">show</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Show', $smallcase, $uppercase) "
-                >show</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Show', $smallcase, $uppercase) ">show</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Show/Sale', $smallcase, $uppercase) "
-                >show</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Show/Sale', $smallcase, $uppercase) ">show</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Slaughter', $smallcase, $uppercase) "
-                >slaughter</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Slaughter', $smallcase, $uppercase) ">slaughter</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Training', $smallcase, $uppercase) "
-                >training</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Training', $smallcase, $uppercase) ">training</xsl:when>
             <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = translate('Transit', $smallcase, $uppercase) "
-                >other</xsl:when>
+                test="translate($purpose, $smallcase, $uppercase) = 
+                      translate('Transit', $smallcase, $uppercase) ">other</xsl:when>
             <xsl:otherwise>other</xsl:otherwise>
         </xsl:choose>
     </xsl:template>
