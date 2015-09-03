@@ -109,7 +109,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 					while( data.nextRow() ) {
 						prog.setMessage(sProgMsg + data.getCVINumber() );
 						String sXML = buildXml( data );
-//			System.out.println(sXML);
+			System.out.println(sXML);
 						// Send it!
 						String sRet = service.sendCviXML(sXML);
 						if( sRet == null || !sRet.trim().startsWith("00") ) {

@@ -201,12 +201,14 @@ public class StdeCviXmlBuilder {
 			if( eState != null ) sState = eState.getTextContent();
 			Element eZip = childElementByName(eAddress, "Zip");
 			if( eZip != null ) sZip = eZip.getTextContent();
-			if( ((sStreetIn == null && sStreet == null ) || (sStreetIn != null && sStreetIn.equals(sStreet))) 
-					||
+			if( ( sStreetIn != null || sCityIn != null || sZipIn != null )
+					&&
+				((sStreetIn == null && sStreet == null ) || (sStreetIn != null && sStreetIn.equals(sStreet))) 
+					&&
 				((sCityIn == null && sCity == null ) || (sCityIn != null && sCityIn.equals(sCity))) 
-					||
+					&&
 				((sStateIn == null && sState == null ) || (sStateIn != null && sStateIn.equals(sState))) 
-					||
+					&&
 				((sZipIn == null && sZip == null ) || (sZipIn != null && sZipIn.equals(sZip))) ) {
 				
 				return eAddress;
