@@ -210,6 +210,7 @@ public final class CivetEditDialog extends JFrame {
 	private JButton bEditLast;
 	private JButton bPDFViewFile;
 	private boolean bPreview;
+	private String sDefaultPurpose;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -299,7 +300,10 @@ public final class CivetEditDialog extends JFrame {
 			    
 				cbPurpose.setModel( new PurposeLookup() );
 			    cbPurpose.refresh();
-			    cbPurpose.setSelectedItem("Interstate");
+//			    cbPurpose.setSelectedItem("Interstate");
+				sDefaultPurpose = CivetConfig.getDefaultPurpose();
+				if( sDefaultPurpose != null )
+					cbPurpose.setSelectedItem(sDefaultPurpose);
 			    make90Percent();
 
 			}
@@ -1887,6 +1891,8 @@ public final class CivetEditDialog extends JFrame {
 			jtfNumber.setText("");
 			cbIssuedBy.setSelectedKey(-1);
 			jtfIssuedBy.setText("");
+			if( sDefaultPurpose != null )
+				cbPurpose.setSelectedItem( sDefaultPurpose );
 		}
 		else {
 			// Note: we don't switch to the alternate map right away when the check box is selected

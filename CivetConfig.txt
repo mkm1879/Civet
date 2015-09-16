@@ -58,6 +58,7 @@ vspsDirPath=E:\\EclipseJava\\Civet\\VSPSData\\
 CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
 StdSchema=E:\\Documents\\Civet\\ecviDraftRelaxed.xsd
 rotation=0
+defaultPurpose=Other
 
 #Template files for generated emails
 ExportEmailTemplate=E:\\Documents\\Civet\\CivetExportsEmailMessage.txt

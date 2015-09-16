@@ -658,6 +658,16 @@ public class CivetConfig {
 		}
 		return iRet;
 	}
+	
+	/**
+	 * get the string for the default purpose of movement but allow it to not exist.
+	 * @return
+	 */
+	public static String getDefaultPurpose() {
+		String sRet = props.getProperty("defaultPurpose");
+		return sRet;
+	}
+	
 	public static boolean isJPedalXFA() {
 		boolean bRet = false;
 		if( iJPedalType == UNK ) {
