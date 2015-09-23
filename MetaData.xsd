@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="cviMetaData">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="cviNumberSource" type="xs:string" minOccurs="0"/>
+        <xs:element name="bureauReceiptDate" type="xs:date" minOccurs="0"/>
+        <xs:element name="errors" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="err" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element  name="errorNote" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="certificateNbr" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
