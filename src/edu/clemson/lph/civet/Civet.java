@@ -20,6 +20,8 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -51,6 +53,10 @@ public class Civet {
 	public static void main(String[] args) {
 		// BasicConfigurator replaced with PropertyConfigurator.
 		PropertyConfigurator.configure("CivetConfig.txt");
+		if( CivetInbox.VERSION.endsWith("XFA") && !stillValid() ) {
+			logger.error("JPedalXFA trial has expired.  Use Civet.jar with JPedal.jar in ./lib" );
+			System.exit(1);
+		}
 		// Fail now so config file and required files can be fixed before work is done.
 		CivetConfig.checkAllConfig();
 		logger.setLevel(CivetConfig.getLogLevel());
@@ -141,6 +147,25 @@ public class Civet {
 				}
 			});
 	     }
+	}
+	
+	private static boolean stillValid() {
+		boolean bRet = false;
+		java.util.Date dNow = new java.util.Date();
+		SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd");
+		try {
+			java.util.Date dNewYear = df.parse("2016-01-01");
+			if( dNow.before(dNewYear) )
+				bRet = true;
+			else {
+				MessageDialog.showMessage(null, "Civet Error: Expired", "The JPedal XFA trial has expired.  Please use Civet.jar with a valid JPedal library file");
+			}
+		} catch (ParseException e) {
+			logger.error(e);
+		}
+		
+		
+		return bRet;
 	}
 	
 	private static void previewFile( String sFile ) {
