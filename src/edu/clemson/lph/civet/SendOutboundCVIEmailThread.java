@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.mail.AuthenticationFailedException;
+import javax.mail.MessagingException;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.*;
@@ -242,6 +243,11 @@ public class SendOutboundCVIEmailThread extends Thread {
 		} catch (MailException me) {
 			logger.error(me.getMessage() + "\nInvalid MIMEFile Specification" );
 			sCurrentEmailError = me.getMessage();
+			bRet = false;
+		} catch (MessagingException e) {
+			logger.error("Could not connect to email server", e);
+			e.printStackTrace();
+			sCurrentEmailError = e.getMessage();
 			bRet = false;
 		} catch (Exception e) {
 			logger.error("Could not send file " + sFileName, e);
