@@ -4,10 +4,10 @@
 #
 # Special Controls and Events
 # Control with focus when dialog opens
-pFirstControl=OtherCity
-pInstateFirst=OtherCity
+pFirstControl=OtherAddress
+pInstateFirst=OtherAddress
 # Control with focus when Premise info found and filled in
-pPremiseFound=ThisCity
+pPremiseFound=Species
 #
 # Alternate tab order specification
 # Usage = FromControl=ToControl
@@ -30,10 +30,10 @@ EditLastButton=
 Inbound= 
 Outbound= 
 InState= 
-OtherState=OtherCity 
+OtherState=OtherAddress 
 OtherName= 
 OtherAddress= 
-OtherCity=CertificateNumber 
+OtherCity= 
 OtherZipcode= 
 OtherPIN= 
 ThisPhone= 

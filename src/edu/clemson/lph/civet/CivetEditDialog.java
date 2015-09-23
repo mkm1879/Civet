@@ -1336,76 +1336,81 @@ public final class CivetEditDialog extends JFrame {
 	 * when tabbed into so it can be easily overwritten.
 	 */
 	private void setAllFocus() {
-		 jtfOtherCity.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					selectAll(e);
-				}
-			});
-		 jtfOtherName.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					selectAll(e);
-				}
-			});
-		 jtfThisPIN.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					jtfThisPIN.selectAll();
-				}
-			});
-		 jtfThisState.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					selectAll(e);
-				}
-			});
-		 jtfPhone.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					selectAll(e);
-				}
-			});
-		 jtfAddress.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					selectAll(e);
-				}
-			});
-		 jtfThisName.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					selectAll(e);
-				}
-			});
-		 jtfThisCity.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					selectAll(e);
-				}
-			});
-		 jtfZip.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					selectAll(e);
-				}
-			});
-		 jtfNumber.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					selectAll(e);
-				}
-			});
-		 jtfDateInspected.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					selectAll(e);
-				}
-			});
-		 jtfCVINo.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					selectAll(e);
-				}
-			});
-		 jtfOtherCity.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					selectAll(e);
-				}
-			});
-		 jtfDateReceived.addFocusListener(new java.awt.event.FocusAdapter() {
-				public void focusGained(FocusEvent e) {
-					selectAll(e);
-				}
-			});
+		jtfOtherName.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfOtherAddress.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfOtherCity.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfOtherZip.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfThisPIN.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				jtfThisPIN.selectAll();
+			}
+		});
+		//		 jtfThisState.addFocusListener(new java.awt.event.FocusAdapter() {
+		//				public void focusGained(FocusEvent e) {
+		//					selectAll(e);
+		//				}
+		//			});
+		jtfPhone.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfThisName.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfAddress.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfThisCity.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfZip.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfNumber.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfDateInspected.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfCVINo.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfDateReceived.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
 	}
 
 	/**
