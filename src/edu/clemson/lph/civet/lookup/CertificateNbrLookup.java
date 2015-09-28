@@ -31,6 +31,7 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.CivetConfig;
 
 public class CertificateNbrLookup {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
@@ -125,6 +126,17 @@ public class CertificateNbrLookup {
 				}
 			}
 		}
+	}
+
+	public static boolean certficateNbrExistsThisSession(String sCVINo, String sOtherStateCode, boolean bInbound) {
+		boolean bRet = false;
+		String sOriginStateCode = bInbound ? sOtherStateCode : CivetConfig.getHomeStateAbbr();
+		String sDestinationStateCode = bInbound ? CivetConfig.getHomeStateAbbr() : sOtherStateCode;
+		String sXmlFileName = "CVI_" + sOriginStateCode + "_To_" + sDestinationStateCode + "_" + sCVINo + ".cvi";
+		File file = new File( CivetConfig.getToFileDirPath() + sXmlFileName );
+		if( file.exists() )
+			bRet = true;
+		return bRet;
 	}
 
 }

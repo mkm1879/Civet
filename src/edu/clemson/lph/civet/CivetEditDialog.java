@@ -1120,6 +1120,15 @@ public final class CivetEditDialog extends JFrame {
 					MessageDialog.showMessage(CivetEditDialog.this, "Civet Error", "Certificate number " + sCertNbr + " already exists");
 					jtfCVINo.requestFocus();
 				}
+				String sOtherStateCode = States.getStateCode(cbOtherState.getSelectedValue());
+				boolean bInbound = rbImport.isSelected();
+				if( !isReopened() ) {
+					if( CertificateNbrLookup.certficateNbrExistsThisSession(sCertNbr, sOtherStateCode, bInbound) ) {
+						MessageDialog.showMessage(CivetEditDialog.this, "Civet Error", "Certificate Error " + sCertNbr + " has already been saved but not uploaded.\n" +
+								"Resolve and try again.");
+						jtfCVINo.requestFocus();
+					}
+				}
 			}
 		});
 		GridBagConstraints gbc_jtfCviNumber = new GridBagConstraints();
@@ -2146,6 +2155,8 @@ public final class CivetEditDialog extends JFrame {
 		for( int i = 0; i < animals.getLength(); i++ ) {
 			sSpeciesCode = std.getSpeciesCode(animals.item(i));
 			String sAnimalID = std.getAnimalID(animals.item(i));
+			if( sAnimalID == null || sAnimalID.trim().length() == 0 ) 
+				sAnimalID = "CO/KS No ID";  // This will flag as individual animal record in XML
 			boolean bSet = false;
 			SpeciesLookup sppLookup = new SpeciesLookup( sSpeciesCode );
 			if( sppLookup == null || sppLookup.getSpeciesCode() == null ) {
@@ -2160,7 +2171,7 @@ public final class CivetEditDialog extends JFrame {
 			}
 			if( aSpecies.size() > 0 ) {
 				for( SpeciesRecord r : aSpecies ) {
-					if( r.sSpeciesCode == sSpeciesCode ) {
+					if( r.sSpeciesCode.equals(sSpeciesCode) ) {
 						r.iNumber++;
 						bSet = true;
 						break;
@@ -2168,7 +2179,7 @@ public final class CivetEditDialog extends JFrame {
 				}
 			}
 			if( !bSet ) {
-				SpeciesRecord sp = new SpeciesRecord( sSpeciesCode, animals.getLength() );
+				SpeciesRecord sp = new SpeciesRecord( sSpeciesCode, 1 );
 				aSpecies.add(sp);
 			}
 		}
@@ -2179,7 +2190,7 @@ public final class CivetEditDialog extends JFrame {
 			boolean bSet = false;
 			if( aSpecies.size() > 0 ) {
 				for( SpeciesRecord r : aSpecies ) {
-					if( r.sSpeciesCode == sSpeciesCode ) {
+					if( r.sSpeciesCode.equals(sSpeciesCode) ) {
 						r.iNumber += iQuantity;
 						bSet = true;
 						break;
@@ -2353,6 +2364,7 @@ public final class CivetEditDialog extends JFrame {
 			MessageDialog.showMessage(this, "Civet Error", "One or more required fields:" + sFields + " are empty");
 			return false;
 		}
+
 		// Setup the two variables that combine to tell what to save where.
 		// XFAPdf or Image files send and save the original file contents (bytes null, file populated)
 		// Pageable Pdf send and save extracted bytes (bytes populated, file null)
@@ -2505,11 +2517,17 @@ public final class CivetEditDialog extends JFrame {
 				// Will trigger later error.
 				return;
 			}
-			SpeciesRecord rSpecies = new SpeciesRecord(sSpeciesCode, iNum);
-			if( aSpecies.contains(rSpecies) ) {
-				aSpecies.remove(rSpecies);
+			boolean bFound = false;
+			for( SpeciesRecord sr : aSpecies ) {
+				if( sr.sSpeciesCode.equals(sSpeciesCode) ) {
+					bFound = true;
+					sr.iNumber = iNum;
+				}
 			}
-			aSpecies.add(rSpecies);
+			if( !bFound ) {
+				SpeciesRecord rSpecies = new SpeciesRecord(sSpeciesCode, iNum);
+				aSpecies.add(rSpecies);
+			}
 			if( bClear ) {
 				jtfNumber.setText("");
 				cbSpecies.setSelectedItem(null);

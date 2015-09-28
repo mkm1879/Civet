@@ -580,6 +580,26 @@ public class StdeCviXmlBuilder {
 		return group;
 	}
 	
+	public boolean hasGroup( String sSpecies ) {
+		boolean bRet = false;
+		if( isValidDoc() && sSpecies != null && sSpecies.trim().length() > 0 ) {
+			NodeList groups = root.getElementsByTagName("GroupLot");
+			for( int i = 0; i < groups.getLength(); i++ ) {
+				Node nNext = groups.item(i);
+				if( nNext instanceof Element ) {
+					Element group = (Element)nNext;
+					String sSpeciesCode = group.getAttribute("SpeciesCode");
+					if( sSpecies.equalsIgnoreCase(sSpeciesCode) ) {
+						bRet = true;
+						break;
+					}
+				}
+			}
+			
+		}
+		return bRet;
+	}
+	
 	public void addPDFAttachement( byte[] pdfBytes, String sFileName ) {
 		if( isValidDoc() && pdfBytes != null && pdfBytes.length > 0 ) {
 			String sPDF64 = new String(Base64.encodeBase64(pdfBytes));

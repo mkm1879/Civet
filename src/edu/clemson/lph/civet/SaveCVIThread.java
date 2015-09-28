@@ -302,16 +302,22 @@ public class SaveCVIThread extends Thread {
 				}
 			}
 			if( iCountIds < sr.iNumber ) {
-				xmlBuilder.addGroup(sr.iNumber - iCountIds, "Group Lot", sSpeciesCode, null, null );
+				if( !xmlBuilder.hasGroup(sSpeciesCode) )
+					xmlBuilder.addGroup(sr.iNumber - iCountIds, "Group Lot", sSpeciesCode, null, null );
 			}
 		}
 		if( aAnimalIDs != null ) {
 			for( AnimalIDRecord ar : aAnimalIDs ) {
-				String sType = IDTypeGuesser.getTagType(ar.sTag);
-				xmlBuilder.addAnimal( ar.sSpeciesCode, dDateIssued,null,null,null,sType,ar.sTag);
+				if( "CO/KS No ID".equals(ar.sTag) ) {
+					xmlBuilder.addAnimal( ar.sSpeciesCode, dDateIssued,null,null,null,"UN","");
+				}
+				else {
+					String sType = IDTypeGuesser.getTagType(ar.sTag);
+					xmlBuilder.addAnimal( ar.sSpeciesCode, dDateIssued,null,null,null,sType,ar.sTag);
+				}
 			}
 		}
-		if( !bXFA ) { // CO/KS doesn't do animals and groups the way we do.  Don't override.
+		if( !bXFA ) { 
 			// Don't check size on XFA PDFs because we don't control those.
 			if( bAttachmentFileBytes != null ) {
 				if( bAttachmentFileBytes.length > MAX_SANE_SIZE ) {
