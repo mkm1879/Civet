@@ -30,12 +30,12 @@ public class IdListGen {
 			try {
 			SplitID split = new SplitID( sFirstID );
 			String sFirst = split.getFirstPart(); 
-			Integer iLast = split.getLastPart();
+			Long iLast = split.getLastPart();
 
 			int iLen = iLast.toString().length();
 			lList.add( sPrefix + sFirstID );
 			for( int i = 1; i < iNum; i++ ) {
-				Integer iNext = iLast + i;
+				Long iNext = iLast + i;
 				int iNextLen = iNext.toString().length();
 				while( iNextLen > iLen ) {
 					if( sFirst.endsWith("0") ) {
@@ -59,14 +59,14 @@ public class IdListGen {
 	public static ArrayList<String> get840Ids( String sPrefix, String sFirstID, int iNum ) throws Exception {
 		ArrayList<String> lList = new ArrayList<String>();
 		lList.add( AddAnimalsDialog.padTag(sPrefix, sFirstID, 15) );
-		Integer iLast = null;
+		Long iLast = null;
 		try {
-			iLast = Integer.parseInt(sFirstID);
+			iLast = Long.parseLong(sFirstID);
 		} catch( NumberFormatException nfe ) {
 			throw new NumberFormatException( "Cannot parse '" + sFirstID + "' as a number" );
 		}
 		for( int i = 1; i < iNum; i++ ) {
-			Integer iNext = iLast + i;
+			Long iNext = iLast + i;
 			String sNextID = AddAnimalsDialog.padTag(sPrefix, iNext.toString(), 15);
 			lList.add(sNextID);
 		}
@@ -79,19 +79,19 @@ public class IdListGen {
 		return split.getFirstPart();
 	}
 	
-	public static Integer getLastSplit( String sId ) {
+	public static Long getLastSplit( String sId ) {
 		SplitID split = new SplitID( sId );
 		return split.getLastPart();
 	}
 	
 	static class SplitID {
 		private String sFirstPart = null;
-		private Integer iLastPart = null;
+		private Long iLastPart = null;
 		
 		public SplitID( String sID ) {
 			try {
 				int iLen = sID.length();
-				int iFullID = Integer.parseInt(sID);
+				long iFullID = Long.parseLong(sID);
 				iLastPart = iFullID;
 				int iNewLen = iLastPart.toString().length();
 				sFirstPart = "";
@@ -109,7 +109,7 @@ public class IdListGen {
 					}
 					sFirstPart = sID.substring(0,i+1);
 					if( i < sID.length() )
-						iLastPart = Integer.parseInt(sID.substring(i+1));
+						iLastPart = Long.parseLong(sID.substring(i+1));
 					else 
 						iLastPart = null;
 					break;
@@ -118,7 +118,7 @@ public class IdListGen {
 		}
 		
 		public String getFirstPart() { return sFirstPart; }
-		public Integer getLastPart() { return iLastPart; }
+		public Long getLastPart() { return iLastPart; }
 	}
 
 }
