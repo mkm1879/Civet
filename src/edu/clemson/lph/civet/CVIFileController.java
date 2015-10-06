@@ -34,6 +34,7 @@ import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.dialogs.MessageDialog;
+import edu.clemson.lph.pdfgen.PDFOpener;
 import edu.clemson.lph.pdfgen.PDFUtils;
 
 /**
@@ -624,6 +625,10 @@ public class CVIFileController {
 				mPagesComplete.put(currentFilePath, new ArrayList<Integer>());
 			aPagesInCurrent.clear();
 			if( isXFADocument() ) {
+				if( !CivetConfig.isJPedalXFA() ) {
+					PDFOpener opener = new PDFOpener(dlg);
+					opener.openPDFContentInAcrobat(getCurrentPdfBytes());
+				}
 				dlg.setRotation(0);  // Always rotate 180 (actually 0) since we know they are right that way
 				dlg.populateFromPDF();
 			}

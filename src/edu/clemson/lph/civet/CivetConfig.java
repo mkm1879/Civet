@@ -671,12 +671,15 @@ public class CivetConfig {
 	public static boolean isJPedalXFA() {
 		boolean bRet = false;
 		if( iJPedalType == UNK ) {
-			// do something that requires XFA and set value;
-			PdfDecoder decoder = new PdfDecoder();
 			try {
-				decoder.getFormRenderer();
-				iJPedalType = XFA;
-				bRet = true;
+				String sVersion = PdfDecoder.version;
+				StringTokenizer tok = new StringTokenizer(sVersion, ".");
+				String sMajor = tok.nextToken();
+				int iMajor = Integer.parseInt(sMajor);
+				if( iMajor >= 6 ) {
+					iJPedalType = XFA;
+					bRet = true;
+				}
 			} catch( java.lang.NoSuchMethodError e ) {
 				iJPedalType = LGPL;
 				bRet = false;
@@ -733,6 +736,19 @@ public class CivetConfig {
 		if( sRet == null ) exitError("dbCivetSchemaName");
 		return sRet;
 	}
+	
+
+	public static String getAcrobatPath() {
+		String sRet = props.getProperty("acrobatPath");
+		if( sRet != null ) {
+			File f = new File( sRet );
+			if( !f.exists() || !f.isFile() ) {
+				sRet = null;
+			}
+		}
+		return sRet;
+	}
+
 
 	/**
 	 * Get the Database UserName
