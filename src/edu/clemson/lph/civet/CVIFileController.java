@@ -625,7 +625,7 @@ public class CVIFileController {
 				mPagesComplete.put(currentFilePath, new ArrayList<Integer>());
 			aPagesInCurrent.clear();
 			if( isXFADocument() ) {
-				if( !CivetConfig.isJPedalXFA() ) {
+				if( !CivetConfig.isJPedalXFA() && CivetConfig.isAutoOpenPdf() ) {
 					PDFOpener opener = new PDFOpener(dlg);
 					opener.openPDFContentInAcrobat(getCurrentPdfBytes());
 				}

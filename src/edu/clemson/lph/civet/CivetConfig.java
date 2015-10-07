@@ -55,6 +55,7 @@ public class CivetConfig {
 	private static String sDBPassword = null;
 	private static Boolean bSmall;
 	private static boolean bStateIDChecksum;
+	private static Boolean bAutoOpenPDF;
 	
 
 	/**
@@ -671,24 +672,32 @@ public class CivetConfig {
 	public static boolean isJPedalXFA() {
 		boolean bRet = false;
 		if( iJPedalType == UNK ) {
-			try {
-				String sVersion = PdfDecoder.version;
-				StringTokenizer tok = new StringTokenizer(sVersion, ".");
-				String sMajor = tok.nextToken();
-				int iMajor = Integer.parseInt(sMajor);
-				if( iMajor >= 6 ) {
-					iJPedalType = XFA;
-					bRet = true;
-				}
-			} catch( java.lang.NoSuchMethodError e ) {
-				iJPedalType = LGPL;
-				bRet = false;
-			}
+			final String xfaClassPath="org/jpedal/objects/acroforms/AcroRendererXFA.class";
+			ClassLoader loader = logger.getClass().getClassLoader();
+			bRet = loader.getResource(xfaClassPath)!=null;
+		}
+		if( bRet ) {
+			iJPedalType = XFA;
 		}
 		else {
-			bRet = (iJPedalType == XFA);
+			iJPedalType = LGPL;
 		}
 		return bRet;
+	}
+	
+	public static boolean isAutoOpenPdf() {
+		if( bAutoOpenPDF  == null ) {
+			String sVal = props.getProperty("autoOpenPdf");
+			if( sVal == null )
+				bAutoOpenPDF = true;
+			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bAutoOpenPDF = true;
+			}
+			else {
+				bAutoOpenPDF = false;
+			}
+		}
+		return bAutoOpenPDF;
 	}
 	
 
