@@ -29,7 +29,7 @@ public class SpeciesRecord {
   public boolean equals( Object o ) {
 	  if( !( o instanceof SpeciesRecord ) ) return false;
 	  SpeciesRecord rOther = (SpeciesRecord)o;
-	  return rOther.sSpeciesCode == this.sSpeciesCode;
+	  return rOther.sSpeciesCode.equalsIgnoreCase(this.sSpeciesCode);
   }
   
   @Override
