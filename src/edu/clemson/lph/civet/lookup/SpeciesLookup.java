@@ -49,17 +49,17 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 	 * for all lookups from this object.  Including its function as a DBComboBoxModel based on iKey
 	 */
 	public SpeciesLookup() {
-		if( sppCodeMap == null || sppCodeMap == null )
+		if( sppCodeMap == null || sppNameMap == null )
 			readSppTable();		
 	}
 	
 	public SpeciesLookup( String sSppCode ) {
-		if( sppCodeMap == null || sppCodeMap == null )
+		if( sppCodeMap == null || sppNameMap == null )
 			readSppTable();
 		Spp spp = sppCodeMap.get(sSppCode);
 		if( spp == null ) {
 			MessageDialog.messageLater(null, "Civet Error: Missing Species Code", "Species code " + sSppCode + " not found in lookup table.");
-			spp = new Spp("Invalid Species Code",null);
+//			spp = new Spp("Invalid Species Code",null);
 			return;
 		}
 		this.sSpeciesName = spp.sSppName;
@@ -143,7 +143,7 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 		}
 	}
 	
-	private class Spp {
+	private static class Spp {
 		public String sSppCode;
 		public String sSppName;
 		

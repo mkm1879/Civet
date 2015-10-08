@@ -1604,7 +1604,7 @@ public final class CivetEditDialog extends JFrame {
 		String sPage = QuestionDialog.ask(this, "Civet: Goto Page", "Page number?");
 		int iPage = -1;
 		try {
-			iPage = Integer.valueOf(sPage);
+			iPage = Integer.parseInt(sPage);
 		} catch (NumberFormatException ex) {
 			MessageDialog.showMessage(this, "Civet: Error", "Cannot parse " + sPage + " as a number");
 			return;

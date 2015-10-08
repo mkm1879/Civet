@@ -76,7 +76,7 @@ public class PDFOpener {
 		return sFileOut;
 	}// End decode pages to new PDF
 
-	class OpenRecordInAcrobat extends Thread {
+	static class OpenRecordInAcrobat extends Thread {
 		String sFileName;
 		int iPageNo;
 		public OpenRecordInAcrobat( String sFileName ) {
@@ -117,10 +117,9 @@ public class PDFOpener {
 		t.start();
 	}
 
-	class OpenPageInAcrobat extends Thread {
+	static class OpenPageInAcrobat extends Thread {
 		String sFileName;
 		int iPageNo;
-		ProgressDialog prog;
 		public OpenPageInAcrobat(String sFileName, int iPageNo ) {
 			this.sFileName = sFileName;
 			this.iPageNo = iPageNo;

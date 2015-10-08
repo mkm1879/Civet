@@ -373,7 +373,7 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 		}
 	}
 	
-	private class Vet {
+	private static class Vet {
 		public Integer iVetKey;
 		public String sFormattedName;
 		public String sFirstName;
@@ -453,18 +453,20 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 
 	@Override
 	public String getColumnName(int columnIndex) {
+		String sRet = null;
 		switch( columnIndex ) {
-		case 0: return "VetKey";
-		case 1: return "LicNbr";
-		case 2: return "NAN #";
-		case 3: return "NAN Level";
-		case 4: return "LastName";
-		case 5: return "FirstName";
-		case 6: return "Address";
-		case 7: return "City";
-		case 8: return "State";
+		case 0: sRet =  "VetKey"; break;
+		case 1: sRet =  "LicNbr"; break;
+		case 2: sRet =  "NAN #"; break;
+		case 3: sRet =  "NAN Level"; break;
+		case 4: sRet =  "LastName"; break;
+		case 5: sRet =  "FirstName"; break;
+		case 6: sRet =  "Address"; break;
+		case 7: sRet =  "City"; break;
+		case 8: sRet =  "State"; break;
+		default: logger.error("Index out of bounds: " + columnIndex);
 		}
-		return null;
+		return sRet;
 	}
 
 	@Override
@@ -474,34 +476,37 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		Object oRet = null;
 		Vet row = rows.get(rowIndex);
 		switch( columnIndex ) {
-		case 0: return row.iVetKey;
-		case 1: return row.sLic;
-		case 2: return row.sNAN;
-		case 3: return row.iNANLevel;
-		case 4: return row.sLastName;
-		case 5: return row.sFirstName;
-		case 6: return row.sAddress;
-		case 7: return row.sCity;
-		case 8: return row.sState;
+		case 0: oRet =  row.iVetKey; break;
+		case 1: oRet =  row.sLic; break;
+		case 2: oRet =  row.sNAN; break;
+		case 3: oRet =  row.iNANLevel; break;
+		case 4: oRet =  row.sLastName; break;
+		case 5: oRet =  row.sFirstName; break;
+		case 6: oRet =  row.sAddress; break;
+		case 7: oRet =  row.sCity; break;
+		case 8: oRet =  row.sState; break;
+		default: logger.error("Index out of bounds: " + columnIndex);
 		}
-		return null;
+		return oRet;
 	}
 
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 		Vet row = rows.get(rowIndex);
 		switch( columnIndex ) {
-		case 0:  row.iVetKey = (Integer)aValue;
-		case 1:  row.sLic = (String)aValue;
-		case 2:  row.sNAN = (String)aValue;
-		case 3:  row.iNANLevel = (Integer)aValue;
-		case 4:  row.sLastName = (String)aValue;
-		case 5:  row.sFirstName = (String)aValue;
-		case 6:  row.sAddress = (String)aValue;
-		case 7:  row.sCity = (String)aValue;
-		case 8:  row.sState = (String)aValue;
+		case 0:  row.iVetKey = (Integer)aValue; break;
+		case 1:  row.sLic = (String)aValue; break;
+		case 2:  row.sNAN = (String)aValue; break;
+		case 3:  row.iNANLevel = (Integer)aValue; break;
+		case 4:  row.sLastName = (String)aValue; break;
+		case 5:  row.sFirstName = (String)aValue; break;
+		case 6:  row.sAddress = (String)aValue; break;
+		case 7:  row.sCity = (String)aValue; break;
+		case 8:  row.sState = (String)aValue; break;
+		default: logger.error("Index out of bounds: " + columnIndex);
 		}
 	}
 

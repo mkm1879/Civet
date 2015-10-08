@@ -371,7 +371,7 @@ public class UsaHerdsLookupVets {
 	}
 
 
-	private class WebServiceVetRow {
+	private static class WebServiceVetRow {
 		public Integer iKeyValue;
 		public String sFormattedName;
 		public String sFirstName;

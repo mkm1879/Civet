@@ -20,8 +20,8 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.util.HashMap;
 
 public class PurposeTranslator {
-	public static HashMap<String, String> mHerds2Std = new HashMap<String, String>();
-	public static HashMap<String, String> mStd2Herds = new HashMap<String, String>();
+	private static HashMap<String, String> mHerds2Std = new HashMap<String, String>();
+	private static HashMap<String, String> mStd2Herds = new HashMap<String, String>();
 	
 	static {
 		mHerds2Std.put("Sale", "sale");

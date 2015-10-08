@@ -175,7 +175,7 @@ public class PremisesLocalStore {
 		return null;
 	}
 	
-	public class PremRecord {
+	public static class PremRecord {
 		public String sPremisesId = null;
 		public String sPremisesName = null;
 		public String sAddress;
@@ -235,7 +235,7 @@ public class PremisesLocalStore {
 
 	}
 	
-	public class StringPair {
+	public static class StringPair {
 		public String s1;
 		public String s2;	
 		

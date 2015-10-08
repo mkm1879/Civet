@@ -121,12 +121,12 @@ public class CVIReportModel extends AbstractTableModel implements ThreadListener
 		@Override
 		public void run() {
 			String sQuery = null;
-			Connection conn = factory.makeDBConnection();
-			if( conn == null ) {
-				return;
-			}
+			Connection conn = null;
 			try {
-				
+				conn = factory.makeDBConnection();
+				if( conn == null ) {
+					return;
+				}
 				String sQueryCVIsIn = "select count(*) \n" + 
                                       "from "+CivetConfig.getDbDatabaseName()+"."+CivetConfig.getDbCivetSchemaName()+".vw_CVISummary c  \n" + 
                                       "where c.InspectionDate between ? and ? \n" + 
@@ -175,6 +175,7 @@ public class CVIReportModel extends AbstractTableModel implements ThreadListener
 					else {
 						aRows.get(0).add("");						
 					}
+					psCVIsIn.close();
 					psCVIsOut.setDate(1, dStart);
 					psCVIsOut.setDate(2, dEnd);
 					psCVIsOut.setString(3, sSpecies);
@@ -185,6 +186,7 @@ public class CVIReportModel extends AbstractTableModel implements ThreadListener
 					else {
 						aRows.get(1).add("");						
 					}
+					psCVIsOut.close();
 					psAnimalsIn.setDate(1, dStart);
 					psAnimalsIn.setDate(2, dEnd);
 					psAnimalsIn.setString(3, sSpecies);
@@ -195,6 +197,7 @@ public class CVIReportModel extends AbstractTableModel implements ThreadListener
 					else {
 						aRows.get(2).add("");						
 					}
+					psAnimalsIn.close();
 					psAnimalsOut.setDate(1, dStart);
 					psAnimalsOut.setDate(2, dEnd);
 					psAnimalsOut.setString(3, sSpecies);
@@ -205,6 +208,7 @@ public class CVIReportModel extends AbstractTableModel implements ThreadListener
 					else {
 						aRows.get(3).add("");						
 					}
+					psAnimalsOut.close();
 					psStatesIn.setDate(1, dStart);
 					psStatesIn.setDate(2, dEnd);
 					psStatesIn.setString(3, sSpecies);
@@ -215,6 +219,7 @@ public class CVIReportModel extends AbstractTableModel implements ThreadListener
 					else {
 						aRows.get(4).add("");						
 					}
+					psStatesIn.close();
 					psStatesOut.setDate(1, dStart);
 					psStatesOut.setDate(2, dEnd);
 					psStatesOut.setString(3, sSpecies);
@@ -225,6 +230,7 @@ public class CVIReportModel extends AbstractTableModel implements ThreadListener
 					else {
 						aRows.get(5).add("");						
 					}
+					psStatesOut.close();
 				}
 			} catch (SQLException e) {
 				logger.error( e.getMessage() + "\nError in query\n" + sQuery);

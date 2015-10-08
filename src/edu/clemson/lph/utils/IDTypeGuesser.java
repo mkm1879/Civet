@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import edu.clemson.lph.civet.lookup.States;
 
 public class IDTypeGuesser {
-	public static HashMap<String, String> mTypeMap = new HashMap<String, String>();
+	private static HashMap<String, String> mTypeMap = new HashMap<String, String>();
 	
 	static {
 		mTypeMap.put("^840\\d{12}$", "N840RFID");

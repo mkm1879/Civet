@@ -87,57 +87,93 @@ public class MergePDF {
 
 	public static byte[] appendJPGPagetoPDF( byte destBytes[], File fJPEGAdditional ) throws IOException {
 		FileInputStream fsIn = new FileInputStream( fJPEGAdditional );
-		byte jpgBytes[] = new byte[(int)fJPEGAdditional.length()];
-		fsIn.read(jpgBytes);
-		byte addBytes[] = jpgToPdfBytes( jpgBytes );
-		ByteArrayInputStream fisAdd = new ByteArrayInputStream( addBytes );
-		ArrayList<InputStream> lInputs = new ArrayList<InputStream>();
-		if( destBytes != null ) {
-			ByteArrayInputStream fisDest = new ByteArrayInputStream( destBytes );
-			lInputs.add(fisDest);
+		ByteArrayInputStream baisAdd = null;
+		ByteArrayOutputStream baosOut = null;
+		byte[] aOut = {};
+		try {
+			byte jpgBytes[] = new byte[(int)fJPEGAdditional.length()];
+			fsIn.read(jpgBytes);
+			byte addBytes[] = jpgToPdfBytes( jpgBytes );
+			baisAdd = new ByteArrayInputStream( addBytes );
+			ArrayList<InputStream> lInputs = new ArrayList<InputStream>();
+			if( destBytes != null ) {
+				ByteArrayInputStream fisDest = new ByteArrayInputStream( destBytes );
+				lInputs.add(fisDest);
+			}
+			lInputs.add(baisAdd);
+			baosOut = new ByteArrayOutputStream();
+			concatPDFs( lInputs, baosOut, true);
+			aOut = baosOut.toByteArray();
+		} catch( IOException ioe ) {
+			throw ioe;
+		} finally {
+			fsIn.close();
+			if( baisAdd != null ) baisAdd.close();
+			if( baosOut != null ) baosOut.close();
 		}
-		lInputs.add(fisAdd);
-		ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
-		concatPDFs( lInputs, baosOut, true);
-		fsIn.close();
-		return baosOut.toByteArray();
+		return aOut;
 	}
 
 	public static byte[] appendPDFtoPDF( byte destBytes[], File fJPEGAdditional ) throws IOException {
-		FileInputStream fsIn = new FileInputStream( fJPEGAdditional );
+		FileInputStream fsIn = null;
 		byte addBytes[] = new byte[(int)fJPEGAdditional.length()];
-		fsIn.read(addBytes);
-		ByteArrayInputStream fisAdd = new ByteArrayInputStream( addBytes );
-		ArrayList<InputStream> lInputs = new ArrayList<InputStream>();
-		if( destBytes != null ) {
-			ByteArrayInputStream fisDest = new ByteArrayInputStream( destBytes );
-			lInputs.add(fisDest);
+		ByteArrayInputStream fisAdd = null;
+		ByteArrayOutputStream baosOut = null;
+		byte[] aOut = {};
+		try {
+			fsIn = new FileInputStream( fJPEGAdditional );
+			fsIn.read(addBytes);
+			fisAdd = new ByteArrayInputStream( addBytes );
+			ArrayList<InputStream> lInputs = new ArrayList<InputStream>();
+			if( destBytes != null ) {
+				ByteArrayInputStream fisDest = new ByteArrayInputStream( destBytes );
+				lInputs.add(fisDest);
+			}
+			lInputs.add(fisAdd);
+			baosOut = new ByteArrayOutputStream();
+			concatPDFs( lInputs, baosOut, true);
+			aOut = baosOut.toByteArray();
+		} catch( IOException ioe ) {
+			throw ioe;
+		} finally {
+			if( fsIn != null ) fsIn.close();
+			if( fisAdd != null ) fisAdd.close();
+			if( baosOut != null ) baosOut.close();
 		}
-		lInputs.add(fisAdd);
-		ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
-		concatPDFs( lInputs, baosOut, true);
-		fsIn.close();
-		return baosOut.toByteArray();
+		return aOut;
 	}
 
 
 	public static void appendJPGPagetoPDF( File fDestination, File fJPEGAdditional ) throws IOException {
-		FileInputStream fsDest = new FileInputStream( fDestination );
-		FileInputStream fsIn = new FileInputStream( fJPEGAdditional );
-		byte jpgBytes[] = new byte[(int)fJPEGAdditional.length()];
-		fsIn.read(jpgBytes);
-		byte addBytes[] = jpgToPdfBytes( jpgBytes );
-		byte destBytes[] = new byte[(int)fDestination.length()];
-		fsDest.read(destBytes);
-		fsDest.close();
-		ByteArrayInputStream fisDest = new ByteArrayInputStream( destBytes );
-		ByteArrayInputStream fisAdd = new ByteArrayInputStream( addBytes );
-		ArrayList<InputStream> lInputs = new ArrayList<InputStream>();
-		lInputs.add(fisDest);
-		lInputs.add(fisAdd);
-		FileOutputStream fsOut = new FileOutputStream( fDestination );
-		concatPDFs( lInputs, fsOut, true);
-		fsIn.close();
+		FileInputStream fsDest = null;
+		FileInputStream fsIn = null;
+		FileOutputStream fsOut = null;
+		ByteArrayInputStream baisDest = null;
+		ByteArrayInputStream baisAdd = null;
+		try {
+			fsDest = new FileInputStream( fDestination );
+			fsIn = new FileInputStream( fJPEGAdditional );
+			byte jpgBytes[] = new byte[(int)fJPEGAdditional.length()];
+			fsIn.read(jpgBytes);
+			byte addBytes[] = jpgToPdfBytes( jpgBytes );
+			byte destBytes[] = new byte[(int)fDestination.length()];
+			fsDest.read(destBytes);
+			baisDest = new ByteArrayInputStream( destBytes );
+			baisAdd = new ByteArrayInputStream( addBytes );
+			ArrayList<InputStream> lInputs = new ArrayList<InputStream>();
+			lInputs.add(baisDest);
+			lInputs.add(baisAdd);
+			fsOut = new FileOutputStream( fDestination );
+			concatPDFs( lInputs, fsOut, true);
+		} catch( IOException ioe ) {
+			throw ioe;
+		} finally {
+			if( fsDest != null ) fsDest.close();
+			if( fsIn != null ) fsIn.close();
+			if( fsOut != null ) fsOut.close();
+			if( baisDest != null ) baisDest.close();
+			if( baisAdd != null ) baisAdd.close();
+		}
 	}
 	/**
 	 * This method is very specific to JPG images of CVIs.  Assumes them to be letter sized
@@ -220,12 +256,14 @@ public class MergePDF {
 		Rectangle pagesize = PageSize.LETTER.rotate();  // Landscape letter size (11x8.5)
 		Document doc = new Document( pagesize, 0f, 0f, 0f, 0f ); // no margins
 		ByteArrayOutputStream baosPDF = new ByteArrayOutputStream();
+		byte[] aOut = {};
 		PdfWriter docWriter = null;
 		try {
 			docWriter = PdfWriter.getInstance(doc, baosPDF);
 			doc.open();
 			imageIn.scaleToFit( pagesize.getWidth(), pagesize.getHeight()  );
 			doc.add(imageIn);
+			aOut = baosPDF.toByteArray();
 		} catch (DocumentException e) {
 			logger.error(e);
 		}
@@ -234,22 +272,37 @@ public class MergePDF {
 				doc.close();
 			if( docWriter != null )
 				docWriter.close();
+			try {
+				baosPDF.close();
+			} catch (IOException e) {}
 		}
-		return baosPDF.toByteArray();
+		return aOut;
 	}
 	
 	public static void appendPDFtoPDF( File fDestination, File fAdditional ) throws IOException {
-		FileInputStream fsDest = new FileInputStream( fDestination );
-		FileInputStream fsIn = new FileInputStream( fAdditional );
-		byte destBytes[] = new byte[(int)fDestination.length()];
-		fsDest.read(destBytes);
-		fsDest.close();
-		ByteArrayInputStream fisDest = new ByteArrayInputStream( destBytes );
-		ArrayList<InputStream> lInputs = new ArrayList<InputStream>();
-		lInputs.add(fisDest);
-		lInputs.add(fsIn);
-		FileOutputStream fsOut = new FileOutputStream( fDestination );
-		concatPDFs( lInputs, fsOut, true);
+		FileInputStream fsDest = null;
+		FileInputStream fsIn = null;
+		FileOutputStream fsOut = null;
+		ByteArrayInputStream fisDest = null;
+		try {
+			fsDest = new FileInputStream( fDestination );
+			fsIn = new FileInputStream( fAdditional );
+			byte destBytes[] = new byte[(int)fDestination.length()];
+			fsDest.read(destBytes);
+			fisDest = new ByteArrayInputStream( destBytes );
+			ArrayList<InputStream> lInputs = new ArrayList<InputStream>();
+			lInputs.add(fisDest);
+			lInputs.add(fsIn);
+			fsOut = new FileOutputStream( fDestination );
+			concatPDFs( lInputs, fsOut, true);
+		} catch( IOException ioe ) {
+			throw ioe;
+		} finally {
+			if( fsDest != null ) fsDest.close();
+			if( fsIn != null ) fsIn.close();
+			if( fisDest != null ) fisDest.close();
+			if( fsOut != null ) fsOut.close();
+		}
 	}
 
 	public static void concatPDFs(List<InputStream> pdfInputStreams, OutputStream outputStream, boolean paginate) {

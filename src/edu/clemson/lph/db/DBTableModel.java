@@ -20,6 +20,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -204,8 +205,9 @@ public class DBTableModel extends AbstractTableModel implements ThreadListener {
 	
 	private void addParameters( PreparedStatement ps, HashMap<Integer, Object> hParameters ) 
 			throws SQLException {
-		for( Integer iIndex : hParameters.keySet() ) {
-			Object oValue = hParameters.get(iIndex);
+		for( Map.Entry<Integer, Object> entry : hParameters.entrySet() ) {
+			Integer iIndex = entry.getKey();
+			Object oValue = entry.getValue();
 			if( oValue == null )
 				logger.error( "Null value in DBTableModel parameter ");
 			else if( oValue instanceof String ) 

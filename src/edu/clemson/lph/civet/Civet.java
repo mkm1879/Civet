@@ -116,7 +116,7 @@ public class Civet {
 					}
 					if( CivetConfig.isStandAlone() ) {
 						if( !LookupFilesGenerator.checkLookupFiles() ) {
-							System.exit(1);
+							throw( new RuntimeException("Failed to load lookup tables"));
 						}
 						else {
 							new CivetInbox();
@@ -179,8 +179,12 @@ public class Civet {
 		String sMoveTo = sInbox + sFileName;
 		if( !(sMoveTo.equalsIgnoreCase(sFile)) ){
 			File fMoveTo = new File( sMoveTo );
-			fFile.renameTo(fMoveTo);
-			fFile = fMoveTo;
+			if( !fFile.renameTo(fMoveTo) ) {
+				MessageDialog.showMessage(dlg, "Civet: Preview Error", "Failed to move file\n" + sFile + "\n\t to Civet InBox\nOpening in Preview");
+			}
+			else {
+				fFile = fMoveTo;
+			}
 		}
 		File selectedFiles[] = {fFile};
 		dlg.openFiles(selectedFiles, true);

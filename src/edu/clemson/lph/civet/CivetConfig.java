@@ -787,10 +787,19 @@ public class CivetConfig {
 	 */
 	public static void checkAllConfig() {
 		props = new Properties();
+		FileInputStream fis = null;
 		try {
-			props.load(new FileInputStream("CivetConfig.txt"));
+			fis = new FileInputStream("CivetConfig.txt");
+			props.load(fis);
 		} catch (IOException e) {
 			exitErrorImmediate("Cannot read configuration file CivetConfig.txt");
+		} finally {
+			if( fis != null )
+				try {
+					fis.close();
+				} catch (IOException e) {
+					logger.error(e);
+				}
 		}
 		String sRet = props.getProperty("standAlone");
 		if( sRet == null ) exitErrorImmediate("standAlone");

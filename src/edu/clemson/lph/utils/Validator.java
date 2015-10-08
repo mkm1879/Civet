@@ -183,15 +183,15 @@ public class Validator extends org.xml.sax.helpers.DefaultHandler {
 	    }
 	    catch (SAXException ex) {
 	      ex.printStackTrace();
-	      System.exit(1);
+	      throw new RuntimeException(ex.getMessage());
 	    }
 	    catch ( ParserConfigurationException pex ) {
 	      pex.printStackTrace();
-	      System.exit(1);
+	      throw new RuntimeException(pex.getMessage());
 	    }
 	    catch (IllegalArgumentException x) {
 	      System.err.println( "Parser not supported" );
-	      System.exit(1);
+	      throw new RuntimeException(x.getMessage());
 	    }
 	  }
 
@@ -201,14 +201,24 @@ public class Validator extends org.xml.sax.helpers.DefaultHandler {
 	   * @return boolean
 	   */
 	  public boolean isValidXMLFile( String sFile ) {
+		  boolean bRet = false;
+		  FileInputStream fis = null;
 		  try {
-			  FileInputStream fis = new FileInputStream( sFile );
-			  return isValidStream( fis );
+			  fis = new FileInputStream( sFile );
+			  bRet = isValidStream( fis );
 		  }
 		  catch( FileNotFoundException fne ) {
 			  sLastError = sFile + " not found";
+			  bRet = false;
 		  }
-		  return false;
+		  finally {
+			  if( fis != null )
+				try {
+					fis.close();
+				} catch (IOException e) {
+				}
+		  }
+		  return bRet;
 	  }
 	  
 	  /**

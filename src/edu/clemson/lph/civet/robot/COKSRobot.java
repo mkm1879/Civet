@@ -64,7 +64,7 @@ public class COKSRobot extends Thread {
 		else if( sFormat.equals("ADOBE") )
 			bStd = false;
 		else
-			System.exit(1);
+			throw new RuntimeException("Robot mode needs robotOutputFormat set in CivetConfig.txt to either STD or ADOBE");
 
 	}
 	

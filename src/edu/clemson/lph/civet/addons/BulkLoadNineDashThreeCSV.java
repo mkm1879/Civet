@@ -43,7 +43,6 @@ import org.w3c.dom.Element;
 
 public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private StdeCviXml stdXml;
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_9dash3;
 	private static final String sProgMsg = "Loading 9-3: ";
 	
@@ -140,7 +139,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 		}
 		
 		private String buildXml( CSVNineDashThreeDataFile data ) throws IOException {
-			StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder(stdXml);
+			StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder();
 			String sCVINumber = data.getCVINumber();
 			String sSpecies = data.getSpecies();
 			String sSpeciesCode = null;
