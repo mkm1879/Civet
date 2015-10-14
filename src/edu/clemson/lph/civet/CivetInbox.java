@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.List;
 
@@ -58,7 +59,7 @@ import edu.clemson.lph.civet.vsps.VspsCviFile;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.13a";
+	public static final String VERSION = "3.14 XFA";
 	private static final String IDRLICENSE = "\n\nContains material copyrighted by IDRSolutions for the sole purpose" +
 	"of evaluating its JPedalXFA library in this application.\n\n" +
 	"Reuse or redistribution of this application is prohibited.\n\n" +
@@ -285,7 +286,7 @@ public class CivetInbox extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				setVisible(false);
 				dispose();
-				System.exit(0);
+				CivetInbox.this.dispatchEvent(new WindowEvent(CivetInbox.this, WindowEvent.WINDOW_CLOSING));
 			}
 		});
 		menuFile.add(menuItemFileExit);

@@ -202,7 +202,7 @@ public class StateVetLookup implements DBTableSource {
 		}
 	}
 	
-	private class StateVet {
+	private static class StateVet {
 		public String sPrefix;
 		public String sFirstName;
 		public String sLastName;
@@ -219,6 +219,7 @@ public class StateVetLookup implements DBTableSource {
 		public StateVet( String sVetPrefix, String sVetFirstName, String sVetLastName, 
 				    String sVetAddress, String sVetCity, String sVetStateCode, String sVetState, 
 				    String sVetZipCode, String sVetEmail, String sVetCVIEmail, String sVetCVIErrorEmail, String sFileType ) {
+			this.sPrefix = sVetPrefix;
 			this.sFirstName = sVetFirstName;
 			this.sLastName = sVetLastName;
 			this.sAddress = sVetAddress;

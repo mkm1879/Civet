@@ -67,16 +67,6 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 		fireTableDataChanged();
 	}
 	
-	public int getMaxRowID() {
-		int iMax = 0;
-		for( AnimalIDRecord r : rows ) {
-			int iNext = r.iRowID;
-			if( iNext > iMax)
-				iMax = iNext;
-		}
-		return iMax;
-	}
-	
 	public void addRow( String sSpeciesCode, String sSpecies, String sTag ) {
 		rows.add( new AnimalIDRecord( sSpeciesCode, sSpecies, sTag ) );
 		fireTableDataChanged();

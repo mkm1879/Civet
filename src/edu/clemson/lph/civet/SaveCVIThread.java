@@ -74,8 +74,6 @@ public class SaveCVIThread extends Thread {
 	private java.util.Date dDateIssued;
 	private java.util.Date dDateReceived;
 	
-	@SuppressWarnings("unused") // this just gets converted to a sStdPurpose but keep for debugging, etc.
-	private String sMovementPurpose;
 	private String sStdPurpose;
 	private Integer iIssuedByKey;
 	private String sIssuedByName;
@@ -111,7 +109,6 @@ public class SaveCVIThread extends Thread {
 		this.dDateReceived = dDateReceived;
 		this.iIssuedByKey = iIssuedByKey;
 		this.sIssuedByName = sIssuedByName;
-		this.sMovementPurpose = sMovementPurpose;
 		PurposeLookup purpose = new PurposeLookup();
 		this.sStdPurpose = purpose.getCodeForValue(sMovementPurpose);
 		if( sStdPurpose == null || sStdPurpose.trim().length() == 0 )

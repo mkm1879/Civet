@@ -58,7 +58,7 @@ public class AddPageToCviThread extends Thread {
 		byte[] fileBytes;
 		try {
 			fileBytes = FileUtils.readBinaryFile( currentFile.getAbsolutePath() );
-			String sXml = new String( fileBytes );
+			String sXml = new String( fileBytes, "UTF-8" );
 			stdXml = new StdeCviXml( sXml );
 			rawPdfBytes = stdXml.getOriginalCVI();
 			String sFileName = stdXml.getOriginalCVIFileName();

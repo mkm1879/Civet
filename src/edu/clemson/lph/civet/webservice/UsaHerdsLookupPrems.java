@@ -440,7 +440,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 		return currentRow.sGeoLong;
 	}
 
-	private class WebServicePremisesRow {
+	private static class WebServicePremisesRow {
 		public Integer iKeyValue;
 		public String sStatePremID;
 		public String sFedPremID;
@@ -490,16 +490,18 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 
 	@Override
 	public String getColumnName(int columnIndex) {
+		String sRet = null;
 		switch( columnIndex ) {
-		case 0: return "LID";
-		case 1: return "PIN";
-		case 2: return "Name";
-		case 3: return "Address";
-		case 4: return "City";
-		case 5: return "County";
-		case 6: return "Classification";
+		case 0: sRet =  "LID"; break;
+		case 1: sRet =  "PIN"; break;
+		case 2: sRet =  "Name"; break;
+		case 3: sRet =  "Address"; break;
+		case 4: sRet =  "City"; break;
+		case 5: sRet =  "County"; break;
+		case 6: sRet =  "Classification"; break;
+		default: logger.error("Index out of bounds: " + columnIndex);
 		}
-		return null;
+		return sRet;
 	}
 
 	@Override
@@ -509,30 +511,33 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		Object oRet = null;
 		WebServicePremisesRow row = rows.get(rowIndex);
 		switch( columnIndex ) {
-		case 0: return row.sStatePremID;
-		case 1: return row.sFedPremID;
-		case 2: return row.sPremName;
-		case 3: return row.sAddress;
-		case 4: return row.sCity;
-		case 5: return row.sCounty;
-		case 6: return row.sClassType;
+		case 0: oRet =  row.sStatePremID; break;
+		case 1: oRet =  row.sFedPremID; break;
+		case 2: oRet =  row.sPremName; break;
+		case 3: oRet =  row.sAddress; break;
+		case 4: oRet =  row.sCity; break;
+		case 5: oRet =  row.sCounty; break;
+		case 6: oRet =  row.sClassType; break;
+		default: logger.error("Index out of bounds: " + columnIndex);
 		}
-		return null;
+		return oRet;
 	}
 
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 		WebServicePremisesRow row = rows.get(rowIndex);
 		switch( columnIndex ) {
-		case 0: row.sStatePremID = (String)aValue;
-		case 1: row.sFedPremID = (String)aValue;
-		case 2: row.sPremName = (String)aValue;
-		case 3: row.sAddress = (String)aValue;
-		case 4: row.sCity = (String)aValue;
-		case 5: row.sCounty = (String)aValue;
-		case 6: row.sClassType = (String)aValue;
+		case 0: row.sStatePremID = (String)aValue; break;
+		case 1: row.sFedPremID = (String)aValue; break;
+		case 2: row.sPremName = (String)aValue; break;
+		case 3: row.sAddress = (String)aValue; break;
+		case 4: row.sCity = (String)aValue; break;
+		case 5: row.sCounty = (String)aValue; break;
+		case 6: row.sClassType = (String)aValue; break;
+		default: logger.error("Index out of bounds: " + columnIndex);
 		}
 	}
 

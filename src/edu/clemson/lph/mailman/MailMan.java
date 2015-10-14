@@ -17,7 +17,6 @@ GNU General Public License for more details.
 You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
-import java.security.GeneralSecurityException;
 import java.util.*;
 import java.io.*;
 
@@ -41,11 +40,7 @@ import javax.mail.internet.MimeMultipart;
 //import javax.mail.*;
 //import javax.mail.internet.*;
 import javax.mail.util.ByteArrayDataSource;
-
 import org.apache.log4j.Logger;
-
-import com.sun.mail.util.MailSSLSocketFactory;
-
 import edu.clemson.lph.civet.Civet;
 
 

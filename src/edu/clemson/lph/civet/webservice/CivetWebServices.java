@@ -133,6 +133,8 @@ public class CivetWebServices {
 //			System.out.println(sOut);
 			dOut = XMLUtility.stringToDom(sOut);
 			writer.close();
+		} catch (RuntimeException re) {
+			throw re;
 		} catch (Exception e) {
 			throw new WebServiceException(e);
 		}
@@ -164,6 +166,8 @@ public class CivetWebServices {
 				bRet = false;
 			}
 			writer.close();
+		} catch (RuntimeException re) {
+			throw re;
 		} catch (Exception e) {
 			throw new WebServiceException(e);
 		}
@@ -228,6 +232,8 @@ public class CivetWebServices {
 //			System.out.println(sOut);
 			dOut = XMLUtility.stringToDom(sOut);
 			writer.close();
+		} catch (RuntimeException re) {
+			throw re;
 		} catch (Exception e) {
 			throw new WebServiceException(e);
 		}
@@ -299,6 +305,8 @@ public class CivetWebServices {
 //			System.out.println(XMLUtility.printElements(dOut));
 
 			writer.close();
+		} catch (RuntimeException re) {
+			throw re;
 		} catch (Exception e) {
 			throw new WebServiceException(e);
 		}
@@ -356,6 +364,8 @@ public class CivetWebServices {
 //			System.out.println(XMLUtility.printElements(dOut));
 
 			writer.close();
+		} catch (RuntimeException re) {
+			throw re;
 		} catch (Exception e) {
 			throw new WebServiceException(e);
 		}

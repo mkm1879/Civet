@@ -68,18 +68,16 @@ public class SubmitCVIsThread extends Thread {
 				processFile( fThis );
 				if( CivetConfig.isSaveCopies() ) {
 					File fOut = new File( sOutPath + sName );
-	    			if( fOut.exists() ) {
-	    				MessageDialog.messageLater(parent, "Civet Error", fOut.getAbsolutePath() + " already exists in OutBox.\n" +
-	    							"Check that it really is a duplicate and manually delete.");
+	    			while( fOut.exists() ) {
 	    				String sOutPath = fOut.getAbsolutePath();
 	    				sOutPath = FileUtils.incrementFileName(sOutPath);
 	    				fOut = new File( sOutPath );
+	    				MessageDialog.messageLater(parent, "Civet Error", fOut.getAbsolutePath() + " already exists in OutBox.\n" +
+	    						"Saving as " + sOutPath);
 	    			}
-	    			else {
-	    				boolean success = fThis.renameTo(fOut);
-	    				if (!success) {
-	    					MessageDialog.messageLater(parent, "Civet Error", "Could not move " + fThis.getAbsolutePath() + " to " + fOut.getAbsolutePath() );
-	    				}
+    				boolean success = fThis.renameTo(fOut);
+    				if (!success) {
+    					MessageDialog.messageLater(parent, "Civet Error", "Could not move " + fThis.getAbsolutePath() + " to " + fOut.getAbsolutePath() );
 	    			}
 				}
 				else {

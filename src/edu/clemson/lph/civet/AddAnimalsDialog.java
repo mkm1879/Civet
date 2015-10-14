@@ -36,6 +36,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.clemson.lph.controls.DBNumericField;
 import edu.clemson.lph.dialogs.MessageDialog;
@@ -83,8 +84,8 @@ public class AddAnimalsDialog extends JDialog {
 			}
 			{
 				cbSpecies = new JComboBox<String>();
-				for( String s : hSpecies.keySet() ) {
-					String sSpecies = hSpecies.get(s);
+				for( Map.Entry<String, String> e : hSpecies.entrySet() ) {
+					String sSpecies = e.getValue();
 					cbSpecies.addItem(sSpecies);
 				}
 				panel.add(cbSpecies);

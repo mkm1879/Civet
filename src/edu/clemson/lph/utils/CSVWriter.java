@@ -20,6 +20,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
@@ -107,7 +108,14 @@ public class CSVWriter {
 	}
 	
 	public int write( File fFileOut ) throws FileNotFoundException {
-		return write( new FileOutputStream( fFileOut ) );
+		int iRet = 0;
+		FileOutputStream fos = new FileOutputStream( fFileOut );
+		iRet = write( fos );
+		try {
+			fos.close();
+		} catch (IOException e) {
+		}
+		return iRet;
 	}
 	
 	public int write( OutputStream strOut ) {

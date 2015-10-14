@@ -55,6 +55,7 @@ public class CivetConfig {
 	private static String sDBPassword = null;
 	private static Boolean bSmall;
 	private static boolean bStateIDChecksum;
+	private static Boolean bAutoOpenPDF;
 	
 
 	/**
@@ -671,21 +672,32 @@ public class CivetConfig {
 	public static boolean isJPedalXFA() {
 		boolean bRet = false;
 		if( iJPedalType == UNK ) {
-			// do something that requires XFA and set value;
-			PdfDecoder decoder = new PdfDecoder();
-			try {
-				decoder.getFormRenderer();
-				iJPedalType = XFA;
-				bRet = true;
-			} catch( java.lang.NoSuchMethodError e ) {
-				iJPedalType = LGPL;
-				bRet = false;
-			}
+			final String xfaClassPath="org/jpedal/objects/acroforms/AcroRendererXFA.class";
+			ClassLoader loader = logger.getClass().getClassLoader();
+			bRet = loader.getResource(xfaClassPath)!=null;
+		}
+		if( bRet ) {
+			iJPedalType = XFA;
 		}
 		else {
-			bRet = (iJPedalType == XFA);
+			iJPedalType = LGPL;
 		}
 		return bRet;
+	}
+	
+	public static boolean isAutoOpenPdf() {
+		if( bAutoOpenPDF  == null ) {
+			String sVal = props.getProperty("autoOpenPdf");
+			if( sVal == null )
+				bAutoOpenPDF = true;
+			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bAutoOpenPDF = true;
+			}
+			else {
+				bAutoOpenPDF = false;
+			}
+		}
+		return bAutoOpenPDF;
 	}
 	
 
@@ -733,6 +745,19 @@ public class CivetConfig {
 		if( sRet == null ) exitError("dbCivetSchemaName");
 		return sRet;
 	}
+	
+
+	public static String getAcrobatPath() {
+		String sRet = props.getProperty("acrobatPath");
+		if( sRet != null ) {
+			File f = new File( sRet );
+			if( !f.exists() || !f.isFile() ) {
+				sRet = null;
+			}
+		}
+		return sRet;
+	}
+
 
 	/**
 	 * Get the Database UserName
@@ -787,10 +812,19 @@ public class CivetConfig {
 	 */
 	public static void checkAllConfig() {
 		props = new Properties();
+		FileInputStream fis = null;
 		try {
-			props.load(new FileInputStream("CivetConfig.txt"));
+			fis = new FileInputStream("CivetConfig.txt");
+			props.load(fis);
 		} catch (IOException e) {
 			exitErrorImmediate("Cannot read configuration file CivetConfig.txt");
+		} finally {
+			if( fis != null )
+				try {
+					fis.close();
+				} catch (IOException e) {
+					logger.error(e);
+				}
 		}
 		String sRet = props.getProperty("standAlone");
 		if( sRet == null ) exitErrorImmediate("standAlone");

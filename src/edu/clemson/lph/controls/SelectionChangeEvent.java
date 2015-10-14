@@ -19,9 +19,9 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 public class SelectionChangeEvent {
-  public DBComboBox comboBox = null;
-  public Object oOldItem = null;
-  public Object oItem = null;
+  protected DBComboBox comboBox = null;
+  protected Object oOldItem = null;
+  protected Object oItem = null;
 
   public SelectionChangeEvent() {
   }

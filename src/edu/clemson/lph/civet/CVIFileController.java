@@ -34,6 +34,7 @@ import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.dialogs.MessageDialog;
+import edu.clemson.lph.pdfgen.PDFOpener;
 import edu.clemson.lph.pdfgen.PDFUtils;
 
 /**
@@ -540,18 +541,23 @@ public class CVIFileController {
 		}
 		else {
 			long len = currentFile.length();
-			FileInputStream r;
+			FileInputStream r = null;
 			try {
 				r = new FileInputStream( currentFile );
 				pdfBytes = new byte[(int)len];
 				int iRead = r.read(pdfBytes);
-				r.close();
 				if( iRead != len ) {
 					throw new IOException( "Array length "+ iRead + " does not match file length " + len);
 				}
 			} catch (IOException e) {
 				MessageDialog.showMessage( dlg, "Civet: Error",
 						"Error Reading File " + currentFile.getAbsolutePath() )	;
+			} finally {
+				try {
+					if( r != null) r.close();
+				} catch (IOException e) {
+					logger.error(e);
+				}				
 			}
 		}
 		return pdfBytes;
@@ -577,9 +583,11 @@ public class CVIFileController {
 			document.close();
 		} catch( IOException ioe ) {
 			logger.info("IO error extracting pages to byte array", ioe);
+			// This is a bug if the exception happens just returning the original pdf
 			return rawPdfBytes;
 		} catch( DocumentException de ) {
 			logger.info(de.getMessage() + "\nDocument error extracting pages to byte array");
+			// This is a bug if the exception happens just returning the original pdf
 			return rawPdfBytes;
 		}
 		return baOut.toByteArray();
@@ -624,6 +632,10 @@ public class CVIFileController {
 				mPagesComplete.put(currentFilePath, new ArrayList<Integer>());
 			aPagesInCurrent.clear();
 			if( isXFADocument() ) {
+				if( !CivetConfig.isJPedalXFA() && CivetConfig.isAutoOpenPdf() ) {
+					PDFOpener opener = new PDFOpener(dlg);
+					opener.openPDFContentInAcrobat(getCurrentPdfBytes());
+				}
 				dlg.setRotation(0);  // Always rotate 180 (actually 0) since we know they are right that way
 				dlg.populateFromPDF();
 			}

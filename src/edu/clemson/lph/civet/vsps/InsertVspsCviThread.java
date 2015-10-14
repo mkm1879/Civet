@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
@@ -33,7 +34,6 @@ import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
@@ -43,7 +43,6 @@ public class InsertVspsCviThread extends Thread {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	Window parent;
 	VspsCviFile cviFile;
-	StdeCviXml stdXml;
 	ProgressDialog prog;
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_VSPS;
 	private CivetWebServices service = null;
@@ -100,7 +99,7 @@ public class InsertVspsCviThread extends Thread {
 	}
 	
 	private String buildXml( VspsCvi cvi ) throws IOException {
-		StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder(stdXml);
+		StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder();
 		VetLookup vet = new VetLookup( cvi.getVetLastName(), cvi.getVetFirstName() );
 		xmlBuilder.setCviNumber(cvi.getCVINumber());
 		xmlBuilder.setIssueDate(cvi.getInspectionDate());
@@ -153,10 +152,11 @@ public class InsertVspsCviThread extends Thread {
 			}
 		}
 		// Add Groups.
-		for( List<String> lKey : hGroups.keySet() ) {
+		for( Map.Entry<List<String>, Integer> entry : hGroups.entrySet() ) {
+			List<String> lKey = entry.getKey();
 			String sSpecies = lKey.get(0);
 			String sGender = lKey.get(1);
-			Integer iNum = hGroups.get(lKey);
+			Integer iNum = entry.getValue();
 			xmlBuilder.addGroup(iNum, "Non-identified Animals", sSpecies, null, sGender);
 		}
 		CviMetaDataXml metaData = new CviMetaDataXml();

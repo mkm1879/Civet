@@ -221,7 +221,7 @@ public class DBComboBox extends JComboBox<String> {
 			if (parent == null) return wParent; // I give up.  Where am I?
 			parent = parent.getParent();
 		}
-		if (parent instanceof Window) wParent = (Window) parent;
+		wParent = (Window) parent;
 		return wParent;
 	}
 

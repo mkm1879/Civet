@@ -24,7 +24,6 @@ import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.utils.PremCheckSum;
@@ -44,9 +43,8 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	JFrame fParent = null;
 	private static final boolean bRequireBothPINs = true;
-	private StdeCviXml stdXml;
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_SWINE;
-	public final String sProgMessage = "Loading CVI: ";
+	public final static String sProgMessage = "Loading CVI: ";
 
 	
 	public BulkLoadSwineMovementCSV() {
@@ -132,7 +130,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 	}// end inner class TWorkSave
 	
 	private String buildXml( CSVDataFile data ) throws IOException {
-		StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder(stdXml);
+		StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder();
 		StringTokenizer tok = new StringTokenizer(data.getVet(), " ," );
 		String sFirst = tok.nextToken();
 		String sLast = tok.nextToken();

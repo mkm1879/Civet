@@ -18,6 +18,7 @@ You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.utils.FileUtils;
 
@@ -76,7 +77,7 @@ public class PDFOpener {
 		return sFileOut;
 	}// End decode pages to new PDF
 
-	class OpenRecordInAcrobat extends Thread {
+	static class OpenRecordInAcrobat extends Thread {
 		String sFileName;
 		int iPageNo;
 		public OpenRecordInAcrobat( String sFileName ) {
@@ -85,6 +86,7 @@ public class PDFOpener {
 
 		public void run() {
 			String sOs = System.getProperty("os.name");
+			String sExecutable = CivetConfig.getAcrobatPath();
 			// Open with default application using CMD command interpreter to run "start filename.ext"
 			// The CMD command interpreter "knows" the associated application.  Just start doesn't work.
 			Runtime myRuntime = Runtime.getRuntime();
@@ -99,6 +101,9 @@ public class PDFOpener {
 			}
 			else {
 				String sCmd = "cmd /c \"start " + sFileName + " \"";
+				if( sExecutable != null ) {
+					sCmd = "\"" + sExecutable + "\" \"" + sFileName + "\""; 
+				}
 				try {
 					myRuntime.exec(sCmd);
 				}
@@ -117,10 +122,9 @@ public class PDFOpener {
 		t.start();
 	}
 
-	class OpenPageInAcrobat extends Thread {
+	static class OpenPageInAcrobat extends Thread {
 		String sFileName;
 		int iPageNo;
-		ProgressDialog prog;
 		public OpenPageInAcrobat(String sFileName, int iPageNo ) {
 			this.sFileName = sFileName;
 			this.iPageNo = iPageNo;

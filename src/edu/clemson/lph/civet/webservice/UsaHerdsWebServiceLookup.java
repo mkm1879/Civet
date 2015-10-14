@@ -183,7 +183,7 @@ public class UsaHerdsWebServiceLookup {
 		return currentRow.iDisplaySequence;
 	}
 	
-	private class WebServiceLookupRow {
+	private static class WebServiceLookupRow {
 		public Integer iKeyValue;
 		public String sDescription;
 		public String sUSDADescription;
