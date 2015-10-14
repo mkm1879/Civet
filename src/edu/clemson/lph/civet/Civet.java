@@ -60,6 +60,7 @@ public class Civet {
 		// Fail now so config file and required files can be fixed before work is done.
 		CivetConfig.checkAllConfig();
 		logger.setLevel(CivetConfig.getLogLevel());
+		logger.info("Civet running build: " + CivetInbox.VERSION);
 		if( args.length == 1) {
 			String sFile = args[0];
 			if( sFile != null && ( sFile.toLowerCase().endsWith(".cvi") || sFile.toLowerCase().endsWith(".pdf")) ) {
@@ -108,7 +109,6 @@ public class Civet {
 						}
 						else {
 							UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-							logger.info("UI look and feel set");
 						}
 					} 
 					catch (Exception e) {
