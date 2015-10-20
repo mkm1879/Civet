@@ -675,13 +675,15 @@ public class CivetConfig {
 			final String xfaClassPath="org/jpedal/objects/acroforms/AcroRendererXFA.class";
 			ClassLoader loader = logger.getClass().getClassLoader();
 			bRet = loader.getResource(xfaClassPath)!=null;
-		}
-		if( bRet ) {
-			iJPedalType = XFA;
-			return true;
+			if( bRet ) {
+				iJPedalType = XFA;
+			}
+			else {
+				iJPedalType = LGPL;
+			}
 		}
 		else {
-			iJPedalType = LGPL;
+			bRet = ( iJPedalType == XFA );
 		}
 		return bRet;
 	}

@@ -104,6 +104,7 @@ public class OpenFileThread extends Thread {
 	public void run() {
 		// Do all setup here.
 		try {
+			pdfDecoder = dlg.initPdfDisplay();
 			if( fileBytes == null ) {
 				fileBytes = FileUtils.readBinaryFile( sFilePath );
 			}

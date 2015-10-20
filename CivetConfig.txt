@@ -26,7 +26,7 @@ saveCopies=true
 
 #Web Service Settings
 standAlone=no
-herdsWebServiceURL=http:\\lphstage/usaherds/WebService/ExternalMessages.asmx
+herdsWebServiceURL=http://lphapps/usaherds/WebService/ExternalMessages.asmx
 
 #Email setup
 smtpHost=mail.clemson.edu
@@ -59,8 +59,8 @@ CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
 StdSchema=/Users/mike/Civet/CivetecviDraftRelaxed.xsd
 rotation=0
 defaultPurpose=Other
-#acrobatPath="C:/Program Files (x86)/Adobe/Acrobat 10.0/Acrobat/Acrobat.exe"
-autoOpenPdf=no
+#acrobatPath="C:\Program Files (x86)\Adobe\Acrobat 10.0\Acrobat\Acrobat.exe"
+autoOpenPdf=yes
 
 #Template files for generated emails
 ExportEmailTemplate=/Users/mike/Civet/CivetCivetExportsEmailMessage.txt
