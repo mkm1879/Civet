@@ -678,6 +678,7 @@ public class CivetConfig {
 		}
 		if( bRet ) {
 			iJPedalType = XFA;
+			return true;
 		}
 		else {
 			iJPedalType = LGPL;

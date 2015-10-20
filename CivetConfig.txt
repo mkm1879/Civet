@@ -26,7 +26,7 @@ saveCopies=true
 
 #Web Service Settings
 standAlone=no
-herdsWebServiceURL=http://lphstage/usaherds/WebService/ExternalMessages.asmx
+herdsWebServiceURL=http:\\lphstage/usaherds/WebService/ExternalMessages.asmx
 
 #Email setup
 smtpHost=mail.clemson.edu
@@ -48,29 +48,29 @@ emailCopyTo=mmarti5@clemson.edu
 maxAttachSize=5M
 
 #Local system setup
-InputDirPath=E:\\Documents\\Civet\\CivetInbox\\
-ToBeFiledDirPath=E:\\Documents\\Civet\\CivetToBeFiled\\
-EmailOutDirPath=E:\\Documents\\Civet\\CivetToBeMailedOut\\
-EmailErrorsDirPath=E:\\Documents\\Civet\\CivetToBeMailedErrors\\
-OutputDirPath=E:\\Documents\\Civet\\CivetOutbox\\
-bulkLoadDirPath=E:\\Documents\\Epi\\Swine\\
-vspsDirPath=E:\\EclipseJava\\Civet\\VSPSData\\
+InputDirPath=/Users/mike/Civet/CivetCivetInbox/
+ToBeFiledDirPath=/Users/mike/Civet/CivetCivetToBeFiled/
+EmailOutDirPath=/Users/mike/Civet/CivetCivetToBeMailedOut/
+EmailErrorsDirPath=/Users/mike/Civet/CivetCivetToBeMailedErrors/
+OutputDirPath=/Users/mike/Civet/CivetCivetOutbox/
+bulkLoadDirPath=/Users/mike/Civet/CivetSwine/
+vspsDirPath=/Users/mike/Civet/CivetVSPSData/
 CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
-StdSchema=E:\\Documents\\Civet\\ecviDraftRelaxed.xsd
+StdSchema=/Users/mike/Civet/CivetecviDraftRelaxed.xsd
 rotation=0
 defaultPurpose=Other
-#acrobatPath="C:\Program Files (x86)\Adobe\Acrobat 10.0\Acrobat\Acrobat.exe"
+#acrobatPath="C:/Program Files (x86)/Adobe/Acrobat 10.0/Acrobat/Acrobat.exe"
 autoOpenPdf=no
 
 #Template files for generated emails
-ExportEmailTemplate=E:\\Documents\\Civet\\CivetExportsEmailMessage.txt
-ImportErrorsEmailTemplate=E:\\Documents\\Civet\\CivetImportsErrorEmailMessage.txt
-ImportErrorsLetterTemplate=E:\\Documents\\Civet\\CivetImportsErrorLetterTemplate.txt
+ExportEmailTemplate=/Users/mike/Civet/CivetCivetExportsEmailMessage.txt
+ImportErrorsEmailTemplate=/Users/mike/Civet/CivetCivetImportsErrorEmailMessage.txt
+ImportErrorsLetterTemplate=/Users/mike/Civet/CivetCivetImportsErrorLetterTemplate.txt
 
 #Robot Mode Settings
-robotInputPath=E:\\Documents\\Civet\\CivetRobotIn
-robotCompleteOutPath=E:\\Documents\\Civet\\CivetRobotComplete
-robotXMLOutPath=E:\\Documents\\Civet\\CivetRobotXML
+robotInputPath=E:/Documents/Civet/CivetRobotIn
+robotCompleteOutPath=E:/Documents/Civet/CivetRobotComplete
+robotXMLOutPath=E:/Documents/Civet/CivetRobotXML
 robotOutputFormat=STD
 #robotOutputFormat=ADOBE
 robotWaitSeconds=15
