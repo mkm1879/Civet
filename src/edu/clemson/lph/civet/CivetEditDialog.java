@@ -261,6 +261,16 @@ public final class CivetEditDialog extends JFrame {
 			bGotoPage.setEnabled(false);		
 	}
 	
+	/**
+	 * Hack to get display to reset whatever is needed to render PDF
+	 */
+	public PdfDecoder initPdfDisplay() {
+		pdfDecoder.dispose();
+		pdfDecoder = new PdfDecoder(true);
+		display.setViewportView(pdfDecoder);
+		return pdfDecoder;
+	}
+	
 	public void updatePdfDisplay() {
 		pdfDecoder.setPageParameters(getScale(),
 				controller.getCurrentPageNo(),
@@ -540,7 +550,7 @@ public final class CivetEditDialog extends JFrame {
 	}
 
 	private void setupViewPanel() {	
-		pdfDecoder = new PdfDecoder(true);
+		pdfDecoder = new PdfDecoder();
 		//ensure non-embedded font map to sensible replacements
 		//    PdfDecoder.setFontReplacements(pdfDecoder);
 		pView = new JPanel();
@@ -2149,6 +2159,7 @@ public final class CivetEditDialog extends JFrame {
 	 */
 	private void loadSpeciesFromStdXml(StdeCviXml std) {
 		aSpecies = new ArrayList<SpeciesRecord>();
+		ArrayList<String> aBadSpecies = new ArrayList<String>();
 		NodeList animals = std.listAnimals();
 		String sSpeciesCode = null;
 		String sSpeciesName = null;
@@ -2158,12 +2169,15 @@ public final class CivetEditDialog extends JFrame {
 			if( sAnimalID == null || sAnimalID.trim().length() == 0 ) 
 				sAnimalID = "CO/KS No ID";  // This will flag as individual animal record in XML
 			boolean bSet = false;
-			SpeciesLookup sppLookup = new SpeciesLookup( sSpeciesCode );
-			if( sppLookup == null || sppLookup.getSpeciesCode() == null ) {
+			SpeciesLookup sppLookup = null;
+			if( !aBadSpecies.contains(sSpeciesCode) )
+				sppLookup = new SpeciesLookup( sSpeciesCode );
+			if( sppLookup == null || sppLookup.getSpeciesName() == null ) {
+				aBadSpecies.add(sSpeciesCode);
 				sSpeciesCode = null;
 				sSpeciesName = null;
 				continue;  // Without a valid code, we cannot create a valid animal.
-				// TODO: Replace giving up with a dialog to select species
+				// TODO: Replace giving up with a dialog to select species?
 			}
 			sSpeciesName = sppLookup.getSpeciesName();
 			if( sSpeciesCode != null && sAnimalID != null && sAnimalID.trim().length() > 0 ) {

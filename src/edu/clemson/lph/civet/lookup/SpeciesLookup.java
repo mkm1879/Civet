@@ -59,8 +59,8 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 		Spp spp = sppCodeMap.get(sSppCode);
 		if( spp == null ) {
 			MessageDialog.messageLater(null, "Civet Error: Missing Species Code", "Species code " + sSppCode + " not found in lookup table.");
-//			spp = new Spp("Invalid Species Code",null);
-			return;
+			spp = new Spp("Invalid Species Code",null);
+//			return;
 		}
 		this.sSpeciesName = spp.sSppName;
 		this.sSpeciesCode = spp.sSppCode;
