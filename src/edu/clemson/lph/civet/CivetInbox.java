@@ -390,42 +390,38 @@ public class CivetInbox extends JFrame {
 			currentModel.refresh();
 			tblInBox.setModel(currentModel);
 			tblInBox.setRowSorter( currentModel.getSorter() );
-		}
-		setMenuItems();
-	}
-	
-	private void setMenuItems() {
-		// Set items that apply in any view
-		if( currentModel.getRowCount() == 0 ) {
-			bOpen.setEnabled(false);
-			menuItemFileOpen.setEnabled(false);
-			bOpenAll.setEnabled(false);
-			menuItemFileOpenAll.setEnabled(false);
-		}
-		else {
-			bOpen.setEnabled(true);
-			menuItemFileOpen.setEnabled(true);
-			bOpenAll.setEnabled(true);
-			menuItemFileOpenAll.setEnabled(true);
+			// Set items that apply in any view
+			if( currentModel.getRowCount() == 0 ) {
+				bOpen.setEnabled(false);
+				menuItemFileOpen.setEnabled(false);
+				bOpenAll.setEnabled(false);
+				menuItemFileOpenAll.setEnabled(false);
+			}
+			else {
+				bOpen.setEnabled(true);
+				menuItemFileOpen.setEnabled(true);
+				bOpenAll.setEnabled(true);
+				menuItemFileOpenAll.setEnabled(true);
+			}
 		}
 	}
 
-	private void doOpenFile( String sFile ) {
-		if( sFile == null || sFile.trim().length() == 0 ) return;
-		CivetEditDialog dlg = new CivetEditDialog( CivetInbox.this );
-		File fFile = new File(sFile);
-		if( !fFile.exists() ) return;
-		String sFileName = fFile.getName();
-		String sInbox = CivetConfig.getInputDirPath();
-		String sMoveTo = sInbox + sFileName;
-		if( !(sMoveTo.equalsIgnoreCase(sFile)) ){
-			File fMoveTo = new File( sMoveTo );
-			fFile.renameTo(fMoveTo);
-			fFile = fMoveTo;
-		}
-		File selectedFiles[] = {fFile};
-		dlg.openFiles(selectedFiles, false);
-	}
+//	private void doOpenFile( String sFile ) {
+//		if( sFile == null || sFile.trim().length() == 0 ) return;
+//		CivetEditDialog dlg = new CivetEditDialog( CivetInbox.this );
+//		File fFile = new File(sFile);
+//		if( !fFile.exists() ) return;
+//		String sFileName = fFile.getName();
+//		String sInbox = CivetConfig.getInputDirPath();
+//		String sMoveTo = sInbox + sFileName;
+//		if( !(sMoveTo.equalsIgnoreCase(sFile)) ){
+//			File fMoveTo = new File( sMoveTo );
+//			fFile.renameTo(fMoveTo);
+//			fFile = fMoveTo;
+//		}
+//		File selectedFiles[] = {fFile};
+//		dlg.openFiles(selectedFiles, false);
+//	}
 
 	private void doOpenFiles() {
 		CivetEditDialog dlg = new CivetEditDialog( CivetInbox.this );
@@ -499,9 +495,6 @@ public class CivetInbox extends JFrame {
 			ask.setVisible(true);
 			if( ask.isExitOK() ) {
 				String sUserID = ask.getAnswerOne();
-//				if( sUserID.contains("@")) {
-//					sUserID = sUserID.substring(0, sUserID.indexOf('@'));
-//				}
 				MailMan.setDefaultUserID(sUserID);
 				MailMan.setDefaultPassword(ask.getAnswerTwo());
 				MailMan.setDefaultHost(CivetConfig.getSmtpHost());
@@ -553,8 +546,7 @@ public class CivetInbox extends JFrame {
 	private void viewUnsentOutbound() {
 		this.setTitle(sTitleBase + "Outbound CVIs to Email");
 		currentModel = new EmailFilesTableModel( new File( CivetConfig.getEmailOutDirPath() ) );
-		tblInBox.setModel(currentModel);
-		tblInBox.setRowSorter( currentModel.getSorter() );
+		refreshTables();
 		menuItemSubmitSelectedCVIs.setEnabled(false);
 		menuItemSubmitAllCVIs.setEnabled(false);
 		if( currentModel.getRowCount() > 0 )
@@ -567,8 +559,7 @@ public class CivetInbox extends JFrame {
 	private void viewUnsentInboundErrors() {
 		this.setTitle(sTitleBase + "Inbound Error CVIs to Email");
 		currentModel = new EmailFilesTableModel( new File( CivetConfig.getEmailErrorsDirPath() ) );
-		tblInBox.setModel(currentModel);
-		tblInBox.setRowSorter( currentModel.getSorter() );
+		refreshTables();
 		menuItemSubmitSelectedCVIs.setEnabled(false);
 		menuItemSubmitAllCVIs.setEnabled(false);
 		menuItemSendOutboundCVIs.setEnabled(false);			
@@ -581,8 +572,7 @@ public class CivetInbox extends JFrame {
 	private void viewToBeFiled() {
 		this.setTitle(sTitleBase + "CVI Data Ready to Submit to USAHERDS");
 		currentModel = new StdXMLFilesTableModel( new File( CivetConfig.getToFileDirPath() ) );
-		tblInBox.setModel(currentModel);
-		tblInBox.setRowSorter( currentModel.getSorter() );
+		refreshTables();
 		if( currentModel.getRowCount() > 0 && !CivetConfig.isStandAlone() ) {
 			menuItemSubmitSelectedCVIs.setEnabled(true);
 			menuItemSubmitAllCVIs.setEnabled(true);
@@ -598,8 +588,7 @@ public class CivetInbox extends JFrame {
 	private void viewNew() {
 		this.setTitle(sTitleBase + "Source Files Ready to Enter");
 		currentModel = new SourceFilesTableModel( new File( CivetConfig.getInputDirPath() ) );
-		tblInBox.setModel(currentModel);
-		tblInBox.setRowSorter( currentModel.getSorter() );
+		refreshTables();
 		menuItemSubmitSelectedCVIs.setEnabled(false);
 		menuItemSubmitAllCVIs.setEnabled(false);
 		menuItemSendOutboundCVIs.setEnabled(false);			
