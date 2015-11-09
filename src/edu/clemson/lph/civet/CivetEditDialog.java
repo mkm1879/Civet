@@ -264,12 +264,12 @@ public final class CivetEditDialog extends JFrame {
 	/**
 	 * Hack to get display to reset whatever is needed to render PDF
 	 */
-	public PdfDecoder initPdfDisplay() {
-		pdfDecoder.dispose();
-		pdfDecoder = new PdfDecoder(true);
-		display.setViewportView(pdfDecoder);
-		return pdfDecoder;
-	}
+//	public PdfDecoder initPdfDisplay() {
+//		pdfDecoder.dispose();
+//		pdfDecoder = new PdfDecoder(true);
+//		display.setViewportView(pdfDecoder);
+//		return pdfDecoder;
+//	}
 	
 	public void updatePdfDisplay() {
 		pdfDecoder.setPageParameters(getScale(),
