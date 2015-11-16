@@ -30,9 +30,11 @@ herdsWebServiceURL=http://lphstage/usaherds/WebService/ExternalMessages.asmx
 
 #Email setup
 smtpHost=mail.clemson.edu
-smtpPort=587
+#smtpPort=587
+smtpPort=465
 #465 and 25 are sometimes still used.
-smtpSecurity=STARTTLS
+#smtpSecurity=STARTTLS
+smtpSecurity=SSL
 #STARTTLS for modern email with "good" certificate
 #SSL for old email
 #NONE for no security over port 25 (very old but used sometimes with IP verification)

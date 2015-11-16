@@ -144,10 +144,15 @@ public class CSVNineDashThreeDataFile {
 		if( sDate == null || sDate.trim().length() == 0 ) return dRet;
 		
 		SimpleDateFormat df = new SimpleDateFormat( "MM/dd/yy");
+		SimpleDateFormat df2 = new SimpleDateFormat( "MM/dd/yyyy");
 		try {
 			dRet = df.parse(sDate);
 		} catch (ParseException e) {
-			logger.error( "Cannot parse " + sDate + " as a date" );
+			try {
+				dRet = df2.parse(sDate);
+			} catch (ParseException e2) {
+				logger.error( "Cannot parse " + sDate + " as a date" );
+			}
 		}
 		return dRet;
 	}

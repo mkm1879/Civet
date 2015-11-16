@@ -196,7 +196,11 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			Element destination = xmlBuilder.setDestination(sDestinationPIN, data.getConsigneeName(), sConsigneeState );
 			xmlBuilder.setAddress(destination, data.getConsigneeStreet(), data.getConsigneeCity(), sConsigneeState, data.getConsigneeZip());
 
-			int iNum = data.getAnimalCount();
+			Integer iNum = data.getAnimalCount();
+			if( iNum == null ) {
+				logger.error("Missing Animal Count in " + sCVINumber);
+				iNum = 1;
+			}
 			String sGender = "Gender Unknown";
 			xmlBuilder.addGroup(iNum, "Poultry Lot Under NPIP 9-3", sSpeciesCode, null, sGender);
 			CviMetaDataXml metaData = new CviMetaDataXml();
