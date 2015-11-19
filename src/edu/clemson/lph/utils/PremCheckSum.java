@@ -1,6 +1,6 @@
 package edu.clemson.lph.utils;
 
-import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 
 /*
 Copyright 2014 Michael K Martin

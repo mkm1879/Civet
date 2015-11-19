@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet;
+package edu.clemson.lph.civet.prefs;
 /*
 Copyright 2014 Michael K Martin
 
@@ -31,6 +31,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jpedal.PdfDecoder;
 
+import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.TwoLineQuestionDialog;
@@ -814,20 +815,22 @@ public class CivetConfig {
 	 * NOTE: Only test those that are required by the external release, i.e., outside of addons
 	 */
 	public static void checkAllConfig() {
-		props = new Properties();
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream("CivetConfig.txt");
-			props.load(fis);
-		} catch (IOException e) {
-			exitErrorImmediate("Cannot read configuration file CivetConfig.txt");
-		} finally {
-			if( fis != null )
-				try {
-					fis.close();
-				} catch (IOException e) {
-					logger.error(e);
-				}
+		if( props == null ) {
+			props = new Properties();
+			FileInputStream fis = null;
+			try {
+				fis = new FileInputStream("CivetConfig.txt");
+				props.load(fis);
+			} catch (IOException e) {
+				exitErrorImmediate("Cannot read configuration file CivetConfig.txt");
+			} finally {
+				if( fis != null )
+					try {
+						fis.close();
+					} catch (IOException e) {
+						logger.error(e);
+					}
+			}
 		}
 		String sRet = props.getProperty("standAlone");
 		if( sRet == null ) exitErrorImmediate("standAlone");
@@ -846,7 +849,7 @@ public class CivetConfig {
 		sRet = props.getProperty("smtpPort");
 		if( sRet == null ) exitErrorImmediate("smtpPort");
 		sRet = props.getProperty("smtpSecurity");
-		if( sRet == null ) exitErrorImmediate("smtpIsTls");
+		if( sRet == null ) exitErrorImmediate("smtpSecurity");
 		sRet = props.getProperty("smtpPort");
 		if( sRet == null ) exitErrorImmediate("smtpPorty");
 		sRet = props.getProperty("smtpDomain");
@@ -883,24 +886,6 @@ public class CivetConfig {
 		if( !f.exists() || !f.isDirectory() ) {
 			exitErrorImmediate( "OutputDirPath\n" + sRet + " does not exist or is not a folder");			
 		}
-		sRet = props.getProperty("robotInputPath");
-		if( sRet == null ) exitErrorImmediate("robotInputPath");
-		f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "robotInputPath\n" + sRet + " does not exist or is not a folder");			
-		}
-		sRet = props.getProperty("robotCompleteOutPath");
-		if( sRet == null ) exitErrorImmediate("robotCompleteOutPath");
-		f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "robotCompleteOutPath\n" + sRet + " does not exist or is not a folder");			
-		}
-		sRet = props.getProperty("robotXMLOutPath");
-		if( sRet == null ) exitErrorImmediate("robotXMLOutPath");
-		f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "robotXMLOutPath\n" + sRet + " does not exist or is not a folder");			
-		}
 		sRet = props.getProperty("vetTableFile");
 		if( sRet == null ) exitErrorImmediate("vetTableFile");
 		sRet = props.getProperty("stateVetTableFile");
@@ -911,12 +896,8 @@ public class CivetConfig {
 		}
 		sRet = props.getProperty("sppTableFile");
 		if( sRet == null ) exitErrorImmediate("sppTableFile");
-		sRet = props.getProperty("purposeTableFile");
-		if( sRet == null ) exitErrorImmediate("purposeTableFile");
 		sRet = props.getProperty("errorTypeTableFile");
 		if( sRet == null ) exitErrorImmediate("errorTypeTableFile");
-		sRet = props.getProperty("robotOutputFormat");
-		if( sRet == null ) exitErrorImmediate("robotOutputFormat");
 		if( !sRet.equals("STD") && !sRet.equals("ADOBE") ) 
 			exitErrorImmediate("Unknown robot output format:\n" + sRet );
 		sRet = props.getProperty("CoKsXSLTFile");
@@ -965,5 +946,46 @@ public class CivetConfig {
 		} catch( NumberFormatException nfe ) {
 			exitErrorImmediate( "Cannot read maxAttachSize\n" + sRet + " as an integer number");			
 		}
-	}			
+	}	
+	
+	public static void checkRobotConfig() {
+		if( props == null ) {
+			props = new Properties();
+			FileInputStream fis = null;
+			try {
+				fis = new FileInputStream("CivetConfig.txt");
+				props.load(fis);
+			} catch (IOException e) {
+				exitErrorImmediate("Cannot read configuration file CivetConfig.txt");
+			} finally {
+				if( fis != null )
+					try {
+						fis.close();
+					} catch (IOException e) {
+						logger.error(e);
+					}
+			}
+		}
+		String sRet = props.getProperty("robotInputPath");
+		if( sRet == null ) exitErrorImmediate("robotInputPath");
+		File f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			exitErrorImmediate( "robotInputPath\n" + sRet + " does not exist or is not a folder");			
+		}
+		sRet = props.getProperty("robotCompleteOutPath");
+		if( sRet == null ) exitErrorImmediate("robotCompleteOutPath");
+		f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			exitErrorImmediate( "robotCompleteOutPath\n" + sRet + " does not exist or is not a folder");			
+		}
+		sRet = props.getProperty("robotXMLOutPath");
+		if( sRet == null ) exitErrorImmediate("robotXMLOutPath");
+		f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			exitErrorImmediate( "robotXMLOutPath\n" + sRet + " does not exist or is not a folder");			
+		}
+		sRet = props.getProperty("robotOutputFormat");
+		if( sRet == null ) exitErrorImmediate("robotOutputFormat");
+
+	}
 }

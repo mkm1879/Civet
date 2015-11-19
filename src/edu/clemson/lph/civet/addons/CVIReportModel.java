@@ -33,7 +33,7 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.*;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.db.*;
 
 

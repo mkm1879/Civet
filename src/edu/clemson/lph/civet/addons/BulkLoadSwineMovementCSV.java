@@ -20,8 +20,8 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.CSVFilter;
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.civet.lookup.VetLookup;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;

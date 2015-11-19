@@ -28,6 +28,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.robot.COKSRobot;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
@@ -79,6 +80,7 @@ public class Civet {
 			}
 			COKSRobot robbie;
 			try {
+				CivetConfig.checkRobotConfig();
 				robbie = new COKSRobot();
 				robbie.start();
 				System.out.println("Running in Robot Mode\nMinimize but do not close this Command Window");

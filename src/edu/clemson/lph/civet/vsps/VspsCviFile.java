@@ -35,7 +35,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
