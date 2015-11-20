@@ -298,11 +298,13 @@
                             <xsl:with-param name="species" select="spp"/>
                         </xsl:call-template>
                     </xsl:attribute>
-                    <xsl:attribute name="Age">
-                        <xsl:call-template name="Age">
-                            <xsl:with-param name="item" select="."/>
-                        </xsl:call-template>
-                    </xsl:attribute>
+                    <xsl:if test="./Age and ./Age != '' ">
+                        <xsl:attribute name="Age">
+                            <xsl:call-template name="Age">
+                                <xsl:with-param name="item" select="."/>
+                            </xsl:call-template>
+                        </xsl:attribute>
+                    </xsl:if>
                     <xsl:attribute name="Breed">
                         <xsl:call-template name="Breed">
                             <xsl:with-param name="species" select="spp"/>
