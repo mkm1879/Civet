@@ -220,7 +220,7 @@
             <xsl:variable name="head" select="headCt"/>
             <xsl:if test="number($head) = 1">
                 <xsl:element name="Animal">
-                    <xsl:if test="./Age and ./Age != '' ">
+                    <xsl:if test="./ageNum and ./ageNum != '' ">
                         <xsl:attribute name="Age">
                             <xsl:call-template name="Age">
                                 <xsl:with-param name="item" select="."/>
@@ -298,7 +298,7 @@
                             <xsl:with-param name="species" select="spp"/>
                         </xsl:call-template>
                     </xsl:attribute>
-                    <xsl:if test="./Age and ./Age != '' ">
+                    <xsl:if test="./ageNum and ./ageNum != '' ">
                         <xsl:attribute name="Age">
                             <xsl:call-template name="Age">
                                 <xsl:with-param name="item" select="."/>
@@ -483,7 +483,7 @@
             <xsl:when test="$sex ='F'">Female</xsl:when>
             <xsl:when test="$sex ='M'">Male</xsl:when>
             <xsl:when test="$sex ='C'">Neutered Male</xsl:when>
-            <xsl:when test="$sex ='S'">Neutered Female</xsl:when>
+            <xsl:when test="$sex ='S'">Spayed Female</xsl:when>
             <xsl:when test="$sex ='X'">Other</xsl:when>
             <xsl:when test="$sex ='U'">Gender Unknown</xsl:when>
             <xsl:otherwise>Gender Unknown</xsl:otherwise>
