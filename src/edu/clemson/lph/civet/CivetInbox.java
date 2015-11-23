@@ -59,7 +59,7 @@ import edu.clemson.lph.civet.vsps.VspsCviFile;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.15beta1";
+	public static final String VERSION = "3.15beta2";
 	private static final String IDRLICENSE = "\n\nContains material copyrighted by IDRSolutions for the sole purpose" +
 	"of evaluating its JPedalXFA library in this application.\n\n" +
 	"Reuse or redistribution of this application is prohibited.\n\n" +
