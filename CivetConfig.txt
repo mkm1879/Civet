@@ -43,7 +43,7 @@ emailReplyTo=mk10martin@aol.com,mkm1879@gmail.com
 smtpDomain=@gmail.com
 #If emailTestTo is set emails do NOT go to destination state but to this address for testing!!!!!!
 emailTestTo=mkm1879@gmail.com
-emailCopyTo=mmarti5@clemson.edu
+#emailCopyTo=mmarti5@clemson.edu
 
 #Limit size of all email attachments on one email 
 #May be in bytes, K or M

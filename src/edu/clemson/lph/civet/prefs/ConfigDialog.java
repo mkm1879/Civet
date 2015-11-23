@@ -7,7 +7,10 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.swing.JTabbedPane;
 import javax.swing.table.TableColumn;
@@ -73,11 +76,15 @@ public class ConfigDialog extends JDialog {
 					addRow(me, pThis, i);
 				}
 			}
-			TableColumnModel colModel = pThis.getTable().getColumnModel();
-			TableColumn col = colModel.getColumn(1);
-			PrefsCellEditor editor = new PrefsCellEditor();
-			col.setCellEditor(editor);
-			col.setCellEditor(editor);
+//			TableColumnModel colModel = pThis.getTable().getColumnModel();
+//			TableColumn col = colModel.getColumn(1);
+//			ConfigRenderer editor = new ConfigRenderer(model, false);
+//			col.setCellRenderer(editor);
+//			col.setCellEditor(editor);
+//			TableColumn col2 = colModel.getColumn(2);
+//			ConfigRenderer editor2 = new ConfigRenderer(model, true);
+//			col2.setCellRenderer(editor2);
+//			col2.setCellEditor(editor);
 		} 
 
 	}
@@ -95,8 +102,16 @@ public class ConfigDialog extends JDialog {
 		final String sDesc = me.getDescription();
 		final String sHelp = me.getHelpText();
 		final String sValue = me.getDefault();
-		ConfigTableModel model = pThis.getModel();
-		model.addRow(sName, sValue, sDesc, sType, sHelp);
+		final List<String> lChoices = me.getChoices();
+		ConfigEntry entry = new ConfigEntry( sName, sValue, sType, sHelp );
+		ConfigEntryPanel pEntry = new ConfigEntryPanel( entry );
+		pThis.addEntry(pEntry);
+		
+//		model = pThis.getModel();
+//		model.addRow(sName, sValue, sDesc, sType, sHelp);
+//		if( "Select".equalsIgnoreCase(sType) ) {
+//			model.setChoices(sName, me.getChoices() );
+//		}
 	}
 
 }
