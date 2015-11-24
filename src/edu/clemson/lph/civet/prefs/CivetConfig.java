@@ -64,7 +64,7 @@ public class CivetConfig {
 		return props;
 	}
 	public static boolean saveProps() {
-		String sComments = "What?";
+		String sComments = "Civet Preferences Configuration File";
 		FileOutputStream out;
 		try {
 			out = new FileOutputStream(new File("CivetConfig.txt"));

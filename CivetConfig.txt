@@ -1,5 +1,5 @@
-#What?
-#Tue Nov 24 15:30:25 EST 2015
+#Civet Preferences Configuration File
+#Tue Nov 24 15:39:49 EST 2015
 dbCivetSchemaName=Civet
 log4j.appender.R.layout=org.apache.log4j.EnhancedPatternLayout
 smtpPort=587
@@ -26,7 +26,7 @@ robotXMLOutPath=E\:/Documents/Civet/CivetRobotXML
 InputDirPath=E\:\\Documents\\Civet\\CivetInbox\\
 acrobatPath=C\:\\Program Files (x86)\\Adobe\\Acrobat 10.0\\Acrobat\\Acrobat.exe
 dbHerdsSchemaName=dbo
-robotWaitSeconds=15
+robotWaitSeconds=30
 smtpHost=smtp.googlemail.com
 log4j.rootLogger=info, stdout, R
 emailTestTo=mmarti5@clemson.edu
@@ -35,27 +35,27 @@ stateIDChecksum=false
 standAlone=no
 ExportEmailTemplate=E\:\\Documents\\Civet\\CivetExportsEmailMessage.txt
 saveCopies=true
-EmailOutDirPath=E\:\\Documents\\Civet\\CivetToBeMailedOut\\
-herdsWebServiceURL=http\://lphstage/usaherds/WebService/ExternalMessages.asmx
-emailFrom=mkm1879@gmail.com
 rotation=0
+emailFrom=mkm1879@gmail.com
+herdsWebServiceURL=http\://lphstage/usaherds/WebService/ExternalMessages.asmx
+EmailOutDirPath=E\:\\Documents\\Civet\\CivetToBeMailedOut\\
 ImportErrorsEmailTemplate=E\:\\Documents\\Civet\\CivetImportsErrorEmailMessage.txt
 log4j.appender.R.layout.ConversionPattern=%d{dd MMM yyyy HH\:mm} %5p %F [%t] %n%m%n %throwable{5}%n
 robotInputPath=E\:/Documents/Civet/CivetRobotIn
-smallScreen=FALSE
 errorTypeTableFile=ErrorTypeTable.csv
+smallScreen=FALSE
 smtpSecurity=STARTTLS
-robotOutputFormat=STD
 localNetAddresses=130.127.169.236,130.127.169.248
-CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
+robotOutputFormat=STD
 vetTableFile=E\:\\EclipseJava\\Civet\\VetTable.csv
+CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
 emailReplyTo=mk10martin@aol.com,mkm1879@gmail.com
 logLevel=INFO
-dbDatabaseName=USAHerds
 log4j.appender.R.MaxFileSize=100KB
-StdSchema=E\:\\Documents\\Civet\\ecviDraftRelaxed.xsd
-purposeTableFile=PurposeTable.csv
+dbDatabaseName=USAHerds
 homeStateKey=56
+purposeTableFile=PurposeTable.csv
+StdSchema=E\:\\Documents\\Civet\\ecviDraftRelaxed.xsd
 bulkLoadDirPath=E\:\\Documents\\Civet\\Swine\\
 log4j.appender.R.MaxBackupIndex=1
 log4j.appender.R.File=Civet.log
