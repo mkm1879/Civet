@@ -56,11 +56,12 @@ import edu.clemson.lph.civet.files.SourceFilesTableModel;
 import edu.clemson.lph.civet.files.StdXMLFilesTableModel;
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.prefs.ConfigDialog;
 import edu.clemson.lph.civet.vsps.VspsCviFile;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.15beta1";
+	public static final String VERSION = "3.16beta2";
 	private static final String IDRLICENSE = "\n\nContains material copyrighted by IDRSolutions for the sole purpose" +
 	"of evaluating its JPedalXFA library in this application.\n\n" +
 	"Reuse or redistribution of this application is prohibited.\n\n" +
@@ -89,6 +90,7 @@ public class CivetInbox extends JFrame {
 	JButton bOpen = new JButton();
 	JButton bOpenAll = new JButton();
 	JMenu menuFile = new JMenu();
+	JMenuItem menuItemEditPrefs = new JMenuItem();
 	JMenuItem menuItemFileOpen = new JMenuItem();
 	JMenuItem menuItemFileOpenAll = new JMenuItem();
 	JMenuItem menuItemFileExit = new JMenuItem();
@@ -147,6 +149,16 @@ public class CivetInbox extends JFrame {
 			}
 		});
 		bOpen.setToolTipText("Open selected files or browse for files");
+		
+		menuItemEditPrefs.setText("Edit Preferences in CivetConfig.txt");
+		menuItemEditPrefs.setToolTipText("Open selected files or browse for files");
+		menuItemEditPrefs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				doEditPrefs();
+			}
+		});
+		menuFile.add(menuItemEditPrefs);
+		
 		menuItemFileOpen.setText("Open File(s)");
 		menuItemFileOpen.setToolTipText("Open selected files or browse for files");
 		menuItemFileOpen.addActionListener(new ActionListener() {
@@ -435,6 +447,11 @@ public class CivetInbox extends JFrame {
 			dlg.openFiles(selectedFiles, bView);
 		else
 			dlg.selectFiles();
+	}
+	
+	private void doEditPrefs() {
+		ConfigDialog dlg = new ConfigDialog();
+		dlg.setVisible(true);
 	}
 
 	private void doOpenAll() {

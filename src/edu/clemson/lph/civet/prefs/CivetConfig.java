@@ -19,6 +19,8 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,7 +40,7 @@ import edu.clemson.lph.dialogs.TwoLineQuestionDialog;
 public class CivetConfig {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	// initialized in Civet.main via checkAllConfig
-	private static Properties props;
+	private static Properties props = null;
 	private static final int UNK = -1;
 	private static final int LGPL = 0;
 	private static final int XFA = 1;
@@ -58,6 +60,23 @@ public class CivetConfig {
 	private static Boolean bAutoOpenPDF;
 	
 
+	public static Properties getProps() {
+		return props;
+	}
+	public static boolean saveProps() {
+		String sComments = "What?";
+		FileOutputStream out;
+		try {
+			out = new FileOutputStream(new File("CivetConfig.txt"));
+			props.store(out, sComments);
+			out.flush();
+			out.close();
+			return true;
+		} catch (IOException e) {
+			logger.error(e);
+			return false;
+		}
+	}
 	/**
 	 * Check to see if we are on LPH LAN.  Only used in local version.
 	 * @return
@@ -794,7 +813,20 @@ public class CivetConfig {
 	 * Generic crash out routine.
 	 */
 	private static void exitError( String sProp ) {
-		MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
+		MessageDialog.showMessage(null, "Civet: Error in CivetConfig", "Cannot read property " + sProp);
+		ConfigDialog dialog = new ConfigDialog();
+		dialog.setModal(true);;
+		dialog.setVisible(true);
+		int iFails = 1;
+		while( iFails < 4 && !dialog.isComplete() ) {
+			MessageDialog.showMessage(null, "Civet: Error in CivetConfig", "Still not complete");
+			iFails++;
+			dialog.setVisible(true);
+		}
+		if( iFails >= 4 ) {
+			MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig", "Still not complete");
+			System.exit(1);
+		}
 		logger.error("Cannot read property " + sProp);
 	}
 	
@@ -804,166 +836,179 @@ public class CivetConfig {
 	private static void exitErrorImmediate( String sProp ) {
 		MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
 		logger.error("Cannot read property " + sProp);
+		new Exception().printStackTrace();
 		System.exit(1);
 	}
 	
-	/**
-	 * This method is designed to ensure that all necessary configuration is set.  
-	 * Some may legitimately return null.  Remove them here and change error handling in 
-	 * the individual get... methods.
-	 * NOTE: Only test those that are required by the external release, i.e., outside of addons
-	 */
-	public static void checkAllConfig() {
-		props = new Properties();
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream("CivetConfig.txt");
-			props.load(fis);
-		} catch (IOException e) {
-			exitErrorImmediate("Cannot read configuration file CivetConfig.txt");
-		} finally {
-			if( fis != null )
-				try {
-					fis.close();
-				} catch (IOException e) {
-					logger.error(e);
-				}
+	public static void initConfig() {
+		if( props == null ) {
+			props = new Properties();
+			FileInputStream fis = null;
+			try {
+				fis = new FileInputStream("CivetConfig.txt");
+				props.load(fis);
+			} catch (IOException e) {
+				exitErrorImmediate("Cannot read configuration file CivetConfig.txt");
+			} finally {
+				if( fis != null )
+					try {
+						fis.close();
+					} catch (IOException e) {
+						logger.error(e);
+					}
+			}
 		}
+	}
+		/**
+		 * This method is designed to ensure that all necessary configuration is set.  
+		 * Some may legitimately return null.  Remove them here and change error handling in 
+		 * the individual get... methods.
+		 * NOTE: Only test those that are required by the external release, i.e., outside of addons
+		 */
+	public static void checkAllConfig() {
+		initConfig();	
 		String sRet = props.getProperty("standAlone");
-		if( sRet == null ) exitErrorImmediate("standAlone");
+		if( sRet == null ) exitError("standAlone");
 		sRet = props.getProperty("defaultDirection");
-		if( sRet == null ) exitErrorImmediate("defaultDirection");
+		if( sRet == null ) exitError("defaultDirection");
 		sRet = props.getProperty("homeStateAbbr");
-		if( sRet == null ) exitErrorImmediate("homeStateAbbr");
+		if( sRet == null ) exitError("homeStateAbbr");
 		sRet = props.getProperty("homeState");
-		if( sRet == null ) exitErrorImmediate("homeState");
+		if( sRet == null ) exitError("homeState");
 		sRet = props.getProperty("homeStateKey");
-		if( sRet == null ) exitErrorImmediate("homeStateKey");
+		if( sRet == null ) exitError("homeStateKey");
 		sRet = props.getProperty("cviValidDays");
-		if( sRet == null ) exitErrorImmediate("cviValidDays");
+		if( sRet == null ) exitError("cviValidDays");
 		sRet = props.getProperty("smtpHost");
-		if( sRet == null ) exitErrorImmediate("smtpHost");
+		if( sRet == null ) exitError("smtpHost");
 		sRet = props.getProperty("smtpPort");
-		if( sRet == null ) exitErrorImmediate("smtpPort");
+		if( sRet == null ) exitError("smtpPort");
 		sRet = props.getProperty("smtpSecurity");
-		if( sRet == null ) exitErrorImmediate("smtpIsTls");
+		if( sRet == null ) exitError("smtpIsTls");
 		sRet = props.getProperty("smtpPort");
-		if( sRet == null ) exitErrorImmediate("smtpPorty");
+		if( sRet == null ) exitError("smtpPorty");
 		sRet = props.getProperty("smtpDomain");
-		if( sRet == null ) exitErrorImmediate("smtpDomain");
+		if( sRet == null ) exitError("smtpDomain");
 		sRet = props.getProperty("herdsWebServiceURL");
-		if( sRet == null ) exitErrorImmediate("herdsWebServiceURL");
+		if( sRet == null ) exitError("herdsWebServiceURL");
 		sRet = props.getProperty("InputDirPath");
-		if( sRet == null ) exitErrorImmediate("InputDirPath");
+		if( sRet == null ) exitError("InputDirPath");
 		File f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "InputDirPath\n" + sRet + " does not exist or is not a folder");			
+			exitError( "InputDirPath\n" + sRet + " does not exist or is not a folder");			
 		}
 		sRet = props.getProperty("ToBeFiledDirPath");
-		if( sRet == null ) exitErrorImmediate("ToBeFiledDirPath");
+		if( sRet == null ) exitError("ToBeFiledDirPath");
 		f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "ToBeFiledDirPath\n" + sRet + " does not exist or is not a folder");			
+			exitError( "ToBeFiledDirPath\n" + sRet + " does not exist or is not a folder");			
 		}
 		sRet = props.getProperty("EmailOutDirPath");
-		if( sRet == null ) exitErrorImmediate("EmailOutDirPath");
+		if( sRet == null ) exitError("EmailOutDirPath");
 		f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "EmailOutDirPath\n" + sRet + " does not exist or is not a folder");			
+			exitError( "EmailOutDirPath\n" + sRet + " does not exist or is not a folder");			
 		}
 		sRet = props.getProperty("EmailErrorsDirPath");
-		if( sRet == null ) exitErrorImmediate("EmailErrorsDirPath");
+		if( sRet == null ) exitError("EmailErrorsDirPath");
 		f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "EmailErrorsDirPath\n" + sRet + " does not exist or is not a folder");			
+			exitError( "EmailErrorsDirPath\n" + sRet + " does not exist or is not a folder");			
 		}
 		sRet = props.getProperty("OutputDirPath");
-		if( sRet == null ) exitErrorImmediate("OutputDirPath");
+		if( sRet == null ) exitError("OutputDirPath");
 		f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "OutputDirPath\n" + sRet + " does not exist or is not a folder");			
-		}
-		sRet = props.getProperty("robotInputPath");
-		if( sRet == null ) exitErrorImmediate("robotInputPath");
-		f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "robotInputPath\n" + sRet + " does not exist or is not a folder");			
-		}
-		sRet = props.getProperty("robotCompleteOutPath");
-		if( sRet == null ) exitErrorImmediate("robotCompleteOutPath");
-		f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "robotCompleteOutPath\n" + sRet + " does not exist or is not a folder");			
-		}
-		sRet = props.getProperty("robotXMLOutPath");
-		if( sRet == null ) exitErrorImmediate("robotXMLOutPath");
-		f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "robotXMLOutPath\n" + sRet + " does not exist or is not a folder");			
+			exitError( "OutputDirPath\n" + sRet + " does not exist or is not a folder");			
 		}
 		sRet = props.getProperty("vetTableFile");
-		if( sRet == null ) exitErrorImmediate("vetTableFile");
+		if( sRet == null ) exitError("vetTableFile");
 		sRet = props.getProperty("stateVetTableFile");
-		if( sRet == null ) exitErrorImmediate("stateVetTableFile");
+		if( sRet == null ) exitError("stateVetTableFile");
 		f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
-			exitErrorImmediate( "stateVetTableFile\n" + sRet + " does not exist or is not a file");			
+			exitError( "stateVetTableFile\n" + sRet + " does not exist or is not a file");			
 		}
 		sRet = props.getProperty("sppTableFile");
-		if( sRet == null ) exitErrorImmediate("sppTableFile");
+		if( sRet == null ) exitError("sppTableFile");
 		sRet = props.getProperty("purposeTableFile");
-		if( sRet == null ) exitErrorImmediate("purposeTableFile");
+		if( sRet == null ) exitError("purposeTableFile");
 		sRet = props.getProperty("errorTypeTableFile");
-		if( sRet == null ) exitErrorImmediate("errorTypeTableFile");
-		sRet = props.getProperty("robotOutputFormat");
-		if( sRet == null ) exitErrorImmediate("robotOutputFormat");
-		if( !sRet.equals("STD") && !sRet.equals("ADOBE") ) 
-			exitErrorImmediate("Unknown robot output format:\n" + sRet );
+		if( sRet == null ) exitError("errorTypeTableFile");
 		sRet = props.getProperty("CoKsXSLTFile");
-		if( sRet == null ) exitErrorImmediate("xsltFile");
+		if( sRet == null ) exitError("xsltFile");
 		f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
-			exitErrorImmediate( "CoKsXSLTFile\n" + sRet + " does not exist or is not a file");			
+			exitError( "CoKsXSLTFile\n" + sRet + " does not exist or is not a file");			
 		}
 		sRet = props.getProperty("StdSchema");
-		if( sRet == null ) exitErrorImmediate("StdSchema");
+		if( sRet == null ) exitError("StdSchema");
 		f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
-			exitErrorImmediate( "StdSchema\n" + sRet + " does not exist or is not a file");			
+			exitError( "StdSchema\n" + sRet + " does not exist or is not a file");			
 		}
 		sRet = props.getProperty("ExportEmailTemplate");
-		if( sRet == null ) exitErrorImmediate("ExportEmailTemplate");
+		if( sRet == null ) exitError("ExportEmailTemplate");
 		f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
-			exitErrorImmediate( "ExportEmailTemplate\n" + sRet + " does not exist or is not a file");			
+			exitError( "ExportEmailTemplate\n" + sRet + " does not exist or is not a file");			
 		}
 		sRet = props.getProperty("ImportErrorsEmailTemplate");
-		if( sRet == null ) exitErrorImmediate("ImportErrorsEmailTemplate");
+		if( sRet == null ) exitError("ImportErrorsEmailTemplate");
 		f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
-			exitErrorImmediate( "ImportErrorsEmailTemplate\n" + sRet + " does not exist or is not a file");			
+			exitError( "ImportErrorsEmailTemplate\n" + sRet + " does not exist or is not a file");			
 		}
 		sRet = props.getProperty("ImportErrorsLetterTemplate");
-		if( sRet == null ) exitErrorImmediate("ImportErrorsLetterTemplate");
+		if( sRet == null ) exitError("ImportErrorsLetterTemplate");
 		f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
-			exitErrorImmediate( "ImportErrorsLetterTemplate\n" + sRet + " does not exist or is not a file");			
+			exitError( "ImportErrorsLetterTemplate\n" + sRet + " does not exist or is not a file");			
 		}
 		sRet = props.getProperty("rotation");
-		if( sRet == null ) exitErrorImmediate("rotation");
+		if( sRet == null ) exitError("rotation");
 		try {
 			Integer.parseInt(sRet);
 		} catch( NumberFormatException nfe ) {
-			exitErrorImmediate( "Cannot read rotation\n" + sRet + " as an integer number");
+			exitError( "Cannot read rotation\n" + sRet + " as an integer number");
 		}
 		sRet = props.getProperty("maxAttachSize");
-		if( sRet == null ) exitErrorImmediate("maxAttachSize");
+		if( sRet == null ) exitError("maxAttachSize");
 		if( !Character.isDigit(sRet.charAt(sRet.length()-1)) ) 
 			sRet = sRet.substring(0,sRet.length()-1);
 		try {
 			Integer.parseInt(sRet);
 		} catch( NumberFormatException nfe ) {
-			exitErrorImmediate( "Cannot read maxAttachSize\n" + sRet + " as an integer number");			
+			exitError( "Cannot read maxAttachSize\n" + sRet + " as an integer number");			
 		}
-	}			
+	}		
+	
+	public static void checkRobotConfig() {
+		initConfig();
+		String sRet = null;
+		File f = null;
+		sRet = props.getProperty("robotInputPath");
+		if( sRet == null ) exitErrorImmediate("robotInputPath");
+		f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			exitError( "robotInputPath\n" + sRet + " does not exist or is not a folder");			
+		}
+		sRet = props.getProperty("robotCompleteOutPath");
+		if( sRet == null ) exitErrorImmediate("robotCompleteOutPath");
+		f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			exitError( "robotCompleteOutPath\n" + sRet + " does not exist or is not a folder");			
+		}
+		sRet = props.getProperty("robotXMLOutPath");
+		if( sRet == null ) exitErrorImmediate("robotXMLOutPath");
+		f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			exitError( "robotXMLOutPath\n" + sRet + " does not exist or is not a folder");			
+		}
+		sRet = props.getProperty("robotOutputFormat");
+		if( sRet == null ) exitErrorImmediate("robotOutputFormat");
+		if( !sRet.equals("STD") && !sRet.equals("ADOBE") ) 
+			exitError("Unknown robot output format:\n" + sRet );
+
+	}
 }
