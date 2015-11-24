@@ -20,7 +20,7 @@ import javax.swing.table.TableColumnModel;
 public class ConfigDialog extends JDialog {
 
 	private JTabbedPane tabbedPane;
-	private HashMap<String, Object> hControls;
+	private ArrayList<ConfigEntryPanel> aEntries = null;
 
 	/**
 	 * Launch the application.
@@ -39,8 +39,9 @@ public class ConfigDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public ConfigDialog() {
-		hControls = new HashMap<String, Object>();
-		setBounds(100, 100, 450, 300);
+		aEntries = new ArrayList<ConfigEntryPanel>();
+		setBounds(100, 100, 650, 450);
+		setTitle("Civet: Configuration Settings (edits CivetConfig.txt)");
 		getContentPane().setLayout(new BorderLayout());
 		{
 			JPanel buttonPane = new JPanel();
@@ -76,23 +77,12 @@ public class ConfigDialog extends JDialog {
 					addRow(me, pThis, i);
 				}
 			}
-//			TableColumnModel colModel = pThis.getTable().getColumnModel();
-//			TableColumn col = colModel.getColumn(1);
-//			ConfigRenderer editor = new ConfigRenderer(model, false);
-//			col.setCellRenderer(editor);
-//			col.setCellEditor(editor);
-//			TableColumn col2 = colModel.getColumn(2);
-//			ConfigRenderer editor2 = new ConfigRenderer(model, true);
-//			col2.setCellRenderer(editor2);
-//			col2.setCellEditor(editor);
 		} 
-
 	}
 	
 	private ConfigTabPanel addTab( String sTabName, int iRows ) {
 		ConfigTabPanel pThis = new ConfigTabPanel();
 		tabbedPane.addTab(sTabName, null, pThis, null);
-		hControls.put(sTabName, pThis);
 		return pThis;
 	}
 	
@@ -100,18 +90,16 @@ public class ConfigDialog extends JDialog {
 		final String sName = me.getName();
 		final String sType = me.getType();
 		final String sDesc = me.getDescription();
-		final String sHelp = me.getHelpText();
+		final String sHelp = sDesc; //me.getHelpText();
 		final String sValue = me.getDefault();
-		final List<String> lChoices = me.getChoices();
+		List<String> lChoices = null;
 		ConfigEntry entry = new ConfigEntry( sName, sValue, sType, sHelp );
-		ConfigEntryPanel pEntry = new ConfigEntryPanel( entry );
+		if( "Select".equalsIgnoreCase(sType) ) {
+			lChoices = me.getChoices();
+		}
+		ConfigEntryPanel pEntry = new ConfigEntryPanel( entry, lChoices );
+		aEntries.add(pEntry);
 		pThis.addEntry(pEntry);
-		
-//		model = pThis.getModel();
-//		model.addRow(sName, sValue, sDesc, sType, sHelp);
-//		if( "Select".equalsIgnoreCase(sType) ) {
-//			model.setChoices(sName, me.getChoices() );
-//		}
 	}
 
 }

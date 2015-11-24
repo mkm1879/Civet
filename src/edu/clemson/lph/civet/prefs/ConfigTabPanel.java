@@ -13,8 +13,8 @@ import javax.swing.table.TableColumnModel;
 
 @SuppressWarnings("serial")
 public class ConfigTabPanel extends JPanel {
-//	private JTable tblPrefs;
-private JPanel pRows;
+	private JPanel pRows;
+	private int iYPosition = 5;
 
 	/**
 	 * Create the panel.
@@ -25,12 +25,13 @@ private JPanel pRows;
 		spPrefs.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		add(spPrefs);
 		pRows = new JPanel();
-		GridLayout gRows = new GridLayout(20,3,2,2);
-		pRows.setLayout(gRows);
+		pRows.setLayout( null );
 		spPrefs.setViewportView(pRows);
 	}
 	
 	public void addEntry( ConfigEntryPanel panel ) {
+		panel.setBounds( 2, iYPosition, 600, 25 );
+		iYPosition += 27;
 		pRows.add(panel);
 	}
 
