@@ -23,6 +23,7 @@ import javax.swing.table.TableColumnModel;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.mailman.MailMan;
 
 @SuppressWarnings("serial")
 public class ConfigDialog extends JDialog {
@@ -34,6 +35,7 @@ public class ConfigDialog extends JDialog {
 	private String sTitleBase = "Civet: Configuration Settings (edits CivetConfig.txt)";
 
 	private boolean bComplete;
+	private boolean bExitOK;
 
 	/**
 	 * Launch the application.  Testing only!
@@ -75,6 +77,7 @@ public class ConfigDialog extends JDialog {
 		CivetConfig.initConfig();
 		props = CivetConfig.getProps();
 		aEntries = new ArrayList<ConfigEntryPanel>();
+		bExitOK = false;
 		setBounds(100, 100, 650, 450);
 		getContentPane().setLayout(new BorderLayout());
 		{
@@ -138,6 +141,7 @@ public class ConfigDialog extends JDialog {
 			}
 		}
 		setVisible(false);
+		bExitOK = false;
 		dispose();
 	}
 
@@ -156,6 +160,13 @@ public class ConfigDialog extends JDialog {
 		if( !CivetConfig.saveProps() ) {
 			logger.error("Faild to save Config properties");
 		}
+		bExitOK = true;
+		// In case the user has already entered password, save it
+		String sMailUser = MailMan.getDefaultUserID();
+		String sMailPass = MailMan.getDefaultPassword();
+		CivetConfig.initEmail(false);
+		MailMan.setDefaultUserID(sMailUser);
+		MailMan.setDefaultPassword(sMailPass);
 		setVisible(false);
 		dispose();
 	}

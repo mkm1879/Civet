@@ -1,5 +1,5 @@
 #Civet Preferences Configuration File
-#Tue Nov 24 15:39:49 EST 2015
+#Wed Nov 25 09:30:34 EST 2015
 dbCivetSchemaName=Civet
 log4j.appender.R.layout=org.apache.log4j.EnhancedPatternLayout
 smtpPort=587
@@ -9,7 +9,7 @@ log4j.appender.R=org.apache.log4j.RollingFileAppender
 sppTableFile=SpeciesTable.csv
 defaultReceivedDate=TRUE
 defaultDirection=Export
-emailCopyTo=
+emailCopyTo=mk10martin@aol.com
 homeState=SOUTH CAROLINA
 ToBeFiledDirPath=E\:\\Documents\\Civet\\CivetToBeFiled\\
 dbServer=lphstage
@@ -49,7 +49,7 @@ localNetAddresses=130.127.169.236,130.127.169.248
 robotOutputFormat=STD
 vetTableFile=E\:\\EclipseJava\\Civet\\VetTable.csv
 CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
-emailReplyTo=mk10martin@aol.com,mkm1879@gmail.com
+emailReplyTo=scvetcert@clemson.edu
 logLevel=INFO
 log4j.appender.R.MaxFileSize=100KB
 dbDatabaseName=USAHerds

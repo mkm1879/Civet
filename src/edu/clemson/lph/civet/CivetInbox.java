@@ -375,7 +375,7 @@ public class CivetInbox extends JFrame {
 		File fLog = new File( "Civet.log");
 		if( fLog.exists() ) {
 			String sMsg = QuestionDialog.ask(this, "Civet Send Log", "Describe your problem:");
-			if( !initEmail() )
+			if( !CivetConfig.initEmail(true) )
 				return;
 			try {
 				if( MailMan.sendIt("mmarti5@clemson.edu", null, "Civet Error Log", 
@@ -452,6 +452,7 @@ public class CivetInbox extends JFrame {
 	private void doEditPrefs() {
 		ConfigDialog dlg = new ConfigDialog();
 		dlg.setVisible(true);
+		
 	}
 
 	private void doOpenAll() {
@@ -505,44 +506,9 @@ public class CivetInbox extends JFrame {
 		return bRet;
 	}
 
-	private boolean initEmail() {
-		if(MailMan.getDefaultUserID() == null || MailMan.getDefaultPassword() == null ) {
-			TwoLineQuestionDialog ask = new TwoLineQuestionDialog( this, "Civet Email Login:",
-					"Email UserID:", "Email Password:", true);
-			ask.setPassword(true);
-			ask.setVisible(true);
-			if( ask.isExitOK() ) {
-				String sUserID = ask.getAnswerOne();
-				MailMan.setDefaultUserID(sUserID);
-				MailMan.setDefaultPassword(ask.getAnswerTwo());
-				MailMan.setDefaultHost(CivetConfig.getSmtpHost());
-				MailMan.setDefaultPort(CivetConfig.getSmtpPortInt());
-				String sSecurity = CivetConfig.getSmtpSecurity();
-				MailMan.setSecurity(sSecurity);
-				String sFrom = CivetConfig.getEmailFrom();
-				if( sFrom != null )
-					MailMan.setDefaultFrom(sFrom);
-				else if( !sUserID.contains("@")) {
-					MailMan.setDefaultFrom(sUserID + CivetConfig.getSmtpDomain() );
-				}
-				else {
-					MailMan.setDefaultFrom(sUserID);
-				}
-				String sReplyTo = CivetConfig.getEmailReplyTo();
-				if( sReplyTo != null )
-					MailMan.setDefaultReplyTo(sReplyTo);
-
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-		return true;
-	}
 
 	void sendOutboundCVIs() {
-		if( !initEmail() )
+		if( !CivetConfig.initEmail(true) )
 			return;
 		ProgressDialog prog = new ProgressDialog(this, "Civet", "Emailing Outbound CVIs");
 		prog.setAuto(true);
@@ -552,7 +518,7 @@ public class CivetInbox extends JFrame {
 	}
 
 	void sendInboundErrors() {
-		if( !initEmail() )
+		if( !CivetConfig.initEmail(true) )
 			return;
 		ProgressDialog prog = new ProgressDialog(this, "Civet", "Emailing Inbound Errors");
 		prog.setAuto(true);

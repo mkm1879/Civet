@@ -36,6 +36,7 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.TwoLineQuestionDialog;
+import edu.clemson.lph.mailman.MailMan;
 
 public class CivetConfig {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
@@ -404,6 +405,45 @@ public class CivetConfig {
 	public static void initDB() {
 		
 	}
+	
+	public static boolean initEmail(boolean bLogin) {
+		boolean bRet = true;
+		String sUserID = MailMan.getDefaultUserID();
+		if( (MailMan.getDefaultUserID() == null || MailMan.getDefaultPassword() == null) && bLogin ) {
+			TwoLineQuestionDialog ask = new TwoLineQuestionDialog( "Civet Email Login:",
+					"Email UserID:", "Email Password:", true);
+			ask.setPassword(true);
+			ask.setVisible(true);
+			if( ask.isExitOK() ) {
+				sUserID = ask.getAnswerOne();
+				MailMan.setDefaultUserID(sUserID);
+				MailMan.setDefaultPassword(ask.getAnswerTwo());
+				bRet = true;
+			}
+			else {
+				bRet = false;
+			}
+		}
+		MailMan.setDefaultHost(CivetConfig.getSmtpHost());
+		MailMan.setDefaultPort(CivetConfig.getSmtpPortInt());
+		String sSecurity = CivetConfig.getSmtpSecurity();
+		MailMan.setSecurity(sSecurity);
+		String sFrom = CivetConfig.getEmailFrom();
+		if( sFrom != null )
+			MailMan.setDefaultFrom(sFrom);
+		else if( !sUserID.contains("@")) {
+			MailMan.setDefaultFrom(sUserID + CivetConfig.getSmtpDomain() );
+		}
+		else {
+			MailMan.setDefaultFrom(sUserID);
+		}
+		String sReplyTo = CivetConfig.getEmailReplyTo();
+		if( sReplyTo != null )
+			MailMan.setDefaultReplyTo(sReplyTo);
+
+		return bRet;
+	}
+
 	
 	public static String getInputDirPath() {
 		String sRet = props.getProperty("InputDirPath");
