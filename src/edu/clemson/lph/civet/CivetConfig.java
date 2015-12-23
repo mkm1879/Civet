@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jpedal.PdfDecoder;
@@ -794,7 +796,10 @@ public class CivetConfig {
 	 * Generic crash out routine.
 	 */
 	private static void exitError( String sProp ) {
-		MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
+		if( SwingUtilities.isEventDispatchThread() )
+			MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
+		else 
+			MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
 		logger.error("Cannot read property " + sProp);
 	}
 	
@@ -802,7 +807,10 @@ public class CivetConfig {
 	 * Generic crash out routine.
 	 */
 	private static void exitErrorImmediate( String sProp ) {
-		MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
+		if( SwingUtilities.isEventDispatchThread() )
+			MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
+		else
+			MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
 		logger.error("Cannot read property " + sProp);
 		System.exit(1);
 	}
