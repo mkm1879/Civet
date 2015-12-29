@@ -478,6 +478,9 @@ public class CivetInbox extends JFrame {
 						MessageDialog.showMessage(this, "Civet: Error", "Output file " 
 								+ f.getAbsolutePath() + " is not valid based on schema\n"
 								+ sSchemaPath + "\n" + v.getLastError() );
+						logger.error("Civet: Error\nOutput file " 
+								+ f.getAbsolutePath() + " is not valid based on schema\n"
+								+ sSchemaPath + "\n" + v.getLastError());
 						bRet = false;
 						break;
 					}
