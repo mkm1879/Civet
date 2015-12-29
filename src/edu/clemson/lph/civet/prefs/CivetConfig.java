@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -853,30 +855,41 @@ public class CivetConfig {
 	 * Generic crash out routine.
 	 */
 	private static void exitError( String sProp ) {
-		MessageDialog.showMessage(null, "Civet: Error in CivetConfig", "Cannot read property " + sProp);
+		if( SwingUtilities.isEventDispatchThread() )
+			MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
+		else
+			MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
 		ConfigDialog dialog = new ConfigDialog();
 		dialog.setModal(true);;
 		dialog.setVisible(true);
 		int iFails = 1;
 		while( iFails < 4 && !dialog.isComplete() ) {
-			MessageDialog.showMessage(null, "Civet: Error in CivetConfig", "Still not complete");
+			if( SwingUtilities.isEventDispatchThread() )
+				MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Still not complete");
+			else
+				MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Still not complete");
 			iFails++;
 			dialog.setVisible(true);
 		}
 		if( iFails >= 4 ) {
-			MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig", "Still not complete");
+			if( SwingUtilities.isEventDispatchThread() )
+				MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Still not complete");
+			else
+				MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Still not complete");
 			System.exit(1);
 		}
 		logger.error("Cannot read property " + sProp);
 	}
-	
+
 	/**
 	 * Generic crash out routine.
 	 */
 	private static void exitErrorImmediate( String sProp ) {
-		MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
+		if( SwingUtilities.isEventDispatchThread() )
+			MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
+		else
+			MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
 		logger.error("Cannot read property " + sProp);
-		new Exception().printStackTrace();
 		System.exit(1);
 	}
 	
