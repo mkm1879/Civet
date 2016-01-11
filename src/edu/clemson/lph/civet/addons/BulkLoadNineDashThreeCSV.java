@@ -33,8 +33,20 @@ import edu.clemson.lph.utils.StringUtils;
 
 import java.awt.Window;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import javax.swing.*;
 
@@ -45,11 +57,15 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_9dash3;
 	private static final String sProgMsg = "Loading 9-3: ";
+	private static final OpenOption[] CREATE_OR_APPEND = new OpenOption[] { StandardOpenOption.APPEND, StandardOpenOption.CREATE };
+	private DatabaseConnectionFactory factory;
 	
 	public BulkLoadNineDashThreeCSV() {
 	}
 
 	public void import93CSV( Window parent ) {
+		if( factory == null )
+			factory = InitAddOns.getFactory();
 		String sFilePath = "E:\\EclipseJava\\Civet\\NPIP93Data.csv";  //null;
 	    JFileChooser fc = new JFileChooser();
 	    fc.setCurrentDirectory(new File(CivetConfig.getBulkLoadDirPath()));
@@ -71,7 +87,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 		ProgressDialog prog = new ProgressDialog(parent, "Civet", sProgMsg);
 		prog.setAuto(true);
 		prog.setVisible(true);
-		TWork93CSV tWork = new TWork93CSV( prog, sFilePath, parent );
+		TWork93CSV tWork = new TWork93CSV( prog, factory, sFilePath, parent );
 		tWork.start();
 	}
 
@@ -81,11 +97,14 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 		ProgressDialog prog;
 		Window parent;
 		CivetWebServices service;
+		DatabaseConnectionFactory factory;
+
 		
-		public TWork93CSV( ProgressDialog prog, String sFilePath, Window parent ) {
+		public TWork93CSV( ProgressDialog prog, DatabaseConnectionFactory factory, String sFilePath, Window parent ) {
 			this.prog = prog;
 			this.sFilePath = sFilePath;
 			this.parent = parent;
+			this.factory = factory;
 			service = new CivetWebServices();
 		}
 		
@@ -97,6 +116,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 		public void run() {
 			// Create CSVNineDashThreeDataFile object from CSV file
 			CSVNineDashThreeDataFile data;
+//			boolean bSeenBadProduct = false;
 			try {
 				data = new CSVNineDashThreeDataFile( sFilePath );
 				int iMax = data.size();
@@ -107,12 +127,30 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 					// Iterate over the CSV file
 					while( data.nextRow() ) {
 						prog.setMessage(sProgMsg + data.getCVINumber() );
+						if( cviExists( data.getCVINumber(), data.getConsignorState() )) {
+							try {
+								String sLineOut = data.getCVINumber() + " from " + data.getConsignorState() + " already exists\r\n";
+							    Files.write(Paths.get("Duplicates.txt"), sLineOut.getBytes(), CREATE_OR_APPEND);
+							}catch (IOException e) {
+							    logger.error(e);
+							}
+							continue;
+						}
+						if( !("live animal".equalsIgnoreCase( data.getProduct() )) ) {
+							try {
+								String sLineOut = data.getCVINumber() + ", " + data.getProduct() + "\r\n";
+							    Files.write(Paths.get("NonAnimalCVIs.txt"), sLineOut.getBytes(), CREATE_OR_APPEND);
+							}catch (IOException e) {
+								 logger.error(e);
+							}
+						}
 						String sXML = buildXml( data );
-			System.out.println(sXML);
+//			System.out.println(sXML);
 						// Send it!
 						String sRet = service.sendCviXML(sXML);
 						if( sRet == null || !sRet.trim().startsWith("00") ) {
 							logger.error( sRet, new Exception("Error submitting NPIP 9-3 spreadsheet CVI to USAHERDS: ") );
+							logger.error(sXML);
 							MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting to USAHERDS: " + sRet);
 						}
 
@@ -222,6 +260,32 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			return xmlBuilder.getXMLString();
 		}
 
+		private boolean cviExists( String sCVINbr, String sState ) {
+			boolean bRet = false;
+			// NOTE: There is no generator for this now.  Make one in AddOns and distribute to other states????
+			String sQuery = "SELECT * FROM USAHERDS.dbo.CVIs c \n" +
+			                "JOIN USAHERDS.dbo.States s ON s.StateKey = c.StateKey \n" +
+					        "WHERE c.CertificateNbr = ? AND s.StateCode = ?";
+			Connection conn = factory.makeDBConnection();
+			try {
+				PreparedStatement ps = conn.prepareStatement(sQuery);
+				ps.setString(1, sCVINbr);
+				ps.setString(2,  sState);
+				ResultSet rs = ps.executeQuery();
+				if( rs.next() ) {
+					bRet = true;
+				}
+			} catch( SQLException e ) {
+				logger.error("Error in query: " + sQuery, e);
+			} finally {
+				try {
+					if( conn != null && !conn.isClosed() )
+						conn.close();
+				} catch( Exception e2 ) {
+				}
+			}
+			return bRet;
+		}
 	
 	}// end inner class TWorkSave
 	

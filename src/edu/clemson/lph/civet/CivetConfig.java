@@ -455,6 +455,18 @@ public class CivetConfig {
 		}
 		return sRet;
 	}
+	
+	public static String getNineDashThreeLoadDirPath() {
+		String sRet = props.getProperty("nineDashThreeLoadDirPath");
+		if( sRet != null ) {
+			File f = new File( sRet );
+			if( !f.exists() || !f.isDirectory() ) {
+				logger.error( "nineDashThreeLoadDirPath " + sRet + " does not exist or is not a folder");
+				System.exit(1);
+			}
+		}
+		return sRet;
+	}
 
 	public static String getVspsDirPath() {
 		String sRet = props.getProperty("vspsDirPath");

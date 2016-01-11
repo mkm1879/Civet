@@ -104,6 +104,17 @@ public class CSVNineDashThreeDataFile {
 	public int size() {
 		return aaValues.size();
 	}
+	
+	public String printRow() {
+		StringBuffer sb = new StringBuffer();
+		HashMap<String,String> aRow = aaValues.get(iCurrentRow);
+		for( String sKey : aRow.keySet() ) {
+			String sVal = aRow.get(sKey.toUpperCase());
+			if( sVal == null ) sVal = "";
+			sb.append( sKey + "=\"" + sVal + "\",");
+		}
+		return sb.toString();
+	}
 
 	/**
 	 * return the string value of cell at current row with header sKey
@@ -187,7 +198,7 @@ public class CSVNineDashThreeDataFile {
 		return get("ConsigneeCountry");
 	}
 	public String getConsigneeZip() {
-		return get("ConsigneeZip");
+		return formatZip( get("ConsigneeZip") );
 	}
 	public String getConsignorPIN() {
 		return get("ConsignorPIN");
@@ -212,7 +223,7 @@ public class CSVNineDashThreeDataFile {
 			return null;
 	}
 	public String getConsignorZip() {
-		return get("ConsignorZip");
+		return formatZip( get("ConsignorZip") );
 	}
 	public String getConsignorCountry() {
 		return get("ConsignorCountry");
@@ -259,4 +270,15 @@ public class CSVNineDashThreeDataFile {
 		return tagList;
 	}
 
+	private static String formatZip( String sZipIn ) {
+		String sRet = sZipIn;
+		if( sZipIn == null || sZipIn.trim().length() == 0 ) return sRet;
+		while( !Character.isDigit(sRet.charAt(0)) ) {
+			sRet = sRet.substring(1);
+		}
+		while( sRet.trim().length() < 5 ) {
+			sRet = '0' + sRet;
+		}
+		return sRet;
+	}
 }// class CSVFile
