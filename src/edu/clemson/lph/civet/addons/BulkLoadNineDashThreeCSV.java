@@ -202,7 +202,16 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 				iNum = 1;
 			}
 			String sGender = "Gender Unknown";
-			xmlBuilder.addGroup(iNum, "Poultry Lot Under NPIP 9-3", sSpeciesCode, null, sGender);
+			int iNumTags = 0;
+			if( data.hasTags() ) {
+				for( String sID : data.listTagIds() ) {
+					xmlBuilder.addAnimal(sSpeciesCode, data.getInspectionDate(), null, null, sGender, "OTH", sID);
+					iNumTags++;
+				}
+			}
+			if( iNumTags < iNum ) {
+				xmlBuilder.addGroup(iNum - iNumTags, "Poultry Lot Under NPIP 9-3", sSpeciesCode, null, sGender);
+			}
 			CviMetaDataXml metaData = new CviMetaDataXml();
 			metaData.setCertificateNbr(sCVINumber);
 			metaData.setBureauReceiptDate(data.getSavedDate());

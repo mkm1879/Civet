@@ -234,6 +234,14 @@ public class CSVNineDashThreeDataFile {
 		return get("Product");
 	}
 	
+	public boolean hasTags() {
+		String sTags = get("TagID");
+		if( sTags != null && sTags.trim().length() > 0 )
+			return true;
+		else
+			return false;	
+	}
+	
 	public List<String> listTagIds() {
 		ArrayList<String> tagList;
 		String sTags = get("TagID");
