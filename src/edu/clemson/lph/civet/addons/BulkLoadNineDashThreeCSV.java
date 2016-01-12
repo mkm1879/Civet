@@ -66,9 +66,9 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 	public void import93CSV( Window parent ) {
 		if( factory == null )
 			factory = InitAddOns.getFactory();
-		String sFilePath = "E:\\EclipseJava\\Civet\\NPIP93Data.csv";  //null;
+		String sFilePath = null;
 	    JFileChooser fc = new JFileChooser();
-	    fc.setCurrentDirectory(new File(CivetConfig.getBulkLoadDirPath()));
+	    fc.setCurrentDirectory(new File(CivetConfig.getNineDashThreeLoadDirPath() ));
 	    fc.setDialogTitle("Open NPIP 9-3 CSV File");
 	    fc.setFileFilter( new CSVFilter() );
 	    int returnVal = fc.showOpenDialog(parent);
@@ -126,6 +126,10 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 				prog.setMessage( formatMessage( iRow, iMax) );
 					// Iterate over the CSV file
 					while( data.nextRow() ) {
+						// Let USAHERDS catch up.
+						try {
+							Thread.sleep(500L);
+						} catch (InterruptedException e1) { }
 						prog.setMessage(sProgMsg + data.getCVINumber() );
 						if( cviExists( data.getCVINumber(), data.getConsignorState() )) {
 							try {
@@ -147,11 +151,32 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 						String sXML = buildXml( data );
 //			System.out.println(sXML);
 						// Send it!
-						String sRet = service.sendCviXML(sXML);
+						String sRet = null;
+						int iTries = 0;
+						while( iTries < 3 ) {
+							try { 
+								sRet = service.sendCviXML(sXML);
+								iTries = 4;
+							} catch( Exception e ) {
+								if( e.getMessage().contains("timed out")) {
+									try {
+										logger.info("Sleeping after timeout");
+										sleep(2000L);
+									} catch (InterruptedException e1) { }
+									iTries++;
+								}
+								else {
+									sRet = null;
+									iTries = 4;
+								}
+							}
+						}
 						if( sRet == null || !sRet.trim().startsWith("00") ) {
-							logger.error( sRet, new Exception("Error submitting NPIP 9-3 spreadsheet CVI to USAHERDS: ") );
+							logger.error( sRet, new Exception("Error submitting NPIP 9-3 spreadsheet CVI to USAHERDS: " +
+														data.getCVINumber() ) );
 							logger.error(sXML);
-							MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting to USAHERDS: " + sRet);
+							MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting to USAHERDS: " + 
+														data.getCVINumber() + "\n" + sRet);
 						}
 
 					} // Next Row

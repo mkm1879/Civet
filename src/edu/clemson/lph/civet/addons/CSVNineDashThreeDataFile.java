@@ -190,7 +190,7 @@ public class CSVNineDashThreeDataFile {
 	public String getConsigneeState() {
 		String sState = get("ConsigneeState");
 		if( sState != null && sState.trim().length() == 2 )
-			return sState.trim();
+			return sState.trim().toUpperCase();
 		else
 			return null;
 	}
@@ -218,7 +218,7 @@ public class CSVNineDashThreeDataFile {
 	public String getConsignorState() {
 		String sState = get("ConsignorState");
 		if( sState != null && sState.trim().length() == 2 )
-			return sState.trim();
+			return sState.trim().toUpperCase();
 		else
 			return null;
 	}

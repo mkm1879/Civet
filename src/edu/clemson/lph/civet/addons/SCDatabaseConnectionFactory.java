@@ -78,7 +78,6 @@ public class SCDatabaseConnectionFactory implements DatabaseConnectionFactory {
 		conn = java.sql.DriverManager.getConnection(sURI);
 		conn.setAutoCommit(true);
 		conn.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-		logger.info("connection built");
 		} catch ( Exception e ) {
 			logger.error(e);
 		}
