@@ -328,6 +328,8 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 					String sVetPhone = line.get( parser.getLabelIdx( "Phone" ) );
 					String sVetLic = line.get( parser.getLabelIdx( "LicNo" ) );
 					String sVetNAN = line.get( parser.getLabelIdx( "NAN" ) );
+					if(sVetNAN != null && sVetNAN.trim().length() < 6 )
+						sVetNAN = lPadZeros( sVetNAN, 6 );
 					String sNANLevel = line.get( parser.getLabelIdx( "NANLevel") );
 					int iNANLevel = 0;
 					if( sNANLevel != null && sNANLevel.trim().length() > 0 ) {
