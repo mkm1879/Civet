@@ -120,6 +120,14 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 			String sAddress, String sCity, String sStateCode, String sZipCode, 
 			String sPhone, String sNan, String sLicNbr ) {
 		boolean bRet = true;
+		if( sNan != null ) 
+			sNan = lPadZeros( sNan, 6 );
+		// Exact match on NAN or Lic should trump other search logic. Always include these
+		if( v.sNAN != null && sNan != null && v.sNAN.equals(sNan) ) 
+			return true;
+		if( v.sLic != null && sLicNbr != null && v.sLic.equals(sLicNbr) ) 
+			return true;
+		// Otherwise any mismatch fails
 		if( sLastName != null ) sLastName = sLastName.toLowerCase();
 		if( sFirstName != null ) sFirstName = sFirstName.toLowerCase();
 		if( sAddress != null ) sAddress = sAddress.toLowerCase();
@@ -144,6 +152,15 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 		if( v.sLic != null && sLicNbr != null && !v.sLic.equals(sLicNbr) ) 
 			return false;
 		return bRet;
+	}
+	
+	private String lPadZeros ( String sIn, int iLen ) {
+		StringBuffer sb = new StringBuffer();
+		for( int i = sIn.trim().length(); i < iLen; i++ ) {
+			sb.append('0');
+		}
+		sb.append(sIn.trim());
+		return sb.toString();
 	}
 	
 	private boolean phoneMatch(String sPhone1, String sPhone2) {
