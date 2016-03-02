@@ -267,9 +267,6 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 		return bRet;
 	}
 	
-	/* (non-Javadoc)
-	 * @see edu.clemson.lph.civet.webservice.PremisesTableModel#getPremNameAt(int)
-	 */
 	@Override
 	public String getPremNameAt( int iRow ) {
 		WebServicePremisesRow row = rows.get(iRow);
