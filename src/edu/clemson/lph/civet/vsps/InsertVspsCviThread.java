@@ -134,6 +134,9 @@ public class InsertVspsCviThread extends Thread {
 			String sGender = VspsCodeLookup.getGenderCode(animal.getGender());
 			String sId = animal.getFirstOfficialId();
 			String sType = animal.getFirstOfficialIdType(); 
+			Integer iCount = animal.getCount();
+			if( iCount == null )
+				iCount = 1;
 			if( sId != null ) {
 				xmlBuilder.addAnimal( sSpecies, cvi.getInspectionDate(), sBreed, null, sGender, sType, sId);
 			}
@@ -143,11 +146,11 @@ public class InsertVspsCviThread extends Thread {
 				lKey.add(sGender);
 				Integer iNum = hGroups.get(lKey);
 				if( iNum != null ) {
-					iNum++;
+					iNum += iCount;
 					hGroups.put(lKey, iNum);
 				}
 				else {
-					hGroups.put(lKey, 1);
+					hGroups.put(lKey, iCount);
 				}
 			}
 		}
