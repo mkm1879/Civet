@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -66,20 +67,7 @@ public class CivetConfig {
 	public static Properties getProps() {
 		return props;
 	}
-	public static boolean saveProps() {
-		String sComments = "Civet Preferences Configuration File";
-		FileOutputStream out;
-		try {
-			out = new FileOutputStream(new File("CivetConfig.txt"));
-			props.store(out, sComments);
-			out.flush();
-			out.close();
-			return true;
-		} catch (IOException e) {
-			logger.error(e);
-			return false;
-		}
-	}
+
 	/**
 	 * Check to see if we are on LPH LAN.  Only used in local version.
 	 * @return
@@ -891,6 +879,33 @@ public class CivetConfig {
 			MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
 		logger.error("Cannot read property " + sProp);
 		System.exit(1);
+	}
+	
+	public static boolean writeConfigFile( String sFileName ) {
+		boolean bRet = true;
+		ConfigCsv config = new ConfigCsv();
+		PrintWriter pw = null;
+		try {
+		pw = new PrintWriter( new FileOutputStream(sFileName) );
+		while( config.nextTab() != null ) {
+			pw.println("#" + config.getTab());
+			while( config.nextRow() != null ) {
+				String sKey = config.getName();
+				String sValue = props.getProperty(sKey);
+				sValue = sValue.replace("\\", "\\\\");
+				pw.println(sKey + "=" + sValue);
+			}
+			pw.println();
+		}
+		pw.flush();
+		} catch( IOException ioe ) {
+			bRet = false;
+			logger.error(ioe);
+		} finally {
+			if( pw != null )
+				pw.close();
+		}
+		return bRet;
 	}
 	
 	public static void initConfig() {

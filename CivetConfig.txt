@@ -1,66 +1,73 @@
-#Civet Preferences Configuration File
-#Wed Nov 25 09:30:34 EST 2015
-dbCivetSchemaName=Civet
-log4j.appender.R.layout=org.apache.log4j.EnhancedPatternLayout
-smtpPort=587
-OutputDirPath=E\:\\Documents\\Civet\\CivetOutbox\\
-ImportErrorsLetterTemplate=E\:\\Documents\\Civet\\CivetImportsErrorLetterTemplate.txt
-log4j.appender.R=org.apache.log4j.RollingFileAppender
-sppTableFile=SpeciesTable.csv
+#State
+homeState=SOUTH CAROLINA
+homeStateAbbr=SC
+homeStateKey=56
+
+#HERDS
+herdsWebServiceURL=http://lphstage/usaherds/WebService/ExternalMessages.asmx
+brokenLIDs=TRUE
+stateIDChecksum=FALSE
+standAlone=FALSE
+
+#Defaults
 defaultReceivedDate=TRUE
 defaultDirection=Export
-emailCopyTo=mk10martin@aol.com
-homeState=SOUTH CAROLINA
-ToBeFiledDirPath=E\:\\Documents\\Civet\\CivetToBeFiled\\
-dbServer=lphstage
-brokenLIDs=true
-log4j.appender.stdout.layout=org.apache.log4j.EnhancedPatternLayout
-autoOpenPdf=yes
-log4j.appender.stdout=org.apache.log4j.ConsoleAppender
-homeStateAbbr=SC
-defaultPurpose=Other
-EmailErrorsDirPath=E\:\\Documents\\Civet\\CivetToBeMailedErrors\\
-dbPort=1433
-stateVetTableFile=StateVetTable.csv
-robotXMLOutPath=E\:/Documents/Civet/CivetRobotXML
-InputDirPath=E\:\\Documents\\Civet\\CivetInbox\\
-acrobatPath=C\:\\Program Files (x86)\\Adobe\\Acrobat 10.0\\Acrobat\\Acrobat.exe
-dbHerdsSchemaName=dbo
-robotWaitSeconds=30
-smtpHost=smtp.googlemail.com
-log4j.rootLogger=info, stdout, R
-emailTestTo=mmarti5@clemson.edu
-smtpDomain=@gmail.com
-stateIDChecksum=false
-standAlone=no
-ExportEmailTemplate=E\:\\Documents\\Civet\\CivetExportsEmailMessage.txt
-saveCopies=true
-rotation=0
-emailFrom=mkm1879@gmail.com
-herdsWebServiceURL=http\://lphstage/usaherds/WebService/ExternalMessages.asmx
-EmailOutDirPath=E\:\\Documents\\Civet\\CivetToBeMailedOut\\
-ImportErrorsEmailTemplate=E\:\\Documents\\Civet\\CivetImportsErrorEmailMessage.txt
-log4j.appender.R.layout.ConversionPattern=%d{dd MMM yyyy HH\:mm} %5p %F [%t] %n%m%n %throwable{5}%n
-robotInputPath=E\:/Documents/Civet/CivetRobotIn
-errorTypeTableFile=ErrorTypeTable.csv
-smallScreen=FALSE
-smtpSecurity=STARTTLS
-localNetAddresses=130.127.169.236,130.127.169.248
-robotOutputFormat=STD
-vetTableFile=E\:\\EclipseJava\\Civet\\VetTable.csv
-CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
-emailReplyTo=scvetcert@clemson.edu
-logLevel=INFO
-log4j.appender.R.MaxFileSize=100KB
-dbDatabaseName=USAHerds
-homeStateKey=56
-purposeTableFile=PurposeTable.csv
-StdSchema=E\:\\Documents\\Civet\\ecviDraftRelaxed.xsd
-bulkLoadDirPath=E\:\\Documents\\Civet\\Swine\\
-log4j.appender.R.MaxBackupIndex=1
-log4j.appender.R.File=Civet.log
-log4j.appender.stdout.layout.ConversionPattern=%5p [%t] (%F\:%L) - %m%n%throwable{5}
-robotCompleteOutPath=E\:/Documents/Civet/CivetRobotComplete
-vspsDirPath=E\:\\Documents\\Civet\\VSPSData\\
-maxAttachSize=5M
 cviValidDays=30
+saveCopies=true
+smallScreen=FALSE
+rotation=0
+defaultPurpose=Other
+autoOpenPdf=yes
+
+#Email
+smtpHost=smtp.googlemail.com
+smtpPort=587
+smtpSecurity=STARTTLS
+smtpDomain=@gmail.com
+emailFrom=mkm1879@gmail.com
+emailReplyTo=scvetcert@clemson.edu
+emailTestTo=mmarti5@clemson.edu
+emailCopyTo=mk10martin@aol.com
+maxAttachSize=5M
+
+#Folders
+InputDirPath=E:\\Documents\\Civet\\CivetInbox\\
+ToBeFiledDirPath=E:\\Documents\\Civet\\CivetToBeFiled\\
+EmailOutDirPath=E:\\Documents\\Civet\\CivetToBeMailedOut\\
+EmailErrorsDirPath=E:\\Documents\\Civet\\CivetToBeMailedErrors\\
+OutputDirPath=E:\\Documents\\Civet\\CivetOutbox\\
+vspsDirPath=E:\\Documents\\Civet\\VSPSData\\
+
+#Files
+CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
+StdSchema=E:\\Documents\\Civet\\ecviDraftRelaxed.xsd
+acrobatPath=C:\\Program Files (x86)\\Adobe\\Acrobat 10.0\\Acrobat\\Acrobat.exe
+ExportEmailTemplate=E:\\Documents\\Civet\\CivetExportsEmailMessage.txt
+ImportErrorsEmailTemplate=E:\\Documents\\Civet\\CivetImportsErrorEmailMessage.txt
+ImportErrorsLetterTemplate=E:\\Documents\\Civet\\CivetImportsErrorLetterTemplate.txt
+vetTableFile=E:\\EclipseJava\\Civet\\VetTable.csv
+sppTableFile=SpeciesTable.csv
+errorTypeTableFile=ErrorTypeTable.csv
+purposeTableFile=PurposeTable.csv
+stateVetTableFile=StateVetTable.csv
+
+#Robot
+robotInputPath=E:/Documents/Civet/CivetRobotIn
+robotCompleteOutPath=E:/Documents/Civet/CivetRobotComplete
+robotXMLOutPath=E:/Documents/Civet/CivetRobotXML
+robotOutputFormat=STD
+robotWaitSeconds=30
+
+#Logging
+logLevel=INFO
+log4j.rootLogger=info, stdout, R
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.EnhancedPatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%5p [%t] (%F:%L) - %m%n%throwable{5}
+log4j.appender.R=org.apache.log4j.RollingFileAppender
+log4j.appender.R.File=Civet.log
+log4j.appender.R.MaxFileSize=100KB
+log4j.appender.R.MaxBackupIndex=1
+log4j.appender.R.layout=org.apache.log4j.EnhancedPatternLayout
+log4j.appender.R.layout.ConversionPattern=%d{dd MMM yyyy HH:mm} %5p %F [%t] %n%m%n %throwable{5}%n
+

@@ -157,7 +157,7 @@ public class ConfigDialog extends JDialog {
 				}
 			}
 		}
-		if( !CivetConfig.saveProps() ) {
+		if( !CivetConfig.writeConfigFile( "CivetConfig.txt") ) {
 			logger.error("Faild to save Config properties");
 		}
 		bExitOK = true;
