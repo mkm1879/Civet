@@ -34,6 +34,7 @@ public class ConfigDialog extends JDialog {
 	private Properties props = null;
 	private String sTitleBase = "Civet: Configuration Settings (edits CivetConfig.txt)";
 
+	private ArrayList<String> aDefaulted = new ArrayList<String>();
 	private boolean bComplete;
 	private boolean bExitOK;
 
@@ -74,6 +75,23 @@ public class ConfigDialog extends JDialog {
 	 */
 	public ConfigDialog() {
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		try {
+			String os = System.getProperty("os.name");
+			if( os.toLowerCase().contains("mac os") ) {
+				System.setProperty("apple.laf.useScreenMenuBar", "true");
+				System.setProperty("com.apple.mrj.application.apple.menu.about.name",
+						"Civet");
+				System.setProperty("com.apple.mrj.application.growbox.intrudes",
+						"false");
+				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			}
+			else {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			}
+		} 
+		catch (Exception e) {
+			logger.error(e.getMessage());
+		}
 		CivetConfig.initConfig();
 		props = CivetConfig.getProps();
 		aEntries = new ArrayList<ConfigEntryPanel>();
@@ -147,12 +165,12 @@ public class ConfigDialog extends JDialog {
 
 	protected void saveConfig() {
 		bComplete = true;
-		for( ConfigEntryPanel pNext : aEntries) {
-			if( pNext.hasChanged() ) {
+		for( ConfigEntryPanel pNext : aEntries) { 
+			if( pNext.hasChanged() || aDefaulted.contains(pNext.getName()) ) {
 				props.put(pNext.getName(), pNext.getValue());
 			}
 			if( pNext.isMandatory() ) {
-				if( pNext.getValue() == null || pNext.getValue().trim().length() == 0) {
+				if( pNext.getValue() == null || pNext.getValue().trim().length() == 0 ) {
 					bComplete = false;
 				}
 			}
@@ -198,7 +216,13 @@ public class ConfigDialog extends JDialog {
 		final String sName = me.getName();
 		final String sType = me.getType();
 		final String sHelp = me.getDescription();
-		final String sValue = props.getProperty(sName);
+		String sValue = props.getProperty(sName);
+		if( sValue == null || sValue.trim().length() == 0 || "null".equalsIgnoreCase(sValue) ) {
+			if( me.isMandatory() ) {
+				aDefaulted.add(sName);
+				sValue = me.getDefault();
+			}
+		}
 		boolean bMandatory = me.isMandatory();
 		List<String> lChoices = null;
 		ConfigEntry entry = new ConfigEntry( sName, bMandatory, sValue, sType, sHelp );

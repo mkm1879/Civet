@@ -137,7 +137,7 @@ public class ConfigEntryPanel extends JPanel {
 		String sNewValue = jtfValue.getText();
 		String sOldValue = entry.sValue;
 		if( sNewValue == null && sOldValue == null )
-			return true;
+			return false;
 		if( sNewValue == null && sOldValue != null )
 			return true;
 		if( sNewValue != null && sOldValue == null )

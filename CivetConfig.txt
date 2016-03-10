@@ -1,20 +1,20 @@
 #State
-homeState=SOUTH CAROLINA
+homeState=South Carolina
 homeStateAbbr=SC
 homeStateKey=56
 
 #HERDS
-herdsWebServiceURL=http://lphstage/usaherds/WebService/ExternalMessages.asmx
-brokenLIDs=TRUE
+herdsWebServiceURL=http://LPHStage/usaherds/WebService/ExternalMessages.asmx
+brokenLIDs=true
 stateIDChecksum=FALSE
-standAlone=FALSE
+standAlone=no
 
 #Defaults
-defaultReceivedDate=TRUE
-defaultDirection=Export
+defaultReceivedDate=true
+defaultDirection=Import
 cviValidDays=30
 saveCopies=true
-smallScreen=FALSE
+smallScreen=
 rotation=0
 defaultPurpose=Other
 autoOpenPdf=yes
@@ -24,10 +24,10 @@ smtpHost=smtp.googlemail.com
 smtpPort=587
 smtpSecurity=STARTTLS
 smtpDomain=@gmail.com
-emailFrom=mkm1879@gmail.com
-emailReplyTo=scvetcert@clemson.edu
-emailTestTo=mmarti5@clemson.edu
-emailCopyTo=mk10martin@aol.com
+emailFrom=whoever@gmail.com
+emailReplyTo=
+emailTestTo=mkm1879@gmail.com
+emailCopyTo=mkm1879@gmail.com
 maxAttachSize=5M
 
 #Folders
@@ -40,23 +40,23 @@ vspsDirPath=E:\\Documents\\Civet\\VSPSData\\
 
 #Files
 CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
-StdSchema=E:\\Documents\\Civet\\ecviDraftRelaxed.xsd
-acrobatPath=C:\\Program Files (x86)\\Adobe\\Acrobat 10.0\\Acrobat\\Acrobat.exe
+StdSchema=.\\ecviDraftRelaxed.xsd
+acrobatPath=
 ExportEmailTemplate=E:\\Documents\\Civet\\CivetExportsEmailMessage.txt
 ImportErrorsEmailTemplate=E:\\Documents\\Civet\\CivetImportsErrorEmailMessage.txt
 ImportErrorsLetterTemplate=E:\\Documents\\Civet\\CivetImportsErrorLetterTemplate.txt
-vetTableFile=E:\\EclipseJava\\Civet\\VetTable.csv
-sppTableFile=SpeciesTable.csv
+vetTableFile=VetTable.csv
+sppTableFile=.\\SpeciesTable.csv
 errorTypeTableFile=ErrorTypeTable.csv
 purposeTableFile=PurposeTable.csv
 stateVetTableFile=StateVetTable.csv
 
 #Robot
-robotInputPath=E:/Documents/Civet/CivetRobotIn
-robotCompleteOutPath=E:/Documents/Civet/CivetRobotComplete
-robotXMLOutPath=E:/Documents/Civet/CivetRobotXML
+robotInputPath=.\\CivetRobotIn
+robotCompleteOutPath=.\\CivetRobotComplete
+robotXMLOutPath=.\\CivetRobotXML
 robotOutputFormat=STD
-robotWaitSeconds=30
+robotWaitSeconds=15
 
 #Logging
 logLevel=INFO
