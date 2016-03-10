@@ -1,5 +1,5 @@
 #State
-homeState=South Carolina
+homeState=SOUTH CAROLINA
 homeStateAbbr=SC
 homeStateKey=56
 
@@ -14,7 +14,7 @@ defaultReceivedDate=true
 defaultDirection=Import
 cviValidDays=30
 saveCopies=true
-smallScreen=
+smallScreen=FALSE
 rotation=0
 defaultPurpose=Other
 autoOpenPdf=yes
