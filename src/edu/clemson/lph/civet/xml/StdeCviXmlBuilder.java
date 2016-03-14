@@ -23,9 +23,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.StringTokenizer;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.log4j.Logger;
 import org.apache.commons.codec.binary.Base64;
 import org.w3c.dom.Document;
@@ -34,7 +36,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.IDTypeGuesser;
 import edu.clemson.lph.utils.XMLUtility;
 

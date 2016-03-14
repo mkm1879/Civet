@@ -51,14 +51,14 @@ maxAttachSize=5M
 #smtpSecurity=SSL
 
 #Local system setup
-InputDirPath=.\\CivetInbox\\
-ToBeFiledDirPath=.\\CivetToBeFiled\\
-EmailOutDirPath=.\\CivetToBeMailedOut\\
-EmailErrorsDirPath=.\\CivetToBeMailedErrors\\
-OutputDirPath=.\\CivetOutbox\\
+InputDirPath=E:\\Documents\\Civet\\CivetInbox\\
+ToBeFiledDirPath=E:\\Documents\\Civet\\CivetToBeFiled\\
+EmailOutDirPath=E:\\Documents\\Civet\\CivetToBeMailedOut\\
+EmailErrorsDirPath=E:\\Documents\\Civet\\CivetToBeMailedErrors\\
+OutputDirPath=E:\\Documents\\Civet\\CivetOutbox\\
 bulkLoadDirPath=.\\Swine\\
 CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
-StdSchema=.\\ecviDraftRelaxed.xsd
+StdSchema=E:\\Documents\\Civet\\ecviDraftRelaxed.xsd
 defaultPurpose=Other
 
 #If your scans all come out sideways try 90 or 270
@@ -72,9 +72,9 @@ ImportErrorsEmailTemplate=E\:\\Documents\\Civet\\CivetImportsErrorEmailMessage.t
 ImportErrorsLetterTemplate=E\:\\Documents\\Civet\\CivetImportsErrorLetterTemplate.txt
 
 #Robot Mode Settings
-robotInputPath=.\\CivetRobotIn
-robotCompleteOutPath=.\\CivetRobotComplete
-robotXMLOutPath=.\\CivetRobotXML
+robotInputPath=E:\\Documents\\Civet\\CivetRobotIn
+robotCompleteOutPath=E:\\Documents\\Civet\\CivetRobotComplete
+robotXMLOutPath=E:\\Documents\\Civet\\CivetRobotXML
 #probably want to raise this once tested.
 robotWaitSeconds=15
 robotOutputFormat=STD

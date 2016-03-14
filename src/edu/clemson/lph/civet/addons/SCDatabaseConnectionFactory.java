@@ -25,7 +25,7 @@ import java.sql.Connection;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
 import edu.clemson.lph.dialogs.*;
 

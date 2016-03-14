@@ -25,7 +25,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.LabeledCSVParser;
 /**
  * Note: this class has remnants of the old primary key usages.  Should really edit out 

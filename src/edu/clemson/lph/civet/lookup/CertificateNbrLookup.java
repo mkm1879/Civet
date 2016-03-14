@@ -31,7 +31,7 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 
 public class CertificateNbrLookup {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());

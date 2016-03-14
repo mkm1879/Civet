@@ -55,6 +55,7 @@ import edu.clemson.lph.civet.files.FilesTableModel;
 import edu.clemson.lph.civet.files.SourceFilesTableModel;
 import edu.clemson.lph.civet.files.StdXMLFilesTableModel;
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.vsps.VspsCviFile;
 
 @SuppressWarnings("serial")

@@ -46,7 +46,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.IDTypeGuesser;
 import edu.clemson.lph.utils.XMLUtility;
 

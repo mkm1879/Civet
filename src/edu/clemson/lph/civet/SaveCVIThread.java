@@ -35,6 +35,7 @@ import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
 import edu.clemson.lph.civet.lookup.PremisesLocalStore;
 import edu.clemson.lph.civet.lookup.PurposeLookup;
 import edu.clemson.lph.civet.lookup.VetLookup;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;

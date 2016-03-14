@@ -30,8 +30,8 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.civet.lookup.VetLookup;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;

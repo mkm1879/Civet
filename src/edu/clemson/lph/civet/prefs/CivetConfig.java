@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet;
+package edu.clemson.lph.civet.prefs;
 /*
 Copyright 2014 Michael K Martin
 
@@ -33,6 +33,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jpedal.PdfDecoder;
 
+import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.TwoLineQuestionDialog;

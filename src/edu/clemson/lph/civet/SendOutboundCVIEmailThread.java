@@ -33,6 +33,7 @@ import edu.clemson.lph.pdfgen.PDFOpener;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.civet.lookup.StateVetLookup;
 import edu.clemson.lph.civet.lookup.States;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.dialogs.*;
 

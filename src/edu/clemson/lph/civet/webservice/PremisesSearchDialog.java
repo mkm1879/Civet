@@ -45,8 +45,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetConfig;
 import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.SearchDialog;
 

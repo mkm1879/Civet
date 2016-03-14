@@ -27,7 +27,7 @@ import java.util.zip.DataFormatException;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.UsaHerdsLookupVets;
 import edu.clemson.lph.civet.webservice.UsaHerdsWebServiceLookup;
 import edu.clemson.lph.civet.webservice.WebServiceException;

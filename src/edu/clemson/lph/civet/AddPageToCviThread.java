@@ -30,6 +30,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;

@@ -76,6 +76,7 @@ import edu.clemson.lph.civet.lookup.PurposeLookup;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.lookup.VetLookup;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.PremisesSearchDialog;
 import edu.clemson.lph.civet.webservice.PremisesTableModel;
 import edu.clemson.lph.civet.webservice.UsaHerdsLookupPrems;

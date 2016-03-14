@@ -38,7 +38,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetConfig;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.Encodings;
 import edu.clemson.lph.utils.XMLUtility;
 
