@@ -36,7 +36,6 @@ import com.cai.webservice.ExternalMessagesStub.CivetGetVetsResponse;
 import org.w3c.dom.Document;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;

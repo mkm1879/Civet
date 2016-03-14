@@ -13,11 +13,15 @@ public class VspsCodeLookup {
 	hSpCodeLu.put("Bovine", "BOV");
 	hSpCodeLu.put("Equine", "EQU");
 	hSpCodeLu.put("Swine", "POR");
+	hSpCodeLu.put("Porcine", "POR");
 	hSpCodeLu.put("Goat", "CAP");
+	hSpCodeLu.put("Caprine", "CAP");
 	hSpCodeLu.put("Cervidae", "CER");
+	hSpCodeLu.put("Deer", "DEE");
 	hSpCodeLu.put("Duck", "DUC");
 	hSpCodeLu.put("Rabbit", "LAG");
 	hSpCodeLu.put("Sheep", "OVI");
+	hSpCodeLu.put("Ovine", "OVI");
 	hSpCodeLu.put("Turkey", "TUR");
 	hSpCodeLu.put("Chicken", "CHI");
 	hSpCodeLu.put("Avian", "AVI");

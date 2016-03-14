@@ -1319,25 +1319,25 @@ public final class CivetEditDialog extends JFrame {
 		});
 
 	}
-	
-	public void setErrors( ArrayList<String> aErrorKeysIn ) {
-		if( this.aErrorKeys == null )
-			this.aErrorKeys = new ArrayList<String>();
-		else
-			this.aErrorKeys.clear();
-		if( aErrorKeysIn == null || aErrorKeysIn.isEmpty() ) {
-			lError.setVisible(false);
-		}
-		else {
-			lError.setVisible(true);
-			for( String s : aErrorKeysIn ) 
-				this.aErrorKeys.add(s);
-		}
-	}
-	
-	public void setErrorNote( String sNote ) {
-		this.sErrorNotes = sNote;
-	}
+//	
+//	public void setErrors( ArrayList<String> aErrorKeysIn ) {
+//		if( this.aErrorKeys == null )
+//			this.aErrorKeys = new ArrayList<String>();
+//		else
+//			this.aErrorKeys.clear();
+//		if( aErrorKeysIn == null || aErrorKeysIn.isEmpty() ) {
+//			lError.setVisible(false);
+//		}
+//		else {
+//			lError.setVisible(true);
+//			for( String s : aErrorKeysIn ) 
+//				this.aErrorKeys.add(s);
+//		}
+//	}
+//	
+//	public void setErrorNote( String sNote ) {
+//		this.sErrorNotes = sNote;
+//	}
 	
 	/**
 	 * This is used by setAllFocus to make each field select the entire text 

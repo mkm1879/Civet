@@ -1,73 +1,120 @@
-#State
-homeState=SOUTH CAROLINA
+# Configuration settings for Civet
+
+homeState=South Carolina
 homeStateAbbr=SC
 homeStateKey=56
 
-#HERDS
-herdsWebServiceURL=http://LPHStage/usaherds/WebService/ExternalMessages.asmx
+# Still working on dealing with USAHERDS StateIdentifiers that look like LIDS
 brokenLIDs=true
-stateIDChecksum=FALSE
-standAlone=no
 
-#Defaults
+#adds scrollbar to left pane with editing fields.
+#smallScreen=false
+
+# When importing CO/KS PDFs, automatically set received date as today?
 defaultReceivedDate=true
-defaultDirection=Import
-cviValidDays=30
-saveCopies=true
-smallScreen=FALSE
-rotation=0
-defaultPurpose=Other
-autoOpenPdf=yes
 
-#Email
+# Import or Export selected by default?
+defaultDirection=Import
+
+# Days to expiration following inspection date
+cviValidDays=30
+
+# Keep copies of generated .cvi files in OutBox along with originals?
+# Can be helpful for early debugging.  Uses space.  You may want to set to false later.
+saveCopies=true
+#Web Service Settings
+standAlone=no
+herdsWebServiceURL=http://LPHStage/usaherds/WebService/ExternalMessages.asmx
+
+#Email setup for gmail
 smtpHost=smtp.googlemail.com
 smtpPort=587
 smtpSecurity=STARTTLS
+#STARTTLS_NO_CA if certificate validation fails (and you know why!)
 smtpDomain=@gmail.com
-emailFrom=whoever@gmail.com
-emailReplyTo=
+#If emailTestTo is set, emails do NOT go to destination state but to this address for testing!!!!!!
 emailTestTo=mkm1879@gmail.com
 emailCopyTo=mkm1879@gmail.com
+#Limit size of all email attachments on one email 
+#May be in bytes, K or M
 maxAttachSize=5M
 
-#Folders
+# Alternate Email settings to try in various combinations
+
+#really old or internal servers. Port 25 is sometimes used 
+#   with permission granted to specific internal client machines.
+#smtpPort=25
+#smtpSecurity=NONE
+
+#some old servers
+#smtpPort=465
+#smtpSecurity=SSL
+
+#Local system setup
 InputDirPath=E:\\Documents\\Civet\\CivetInbox\\
 ToBeFiledDirPath=E:\\Documents\\Civet\\CivetToBeFiled\\
 EmailOutDirPath=E:\\Documents\\Civet\\CivetToBeMailedOut\\
 EmailErrorsDirPath=E:\\Documents\\Civet\\CivetToBeMailedErrors\\
 OutputDirPath=E:\\Documents\\Civet\\CivetOutbox\\
-vspsDirPath=E:\\Documents\\Civet\\VSPSData\\
-
-#Files
+bulkLoadDirPath=.\\Swine\\
 CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
-StdSchema=.\\ecviDraftRelaxed.xsd
-acrobatPath=
-ExportEmailTemplate=E:\\Documents\\Civet\\CivetExportsEmailMessage.txt
-ImportErrorsEmailTemplate=E:\\Documents\\Civet\\CivetImportsErrorEmailMessage.txt
-ImportErrorsLetterTemplate=E:\\Documents\\Civet\\CivetImportsErrorLetterTemplate.txt
+StdSchema=E:\\Documents\\Civet\\ecviDraftRelaxed.xsd
+defaultPurpose=Other
+
+#If your scans all come out sideways try 90 or 270
+#If your scans all come out upside-down try 180
+rotation=0
+autoOpenPdf=yes
+
+#Template files for generated emails
+ExportEmailTemplate=E\:\\Documents\\Civet\\CivetExportsEmailMessage.txt
+ImportErrorsEmailTemplate=E\:\\Documents\\Civet\\CivetImportsErrorEmailMessage.txt
+ImportErrorsLetterTemplate=E\:\\Documents\\Civet\\CivetImportsErrorLetterTemplate.txt
+
+#Robot Mode Settings
+robotInputPath=E:\\Documents\\Civet\\CivetRobotIn
+robotCompleteOutPath=E:\\Documents\\Civet\\CivetRobotComplete
+robotXMLOutPath=E:\\Documents\\Civet\\CivetRobotXML
+#probably want to raise this once tested.
+robotWaitSeconds=15
+robotOutputFormat=STD
+#if you JUST want to convert to the XML output by Adobe and NOT transform
+# into the USAHA standard or submit to HERDS.  WHY?!
+#robotOutputFormat=ADOBE
+
+
+#Basic lookup tables created by Webservice or manually for stand alone mode
 vetTableFile=VetTable.csv
-sppTableFile=.\\SpeciesTable.csv
-errorTypeTableFile=ErrorTypeTable.csv
+sppTableFile=SpeciesTable.csv
 purposeTableFile=PurposeTable.csv
+errorTypeTableFile=ErrorTypeTable.csv
+
+#State Vet Table distributed manually for now.
 stateVetTableFile=StateVetTable.csv
 
-#Robot
-robotInputPath=.\\CivetRobotIn
-robotCompleteOutPath=.\\CivetRobotComplete
-robotXMLOutPath=.\\CivetRobotXML
-robotOutputFormat=STD
-robotWaitSeconds=15
+#Network settings used to check for live network
+localNetAddresses=130.127.169.236,130.127.169.248
+#SQL Server USAHERDS Settings (Only needed if SQL add ons are used)
+dbServer=lphstage
+dbPort=1433
+dbDatabaseName=USAHerds
+dbHerdsSchemaName=dbo
+dbCivetSchemaName=Civet
 
-#Logging
+
+#Logging using Apache Log 4 J library
 logLevel=INFO
 log4j.rootLogger=info, stdout, R
+
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
 log4j.appender.stdout.layout=org.apache.log4j.EnhancedPatternLayout
+# Pattern to output the caller's file name and line number.
 log4j.appender.stdout.layout.ConversionPattern=%5p [%t] (%F:%L) - %m%n%throwable{5}
+
 log4j.appender.R=org.apache.log4j.RollingFileAppender
 log4j.appender.R.File=Civet.log
 log4j.appender.R.MaxFileSize=100KB
+# Keep one backup file
 log4j.appender.R.MaxBackupIndex=1
 log4j.appender.R.layout=org.apache.log4j.EnhancedPatternLayout
 log4j.appender.R.layout.ConversionPattern=%d{dd MMM yyyy HH:mm} %5p %F [%t] %n%m%n %throwable{5}%n
-

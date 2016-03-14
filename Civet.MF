@@ -1,6 +1,10 @@
 Manifest-Version: 1.0
 Class-Path: . 
+ lib/jpedal-xfa.jar 
+ lib/jpedal-xfa-daily.jar 
  lib/jpedalXFA.jar 
+ lib/jpedal.jar 
+ lib/jpedal-daily.jar 
  lib/jpedal-standard.jar 
  lib/jpedal_LGPL.jar 
  lib/XmlSchema-1.4.7.jar 

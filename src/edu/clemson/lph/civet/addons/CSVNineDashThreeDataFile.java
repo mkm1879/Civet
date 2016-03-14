@@ -104,6 +104,17 @@ public class CSVNineDashThreeDataFile {
 	public int size() {
 		return aaValues.size();
 	}
+	
+	public String printRow() {
+		StringBuffer sb = new StringBuffer();
+		HashMap<String,String> aRow = aaValues.get(iCurrentRow);
+		for( String sKey : aRow.keySet() ) {
+			String sVal = aRow.get(sKey.toUpperCase());
+			if( sVal == null ) sVal = "";
+			sb.append( sKey + "=\"" + sVal + "\",");
+		}
+		return sb.toString();
+	}
 
 	/**
 	 * return the string value of cell at current row with header sKey
@@ -179,7 +190,7 @@ public class CSVNineDashThreeDataFile {
 	public String getConsigneeState() {
 		String sState = get("ConsigneeState");
 		if( sState != null && sState.trim().length() == 2 )
-			return sState.trim();
+			return sState.trim().toUpperCase();
 		else
 			return null;
 	}
@@ -187,7 +198,7 @@ public class CSVNineDashThreeDataFile {
 		return get("ConsigneeCountry");
 	}
 	public String getConsigneeZip() {
-		return get("ConsigneeZip");
+		return formatZip( get("ConsigneeZip") );
 	}
 	public String getConsignorPIN() {
 		return get("ConsignorPIN");
@@ -207,12 +218,12 @@ public class CSVNineDashThreeDataFile {
 	public String getConsignorState() {
 		String sState = get("ConsignorState");
 		if( sState != null && sState.trim().length() == 2 )
-			return sState.trim();
+			return sState.trim().toUpperCase();
 		else
 			return null;
 	}
 	public String getConsignorZip() {
-		return get("ConsignorZip");
+		return formatZip( get("ConsignorZip") );
 	}
 	public String getConsignorCountry() {
 		return get("ConsignorCountry");
@@ -234,6 +245,14 @@ public class CSVNineDashThreeDataFile {
 		return get("Product");
 	}
 	
+	public boolean hasTags() {
+		String sTags = get("TagID");
+		if( sTags != null && sTags.trim().length() > 0 )
+			return true;
+		else
+			return false;	
+	}
+	
 	public List<String> listTagIds() {
 		ArrayList<String> tagList;
 		String sTags = get("TagID");
@@ -251,4 +270,15 @@ public class CSVNineDashThreeDataFile {
 		return tagList;
 	}
 
+	private static String formatZip( String sZipIn ) {
+		String sRet = sZipIn;
+		if( sZipIn == null || sZipIn.trim().length() == 0 ) return sRet;
+		while( !Character.isDigit(sRet.charAt(0)) ) {
+			sRet = sRet.substring(1);
+		}
+		while( sRet.trim().length() < 5 ) {
+			sRet = '0' + sRet;
+		}
+		return sRet;
+	}
 }// class CSVFile

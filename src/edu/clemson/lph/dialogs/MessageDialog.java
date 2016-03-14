@@ -30,6 +30,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextArea;
@@ -109,6 +110,10 @@ public class MessageDialog extends JDialog {
 					deltaY + (screenSize.height - frameSize.height) / 2);
 		}
 	}
+	
+	public static void main( String args[]) {
+		MessageDialog.showMessage(null, "Test Message", "<Veterinarian LicenseNumber=6774 NationalAccreditationNumber=013531>\n<Person>\n<Name>ASHLEY ARMSTRONG, DVM</Name>\n<Phone Number=8122779500 Type=Unknown/>\n</Person>\n<Address>\n<Line1>1652 SPRINGVILLE-JUDAH RD</Line1>\n<Town>SPRINGVILLE</Town>\n<State>IN</State>\n<ZIP>47462</ZIP>\n<Country>USA</Country>\n</Address>\n</Veterinarian>\n<MovementPurposes>\n<MovementPurpose>pet</MovementPurpose>\n</MovementPurposes>\n<Origin>\n<PremName/>\n<Address>\n<Line1>591 DONICA CHURCH RD</Line1>\n<Town>BEDFORD</Town>\n<State>IN</State>\n<ZIP>47421</ZIP>\n<Country>USA</Country>\n</Address>\n<Person>\n<Name>NOBLES-FRALEY, PAULA</Name>\n<Phone Number=3523272877 Type=Unknown/>\n</Person>");
+	}
 
 	private void initGui() {
 		setBounds(100, 100, 450, 300);
@@ -116,15 +121,16 @@ public class MessageDialog extends JDialog {
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(null);
+		contentPanel.setLayout(new BorderLayout());
+		JScrollPane jspText = new JScrollPane();
+		contentPanel.add(jspText, BorderLayout.CENTER);
 		{
 			JTextArea textArea = new JTextArea();
 			textArea.setEditable(false);
-			textArea.setBounds(25, 11, 395, 218);
 			textArea.setWrapStyleWord(true);
 			textArea.setLineWrap(true);
 			textArea.setText( mMessage );
-			contentPanel.add(textArea);
+			jspText.setViewportView(textArea);
 		}
 		{
 			JPanel buttonPane = new JPanel();
