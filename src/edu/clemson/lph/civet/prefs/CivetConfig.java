@@ -19,7 +19,10 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -31,17 +34,17 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.jpedal.PdfDecoder;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.TwoLineQuestionDialog;
+import edu.clemson.lph.mailman.MailMan;
 
 public class CivetConfig {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	// initialized in Civet.main via checkAllConfig
-	private static Properties props;
+	private static Properties props = null;
 	private static final int UNK = -1;
 	private static final int LGPL = 0;
 	private static final int XFA = 1;
@@ -60,6 +63,10 @@ public class CivetConfig {
 	private static boolean bStateIDChecksum;
 	private static Boolean bAutoOpenPDF;
 	
+
+	public static Properties getProps() {
+		return props;
+	}
 
 	/**
 	 * Check to see if we are on LPH LAN.  Only used in local version.
@@ -96,7 +103,7 @@ public class CivetConfig {
 	public static boolean isSmallScreen() {
 		if( bSmall == null ) {
 			String sVal = props.getProperty("smallScreen");
-			if( sVal == null ) 
+			if( sVal == null || sVal.trim().length() == 0 ) 
 				bSmall = false;
 			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
 				bSmall = true;
@@ -111,7 +118,7 @@ public class CivetConfig {
 	public static boolean isDefaultReceivedDate() {
 		if( bDefaultReceivedDate == null ) {
 			String sVal = props.getProperty("defaultReceivedDate");
-			if( sVal == null )
+			if( sVal == null || sVal.trim().length() == 0 )
 				bDefaultReceivedDate = false;
 			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
 				bDefaultReceivedDate = true;
@@ -126,7 +133,7 @@ public class CivetConfig {
 	public static boolean isSaveCopies() {
 		if( bSaveCopies  == null ) {
 			String sVal = props.getProperty("saveCopies");
-			if( sVal == null )
+			if( sVal == null || sVal.trim().length() == 0 )
 				bSaveCopies = true;
 			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
 				bSaveCopies = true;
@@ -142,7 +149,7 @@ public class CivetConfig {
 		if( bBrokenLIDs == null ) {
 			String sVal = props.getProperty("brokenLIDs");
 			// default to true;
-			if( sVal == null || sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+			if( sVal == null || sVal.trim().length() == 0 || sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
 				bBrokenLIDs = true;
 			}
 			else {
@@ -157,7 +164,7 @@ public class CivetConfig {
 		if( bBrokenLIDs == null ) {
 			String sVal = props.getProperty("stateIDChecksum");
 			// default to true;
-			if( sVal == null || sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+			if( sVal == null || sVal.trim().length() == 0 || sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
 				bStateIDChecksum = true;
 			}
 			else {
@@ -181,19 +188,25 @@ public class CivetConfig {
 	
 	public static String getDefaultDirection() {
 		String sRet = props.getProperty("defaultDirection");
-		if( sRet == null ) exitError("defaultDirection");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("defaultDirection");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
 	public static String getHomeStateAbbr() {
 		String sRet = props.getProperty("homeStateAbbr");
-		if( sRet == null ) exitError("homeStateAbbr");
+		if( sRet == null || sRet.trim().length() == 0  ) exitError("homeStateAbbr");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
 	public static String getHomeState() {
 		String sRet = props.getProperty("homeState");
-		if( sRet == null ) exitError("homeState");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("homeState");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
@@ -214,7 +227,7 @@ public class CivetConfig {
 	public static int getCviValidDays() {
 		int iRet = -1;
 		String sRet = props.getProperty("cviValidDays");
-		if( sRet == null ) exitError("cviValidDays");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("cviValidDays");
 		try {
 			iRet = Integer.parseInt(sRet);
 		} catch( NumberFormatException nfe ) {
@@ -228,26 +241,32 @@ public class CivetConfig {
 	
 	public static String getSmtpHost() {
 		String sRet = props.getProperty("smtpHost");
-		if( sRet == null ) exitError("smtpHost");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("smtpHost");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
 	public static String getSmtpPort() {
 		String sRet = props.getProperty("smtpPort");
-		if( sRet == null ) exitError("smtpPort");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("smtpPort");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
 	public static String getSmtpSecurity() {
 		String sRet = props.getProperty("smtpSecurity");
-		if( sRet == null ) exitError("smtpSecurity");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("smtpSecurity");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
 	public static int getSmtpPortInt() {
 		int iRet = -1;
 		String sRet = props.getProperty("smtpPort");
-		if( sRet == null ) exitError("smtpPorty");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("smtpPorty");
 		try {
 			iRet = Integer.parseInt(sRet);
 		} catch( NumberFormatException nfe ) {
@@ -260,12 +279,16 @@ public class CivetConfig {
 	
 	public static String getSmtpDomain() {
 		String sRet = props.getProperty("smtpDomain");
-		if( sRet == null ) exitError("smtpDomain");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("smtpDomain");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
 	public static String getEmailCopyTo() {
 		String sRet = props.getProperty("emailCopyTo");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
@@ -277,6 +300,8 @@ public class CivetConfig {
 	public static String getEmailFrom() {
 		String sRet = null;
 		sRet = props.getProperty("emailFrom");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
@@ -287,6 +312,8 @@ public class CivetConfig {
 	public static String getEmailReplyTo() {
 		String sRet = null;
 		sRet = props.getProperty("emailReplyTo");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
@@ -297,6 +324,8 @@ public class CivetConfig {
 	 */
 	public static String getEmailTestTo() {
 		String sRet = props.getProperty("emailTestTo");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
@@ -306,7 +335,9 @@ public class CivetConfig {
 	 */
 	public static String getHERDSWebServiceURL() {
 		String sRet = props.getProperty("herdsWebServiceURL");
-		if( sRet == null ) exitError("herdsWebServiceURL");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("herdsWebServiceURL");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
@@ -316,7 +347,7 @@ public class CivetConfig {
 	 */
 	public static String getHERDSWebServiceHost() {
 		String sRet = props.getProperty("herdsWebServiceURL");
-		if( sRet == null ) exitError("herdsWebServiceURL");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("herdsWebServiceURL");
 		try {
 			URI uri = new URI(sRet);
 			sRet = uri.getHost();
@@ -324,6 +355,8 @@ public class CivetConfig {
 			// TODO Auto-generated catch block
 			logger.error(e);
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
@@ -389,59 +422,108 @@ public class CivetConfig {
 		
 	}
 	
+	public static boolean initEmail(boolean bLogin) {
+		boolean bRet = true;
+		String sUserID = MailMan.getDefaultUserID();
+		if( (MailMan.getDefaultUserID() == null || MailMan.getDefaultPassword() == null) && bLogin ) {
+			TwoLineQuestionDialog ask = new TwoLineQuestionDialog( "Civet Email Login:",
+					"Email UserID:", "Email Password:", true);
+			ask.setPassword(true);
+			ask.setVisible(true);
+			if( ask.isExitOK() ) {
+				sUserID = ask.getAnswerOne();
+				MailMan.setDefaultUserID(sUserID);
+				MailMan.setDefaultPassword(ask.getAnswerTwo());
+				bRet = true;
+			}
+			else {
+				bRet = false;
+			}
+		}
+		MailMan.setDefaultHost(CivetConfig.getSmtpHost());
+		MailMan.setDefaultPort(CivetConfig.getSmtpPortInt());
+		String sSecurity = CivetConfig.getSmtpSecurity();
+		MailMan.setSecurity(sSecurity);
+		String sFrom = CivetConfig.getEmailFrom();
+		if( sFrom != null )
+			MailMan.setDefaultFrom(sFrom);
+		else if( !sUserID.contains("@")) {
+			MailMan.setDefaultFrom(sUserID + CivetConfig.getSmtpDomain() );
+		}
+		else {
+			MailMan.setDefaultFrom(sUserID);
+		}
+		String sReplyTo = CivetConfig.getEmailReplyTo();
+		if( sReplyTo != null )
+			MailMan.setDefaultReplyTo(sReplyTo);
+
+		return bRet;
+	}
+
+	
 	public static String getInputDirPath() {
 		String sRet = props.getProperty("InputDirPath");
-		if( sRet == null ) exitError("InputDirPath");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("InputDirPath");
 		File f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
 			logger.error( "InputDirPath " + sRet + " does not exist or is not a folder");
 			System.exit(1);
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
 	public static String getToFileDirPath() {
 		String sRet = props.getProperty("ToBeFiledDirPath");
-		if( sRet == null ) exitError("ToBeFiledDirPath");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("ToBeFiledDirPath");
 		File f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
 			logger.error( "ToBeFiledDirPath " + sRet + " does not exist or is not a folder");
 			System.exit(1);
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
 
 	public static String getEmailOutDirPath() {
 		String sRet = props.getProperty("EmailOutDirPath");
-		if( sRet == null ) exitError("EmailOutDirPath");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("EmailOutDirPath");
 		File f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
 			logger.error( "EmailOutDirPath " + sRet + " does not exist or is not a folder");
 			System.exit(1);
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
 	public static String getEmailErrorsDirPath() {
 		String sRet = props.getProperty("EmailErrorsDirPath");
-		if( sRet == null ) exitError("EmailErrorsDirPath");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("EmailErrorsDirPath");
 		File f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
 			logger.error( "EmailErrorsDirPath " + sRet + " does not exist or is not a folder");
 			System.exit(1);
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
 	public static String getOutputDirPath() {
 		String sRet = props.getProperty("OutputDirPath");
-		if( sRet == null ) exitError("OutputDirPath");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("OutputDirPath");
 		File f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
 			logger.error( "OutputDirPath " + sRet + " does not exist or is not a folder");
 			System.exit(1);
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
@@ -466,12 +548,14 @@ public class CivetConfig {
 				System.exit(1);
 			}
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
 	public static String getVspsDirPath() {
 		String sRet = props.getProperty("vspsDirPath");
-		if( sRet == null ) {
+		if( sRet == null || sRet.trim().length() == 0 ) {
 			logger.error( "vspsLoadDirPath not set using install folder");
 			return ".";
 		}
@@ -480,6 +564,8 @@ public class CivetConfig {
 			logger.error( "vspsLoadDirPath " + sRet + " does not exist or is not a folder");
 			sRet = ".";
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
@@ -492,6 +578,8 @@ public class CivetConfig {
 				System.exit(1);
 			}
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
@@ -504,6 +592,8 @@ public class CivetConfig {
 				System.exit(1);
 			}
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
@@ -516,6 +606,8 @@ public class CivetConfig {
 				System.exit(1);
 			}
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
@@ -536,30 +628,38 @@ public class CivetConfig {
 
 	public static String getVetTableFile() {
 		String sRet = props.getProperty("vetTableFile");
-		if( sRet == null ) exitError("vetTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("vetTableFile");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
 	public static String getStateVetTableFile() {
 		String sRet = props.getProperty("stateVetTableFile");
-		if( sRet == null ) exitError("stateVetTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("stateVetTableFile");
 		File f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
 			logger.error( "stateVetTableFile " + sRet + " does not exist or is not a file");
 			System.exit(1);
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
 	public static String getSppTableFile() {
 		String sRet = props.getProperty("sppTableFile");
-		if( sRet == null ) exitError("sppTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("sppTableFile");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
 	public static String getErrorTypeTableFile() {
 		String sRet = props.getProperty("errorTypeTableFile");
-		if( sRet == null ) exitError("errorTypeTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("errorTypeTableFile");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
@@ -569,62 +669,74 @@ public class CivetConfig {
 			if( !sRet.equals("STD") && !sRet.equals("ADOBE") ) 
 				exitError("Unknown robot output format: " + sRet );
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
 	public static String getExportMailTemplate() {
 		String sRet = props.getProperty("ExportEmailTemplate");
-		if( sRet == null ) exitError("ExportEmailTemplate");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("ExportEmailTemplate");
 		File f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
 			logger.error( "ExportEmailTemplate " + sRet + " does not exist or is not a file");
 			System.exit(1);
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
 	public static String getImportErrorsEmailTemplate() {
 		String sRet = props.getProperty("ImportErrorsEmailTemplate");
-		if( sRet == null ) exitError("ImportErrorsEmailTemplate");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("ImportErrorsEmailTemplate");
 		File f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
 			logger.error( "ImportErrorsEmailTemplate " + sRet + " does not exist or is not a file");
 			System.exit(1);
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
 	public static String getImportErrorsLetterTemplate() {
 		String sRet = props.getProperty("ImportErrorsLetterTemplate");
-		if( sRet == null ) exitError("ImportErrorsLetterTemplate");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("ImportErrorsLetterTemplate");
 		File f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
 			logger.error( "ImportErrorsLetterTemplate " + sRet + " does not exist or is not a file");
 			System.exit(1);
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
 
 	public static String getCoKsXSLTFile() {
 		String sRet = props.getProperty("CoKsXSLTFile");
-		if( sRet == null ) exitError("xsltFile");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("xsltFile");
 		File f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
 			logger.error( "CoKsXSLTFile " + sRet + " does not exist or is not a file");
 			System.exit(1);
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
 	public static String getSchemaFile() {
 		String sRet = props.getProperty("StdSchema");
-		if( sRet == null ) exitError("StdSchema");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("StdSchema");
 		File f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
 			logger.error( "StdSchema " + sRet + " does not exist or is not a file");
 			System.exit(1);
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
@@ -632,7 +744,7 @@ public class CivetConfig {
 	public static int getRotation() {
 		int iRet = -1;
 		String sRet = props.getProperty("rotation");
-		if( sRet == null ) exitError("rotation");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("rotation");
 		try {
 			iRet = Integer.parseInt(sRet);
 		} catch( NumberFormatException nfe ) {
@@ -647,7 +759,7 @@ public class CivetConfig {
 		long iRet = -1;
 		long iMulti = 1;
 		String sRet = props.getProperty("maxAttachSize");
-		if( sRet == null ) exitError("maxAttachSize");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("maxAttachSize");
 		if( sRet.endsWith("K") ) iMulti = 1024;
 		else if( sRet.endsWith("M")) iMulti = 1024*1024;
 		if( !Character.isDigit(sRet.charAt(sRet.length()-1)) ) 
@@ -666,7 +778,7 @@ public class CivetConfig {
 	public static long getMaxAnimals() {
 		long iRet = -1;
 		String sRet = props.getProperty("maxAnimals");
-		if( sRet == null ) { 
+		if( sRet == null || sRet.trim().length() == 0 ) { 
 			return DEFAULT_MAX_ANIMALS;
 		}
 		try {
@@ -685,6 +797,8 @@ public class CivetConfig {
 	 */
 	public static String getDefaultPurpose() {
 		String sRet = props.getProperty("defaultPurpose");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
@@ -710,7 +824,7 @@ public class CivetConfig {
 	public static boolean isAutoOpenPdf() {
 		if( bAutoOpenPDF  == null ) {
 			String sVal = props.getProperty("autoOpenPdf");
-			if( sVal == null )
+			if( sVal == null || sVal.trim().length() == 0 )
 				bAutoOpenPDF = true;
 			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
 				bAutoOpenPDF = true;
@@ -726,6 +840,8 @@ public class CivetConfig {
 	// These are only used by direct database "add ons" so don't start-up check but leave in.
 	public static String getDbServer() {
 		String sRet = props.getProperty("dbServer");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
@@ -746,21 +862,29 @@ public class CivetConfig {
 
 	public static String getDbPortString() {
 		String sRet = props.getProperty("dbPort");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
 	public static String getDbDatabaseName() {
 		String sRet = props.getProperty("dbDatabaseName");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
 	public static String getDbHerdsSchemaName() {
 		String sRet = props.getProperty("dbHerdsSchemaName");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
 	public static String getDbCivetSchemaName() {
 		String sRet = props.getProperty("dbCivetSchemaName");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 	
@@ -773,6 +897,8 @@ public class CivetConfig {
 				sRet = null;
 			}
 		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
 		return sRet;
 	}
 
@@ -810,12 +936,14 @@ public class CivetConfig {
 	 */
 	private static void exitError( String sProp ) {
 		if( SwingUtilities.isEventDispatchThread() )
-			MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
-		else 
-			MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp);
-		logger.error("Cannot read property " + sProp);
+			MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp
+						+ "\nDefault value assigned");
+		else
+			MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp
+						+ "\nDefault value assigned");
+		System.exit(1);
 	}
-	
+
 	/**
 	 * Generic crash out routine.
 	 */
@@ -828,163 +956,200 @@ public class CivetConfig {
 		System.exit(1);
 	}
 	
-	/**
-	 * This method is designed to ensure that all necessary configuration is set.  
-	 * Some may legitimately return null.  Remove them here and change error handling in 
-	 * the individual get... methods.
-	 * NOTE: Only test those that are required by the external release, i.e., outside of addons
-	 */
-	public static void checkAllConfig() {
-		props = new Properties();
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream("CivetConfig.txt");
-			props.load(fis);
-		} catch (IOException e) {
-			exitErrorImmediate("Cannot read configuration file CivetConfig.txt");
-		} finally {
-			if( fis != null )
-				try {
-					fis.close();
-				} catch (IOException e) {
-					logger.error(e);
-				}
+	
+	public static void initConfig() {
+		if( props == null ) {
+			props = new Properties();
+			FileInputStream fis = null;
+			try {
+				fis = new FileInputStream("CivetConfig.txt");
+				props.load(fis);
+			} catch (IOException e) {
+				exitErrorImmediate("Cannot read configuration file CivetConfig.txt");
+			} finally {
+				if( fis != null )
+					try {
+						fis.close();
+					} catch (IOException e) {
+						logger.error(e);
+					}
+			}
 		}
+	}
+	
+	public static void checkAllConfig() {
+		String sErr = checkAllConfigImp();
+		int iFails = 1;
+		while( sErr != null ) {
+			if( iFails >= 4 ) {
+				if( SwingUtilities.isEventDispatchThread() )
+					MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Still not complete");
+				else
+					MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Still not complete");
+				logger.error("Cannot read property " + sErr + " after 5 tries");
+				System.exit(1);
+			}
+			if( SwingUtilities.isEventDispatchThread() )
+				MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sErr
+							+ "\nDefault value assigned");
+			else
+				MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sErr
+							+ "\nDefault value assigned");
+			iFails++;
+		}
+	}
+		/**
+		 * This method is designed to ensure that all necessary configuration is set.  
+		 * Some may legitimately return null.  Remove them here and change error handling in 
+		 * the individual get... methods.
+		 * NOTE: Only test those that are required by the external release, i.e., outside of addons
+		 * @return NULL if everything works or string with missing setting or file message
+		 */
+	public static String checkAllConfigImp() {
+		initConfig();	
 		String sRet = props.getProperty("standAlone");
-		if( sRet == null ) exitErrorImmediate("standAlone");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("standAlone");
 		sRet = props.getProperty("defaultDirection");
-		if( sRet == null ) exitErrorImmediate("defaultDirection");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("defaultDirection");
 		sRet = props.getProperty("homeStateAbbr");
-		if( sRet == null ) exitErrorImmediate("homeStateAbbr");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("homeStateAbbr");
 		sRet = props.getProperty("homeState");
-		if( sRet == null ) exitErrorImmediate("homeState");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("homeState");
 		sRet = props.getProperty("homeStateKey");
-		if( sRet == null ) exitErrorImmediate("homeStateKey");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("homeStateKey");
 		sRet = props.getProperty("cviValidDays");
-		if( sRet == null ) exitErrorImmediate("cviValidDays");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("cviValidDays");
 		sRet = props.getProperty("smtpHost");
-		if( sRet == null ) exitErrorImmediate("smtpHost");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("smtpHost");
 		sRet = props.getProperty("smtpPort");
-		if( sRet == null ) exitErrorImmediate("smtpPort");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("smtpPort");
 		sRet = props.getProperty("smtpSecurity");
-		if( sRet == null ) exitErrorImmediate("smtpIsTls");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("smtpIsTls");
 		sRet = props.getProperty("smtpPort");
-		if( sRet == null ) exitErrorImmediate("smtpPorty");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("smtpPorty");
 		sRet = props.getProperty("smtpDomain");
-		if( sRet == null ) exitErrorImmediate("smtpDomain");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("smtpDomain");
 		sRet = props.getProperty("herdsWebServiceURL");
-		if( sRet == null ) exitErrorImmediate("herdsWebServiceURL");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("herdsWebServiceURL");
 		sRet = props.getProperty("InputDirPath");
-		if( sRet == null ) exitErrorImmediate("InputDirPath");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("InputDirPath");
 		File f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "InputDirPath\n" + sRet + " does not exist or is not a folder");			
+			return ( "InputDirPath\n" + sRet + " does not exist or is not a folder");			
 		}
 		sRet = props.getProperty("ToBeFiledDirPath");
-		if( sRet == null ) exitErrorImmediate("ToBeFiledDirPath");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("ToBeFiledDirPath");
 		f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "ToBeFiledDirPath\n" + sRet + " does not exist or is not a folder");			
+			return ( "ToBeFiledDirPath\n" + sRet + " does not exist or is not a folder");			
 		}
 		sRet = props.getProperty("EmailOutDirPath");
-		if( sRet == null ) exitErrorImmediate("EmailOutDirPath");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("EmailOutDirPath");
 		f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "EmailOutDirPath\n" + sRet + " does not exist or is not a folder");			
+			return ( "EmailOutDirPath\n" + sRet + " does not exist or is not a folder");			
 		}
 		sRet = props.getProperty("EmailErrorsDirPath");
-		if( sRet == null ) exitErrorImmediate("EmailErrorsDirPath");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("EmailErrorsDirPath");
 		f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "EmailErrorsDirPath\n" + sRet + " does not exist or is not a folder");			
+			return ( "EmailErrorsDirPath\n" + sRet + " does not exist or is not a folder");			
 		}
 		sRet = props.getProperty("OutputDirPath");
-		if( sRet == null ) exitErrorImmediate("OutputDirPath");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("OutputDirPath");
 		f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "OutputDirPath\n" + sRet + " does not exist or is not a folder");			
-		}
-		sRet = props.getProperty("robotInputPath");
-		if( sRet == null ) exitErrorImmediate("robotInputPath");
-		f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "robotInputPath\n" + sRet + " does not exist or is not a folder");			
-		}
-		sRet = props.getProperty("robotCompleteOutPath");
-		if( sRet == null ) exitErrorImmediate("robotCompleteOutPath");
-		f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "robotCompleteOutPath\n" + sRet + " does not exist or is not a folder");			
-		}
-		sRet = props.getProperty("robotXMLOutPath");
-		if( sRet == null ) exitErrorImmediate("robotXMLOutPath");
-		f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			exitErrorImmediate( "robotXMLOutPath\n" + sRet + " does not exist or is not a folder");			
+			return ( "OutputDirPath\n" + sRet + " does not exist or is not a folder");			
 		}
 		sRet = props.getProperty("vetTableFile");
-		if( sRet == null ) exitErrorImmediate("vetTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("vetTableFile");
 		sRet = props.getProperty("stateVetTableFile");
-		if( sRet == null ) exitErrorImmediate("stateVetTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("stateVetTableFile");
 		f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
-			exitErrorImmediate( "stateVetTableFile\n" + sRet + " does not exist or is not a file");			
+			return ( "stateVetTableFile\n" + sRet + " does not exist or is not a file");			
 		}
 		sRet = props.getProperty("sppTableFile");
-		if( sRet == null ) exitErrorImmediate("sppTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("sppTableFile");
 		sRet = props.getProperty("purposeTableFile");
-		if( sRet == null ) exitErrorImmediate("purposeTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("purposeTableFile");
 		sRet = props.getProperty("errorTypeTableFile");
-		if( sRet == null ) exitErrorImmediate("errorTypeTableFile");
-		sRet = props.getProperty("robotOutputFormat");
-		if( sRet == null ) exitErrorImmediate("robotOutputFormat");
-		if( !sRet.equals("STD") && !sRet.equals("ADOBE") ) 
-			exitErrorImmediate("Unknown robot output format:\n" + sRet );
+		if( sRet == null || sRet.trim().length() == 0 ) return ("errorTypeTableFile");
 		sRet = props.getProperty("CoKsXSLTFile");
-		if( sRet == null ) exitErrorImmediate("xsltFile");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("xsltFile");
 		f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
-			exitErrorImmediate( "CoKsXSLTFile\n" + sRet + " does not exist or is not a file");			
+			return ( "CoKsXSLTFile\n" + sRet + " does not exist or is not a file");			
 		}
 		sRet = props.getProperty("StdSchema");
-		if( sRet == null ) exitErrorImmediate("StdSchema");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("StdSchema");
 		f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
-			exitErrorImmediate( "StdSchema\n" + sRet + " does not exist or is not a file");			
+			return ( "StdSchema\n" + sRet + " does not exist or is not a file");			
 		}
 		sRet = props.getProperty("ExportEmailTemplate");
-		if( sRet == null ) exitErrorImmediate("ExportEmailTemplate");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("ExportEmailTemplate");
 		f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
-			exitErrorImmediate( "ExportEmailTemplate\n" + sRet + " does not exist or is not a file");			
+			return ( "ExportEmailTemplate\n" + sRet + " does not exist or is not a file");			
 		}
 		sRet = props.getProperty("ImportErrorsEmailTemplate");
-		if( sRet == null ) exitErrorImmediate("ImportErrorsEmailTemplate");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("ImportErrorsEmailTemplate");
 		f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
-			exitErrorImmediate( "ImportErrorsEmailTemplate\n" + sRet + " does not exist or is not a file");			
+			return ( "ImportErrorsEmailTemplate\n" + sRet + " does not exist or is not a file");			
 		}
 		sRet = props.getProperty("ImportErrorsLetterTemplate");
-		if( sRet == null ) exitErrorImmediate("ImportErrorsLetterTemplate");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("ImportErrorsLetterTemplate");
 		f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
-			exitErrorImmediate( "ImportErrorsLetterTemplate\n" + sRet + " does not exist or is not a file");			
+			return ( "ImportErrorsLetterTemplate\n" + sRet + " does not exist or is not a file");			
 		}
 		sRet = props.getProperty("rotation");
-		if( sRet == null ) exitErrorImmediate("rotation");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("rotation");
 		try {
 			Integer.parseInt(sRet);
 		} catch( NumberFormatException nfe ) {
-			exitErrorImmediate( "Cannot read rotation\n" + sRet + " as an integer number");
+			return ( "Cannot read rotation\n" + sRet + " as an integer number");
 		}
 		sRet = props.getProperty("maxAttachSize");
-		if( sRet == null ) exitErrorImmediate("maxAttachSize");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("maxAttachSize");
 		if( !Character.isDigit(sRet.charAt(sRet.length()-1)) ) 
 			sRet = sRet.substring(0,sRet.length()-1);
 		try {
 			Integer.parseInt(sRet);
 		} catch( NumberFormatException nfe ) {
-			exitErrorImmediate( "Cannot read maxAttachSize\n" + sRet + " as an integer number");			
+			return ( "Cannot read maxAttachSize\n" + sRet + " as an integer number");			
 		}
-	}			
+		return null;
+	}		
+	
+	public static void checkRobotConfig() {
+		initConfig();
+		String sRet = null;
+		File f = null;
+		sRet = props.getProperty("robotInputPath");
+		if( sRet == null || sRet.trim().length() == 0 ) exitErrorImmediate("robotInputPath");
+		f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			exitError( "robotInputPath\n" + sRet + " does not exist or is not a folder");			
+		}
+		sRet = props.getProperty("robotCompleteOutPath");
+		if( sRet == null || sRet.trim().length() == 0 ) exitErrorImmediate("robotCompleteOutPath");
+		f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			exitError( "robotCompleteOutPath\n" + sRet + " does not exist or is not a folder");			
+		}
+		sRet = props.getProperty("robotXMLOutPath");
+		if( sRet == null || sRet.trim().length() == 0 ) exitErrorImmediate("robotXMLOutPath");
+		f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			exitError( "robotXMLOutPath\n" + sRet + " does not exist or is not a folder");			
+		}
+		sRet = props.getProperty("robotOutputFormat");
+		if( sRet == null || sRet.trim().length() == 0 ) exitErrorImmediate("robotOutputFormat");
+		if( !sRet.equals("STD") && !sRet.equals("ADOBE") ) 
+			exitError("Unknown robot output format:\n" + sRet );
+
+	}
 }
