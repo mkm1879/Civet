@@ -168,6 +168,7 @@ public class CivetWebServices {
 		} catch (RuntimeException re) {
 			throw re;
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new WebServiceException(e);
 		}
 		return bRet;
