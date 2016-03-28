@@ -545,11 +545,11 @@ public class CivetConfig {
 			File f = new File( sRet );
 			if( !f.exists() || !f.isDirectory() ) {
 				logger.error( "nineDashThreeLoadDirPath " + sRet + " does not exist or is not a folder");
-				System.exit(1);
+				sRet = ".//"; 
 			}
 		}
 		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
+			sRet = ".//"; 
 		return sRet;
 	}
 
@@ -557,15 +557,15 @@ public class CivetConfig {
 		String sRet = props.getProperty("vspsDirPath");
 		if( sRet == null || sRet.trim().length() == 0 ) {
 			logger.error( "vspsLoadDirPath not set using install folder");
-			return ".";
+			return ".//";
 		}
 		File f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
 			logger.error( "vspsLoadDirPath " + sRet + " does not exist or is not a folder");
-			sRet = ".";
+			sRet = ".//";
 		}
 		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
+			sRet = ".//"; 
 		return sRet;
 	}
 
