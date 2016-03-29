@@ -1,7 +1,7 @@
 @echo off
 E:
-del \EclipseJava\Civet\Civet.jar
-del \EclipseJava\Civet\Civet.zip
+del \EclipseJava\Civet\Civet.jar 2> nul
+del \EclipseJava\Civet\Civet.zip 2> nul
 cd \EclipseJava\Civet\bin
 rem Copy JPedal classes from storage if we need to package.
 jar -cfm ../Civet.jar ..\Civet.MF edu/clemson/lph edu/clemson/lph/civet edu/clemson/lph/controls edu/clemson/lph/db edu/clemson/lph/dialogs edu/clemson/lph/mailman edu/clemson/lph/pdfgen com/cai/webservice
