@@ -52,13 +52,18 @@ public class StateVetLookupGenerator implements AddOn {
 				"JOIN Accounts av on av.CountyKey = c.CountyKey  \n" +
 				"LEFT JOIN PrefixTypes pt on pt.PrefixTypeKey = av.PrefixTypeKey  \n" +
 				"JOIN Vets v on v.AccountKey = av.AccountKey  \n" +
-				"JOIN VetCertificates vc on vc.VetKey = v.VetKey  \n" +
-				"		and vc.VetCertificateTypeKey = (select VetCertificateTypeKey from VetCertificateTypes  \n" +
-				"										where Description = 'State Veterinarian')  \n" +
-				"		and vc.VetCertificateStatusTypeKey = 1  \n" +
 				"JOIN PracticeVets pv ON pv.VetKey = v.VetKey \n" +
 				"JOIN Practices p ON p.PracticeKey = pv.PracticeKey \n" +
-				"JOIN Accounts ap ON ap.AccountKey = p.AccountKey AND ap.BusinessName LIKE '%CVI_Office'";
+				"JOIN Accounts ap ON ap.AccountKey = p.AccountKey AND ap.BusinessName LIKE '%CVI_Office' \n" +
+				"JOIN VetCertificates vc on vc.VetKey = v.VetKey   \n" +
+				"AND vc.VetCertificateTypeKey = (select VetCertificateTypeKey from VetCertificateTypes   \n" +
+				"								where Description = 'State Veterinarian')   \n" +
+				"AND ( vc.VetCertificateStatusTypeKey = 1  \n" +
+				"			OR NOT EXISTS ( select * from VetCertificates vc1  \n" +
+				"							join PracticeVets pv1 on pv1.VetKey = vc1.VetKey \n" +
+				"					where PracticeKey = p.PracticeKey \n" +
+				"					and VetCertificateStatusTypeKey = 1 ) ) \n" +
+				"ORDER BY c.StateCode";
 		String sName = "StateVetTable";
 		generateLookup( sName, sQuery );
 	}
