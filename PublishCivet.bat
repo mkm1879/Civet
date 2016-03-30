@@ -10,6 +10,9 @@ copy \EclipseJava\Civet\Civet.jar \EclipseJava\Civet\Publish\Civet\Civet.jar >nu
 cd \EclipseJava\Civet\Publish
 jar -cfM ../Civet.zip Civet
 if errorlevel 1 goto zipoops
+cd \EclipseJava\Civet\Publish\Civet
+jar -cfM ../../CivetLib.zip lib
+if errorlevel 1 goto zipoops
 goto done
 :zipoops
 echo Error in Zip

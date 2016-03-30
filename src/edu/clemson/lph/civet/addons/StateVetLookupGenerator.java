@@ -62,6 +62,8 @@ public class StateVetLookupGenerator implements AddOn {
 				"			OR NOT EXISTS ( select * from VetCertificates vc1  \n" +
 				"							join PracticeVets pv1 on pv1.VetKey = vc1.VetKey \n" +
 				"					where PracticeKey = p.PracticeKey \n" +
+				"and vc1.VetCertificateTypeKey = (select VetCertificateTypeKey from VetCertificateTypes \n" + 
+				"		where Description = 'State Veterinarian') \n" +
 				"					and VetCertificateStatusTypeKey = 1 ) ) \n" +
 				"ORDER BY c.StateCode";
 		String sName = "StateVetTable";
