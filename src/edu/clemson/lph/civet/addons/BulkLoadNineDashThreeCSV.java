@@ -118,6 +118,9 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			CSVNineDashThreeDataFile data;
 //			boolean bSeenBadProduct = false;
 			try {
+				File fData = new File(sFilePath);
+				String sFileName = fData.getName();
+				prog.setTitle("Civet 9-3: " + sFileName);
 				data = new CSVNineDashThreeDataFile( sFilePath );
 				int iMax = data.size();
 				prog.setMax(iMax);
@@ -254,9 +257,9 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			// Expiration date will be set automatically from getXML();
 			xmlBuilder.setPurpose("other");
 			// We don't enter the person name, normally  or add logic to tell prem name from person name.
-			Element origin = xmlBuilder.setOrigin(sSourcePIN, data.getConsignorName(), sConsignorState );
+			Element origin = xmlBuilder.setOrigin(sSourcePIN, data.getConsignorBusiness(), data.getConsignorName(), null );
 			xmlBuilder.setAddress(origin, data.getConsignorStreet(), data.getConsignorCity(), sConsignorState, data.getConsignorZip());
-			Element destination = xmlBuilder.setDestination(sDestinationPIN, data.getConsigneeName(), sConsigneeState );
+			Element destination = xmlBuilder.setDestination(sDestinationPIN, data.getConsigneeBusiness(), data.getConsigneeName(), null );
 			xmlBuilder.setAddress(destination, data.getConsigneeStreet(), data.getConsigneeCity(), sConsigneeState, data.getConsigneeZip());
 
 			Integer iNum = data.getAnimalCount();

@@ -57,6 +57,7 @@ EmailOutDirPath=E:\\Documents\\Civet\\CivetToBeMailedOut\\
 EmailErrorsDirPath=E:\\Documents\\Civet\\CivetToBeMailedErrors\\
 OutputDirPath=E:\\Documents\\Civet\\CivetOutbox\\
 bulkLoadDirPath=.\\Swine\\
+nineDashThreeLoadDirPath=E:\\Documents\\Civet\\NPIPData\\
 CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
 StdSchema=E:\\Documents\\Civet\\ecviDraftRelaxed.xsd
 defaultPurpose=Other
