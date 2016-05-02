@@ -80,6 +80,7 @@ public class Civet {
 			}
 			COKSRobot robbie;
 			try {
+				CivetConfig.checkRobotConfig();
 				robbie = new COKSRobot();
 				robbie.start();
 				System.out.println("Running in Robot Mode\nMinimize but do not close this Command Window");

@@ -549,8 +549,9 @@ public class CivetConfig {
 			}
 		}
 		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = ".//"; 
-		return sRet;
+			return sRet;
+		else
+			return null;
 	}
 
 	public static String getVspsDirPath() {
@@ -565,7 +566,7 @@ public class CivetConfig {
 			sRet = ".//";
 		}
 		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = ".//"; 
+			sRet = null; 
 		return sRet;
 	}
 
@@ -941,7 +942,26 @@ public class CivetConfig {
 		else
 			MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sProp
 						+ "\nDefault value assigned");
-		System.exit(1);
+		ConfigDialog dialog = new ConfigDialog();
+		dialog.setModal(true);;
+		dialog.setVisible(true);
+		int iFails = 1;
+		while( iFails < 4 && !dialog.isComplete() ) {
+			if( SwingUtilities.isEventDispatchThread() )
+				MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Still not complete");
+			else
+				MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Still not complete");
+			iFails++;
+			dialog.setVisible(true);
+		}
+		if( iFails >= 4 ) {
+			if( SwingUtilities.isEventDispatchThread() )
+				MessageDialog.showMessage(null, "Civet: Fatal Error in CivetConfig.txt", "Still not complete");
+			else
+				MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Still not complete");
+			System.exit(1);
+		}
+		logger.error("Cannot read property " + sProp);
 	}
 
 	/**
@@ -956,6 +976,39 @@ public class CivetConfig {
 		System.exit(1);
 	}
 	
+	public static boolean writeConfigFile( String sFileName ) {
+		boolean bRet = true;
+		ConfigCsv config = new ConfigCsv();
+		PrintWriter pw = null;
+		try {
+		pw = new PrintWriter( new FileOutputStream(sFileName) );
+		while( config.nextTab() != null ) {
+			pw.println("#" + config.getTab());
+			while( config.nextRow() != null ) {
+				String sKey = config.getName();
+				String sValue = props.getProperty(sKey);
+				if( sValue != null ) {
+//					Replace \\ with \ and then \ with \\ to avoid quad quotes,etc.
+					sValue = sValue.replace("\\\\", "\\");
+					sValue = sValue.replace("\\", "\\\\");
+					pw.println(sKey + "=" + sValue);
+				}
+				else {
+					pw.println(sKey + "=");
+				}
+			}
+			pw.println();
+		}
+		pw.flush();
+		} catch( IOException ioe ) {
+			bRet = false;
+			logger.error(ioe);
+		} finally {
+			if( pw != null )
+				pw.close();
+		}
+		return bRet;
+	}
 	
 	public static void initConfig() {
 		if( props == null ) {
@@ -995,6 +1048,10 @@ public class CivetConfig {
 			else
 				MessageDialog.messageWait(null, "Civet: Fatal Error in CivetConfig.txt", "Cannot read property " + sErr
 							+ "\nDefault value assigned");
+			ConfigDialog dialog = new ConfigDialog();
+			dialog.setModal(true);;
+			dialog.setVisible(true);
+			sErr = checkAllConfigImp();
 			iFails++;
 		}
 	}

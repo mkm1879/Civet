@@ -56,11 +56,12 @@ import edu.clemson.lph.civet.files.SourceFilesTableModel;
 import edu.clemson.lph.civet.files.StdXMLFilesTableModel;
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.prefs.ConfigDialog;
 import edu.clemson.lph.civet.vsps.VspsCviFile;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.16a";
+	public static final String VERSION = "3.16alpha3";
 	private static final String IDRLICENSE = "\n\nContains material copyrighted by IDRSolutions for the sole purpose" +
 	"of evaluating its JPedalXFA library in this application.\n\n" +
 	"Reuse or redistribution of this application is prohibited.\n\n" +
@@ -89,6 +90,7 @@ public class CivetInbox extends JFrame {
 	JButton bOpen = new JButton();
 	JButton bOpenAll = new JButton();
 	JMenu menuFile = new JMenu();
+	JMenuItem menuItemEditPrefs = new JMenuItem();
 	JMenuItem menuItemFileOpen = new JMenuItem();
 	JMenuItem menuItemFileOpenAll = new JMenuItem();
 	JMenuItem menuItemFileExit = new JMenuItem();
@@ -147,6 +149,16 @@ public class CivetInbox extends JFrame {
 			}
 		});
 		bOpen.setToolTipText("Open selected files or browse for files");
+		
+		menuItemEditPrefs.setText("Edit Preferences in CivetConfig.txt");
+		menuItemEditPrefs.setToolTipText("Open selected files or browse for files");
+		menuItemEditPrefs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				doEditPrefs();
+			}
+		});
+		menuFile.add(menuItemEditPrefs);
+		
 		menuItemFileOpen.setText("Open File(s)");
 		menuItemFileOpen.setToolTipText("Open selected files or browse for files");
 		menuItemFileOpen.addActionListener(new ActionListener() {
@@ -363,7 +375,7 @@ public class CivetInbox extends JFrame {
 		File fLog = new File( "Civet.log");
 		if( fLog.exists() ) {
 			String sMsg = QuestionDialog.ask(this, "Civet Send Log", "Describe your problem:");
-			if( !initEmail() )
+			if( !CivetConfig.initEmail(true) )
 				return;
 			try {
 				if( MailMan.sendIt("mmarti5@clemson.edu", null, "Civet Error Log", 
@@ -436,6 +448,12 @@ public class CivetInbox extends JFrame {
 		else
 			dlg.selectFiles();
 	}
+	
+	private void doEditPrefs() {
+		ConfigDialog dlg = new ConfigDialog();
+		dlg.setVisible(true);
+		
+	}
 
 	private void doOpenAll() {
 		CivetEditDialog dlg = new CivetEditDialog( CivetInbox.this );
@@ -491,44 +509,9 @@ public class CivetInbox extends JFrame {
 		return bRet;
 	}
 
-	private boolean initEmail() {
-		if(MailMan.getDefaultUserID() == null || MailMan.getDefaultPassword() == null ) {
-			TwoLineQuestionDialog ask = new TwoLineQuestionDialog( this, "Civet Email Login:",
-					"Email UserID:", "Email Password:", true);
-			ask.setPassword(true);
-			ask.setVisible(true);
-			if( ask.isExitOK() ) {
-				String sUserID = ask.getAnswerOne();
-				MailMan.setDefaultUserID(sUserID);
-				MailMan.setDefaultPassword(ask.getAnswerTwo());
-				MailMan.setDefaultHost(CivetConfig.getSmtpHost());
-				MailMan.setDefaultPort(CivetConfig.getSmtpPortInt());
-				String sSecurity = CivetConfig.getSmtpSecurity();
-				MailMan.setSecurity(sSecurity);
-				String sFrom = CivetConfig.getEmailFrom();
-				if( sFrom != null )
-					MailMan.setDefaultFrom(sFrom);
-				else if( !sUserID.contains("@")) {
-					MailMan.setDefaultFrom(sUserID + CivetConfig.getSmtpDomain() );
-				}
-				else {
-					MailMan.setDefaultFrom(sUserID);
-				}
-				String sReplyTo = CivetConfig.getEmailReplyTo();
-				if( sReplyTo != null )
-					MailMan.setDefaultReplyTo(sReplyTo);
-
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-		return true;
-	}
 
 	void sendOutboundCVIs() {
-		if( !initEmail() )
+		if( !CivetConfig.initEmail(true) )
 			return;
 		ProgressDialog prog = new ProgressDialog(this, "Civet", "Emailing Outbound CVIs");
 		prog.setAuto(true);
@@ -538,7 +521,7 @@ public class CivetInbox extends JFrame {
 	}
 
 	void sendInboundErrors() {
-		if( !initEmail() )
+		if( !CivetConfig.initEmail(true) )
 			return;
 		ProgressDialog prog = new ProgressDialog(this, "Civet", "Emailing Inbound Errors");
 		prog.setAuto(true);
