@@ -56,7 +56,7 @@ public class OneLineQuestionDialog extends JDialog {
 	}
 	
 	public static String ask(Window parent, String sTitle, String sQuestion) {
-		QuestionDialog dlg = new QuestionDialog( parent, sTitle, sQuestion, true);
+		OneLineQuestionDialog dlg = new OneLineQuestionDialog( parent, sTitle, sQuestion, true);
 		dlg.center();
 		dlg.setVisible(true);
 		return dlg.getAnswer();
@@ -71,7 +71,7 @@ public class OneLineQuestionDialog extends JDialog {
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
-					QuestionDialog dlg = new QuestionDialog( fparent, fTitle, fQuestion, true);
+					OneLineQuestionDialog dlg = new OneLineQuestionDialog( fparent, fTitle, fQuestion, true);
 					dlg.center();
 					dlg.setVisible(true);
 					ssAnswer = dlg.getAnswer();
@@ -136,7 +136,7 @@ public class OneLineQuestionDialog extends JDialog {
 		contentPanel.add(lQuestion);
 		jtfAnswer.setBorder(new EtchedBorder() );
 		jtfAnswer.setText("");
-		jtfAnswer.setBounds(27, 46, 385, 165);
+		jtfAnswer.setBounds(27, 46, 385, 20);
 		contentPanel.add(jtfAnswer);
 		{
 			JPanel buttonPane = new JPanel();

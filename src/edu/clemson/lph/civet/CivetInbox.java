@@ -60,11 +60,7 @@ import edu.clemson.lph.civet.vsps.VspsCviFile;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.16a";
-	private static final String IDRLICENSE = "\n\nContains material copyrighted by IDRSolutions for the sole purpose" +
-	"of evaluating its JPedalXFA library in this application.\n\n" +
-	"Reuse or redistribution of this application is prohibited.\n\n" +
-	"An LGPL version is available at http://github.com/mkm1879/civet";
+	public static final String VERSION = "3.16b";
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
@@ -240,8 +236,6 @@ public class CivetInbox extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String sMsg = "Civet: CVI Management Utility\nVersion: " + VERSION;
-				if( VERSION.endsWith("XFA") ) 
-					sMsg += IDRLICENSE;
 				MessageDialog.showMessage(CivetInbox.this, "About Civet", sMsg);
 			}
 		});
