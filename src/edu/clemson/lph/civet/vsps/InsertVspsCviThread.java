@@ -107,7 +107,7 @@ public class InsertVspsCviThread extends Thread {
 		if( cvi.getOriginState().equalsIgnoreCase(CivetConfig.getHomeStateAbbr()) && vet != null ) {
 			String sVetName = vet.getLastName() + ", " + vet.getFirstName();
 			eVet = xmlBuilder.setVet(sVetName, vet.getLicenseNo(), vet.getNAN(), vet.getPhoneDigits());
-			xmlBuilder.setAddress(eVet, vet.getAddress(), vet.getCity(), vet.getState(), vet.getZipCode());
+			xmlBuilder.setAddress(eVet, vet.getAddress(), vet.getCity(), null, vet.getState(), vet.getZipCode());
 		}
 		else {
 			xmlBuilder.setVet(cvi.getVeterinarianName());
@@ -119,12 +119,12 @@ public class InsertVspsCviThread extends Thread {
 		Element eOrigin = xmlBuilder.setOrigin(origin.getPremisesId(), origin.getBusiness(), 
 				origin.getName(), origin.getPhoneDigits());
 		xmlBuilder.setAddress(eOrigin, origin.getAddress1(), origin.getCity(), 
-				origin.getState(), origin.getPostalCode());
+				origin.getCounty(), origin.getState(), origin.getPostalCode());
 		VspsCviEntity destination = cvi.getDestination();
 		Element eDestination = xmlBuilder.setDestination(destination.getPremisesId(), destination.getBusiness(), 
 				destination.getName(), destination.getPhoneDigits());
 		xmlBuilder.setAddress(eDestination, destination.getAddress1(), destination.getCity(), 
-				destination.getState(), destination.getPostalCode());
+				destination.getCounty(), destination.getState(), destination.getPostalCode());
 
 		HashMap<List<String>, Integer> hGroups = new HashMap<List<String>, Integer>();
 		List<VspsCviAnimal> animals = cvi.getAnimals();

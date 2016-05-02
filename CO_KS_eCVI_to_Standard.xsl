@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
-    xmlns="http://www.usaha.org/xmlns/ecvi" xmlns:ecvi="http://www.usaha.org/xmlns/ecvi"
-    xmlns:my="http://www.clemson.edu/public/lph/StdECVI"
-    xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns="http://www.usaha.org/xmlns/ecvi" xmlns:ecvi="http://www.usaha.org/xmlns/ecvi"
+    xmlns:my="http://www.clemson.edu/public/lph/StdECVI" xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/">
     <xsl:output indent="yes" method="xml"/>
     <xsl:strip-space elements="*"/>
     <!-- Get the terrible lookup code stuff out into its own file.  -->
@@ -19,12 +17,12 @@
             <xsl:attribute name="ExpirationDate">
                 <xsl:value-of select="certDate"/>
             </xsl:attribute>
-            <xsl:if test="vetInspection/cviPG1/shipDate and vetInspection/cviPG1/shipDate!=''">
+            <xsl:if test="vetInspection/cviPG1/shipDate and vetInspection/cviPG1/shipDate != ''">
                 <xsl:attribute name="ShipmentDate">
                     <xsl:value-of select="vetInspection/cviPG1/shipDate"/>
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="entryPermit and entryPermit!=''">
+            <xsl:if test="entryPermit and entryPermit != ''">
                 <xsl:attribute name="EntryPermitNumber">
                     <xsl:value-of select="entryPermit"/>
                 </xsl:attribute>
@@ -36,23 +34,23 @@
             <xsl:apply-templates select="vetInspection/cviPG1/consignor/ownerAdd"/>
             <xsl:apply-templates select="vetInspection/cviPG1/consignee/ownerAdd"/>
             <xsl:call-template name="Accessions"/>
-            <xsl:if test="vetInspection/cviPG1/species/large/table/item/headCt!=''">
+            <xsl:if test="vetInspection/cviPG1/species/large/table/item/headCt != ''">
                 <xsl:call-template name="LargeAnimal">
                     <xsl:with-param name="table" select="vetInspection/cviPG1/species/large/table"/>
-                </xsl:call-template> 
+                </xsl:call-template>
             </xsl:if>
-            <xsl:if test="vetInspection/cviPG1/species/large/table/item/headCt!=''">
+            <xsl:if test="vetInspection/cviPG1/species/large/table/item/headCt != ''">
                 <xsl:call-template name="LargeAnimalGroup">
                     <xsl:with-param name="table" select="vetInspection/cviPG1/species/large/table"/>
                 </xsl:call-template>
             </xsl:if>
             <!-- Don't test for number, just assume one if not provided. -->
-            <xsl:if test="vetInspection/cviPG1/species/small/table/item/spp!=''">
+            <xsl:if test="vetInspection/cviPG1/species/small/table/item/spp != ''">
                 <xsl:call-template name="SmallAnimal">
                     <xsl:with-param name="table" select="vetInspection/cviPG1/species/small/table"/>
                 </xsl:call-template>
-            </xsl:if> 
-            <xsl:if test="vetInspection/cviPG1/species/small/table/item/headCt!=''">
+            </xsl:if>
+            <xsl:if test="vetInspection/cviPG1/species/small/table/item/headCt != ''">
                 <xsl:call-template name="SmallAnimalGroup">
                     <xsl:with-param name="table" select="vetInspection/cviPG1/species/small/table"/>
                 </xsl:call-template>
@@ -62,12 +60,12 @@
 
     <xsl:template match="eCVI/vetInspection/vetCertification">
         <xsl:element name="Veterinarian">
-            <xsl:if test="licenseNumber and licenseNumber!=''">
+            <xsl:if test="licenseNumber and licenseNumber != ''">
                 <xsl:attribute name="LicenseNumber">
                     <xsl:value-of select="licenseNumber"/>
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="usdaNumber and usdaNumber!=''">
+            <xsl:if test="usdaNumber and usdaNumber != ''">
                 <xsl:attribute name="NationalAccreditationNumber">
                     <xsl:value-of select="usdaNumber"/>
                 </xsl:attribute>
@@ -76,7 +74,7 @@
                 <xsl:element name="Name">
                     <xsl:value-of select="../../printedName"/>
                 </xsl:element>
-                <xsl:if test="phoneNum and phoneNum!=''">
+                <xsl:if test="phoneNum and phoneNum != ''">
                     <xsl:element name="Phone">
                         <xsl:attribute name="Type">Unknown</xsl:attribute>
                         <xsl:attribute name="Number">
@@ -138,7 +136,7 @@
                 <xsl:value-of select="$data/lid"/>
             </xsl:element>
         </xsl:if>
-        <xsl:if test="$data/busName and $data!=''">
+        <xsl:if test="$data/busName and $data != ''">
             <xsl:element name="PremName">
                 <xsl:value-of select="$data/busName"/>
             </xsl:element>
@@ -150,6 +148,11 @@
             <xsl:element name="Town">
                 <xsl:value-of select="$data/city"/>
             </xsl:element>
+            <xsl:if test="$data/county and $data/county != ''">
+                <xsl:element name="County">
+                    <xsl:value-of select="$data/county"/>
+                </xsl:element>
+            </xsl:if>
             <xsl:element name="State">
                 <xsl:value-of select="$data/state"/>
             </xsl:element>
@@ -163,15 +166,15 @@
         <xsl:element name="Person">
             <xsl:element name="Name">
                 <xsl:choose>
-                    <xsl:when test="$data/lName!='' and $data/fName!=''">
+                    <xsl:when test="$data/lName != '' and $data/fName != ''">
                         <xsl:value-of select="$data/lName"/>
                         <xsl:text>, </xsl:text>
                         <xsl:value-of select="$data/fName"/>
                     </xsl:when>
-                    <xsl:when test="$data/lName!='' and $data/fName=''">
+                    <xsl:when test="$data/lName != '' and $data/fName = ''">
                         <xsl:value-of select="$data/lName"/>
                     </xsl:when>
-                    <xsl:when test="$data/lName='' and $data/fName!=''">
+                    <xsl:when test="$data/lName = '' and $data/fName != ''">
                         <xsl:value-of select="$data/fName"/>
                     </xsl:when>
                     <xsl:otherwise>
@@ -179,7 +182,7 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:element>
-            <xsl:if test="$data/phoneNum and $data/phoneNum!=''">
+            <xsl:if test="$data/phoneNum and $data/phoneNum != ''">
                 <xsl:element name="Phone">
                     <xsl:attribute name="Type">Unknown</xsl:attribute>
                     <xsl:attribute name="Number">
@@ -191,7 +194,7 @@
     </xsl:template>
 
     <xsl:template match="eCVI/vetInspection/cviPG1/consignor/ownerAdd">
-        <xsl:if test=".!=''">
+        <xsl:if test=". != ''">
             <xsl:element name="Consignor">
                 <xsl:element name="Person">
                     <xsl:element name="Name">
@@ -203,7 +206,7 @@
     </xsl:template>
 
     <xsl:template match="eCVI/vetInspection/cviPG1/consignee/ownerAdd">
-        <xsl:if test=".!=''">
+        <xsl:if test=". != ''">
             <xsl:element name="Consignee">
                 <xsl:element name="Person">
                     <xsl:element name="Name">
@@ -220,7 +223,7 @@
             <xsl:variable name="head" select="headCt"/>
             <xsl:if test="number($head) = 1">
                 <xsl:element name="Animal">
-                    <xsl:if test="./ageNum and ./ageNum != '' ">
+                    <xsl:if test="./ageNum and ./ageNum != ''">
                         <xsl:attribute name="Age">
                             <xsl:call-template name="Age">
                                 <xsl:with-param name="item" select="."/>
@@ -255,8 +258,7 @@
                     </xsl:element>
                     <xsl:if test="./eiaResult != 'N/A' and ./eiaResult != ''">
                         <xsl:element name="Test">
-                            <xsl:attribute name="idref">EIA<xsl:value-of select="./itemIndex"
-                                /></xsl:attribute>
+                            <xsl:attribute name="idref">EIA<xsl:value-of select="./itemIndex"/></xsl:attribute>
                             <xsl:attribute name="TestCode">EIA</xsl:attribute>
                             <xsl:element name="Result">
                                 <xsl:attribute name="ResultName">RESULT</xsl:attribute>
@@ -268,8 +270,7 @@
                     </xsl:if>
                     <xsl:if test="./brucResult != 'N/A' and ./brucResult != ''">
                         <xsl:element name="Test">
-                            <xsl:attribute name="idref">BRUC<xsl:value-of select="./itemIndex"
-                                /></xsl:attribute>
+                            <xsl:attribute name="idref">BRUC<xsl:value-of select="./itemIndex"/></xsl:attribute>
                             <xsl:attribute name="TestCode">BRUC</xsl:attribute>
                             <xsl:element name="Result">
                                 <xsl:attribute name="ResultName">RESULT</xsl:attribute>
@@ -283,7 +284,7 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template name="LargeAnimalGroup">
         <xsl:param name="table"/>
         <xsl:for-each select="$table/item">
@@ -298,7 +299,7 @@
                             <xsl:with-param name="species" select="spp"/>
                         </xsl:call-template>
                     </xsl:attribute>
-                    <xsl:if test="./ageNum and ./ageNum != '' ">
+                    <xsl:if test="./ageNum and ./ageNum != ''">
                         <xsl:attribute name="Age">
                             <xsl:call-template name="Age">
                                 <xsl:with-param name="item" select="."/>
@@ -328,7 +329,7 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template name="SmallAnimal">
         <xsl:param name="table"/>
         <xsl:for-each select="$table/item">
@@ -350,7 +351,7 @@
                     <xsl:attribute name="InspectionDate">
                         <xsl:value-of select="../../../../inspDate"/>
                     </xsl:attribute>
-                    
+
                     <xsl:element name="AnimalTag">
                         <xsl:attribute name="Number">
                             <xsl:value-of select="rabiesTag"/>
@@ -358,14 +359,14 @@
                     </xsl:element>
                 </xsl:element>
             </xsl:if>
-         </xsl:for-each>
+        </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template name="SmallAnimalGroup">
         <xsl:param name="table"/>
         <xsl:for-each select="$table/item">
             <xsl:variable name="head" select="headCt"/>
-             <xsl:if test="number($head) > 1">
+            <xsl:if test="number($head) > 1">
                 <xsl:element name="GroupLot">
                     <xsl:attribute name="Quantity">
                         <xsl:value-of select="headCt"/>
@@ -386,14 +387,14 @@
                     </xsl:attribute>
                     -->
                     <xsl:attribute name="Description">
-                        <xsl:if test="not(description) or description=''">No Description Entered</xsl:if>
+                        <xsl:if test="not(description) or description = ''">No Description Entered</xsl:if>
                         <xsl:value-of select="description"/>
                     </xsl:attribute>
                 </xsl:element>
             </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
+
     <xsl:template name="Age">
         <xsl:param name="item"/>
         <xsl:value-of select="$item/ageNum"/>
@@ -401,7 +402,7 @@
             <xsl:with-param name="ageTime" select="$item/ageTime"/>
         </xsl:call-template>
     </xsl:template>
-    
+
     <!-- Translate from simple English time interval abbreviations to UCUM units -->
     <xsl:template name="AgeTime">
         <xsl:param name="ageTime"/>
@@ -431,16 +432,15 @@
     <!-- Known bug.  Does not combine tests into accession if they share accession number and date. -->
     <xsl:template name="Accessions">
         <xsl:if
-            test="/eCVI/vetInspection/cviPG1/species/large/table/item and (
-               /eCVI/vetInspection/cviPG1/species/large/table/item[eiaTestDate != 'N/A' and eiaTestDate != 'n/a' and eiaTestDate != '']
-            or /eCVI/vetInspection/cviPG1/species/large/table/item[brucTestDate != 'N/A' and brucTestDate != 'n/a' and brucTestDate != ''] )">
+            test="
+                /eCVI/vetInspection/cviPG1/species/large/table/item and (
+                /eCVI/vetInspection/cviPG1/species/large/table/item[eiaTestDate != 'N/A' and eiaTestDate != 'n/a' and eiaTestDate != '']
+                or /eCVI/vetInspection/cviPG1/species/large/table/item[brucTestDate != 'N/A' and brucTestDate != 'n/a' and brucTestDate != ''])">
 
             <xsl:element name="Accessions">
-                <xsl:for-each
-                    select="/eCVI/vetInspection/cviPG1/species/large/table/item[eiaTestDate != 'N/A' and eiaTestDate != '']">
+                <xsl:for-each select="/eCVI/vetInspection/cviPG1/species/large/table/item[eiaTestDate != 'N/A' and eiaTestDate != '']">
                     <xsl:element name="Accession">
-                        <xsl:attribute name="id">EIA<xsl:value-of select="./itemIndex"
-                            /></xsl:attribute>
+                        <xsl:attribute name="id">EIA<xsl:value-of select="./itemIndex"/></xsl:attribute>
                         <xsl:attribute name="InfieldTest">
                             <xsl:text>false</xsl:text>
                         </xsl:attribute>
@@ -457,11 +457,9 @@
                         </xsl:element>
                     </xsl:element>
                 </xsl:for-each>
-                <xsl:for-each
-                    select="/eCVI/vetInspection/cviPG1/species/large/table/item[brucTestDate != 'N/A' and brucTestDate != '']">
+                <xsl:for-each select="/eCVI/vetInspection/cviPG1/species/large/table/item[brucTestDate != 'N/A' and brucTestDate != '']">
                     <xsl:element name="Accession">
-                        <xsl:attribute name="id">BRUC<xsl:value-of select="./itemIndex"
-                            /></xsl:attribute>
+                        <xsl:attribute name="id">BRUC<xsl:value-of select="./itemIndex"/></xsl:attribute>
                         <xsl:attribute name="InfieldTest">
                             <xsl:text>false</xsl:text>
                         </xsl:attribute>
@@ -480,12 +478,12 @@
     <xsl:template name="Sex">
         <xsl:param name="sex"/>
         <xsl:choose>
-            <xsl:when test="$sex ='F'">Female</xsl:when>
-            <xsl:when test="$sex ='M'">Male</xsl:when>
-            <xsl:when test="$sex ='C'">Neutered Male</xsl:when>
-            <xsl:when test="$sex ='S'">Spayed Female</xsl:when>
-            <xsl:when test="$sex ='X'">Other</xsl:when>
-            <xsl:when test="$sex ='U'">Gender Unknown</xsl:when>
+            <xsl:when test="$sex = 'F'">Female</xsl:when>
+            <xsl:when test="$sex = 'M'">Male</xsl:when>
+            <xsl:when test="$sex = 'C'">Neutered Male</xsl:when>
+            <xsl:when test="$sex = 'S'">Spayed Female</xsl:when>
+            <xsl:when test="$sex = 'X'">Other</xsl:when>
+            <xsl:when test="$sex = 'U'">Gender Unknown</xsl:when>
             <xsl:otherwise>Gender Unknown</xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -493,63 +491,63 @@
     <xsl:template name="PurposeMap">
         <xsl:param name="purpose"/>
         <xsl:choose>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Backgrounding', $smallcase, $uppercase) ">other</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Breeding', $smallcase, $uppercase) ">breeding</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Feeding', $smallcase, $uppercase) ">feeding</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Grazing', $smallcase, $uppercase) ">grazing</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Medical Treatment', $smallcase, $uppercase) ">medicalTreatment</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Other (specify)', $smallcase, $uppercase) ">other</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Pet', $smallcase, $uppercase) ">pet</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Pet Movement', $smallcase, $uppercase) ">pet</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Production', $smallcase, $uppercase) ">other</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Race', $smallcase, $uppercase) ">race</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Recreational', $smallcase, $uppercase) ">other</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Rodeo', $smallcase, $uppercase) ">rodeo</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Sale', $smallcase, $uppercase) ">sale</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Show/Exhibition', $smallcase, $uppercase) ">show</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Show', $smallcase, $uppercase) ">show</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Show/Sale', $smallcase, $uppercase) ">show</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Slaughter', $smallcase, $uppercase) ">slaughter</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Training', $smallcase, $uppercase) ">training</xsl:when>
-            <xsl:when
-                test="translate($purpose, $smallcase, $uppercase) = 
-                      translate('Transit', $smallcase, $uppercase) ">other</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Backgrounding', $smallcase, $uppercase)">other</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Breeding', $smallcase, $uppercase)">breeding</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Feeding', $smallcase, $uppercase)">feeding</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Grazing', $smallcase, $uppercase)">grazing</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Medical Treatment', $smallcase, $uppercase)">medicalTreatment</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Other (specify)', $smallcase, $uppercase)">other</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Pet', $smallcase, $uppercase)">pet</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Pet Movement', $smallcase, $uppercase)">pet</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Production', $smallcase, $uppercase)">other</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Race', $smallcase, $uppercase)">race</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Recreational', $smallcase, $uppercase)">other</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Rodeo', $smallcase, $uppercase)">rodeo</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Sale', $smallcase, $uppercase)">sale</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Show/Exhibition', $smallcase, $uppercase)">show</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Show', $smallcase, $uppercase)">show</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Show/Sale', $smallcase, $uppercase)">show</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Slaughter', $smallcase, $uppercase)">slaughter</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Training', $smallcase, $uppercase)">training</xsl:when>
+            <xsl:when test="
+                    translate($purpose, $smallcase, $uppercase) =
+                    translate('Transit', $smallcase, $uppercase)">other</xsl:when>
             <xsl:otherwise>other</xsl:otherwise>
         </xsl:choose>
     </xsl:template>

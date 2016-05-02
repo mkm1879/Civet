@@ -258,9 +258,9 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			xmlBuilder.setPurpose("other");
 			// We don't enter the person name, normally  or add logic to tell prem name from person name.
 			Element origin = xmlBuilder.setOrigin(sSourcePIN, data.getConsignorBusiness(), data.getConsignorName(), null );
-			xmlBuilder.setAddress(origin, data.getConsignorStreet(), data.getConsignorCity(), sConsignorState, data.getConsignorZip());
+			xmlBuilder.setAddress(origin, data.getConsignorStreet(), data.getConsignorCity(), null, sConsignorState, data.getConsignorZip());
 			Element destination = xmlBuilder.setDestination(sDestinationPIN, data.getConsigneeBusiness(), data.getConsigneeName(), null );
-			xmlBuilder.setAddress(destination, data.getConsigneeStreet(), data.getConsigneeCity(), sConsigneeState, data.getConsigneeZip());
+			xmlBuilder.setAddress(destination, data.getConsigneeStreet(), data.getConsigneeCity(), null, sConsigneeState, data.getConsigneeZip());
 
 			Integer iNum = data.getAnimalCount();
 			if( iNum == null ) {

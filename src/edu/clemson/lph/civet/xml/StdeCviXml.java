@@ -298,6 +298,13 @@ public class StdeCviXml {
 		return sRet;
 	}
 	
+	public String getOriginCounty() {
+		String sRet = null;
+		String sPath = "/eCVI/Origin/Address/County";
+		sRet = helper.getElementTextByPath(sPath);
+		return sRet;
+	}
+	
 	public String getOriginState() {
 		String sRet = null;
 		String sPath = "/eCVI/Origin/Address/State";
@@ -359,6 +366,13 @@ public class StdeCviXml {
 	public String getDestinationCity() {
 		String sRet = null;
 		String sPath = "/eCVI/Destination/Address/Town";
+		sRet = helper.getElementTextByPath(sPath);
+		return sRet;
+	}
+	
+	public String getDestinationCounty() {
+		String sRet = null;
+		String sPath = "/eCVI/Destination/Address/County";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}

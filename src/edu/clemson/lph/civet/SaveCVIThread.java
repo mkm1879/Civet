@@ -63,6 +63,7 @@ public class SaveCVIThread extends Thread {
 	private String sOriginName ;
 	private String sOriginAddress;
 	private String sOriginCity;
+	private String sOriginCounty;
 	private String sOriginZipCode;
 	private String sOriginPhone;
 	private String sDestinationStateCode;
@@ -70,6 +71,7 @@ public class SaveCVIThread extends Thread {
 	private String sDestinationName;
 	private String sDestinationAddress;
 	private String sDestinationCity;
+	private String sDestinationCounty;
 	private String sDestinationZipCode;
 	private String sDestinationPhone;
 	private java.util.Date dDateIssued;
@@ -89,9 +91,10 @@ public class SaveCVIThread extends Thread {
 
 	public SaveCVIThread(CivetEditDialog dlg, StdeCviXml stdXmlIn,
 			byte[] bAttachmentBytesIn, String sOriginalFileName, File fOriginalFileIn, boolean bImport, boolean bXFAIn,
-			String sOtherStateCode, String sOtherName, String sOtherAddress, String sOtherCity, String sOtherZipcode, String sOtherPIN,
+			String sOtherStateCode, String sOtherName, String sOtherAddress, String sOtherCity, 
+			String sOtherCounty, String sOtherZipcode, String sOtherPIN,
 			String sThisPIN, String sThisName, String sPhone,
-			String sThisAddress, String sThisCity, String sZipcode,
+			String sThisAddress, String sThisCity, String sThisCounty, String sZipcode,
 			java.util.Date dDateIssued, java.util.Date dDateReceived, Integer iIssuedByKey, String sIssuedByName, String sCVINo,
 			String sMovementPurpose,
 			ArrayList<SpeciesRecord> aSpeciesIn,
@@ -121,12 +124,14 @@ public class SaveCVIThread extends Thread {
 			this.sOriginAddress = sOtherAddress;
 			this.sOriginStateCode = sOtherStateCode;
 			this.sOriginCity = sOtherCity;
+			this.sOriginCounty = sOtherCounty;
 			this.sOriginZipCode = sOtherZipcode;
 			this.sOriginPhone = null;
 			this.sDestinationPIN = sThisPIN;
 			this.sDestinationName = sThisName;
 			this.sDestinationAddress = sThisAddress;
 			this.sDestinationCity = sThisCity;
+			this.sDestinationCounty = sThisCounty;
 			this.sDestinationStateCode = CivetConfig.getHomeStateAbbr();
 			this.sDestinationZipCode = sZipcode;
 			this.sDestinationPhone = sPhone;
@@ -137,12 +142,14 @@ public class SaveCVIThread extends Thread {
 			this.sOriginAddress = sThisAddress;
 			this.sOriginStateCode = CivetConfig.getHomeStateAbbr();
 			this.sOriginCity = sThisCity;
+			this.sOriginCounty = sThisCounty;
 			this.sOriginZipCode = sZipcode;
 			this.sOriginPhone = sPhone;
 			this.sDestinationPIN = sOtherPIN;
 			this.sDestinationName = sOtherName;
 			this.sDestinationAddress = sOtherAddress;
 			this.sDestinationCity = sOtherCity;
+			this.sDestinationCounty = sOtherCounty;
 			this.sDestinationStateCode = sOtherStateCode;
 			this.sDestinationZipCode = sOtherZipcode;
 			this.sDestinationPhone = null;
@@ -275,7 +282,7 @@ public class SaveCVIThread extends Thread {
 			else {
 				String sVetName = vet.getLastName() + ", " + vet.getFirstName();
 				eVet = xmlBuilder.setVet(sVetName, vet.getLicenseNo(), vet.getNAN(), vet.getPhoneDigits());
-				xmlBuilder.setAddress(eVet, vet.getAddress(), vet.getCity(), vet.getState(), vet.getZipCode());
+				xmlBuilder.setAddress(eVet, vet.getAddress(), vet.getCity(), null, vet.getState(), vet.getZipCode());
 			}
 			// Use std if XFA
 			xmlBuilder.setPurpose(sStdPurpose);
@@ -283,9 +290,9 @@ public class SaveCVIThread extends Thread {
 		// Expiration date will be set automatically from getXML();
 		// We don't enter the person name, normally  or add logic to tell prem name from person name.
 		Element eOrigin = xmlBuilder.setOrigin(sOriginPIN, sOriginName, null, sOriginPhone);
-		xmlBuilder.setAddress(eOrigin, sOriginAddress, sOriginCity, sOriginStateCode, sOriginZipCode);
+		xmlBuilder.setAddress(eOrigin, sOriginAddress, sOriginCity, sOriginCounty, sOriginStateCode, sOriginZipCode);
 		Element eDestination = xmlBuilder.setDestination(sDestinationPIN, sDestinationName, null, sDestinationPhone);
-		xmlBuilder.setAddress(eDestination, sDestinationAddress, sDestinationCity, sDestinationStateCode, sDestinationZipCode);
+		xmlBuilder.setAddress(eDestination, sDestinationAddress, sDestinationCity, sDestinationCounty, sDestinationStateCode, sDestinationZipCode);
 		// Add animals and groups.  This logic is tortured!
 		// This could be greatly improved to better coordinate with CO/KS list of animals and the standard's group concept.
 		for( SpeciesRecord sr : aSpecies ) {

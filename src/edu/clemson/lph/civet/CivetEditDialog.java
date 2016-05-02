@@ -34,6 +34,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.beans.Beans;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -97,6 +98,7 @@ import edu.clemson.lph.dialogs.QuestionDialog;
 import edu.clemson.lph.dialogs.YesNoDialog;
 import edu.clemson.lph.pdfgen.PDFOpener;
 import edu.clemson.lph.pdfgen.PDFUtils;
+import edu.clemson.lph.utils.CountyUtils;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.PremCheckSum;
 
@@ -144,7 +146,8 @@ public final class CivetEditDialog extends JFrame {
 	// invokeLater() methods of secondary threads.
 	private ImageIcon appIcon;
 	private CountersPanel pCounters;
-	PinField jtfOtherPIN;
+//	PinField jtfOtherPIN;
+	JTextField jtfOtherCounty;
 	private JTextField jtfThisState;
 	SearchTextField jtfThisPIN;
 	JTextField jtfPhone;
@@ -753,6 +756,14 @@ public final class CivetEditDialog extends JFrame {
 			@Override
 			public void focusLost(FocusEvent arg0) {
 				checkZipcode( jtfOtherZip );
+				String sZip = jtfOtherZip.getText();
+				if( sZip != null && sZip.trim().length() > 0 ) {
+					try {
+						jtfOtherCounty.setText(CountyUtils.getCounty(sZip));
+					} catch (IOException e) {
+						logger.error(e);
+					}
+				}
 			}
 		});
 		GridBagConstraints gbc_jtfOtherZipCode = new GridBagConstraints();
@@ -762,22 +773,22 @@ public final class CivetEditDialog extends JFrame {
 		gbc_jtfOtherZipCode.gridy = 4;
 		pOtherState.add(jtfOtherZip, gbc_jtfOtherZipCode);
 	
-		JLabel lblPin = new JLabel("PIN:");
-		GridBagConstraints gbc_lblPin = new GridBagConstraints();
-		gbc_lblPin.fill = GridBagConstraints.BOTH;
-		gbc_lblPin.insets = new Insets(0, 0, 0, 10);
-		gbc_lblPin.gridx = 0;
-		gbc_lblPin.gridy = 5;
-		pOtherState.add(lblPin, gbc_lblPin);
-		lblPin.setFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 11));
-		lblPin.setHorizontalAlignment(SwingConstants.RIGHT);
+		JLabel lblOtherCounty = new JLabel("County:");
+		GridBagConstraints gbc_lblOtherCounty = new GridBagConstraints();
+		gbc_lblOtherCounty.fill = GridBagConstraints.BOTH;
+		gbc_lblOtherCounty.insets = new Insets(0, 0, 0, 10);
+		gbc_lblOtherCounty.gridx = 0;
+		gbc_lblOtherCounty.gridy = 5;
+		pOtherState.add(lblOtherCounty, gbc_lblOtherCounty);
+		lblOtherCounty.setFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 11));
+		lblOtherCounty.setHorizontalAlignment(SwingConstants.RIGHT);
 
-		jtfOtherPIN = new PinField();
-		GridBagConstraints gbc_jtfOtherPIN = new GridBagConstraints();
-		gbc_jtfOtherPIN.fill = GridBagConstraints.BOTH;
-		gbc_jtfOtherPIN.gridx = 1;
-		gbc_jtfOtherPIN.gridy = 5;
-		pOtherState.add(jtfOtherPIN, gbc_jtfOtherPIN);
+		jtfOtherCounty = new JTextField();
+		GridBagConstraints gbc_jtfOtherCounty = new GridBagConstraints();
+		gbc_jtfOtherCounty.fill = GridBagConstraints.BOTH;
+		gbc_jtfOtherCounty.gridx = 1;
+		gbc_jtfOtherCounty.gridy = 5;
+		pOtherState.add(jtfOtherCounty, gbc_jtfOtherCounty);
 	
 	}
 
@@ -1647,7 +1658,7 @@ public final class CivetEditDialog extends JFrame {
 		jtfOtherAddress.setEnabled(bEditable);
 		jtfOtherCity.setEnabled(bEditable);
 		jtfOtherZip.setEnabled(bEditable);
-		jtfOtherPIN.setEnabled(bEditable);
+		jtfOtherCounty.setEnabled(bEditable);
 		jtfThisPIN.setEnabled(bEditable);
 		jtfPhone.setEnabled(bEditable);
 		jtfAddress.setEnabled(bEditable);
@@ -1656,7 +1667,7 @@ public final class CivetEditDialog extends JFrame {
 		jtfCVINo.setEnabled(bEditable);
 		cbSpecies.setEnabled(bEditable);
 		jtfNumber.setEnabled(bEditable);
-		jtfOtherPIN.setEditable(bEditable);
+		jtfOtherCounty.setEditable(bEditable);
 		jtfThisState.setFocusable(false);
 		jtfThisState.setEnabled(bEditable);
 		jtfThisPIN.setEditable(bEditable);
@@ -1898,10 +1909,11 @@ public final class CivetEditDialog extends JFrame {
 		if( !ckSticky.isSelected() || (controller.isLastSavedXFA() && getPageNo() == 1) ){
 			traversal.selectMainMap();
 			cbOtherState.setSelectedKey(-1);
-			jtfOtherPIN.setText("");
+//			jtfOtherPIN.setText("");
 			jtfOtherName.setText("");
 			jtfOtherAddress.setText("");
 			jtfOtherCity.setText("");
+			jtfOtherCounty.setText("");
 			jtfOtherZip.setText("");
 			jtfThisPIN.setText("");
 			jtfThisName.setText("");
@@ -2038,15 +2050,16 @@ public final class CivetEditDialog extends JFrame {
 					setImport(false);
 					rbExport.setSelected(true);
 					cbOtherState.setSelectedValue(States.getState(xStd.getDestinationState()));
-					jtfOtherPIN.setText("");
+//					jtfOtherPIN.setText("");
 					// For display purposes only!  Display person name if no prem name.
 					String sOtherName = xStd.getDestinationPremName();
 					if( sOtherName == null || sOtherName.trim().length() == 0 )
 						sOtherName = xStd.getDestinationPersonName();
-					jtfOtherPIN.setText(xStd.getDestinationPremId());
+//					jtfOtherPIN.setText(xStd.getDestinationPremId());
 					jtfOtherName.setText(sOtherName);
 					jtfOtherAddress.setText(xStd.getDestinationStreet());
 					jtfOtherCity.setText(xStd.getDestinationCity());
+					jtfOtherCounty.setText(xStd.getDestinationCounty());
 					jtfOtherZip.setText(xStd.getDestinationZip());
 					jtfThisPIN.setText("");
 					String sThisName = xStd.getOriginPremName();
@@ -2083,15 +2096,16 @@ public final class CivetEditDialog extends JFrame {
 					setImport(true);
 					rbImport.setSelected(true);
 					cbOtherState.setSelectedValue(States.getState(xStd.getOriginState()));
-					jtfOtherPIN.setText("");
+//					jtfOtherPIN.setText("");
 					// For display purposes only!  Display person name if no prem name.
 					String sOtherName = xStd.getOriginPremName();
 					if( sOtherName == null || sOtherName.trim().length() == 0 )
 						sOtherName = xStd.getOriginPersonName();
-					jtfOtherPIN.setText(xStd.getOriginPremId());
+//					jtfOtherCounty.setText(xStd.getOriginPremId());
 					jtfOtherName.setText(sOtherName);
 					jtfOtherAddress.setText(xStd.getOriginStreet());
 					jtfOtherCity.setText(xStd.getOriginCity());
+					jtfOtherCounty.setText(xStd.getOriginCounty());
 					jtfOtherZip.setText(xStd.getOriginZip());
 					jtfThisPIN.setText("");
 					String sThisName = xStd.getDestinationPremName();
@@ -2330,12 +2344,13 @@ public final class CivetEditDialog extends JFrame {
 		String sOtherName = jtfOtherName.getText();
 		String sOtherAddress = jtfOtherAddress.getText();
 		String sOtherCity = jtfOtherCity.getText();
+		String sOtherCounty = jtfOtherCounty.getText();
 		String sOtherZipcode = jtfOtherZip.getText();
-		String sOtherPIN = jtfOtherPIN.getText();
+		String sOtherPIN = null; //jtfOtherPIN.getText();
 		// Only save actual PINs for other state and only save PINs or HERDS State PremIds (they aren't really LIDS!)
 		// if not 
-		if( sOtherPIN != null && sOtherPIN.trim().length() != 7 && CivetConfig.hasBrokenLIDs() )
-			sOtherPIN = null;
+//		if( sOtherPIN != null && sOtherPIN.trim().length() != 7 && CivetConfig.hasBrokenLIDs() )
+//			sOtherPIN = null;
 		String sThisPremisesId = jtfThisPIN.getText();
 		if( sThisPremisesId != null && sThisPremisesId.trim().length() != 7 && CivetConfig.hasBrokenLIDs() && !bLidFromHerds )
 			sOtherPIN = null;
@@ -2344,6 +2359,12 @@ public final class CivetEditDialog extends JFrame {
 		String sStreetAddress = jtfAddress.getText();
 		String sCity = jtfThisCity.getText();
 		String sZipcode = jtfZip.getText();
+		String sCounty = null;
+		try {
+			sCounty = CountyUtils.getCounty(sZipcode);
+		} catch (IOException e) {
+			logger.error(e);
+		}
 		java.util.Date dDateIssued = jtfDateInspected.getDate();
 		java.util.Date dDateReceived = jtfDateReceived.getDate();
 		// need to incorporate.  Wait for XML upload?
@@ -2412,9 +2433,9 @@ public final class CivetEditDialog extends JFrame {
 		}
 		SaveCVIThread thread = new SaveCVIThread(this, stdXml, bAttachmentBytes,
 				sAttachmentFileName, fAttachmentFile, bInbound, bXFA, sOtherStateCode,
-				sOtherName, sOtherAddress, sOtherCity, sOtherZipcode, sOtherPIN,
+				sOtherName, sOtherAddress, sOtherCity, sOtherCounty, sOtherZipcode, sOtherPIN,
 				sThisPremisesId, sThisName, sPhone,
-				sStreetAddress, sCity, sZipcode,
+				sStreetAddress, sCity, sCounty, sZipcode,
 				dDateIssued, dDateReceived, iIssuedByKey, sIssuedByName, sCVINo,
 				sMovementPurpose,
 				aSpecies,

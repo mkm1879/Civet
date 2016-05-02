@@ -228,7 +228,8 @@ public class StdeCviXmlBuilder {
 	 * @param sZip
 	 * @return
 	 */
-	public Element setAddress( Element e, String sStreet, String sCity, String sState, String sZip ) {
+	public Element setAddress( Element e, String sStreet, String sCity, 
+			String sCounty, String sState, String sZip ) {
 		if( !isValidDoc() )
 			return null;
 		Element address = null;
@@ -267,6 +268,14 @@ public class StdeCviXmlBuilder {
 			}
 			else {
 				town.setTextContent("Not Provided");
+			}
+			if( sCounty != null ) {
+				Node county = childNodeByName( address, "County");
+				if( county == null ) {
+					county = doc.createElement("County");
+					address.appendChild(county);
+					county.setTextContent(sCity.trim());
+				}
 			}
 			Node state = childNodeByName( address, "State");
 			if( state == null ) {
@@ -377,7 +386,7 @@ public class StdeCviXmlBuilder {
 			Element name = doc.createElement("Name");
 			person.appendChild(name);
 			name.setTextContent("NI");
-			setAddress(origin, "NI", "NI", sState, "00000");
+			setAddress(origin, "NI", "NI", null, sState, "00000");
 		}
 		return origin;
 	}
@@ -441,7 +450,7 @@ public class StdeCviXmlBuilder {
 			Element name = doc.createElement("Name");
 			person.appendChild(name);
 			name.setTextContent("NI");
-			setAddress(destination, "NI", "NI", sState, "00000");
+			setAddress(destination, "NI", "NI", null, sState, "00000");
 		}
 		return destination;
 	}
