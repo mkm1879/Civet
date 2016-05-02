@@ -93,7 +93,7 @@ import edu.clemson.lph.controls.PhoneField;
 import edu.clemson.lph.controls.PinField;
 import edu.clemson.lph.controls.SearchTextField;
 import edu.clemson.lph.dialogs.MessageDialog;
-import edu.clemson.lph.dialogs.QuestionDialog;
+import edu.clemson.lph.dialogs.OneLineQuestionDialog;
 import edu.clemson.lph.dialogs.YesNoDialog;
 import edu.clemson.lph.pdfgen.PDFOpener;
 import edu.clemson.lph.pdfgen.PDFUtils;
@@ -1612,7 +1612,7 @@ public final class CivetEditDialog extends JFrame {
 	}
 
 	private void doPickPage() {
-		String sPage = QuestionDialog.ask(this, "Civet: Goto Page", "Page number?");
+		String sPage = OneLineQuestionDialog.ask(this, "Civet: Goto Page", "Page number?");
 		int iPage = -1;
 		try {
 			iPage = Integer.parseInt(sPage);
