@@ -207,10 +207,10 @@ public class SaveCVIThread extends Thread {
 		PremisesLocalStore dataStore = LocalPremisesTableModel.getLocalStore();
 		if( bImport )
 			dataStore.addPremises(  sDestinationPIN,  sDestinationName,  sDestinationAddress,  sDestinationCity,			
-					sDestinationStateCode,  sDestinationZipCode,  sDestinationPhone );
+					sDestinationCounty, sDestinationStateCode,  sDestinationZipCode,  sDestinationPhone );
 		else
 			dataStore.addPremises(  sOriginPIN,  sOriginName,  sOriginAddress,  sOriginCity,			
-					sOriginStateCode,  sOriginZipCode,  sOriginPhone );
+					sOriginCounty, sOriginStateCode,  sOriginZipCode,  sOriginPhone );
 	}
 
 	private void setUpFileNamesAndContent() {

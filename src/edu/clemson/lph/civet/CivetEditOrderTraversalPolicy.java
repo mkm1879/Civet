@@ -357,7 +357,7 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 		hComponentIndexes.put("OtherAddress",17 );
 		hComponentIndexes.put("OtherCity",18 );
 		hComponentIndexes.put("OtherZipcode",19 );
-		hComponentIndexes.put("OtherPIN",20 );
+		hComponentIndexes.put("OtherCounty",20 );
 		hComponentIndexes.put("ThisPhone",21 );
 		hComponentIndexes.put("ThisPIN",22 );
 		hComponentIndexes.put("ThisName",23 );

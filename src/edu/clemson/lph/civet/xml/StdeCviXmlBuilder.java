@@ -274,7 +274,7 @@ public class StdeCviXmlBuilder {
 				if( county == null ) {
 					county = doc.createElement("County");
 					address.appendChild(county);
-					county.setTextContent(sCity.trim());
+					county.setTextContent(sCounty.trim());
 				}
 			}
 			Node state = childNodeByName( address, "State");

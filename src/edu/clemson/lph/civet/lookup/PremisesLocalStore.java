@@ -37,9 +37,9 @@ public class PremisesLocalStore {
 	}
 	
 	public synchronized void addPremises( String sPremisesId, String sPremisesName, String sAddress, String sCity,			
-								String sState, String sZip, String sPhone ) {
+								String sCounty, String sState, String sZip, String sPhone ) {
 		try {
-		PremRecord rNew = new PremRecord( sPremisesId, sPremisesName, sAddress, sCity, sState, sZip, sPhone );
+		PremRecord rNew = new PremRecord( sPremisesId, sPremisesName, sAddress, sCity, sCounty, sState, sZip, sPhone );
 		PremRecord rPrem = containedIn( aPrems, rNew );
 		if( rPrem != null ) {
 			rPrem.updatePremRecord(rNew);
@@ -180,16 +180,18 @@ public class PremisesLocalStore {
 		public String sPremisesName = null;
 		public String sAddress;
 		public String sCity;
+		public String sCounty;
 		public String sState;
 		public String sZip;
 		public String sPhone;
 		
 		public PremRecord( String sPremisesId, String sPremisesName, String sAddress, String sCity,
-							String sState, String sZip, String sPhone ) {
+							String sCounty, String sState, String sZip, String sPhone ) {
 			this.sPremisesId = sPremisesId;
 			this.sPremisesName = sPremisesName;
 			this.sAddress = sAddress;
 			this.sCity = sCity;
+			this.sCounty = sCounty;
 			this.sState = sState;
 			this.sZip = sZip;
 			this.sPhone = sPhone;

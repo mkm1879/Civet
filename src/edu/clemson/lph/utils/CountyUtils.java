@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import edu.clemson.lph.civet.prefs.CivetConfig;
+
 public class CountyUtils {
-	//TODO Replace with call to Prefs once operational.
-	static private String sZipFile = ".\\ZipTable.csv";
 	static private LabeledCSVParser parser;
 	static private HashMap<String,String> zipMap;
 	static private HashMap<String,ArrayList<String>> stateCountiesMap;
@@ -55,6 +55,7 @@ public class CountyUtils {
 	}
 	
 	private static void loadZips() throws IOException {
+		String sZipFile = CivetConfig.getZipcodeTableFile();
 		parser = new LabeledCSVParser(sZipFile);
 		zipMap = new HashMap<String,String>();
 		stateCountiesMap = new HashMap<String,ArrayList<String>>();

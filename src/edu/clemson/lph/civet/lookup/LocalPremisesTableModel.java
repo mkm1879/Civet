@@ -71,7 +71,8 @@ public class LocalPremisesTableModel implements PremisesTableModel {
 	}
 	
 	public LocalPremisesTableModel( String sAddress, String sCity, String sStateCode, String sZipCode, String sPhone ) {
-		if( dataStore == null ) readData();
+		if( dataStore == null ) 
+			readData();
 		rows = dataStore.getPremisesByPhone(sPhone);
 		if( rows == null ) 
 			rows = dataStore.getPremisesByAddressCity(sAddress, sCity);
@@ -94,7 +95,8 @@ public class LocalPremisesTableModel implements PremisesTableModel {
 				LabeledCSVParser parser = new LabeledCSVParser(fIn);
 				List<String> lLine = parser.getNext();
 				while( lLine != null ) {
-					dataStore.addPremises(lLine.get(0), lLine.get(1), lLine.get(2), lLine.get(3), lLine.get(4), lLine.get(5), lLine.get(6));
+					dataStore.addPremises(lLine.get(0), lLine.get(1), lLine.get(2), lLine.get(3), 
+							lLine.get(4), lLine.get(5), lLine.get(6), lLine.get(7));
 					lLine = parser.getNext();
 				}
 			} catch (IOException e1) {
@@ -109,7 +111,8 @@ public class LocalPremisesTableModel implements PremisesTableModel {
 		if( dataStore == null ) return;
 		CSVWriter writer = new CSVWriter();
 		try {
-			writer.setHeader( new ArrayList<String>(Arrays.asList("PIN","Name","Address","City","State","Zip","Phone") ) );
+			writer.setHeader( new ArrayList<String>(Arrays.asList("PIN","Name","Address","City",
+																"County","State","Zip","Phone") ) );
 			ArrayList<PremisesLocalStore.PremRecord> rows = dataStore.getAllRows();
 			for( PremisesLocalStore.PremRecord row : rows ) {
 				ArrayList<Object> fields = new ArrayList<Object>();
@@ -117,6 +120,7 @@ public class LocalPremisesTableModel implements PremisesTableModel {
 				fields.add(row.sPremisesName);
 				fields.add(row.sAddress);
 				fields.add(row.sCity);
+				fields.add(row.sCounty);
 				fields.add(row.sState);
 				fields.add(row.sZip);
 				fields.add(row.sPhone);
@@ -174,6 +178,13 @@ public class LocalPremisesTableModel implements PremisesTableModel {
 	}
 
 	@Override
+	public String getCountyAt(int iRow) {
+		if( iRow < 0 || iRow >= rows.size() ) return null;
+		PremisesLocalStore.PremRecord rPrem = rows.get(iRow);
+		return rPrem.sCounty;
+	}
+
+	@Override
 	public String getStateCodeAt(int iRow) {
 		if( iRow < 0 || iRow >= rows.size() ) return null;
 		PremisesLocalStore.PremRecord rPrem = rows.get(iRow);
@@ -220,6 +231,13 @@ public class LocalPremisesTableModel implements PremisesTableModel {
 		if( iCurrentRow < 0 || iCurrentRow >= rows.size() ) return null;
 		PremisesLocalStore.PremRecord rPrem = rows.get(iCurrentRow);
 		return rPrem.sCity;
+	}
+
+	@Override
+	public String getCounty() {
+		if( iCurrentRow < 0 || iCurrentRow >= rows.size() ) return null;
+		PremisesLocalStore.PremRecord rPrem = rows.get(iCurrentRow);
+		return rPrem.sCounty;
 	}
 
 	@Override

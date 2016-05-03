@@ -35,7 +35,7 @@ OtherName=
 OtherAddress= 
 OtherCity=
 OtherZipcode= 
-OtherPIN= 
+OtherCounty=
 # ThisState is not editable
 ThisPhone= 
 # This will be overridden if Premise is found

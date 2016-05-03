@@ -626,6 +626,14 @@ public class CivetConfig {
 		}
 		return iRet;
 	}
+	
+	public static String getZipcodeTableFile() {
+		String sRet = props.getProperty("zipcodeTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("zipcodeTableFile");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
 
 	public static String getVetTableFile() {
 		String sRet = props.getProperty("vetTableFile");

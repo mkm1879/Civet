@@ -153,6 +153,7 @@ public final class CivetEditDialog extends JFrame {
 	JTextField jtfPhone;
 	JTextField jtfAddress;
 	JTextField jtfThisCity;
+	JTextField jtfThisCounty;  // Hidden
 	JTextField jtfZip;
 	DBNumericField jtfNumber;
 	DateField jtfDateInspected;
@@ -961,6 +962,9 @@ public final class CivetEditDialog extends JFrame {
 		gbc_jtfThisCity.gridx = 1;
 		gbc_jtfThisCity.gridy = 5;
 		pThisState.add(jtfThisCity, gbc_jtfThisCity);
+		
+		// This control is hidden but used to force parallel logic
+		jtfThisCounty = new JTextField();
 
 		JLabel lThisZipCode = new JLabel("ZipCode:");
 		GridBagConstraints gbc_lThisZipCode = new GridBagConstraints();
@@ -1775,6 +1779,7 @@ public final class CivetEditDialog extends JFrame {
 				jtfThisName.setText(dlg.getSelectedPremName());
 				jtfAddress.setText(dlg.getSelectedAddress());
 				jtfThisCity.setText(dlg.getSelectedCity());
+				jtfThisCounty.setText(dlg.getSelectedCounty());
 				jtfZip.setText(dlg.getSelectedZipCode());
 				String sNewPhone = dlg.getSelectedPhone();
 				if( jtfPhone.getText() == null || jtfPhone.getText().trim().length() == 0 ) {
@@ -1835,6 +1840,7 @@ public final class CivetEditDialog extends JFrame {
 				jtfThisName.setText(dlg.getSelectedPremName());
 				jtfAddress.setText(dlg.getSelectedAddress());
 				jtfThisCity.setText(dlg.getSelectedCity());
+				jtfThisCounty.setText(dlg.getSelectedCounty());
 				jtfZip.setText(dlg.getSelectedZipCode());
 				String sPin = dlg.getSelectedPremId();
 				if( sPin != null && sPin.trim().length() != 7 ) {
@@ -1873,6 +1879,7 @@ public final class CivetEditDialog extends JFrame {
 					jtfThisName.setText(dlg.getSelectedPremName());
 					jtfAddress.setText(dlg.getSelectedAddress());
 					jtfThisCity.setText(dlg.getSelectedCity());
+					jtfThisCounty.setText(dlg.getSelectedCounty());
 					jtfZip.setText(dlg.getSelectedZipCode());
 					String sPin = dlg.getSelectedPremId();
 					if( sPin != null && sPin.trim().length() != 7 ) {
@@ -1920,6 +1927,7 @@ public final class CivetEditDialog extends JFrame {
 			jtfPhone.setText("");
 			jtfAddress.setText("");
 			jtfThisCity.setText("");
+			jtfThisCounty.setText("");
 			jtfZip.setText("");
 			jtfDateInspected.setText("");
 			jtfDateReceived.setText("");
@@ -2070,6 +2078,7 @@ public final class CivetEditDialog extends JFrame {
 					jtfPhone.setText(xStd.getOriginPhone());
 					jtfAddress.setText(xStd.getOriginStreet());
 					jtfThisCity.setText(xStd.getOriginCity());
+					jtfThisCounty.setText(xStd.getOriginCounty());
 					jtfZip.setText(xStd.getOriginZip());
 					String sNAN = xStd.getVetNAN();
 					if( sNAN != null && sNAN.trim().length() > 0 ) {
@@ -2359,11 +2368,13 @@ public final class CivetEditDialog extends JFrame {
 		String sStreetAddress = jtfAddress.getText();
 		String sCity = jtfThisCity.getText();
 		String sZipcode = jtfZip.getText();
-		String sCounty = null;
-		try {
-			sCounty = CountyUtils.getCounty(sZipcode);
-		} catch (IOException e) {
-			logger.error(e);
+		String sThisCounty = jtfThisCounty.getText();
+		if( sThisCounty == null || sThisCounty.trim().length() == 0 ) {
+			try {
+				sThisCounty = CountyUtils.getCounty(sZipcode);
+			} catch (IOException e) {
+				logger.error(e);
+			}
 		}
 		java.util.Date dDateIssued = jtfDateInspected.getDate();
 		java.util.Date dDateReceived = jtfDateReceived.getDate();
@@ -2435,7 +2446,7 @@ public final class CivetEditDialog extends JFrame {
 				sAttachmentFileName, fAttachmentFile, bInbound, bXFA, sOtherStateCode,
 				sOtherName, sOtherAddress, sOtherCity, sOtherCounty, sOtherZipcode, sOtherPIN,
 				sThisPremisesId, sThisName, sPhone,
-				sStreetAddress, sCity, sCounty, sZipcode,
+				sStreetAddress, sCity, sThisCounty, sZipcode,
 				dDateIssued, dDateReceived, iIssuedByKey, sIssuedByName, sCVINo,
 				sMovementPurpose,
 				aSpecies,

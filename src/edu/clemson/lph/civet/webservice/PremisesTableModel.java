@@ -27,6 +27,7 @@ public interface PremisesTableModel extends TableModel {
 	public abstract String getPhoneAt(int iRow);
 	public abstract String getAddressAt(int iRow);
 	public abstract String getCityAt(int iRow);
+	public abstract String getCountyAt(int iRow);
 	public abstract String getStateCodeAt(int iRow);
 	public abstract String getZipCodeAt(int iRow);
 	public abstract String getPremClassAt(int iRow);
@@ -36,6 +37,7 @@ public interface PremisesTableModel extends TableModel {
 	public abstract String getPhone();
 	public abstract String getAddress();
 	public abstract String getCity();
+	public abstract String getCounty();
 	public abstract String getStateCode();
 	public abstract String getZipCode();
 	public abstract String getPremClass();

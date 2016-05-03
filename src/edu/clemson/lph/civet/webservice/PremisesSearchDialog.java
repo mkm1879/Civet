@@ -328,6 +328,13 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 		return sRet;
 	}
 
+	public String getSelectedCounty( ) {
+		int iTableRow = getSelectedRow();
+		int iModelRow = getModelRow(iTableRow);
+		String sRet = model.getCountyAt( iModelRow );
+		return sRet;
+	}
+
 	public String getSelectedStateCode() {
 		int iTableRow = getSelectedRow();
 		int iModelRow = getModelRow(iTableRow);
