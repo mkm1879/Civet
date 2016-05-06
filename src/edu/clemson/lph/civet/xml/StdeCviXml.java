@@ -39,6 +39,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.lookup.Counties;
 import edu.clemson.lph.utils.XMLUtility;
 /**
  * Note: kind of weird different style here than in other XML.  Someday maybe make them match.
@@ -305,6 +306,20 @@ public class StdeCviXml {
 		return sRet;
 	}
 	
+	public String validateHerdsOriginCounty() {
+		String sRet = null;
+		String sStatePath = "/eCVI/Origin/Address/State";
+		String sState = helper.getElementTextByPath(sStatePath);
+		String sCountyPath = "/eCVI/Origin/Address/County";
+		String sOriginalCounty = helper.getElementTextByPath(sCountyPath);
+		if( sOriginalCounty != null ) {
+			sRet = Counties.getHerdsCounty(sState, sOriginalCounty);
+			if( sOriginalCounty.equalsIgnoreCase(sRet) )
+				helper.updateElementByPath(sCountyPath, sRet);
+		}
+		return sRet;
+	}
+	
 	public String getOriginState() {
 		String sRet = null;
 		String sPath = "/eCVI/Origin/Address/State";
@@ -374,6 +389,21 @@ public class StdeCviXml {
 		String sRet = null;
 		String sPath = "/eCVI/Destination/Address/County";
 		sRet = helper.getElementTextByPath(sPath);
+		return sRet;
+	}
+	
+	public String validateHerdsDestinationCounty() {
+		String sRet = null;
+		String sStatePath = "/eCVI/Destination/Address/State";
+		String sState = helper.getElementTextByPath(sStatePath);
+		String sCountyPath = "/eCVI/Destination/Address/County";
+		String sOriginalCounty = helper.getElementTextByPath(sCountyPath);
+		sRet = Counties.getHerdsCounty(sState, sOriginalCounty);
+		if( sOriginalCounty != null ) {
+			sRet = Counties.getHerdsCounty(sState, sOriginalCounty);
+			if( !sOriginalCounty.equalsIgnoreCase(sRet) )
+				helper.updateElementByPath( sCountyPath, sRet);
+		}
 		return sRet;
 	}
 	

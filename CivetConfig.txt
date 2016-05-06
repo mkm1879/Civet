@@ -51,6 +51,8 @@ errorTypeTableFile=ErrorTypeTable.csv
 purposeTableFile=PurposeTable.csv
 stateVetTableFile=StateVetTable.csv
 zipcodeTableFile=E:\\EclipseJava\\Civet\\ZipTable.csv
+countiesTableFile=E:\\EclipseJava\\Civet\\CountyTable.csv
+countyAliasesTableFile=E:\\EclipseJava\\Civet\\CountyAliasesTable.csv
 
 #Robot
 robotInputPath=E:\\Documents\\Civet\\CivetRobotIn

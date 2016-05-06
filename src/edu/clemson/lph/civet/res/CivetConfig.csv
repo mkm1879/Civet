@@ -41,6 +41,8 @@ Files,Y,errorTypeTableFile,.\ErrorTypeTable.csv,File,,Table with error types fro
 Files,Y,purposeTableFile,.\PurposeTable.csv,File,,Table with purpose of movement types,
 Files,Y,stateVetTableFile,.\StateVetTable.csv,File,,Table with State Veterinarians' emails (supplied),
 Files,Y,zipcodeTableFile,.\ZipTable.csv,File,,"Table with Census zip code, state, and county (supplied)",
+Files,Y,countiesTableFile,.\CountyTable.csv,File,,"Table with state, and county (supplied)",
+Files,Y,countyAliasesTableFile,.\CountyAliasesTable.csv,File,,"Table with alternate spellings of counties",
 Robot,N,robotInputPath,.\CivetRobotIn,Dir,,Folder for CO/KS CVIs for robot to process automatically,
 Robot,N,robotCompleteOutPath,.\CivetRobotComplete,Dir,,Folder for CO/KS CVIs once processed by robot,
 Robot,N,robotXMLOutPath,.\CivetRobotXML,Dir,,Folder for std XML generated from CO/KS CVIs by robot,

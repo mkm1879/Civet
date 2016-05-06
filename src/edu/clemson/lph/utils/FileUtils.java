@@ -230,12 +230,16 @@ public class FileUtils {
 	
 	
 	public static File writeTextFile( String sText, String sFileOut ) {
+		return writeTextFile( sText, sFileOut, false );
+	}
+		
+	public static File writeTextFile( String sText, String sFileOut, boolean bAppend ) {
 		File fOut = null;
 		PrintWriter pwOut = null;
 		try {
 			try {
 				fOut = new File(sFileOut);
-				pwOut = new PrintWriter( fOut );
+				pwOut = new PrintWriter(new FileOutputStream( fOut, bAppend ));
 				pwOut.write(sText);
 			}
 			catch (IOException ex1) {

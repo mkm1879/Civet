@@ -30,6 +30,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.beans.Beans;
@@ -46,6 +49,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -71,6 +75,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
+import edu.clemson.lph.civet.lookup.Counties;
 import edu.clemson.lph.civet.lookup.ErrorTypeLookup;
 import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
 import edu.clemson.lph.civet.lookup.PurposeLookup;
@@ -147,7 +152,7 @@ public final class CivetEditDialog extends JFrame {
 	private ImageIcon appIcon;
 	private CountersPanel pCounters;
 //	PinField jtfOtherPIN;
-	JTextField jtfOtherCounty;
+	JComboBox<String> cbOtherCounty;
 	private JTextField jtfThisState;
 	SearchTextField jtfThisPIN;
 	JTextField jtfPhone;
@@ -216,6 +221,7 @@ public final class CivetEditDialog extends JFrame {
 	private JButton bPDFViewFile;
 	private boolean bPreview;
 	private String sDefaultPurpose;
+	JLabel lThisCity;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -232,6 +238,7 @@ public final class CivetEditDialog extends JFrame {
 		}
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		controller = new CVIFileController( this ); 
+		
 		initializeDisplay();
 		initializeDBComponents();
 	}
@@ -285,6 +292,18 @@ public final class CivetEditDialog extends JFrame {
 		pdfDecoder.updateUI();
 		pdfDecoder.validate();
 	}
+
+	private void refreshOtherCounties() {
+		cbOtherCounty.removeAllItems();
+		cbOtherCounty.addItem(null);
+		String sOtherState = cbOtherState.getSelectedCode();
+		if( sOtherState != null ) {
+			for( String sCounty : Counties.getCounties(sOtherState) ) {
+				cbOtherCounty.addItem(sCounty);
+			}
+		}
+	}
+
 	
 	/**
 	 * This is misnamed now that we have no actual database connection.
@@ -663,6 +682,12 @@ public final class CivetEditDialog extends JFrame {
 
 		cbOtherState = new DBComboBox();
 		cbOtherState.setMaximumSize( new Dimension(cbOtherState.getWidth()-60, cbOtherState.getHeight()) );
+		cbOtherState.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				refreshOtherCounties();
+			}
+		});
 		GridBagConstraints gbc_cbOtherState = new GridBagConstraints();
 		gbc_cbOtherState.fill = GridBagConstraints.BOTH;
 		gbc_cbOtherState.insets = new Insets(0, 0, 0, 0);
@@ -760,7 +785,9 @@ public final class CivetEditDialog extends JFrame {
 				String sZip = jtfOtherZip.getText();
 				if( sZip != null && sZip.trim().length() > 0 ) {
 					try {
-						jtfOtherCounty.setText(CountyUtils.getCounty(sZip));
+						String sZipCounty = CountyUtils.getCounty(sZip);
+						String sHerdsCounty = Counties.getHerdsCounty(cbOtherState.getSelectedCode(), sZipCounty);
+						cbOtherCounty.setSelectedItem(sHerdsCounty);
 					} catch (IOException e) {
 						logger.error(e);
 					}
@@ -784,19 +811,18 @@ public final class CivetEditDialog extends JFrame {
 		lblOtherCounty.setFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 11));
 		lblOtherCounty.setHorizontalAlignment(SwingConstants.RIGHT);
 
-		jtfOtherCounty = new JTextField();
+		cbOtherCounty = new JComboBox<String>();
 		GridBagConstraints gbc_jtfOtherCounty = new GridBagConstraints();
 		gbc_jtfOtherCounty.fill = GridBagConstraints.BOTH;
 		gbc_jtfOtherCounty.gridx = 1;
 		gbc_jtfOtherCounty.gridy = 5;
-		pOtherState.add(jtfOtherCounty, gbc_jtfOtherCounty);
-	
+		pOtherState.add(cbOtherCounty, gbc_jtfOtherCounty);
 	}
 
 	
 	protected void checkZipcode(JTextField jtfZip) {
 		if( jtfZip == null ) return;
-		String sZip = jtfZip.getText();
+		String sZip = jtfZip.getText().trim();
 		if( sZip == null || sZip.trim().length() == 0 )
 			return;
 	      Pattern r = Pattern.compile("^\\d{5}(-?\\d{4})?$");
@@ -937,7 +963,7 @@ public final class CivetEditDialog extends JFrame {
 		pThisState.add(jtfAddress, gbc_jtfThisAddress);
 
 
-		JLabel lThisCity = new JLabel("City:");
+		lThisCity = new JLabel("City:");
 		GridBagConstraints gbc_lThisCity = new GridBagConstraints();
 		gbc_lThisCity.fill = GridBagConstraints.BOTH;
 		gbc_lThisCity.insets = new Insets(0, 0, 0, 10);
@@ -946,6 +972,23 @@ public final class CivetEditDialog extends JFrame {
 		pThisState.add(lThisCity, gbc_lThisCity);
 		lThisCity.setFont(new java.awt.Font("Tahoma", java.awt.Font.BOLD, 11));
 		lThisCity.setHorizontalAlignment(SwingConstants.RIGHT);
+		
+		lThisCity.addMouseListener( new MouseAdapter() {
+			public void mouseClicked(MouseEvent e)  
+		    {  
+		       String sValue = lThisCity.getText();
+		       if( "City:".equals(sValue)) {
+		    	   lThisCity.setText("County:");
+		    	   jtfThisCounty.setVisible(true);
+		    	   jtfThisCity.setVisible(false);
+		       }
+		       else {
+		    	   lThisCity.setText("City:");
+		    	   jtfThisCounty.setVisible(false);
+		    	   jtfThisCity.setVisible(true);
+		       }
+		    }  
+		});
 
 		jtfThisCity = new JTextField();
 		jtfThisCity.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -962,9 +1005,17 @@ public final class CivetEditDialog extends JFrame {
 		gbc_jtfThisCity.gridx = 1;
 		gbc_jtfThisCity.gridy = 5;
 		pThisState.add(jtfThisCity, gbc_jtfThisCity);
-		
 		// This control is hidden but used to force parallel logic
 		jtfThisCounty = new JTextField();
+		jtfThisCounty.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				logger.info("jtfThisCounty (focusLost) set to: " + Counties.getHerdsCounty(jtfThisState.getText(), jtfThisCounty.getText()));
+				jtfThisCounty.setText(Counties.getHerdsCounty(jtfThisState.getText(), jtfThisCounty.getText()));;
+			}
+		});
+		jtfThisCounty.setVisible(false);
+		pThisState.add(jtfThisCounty, gbc_jtfThisCity );
+		
 
 		JLabel lThisZipCode = new JLabel("ZipCode:");
 		GridBagConstraints gbc_lThisZipCode = new GridBagConstraints();
@@ -984,6 +1035,18 @@ public final class CivetEditDialog extends JFrame {
 			@Override
 			public void focusLost(FocusEvent arg0) {
 				checkZipcode( jtfZip );
+				if( jtfThisCounty.getText() == null || jtfThisCounty.getText().trim().length() == 0 ) {
+					String sZipCounty;
+					try {
+						sZipCounty = CountyUtils.getCounty(jtfZip.getText());
+						if( sZipCounty != null ) {
+							String sHerdsCounty = Counties.getHerdsCounty(jtfThisState.getText(), sZipCounty);
+							jtfThisCounty.setText(sHerdsCounty);
+						}
+					} catch (IOException e) {
+						logger.error(e);
+					}
+				}
 			}
 		});
 		GridBagConstraints gbc_jtfThisZipCode = new GridBagConstraints();
@@ -1662,7 +1725,7 @@ public final class CivetEditDialog extends JFrame {
 		jtfOtherAddress.setEnabled(bEditable);
 		jtfOtherCity.setEnabled(bEditable);
 		jtfOtherZip.setEnabled(bEditable);
-		jtfOtherCounty.setEnabled(bEditable);
+		cbOtherCounty.setEnabled(bEditable);
 		jtfThisPIN.setEnabled(bEditable);
 		jtfPhone.setEnabled(bEditable);
 		jtfAddress.setEnabled(bEditable);
@@ -1671,7 +1734,7 @@ public final class CivetEditDialog extends JFrame {
 		jtfCVINo.setEnabled(bEditable);
 		cbSpecies.setEnabled(bEditable);
 		jtfNumber.setEnabled(bEditable);
-		jtfOtherCounty.setEditable(bEditable);
+		cbOtherCounty.setEditable(bEditable);
 		jtfThisState.setFocusable(false);
 		jtfThisState.setEnabled(bEditable);
 		jtfThisPIN.setEditable(bEditable);
@@ -1805,6 +1868,7 @@ public final class CivetEditDialog extends JFrame {
 							jtfThisName.setText(model.getPremName());
 							jtfAddress.setText(model.getAddress());
 							jtfThisCity.setText(model.getCity());
+							jtfThisCounty.setText(model.getCounty());
 							jtfZip.setText(model.getZipCode());
 							String sNewPhone = model.getPhone();
 							if( jtfPhone.getText() == null || jtfPhone.getText().trim().length() == 0 ) {
@@ -1920,7 +1984,7 @@ public final class CivetEditDialog extends JFrame {
 			jtfOtherName.setText("");
 			jtfOtherAddress.setText("");
 			jtfOtherCity.setText("");
-			jtfOtherCounty.setText("");
+			cbOtherCounty.setSelectedItem(null);
 			jtfOtherZip.setText("");
 			jtfThisPIN.setText("");
 			jtfThisName.setText("");
@@ -1948,6 +2012,7 @@ public final class CivetEditDialog extends JFrame {
 		if(rbInState.isSelected()) {
 			setImport( false );
 			cbOtherState.setSelectedValue(CivetConfig.getHomeState());
+			refreshOtherCounties();
 			cbOtherState.setEnabled(false);
 			lIssuedBy.setVisible(true);
 			lIssuedBy.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -2057,7 +2122,9 @@ public final class CivetEditDialog extends JFrame {
 				if( sOriginState.equalsIgnoreCase(CivetConfig.getHomeState()) ) {
 					setImport(false);
 					rbExport.setSelected(true);
-					cbOtherState.setSelectedValue(States.getState(xStd.getDestinationState()));
+					String sOtherState = States.getState(xStd.getDestinationState());
+					cbOtherState.setSelectedValue(sOtherState);
+					refreshOtherCounties();
 //					jtfOtherPIN.setText("");
 					// For display purposes only!  Display person name if no prem name.
 					String sOtherName = xStd.getDestinationPremName();
@@ -2067,7 +2134,10 @@ public final class CivetEditDialog extends JFrame {
 					jtfOtherName.setText(sOtherName);
 					jtfOtherAddress.setText(xStd.getDestinationStreet());
 					jtfOtherCity.setText(xStd.getDestinationCity());
-					jtfOtherCounty.setText(xStd.getDestinationCounty());
+					String sOtherStateCode = cbOtherState.getSelectedCode();
+					String sOtherCountyIn = xStd.getDestinationCounty();
+					String sOtherHerdsCounty = Counties.getHerdsCounty(sOtherStateCode, sOtherCountyIn);
+					cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
 					jtfOtherZip.setText(xStd.getDestinationZip());
 					jtfThisPIN.setText("");
 					String sThisName = xStd.getOriginPremName();
@@ -2078,7 +2148,9 @@ public final class CivetEditDialog extends JFrame {
 					jtfPhone.setText(xStd.getOriginPhone());
 					jtfAddress.setText(xStd.getOriginStreet());
 					jtfThisCity.setText(xStd.getOriginCity());
-					jtfThisCounty.setText(xStd.getOriginCounty());
+					String sThisCountyIn = xStd.getOriginCounty();
+					String sThisHerdsCounty = Counties.getHerdsCounty("SC", sThisCountyIn);
+					jtfThisCounty.setText(sThisHerdsCounty);
 					jtfZip.setText(xStd.getOriginZip());
 					String sNAN = xStd.getVetNAN();
 					if( sNAN != null && sNAN.trim().length() > 0 ) {
@@ -2104,17 +2176,22 @@ public final class CivetEditDialog extends JFrame {
 				else {
 					setImport(true);
 					rbImport.setSelected(true);
-					cbOtherState.setSelectedValue(States.getState(xStd.getOriginState()));
+					String sOtherState = States.getState(xStd.getOriginState());
+					cbOtherState.setSelectedValue(sOtherState);
 //					jtfOtherPIN.setText("");
 					// For display purposes only!  Display person name if no prem name.
 					String sOtherName = xStd.getOriginPremName();
 					if( sOtherName == null || sOtherName.trim().length() == 0 )
 						sOtherName = xStd.getOriginPersonName();
-//					jtfOtherCounty.setText(xStd.getOriginPremId());
+//					cbOtherCounty.setText(xStd.getOriginPremId());
 					jtfOtherName.setText(sOtherName);
 					jtfOtherAddress.setText(xStd.getOriginStreet());
 					jtfOtherCity.setText(xStd.getOriginCity());
-					jtfOtherCounty.setText(xStd.getOriginCounty());
+					refreshOtherCounties();
+					String sOtherStateCode = cbOtherState.getSelectedCode();
+					String sCountyIn = xStd.getOriginCounty();
+					String sHerdsCounty = Counties.getHerdsCounty(sOtherStateCode, sCountyIn);
+					cbOtherCounty.setSelectedItem(sHerdsCounty);
 					jtfOtherZip.setText(xStd.getOriginZip());
 					jtfThisPIN.setText("");
 					String sThisName = xStd.getDestinationPremName();
@@ -2125,6 +2202,9 @@ public final class CivetEditDialog extends JFrame {
 					jtfPhone.setText(xStd.getDestinationPhone());
 					jtfAddress.setText(xStd.getDestinationStreet());
 					jtfThisCity.setText(xStd.getDestinationCity());
+					String sThisCountyIn = xStd.getDestinationCounty();
+					String sThisHerdsCounty = Counties.getHerdsCounty("SC", sThisCountyIn);
+					jtfThisCounty.setText(sThisHerdsCounty);
 					jtfZip.setText(xStd.getDestinationZip());
 					String sVetName = xStd.getVetName();
 					jtfIssuedBy.setText(sVetName);
@@ -2353,7 +2433,7 @@ public final class CivetEditDialog extends JFrame {
 		String sOtherName = jtfOtherName.getText();
 		String sOtherAddress = jtfOtherAddress.getText();
 		String sOtherCity = jtfOtherCity.getText();
-		String sOtherCounty = jtfOtherCounty.getText();
+		String sOtherCounty = (String)cbOtherCounty.getSelectedItem();
 		String sOtherZipcode = jtfOtherZip.getText();
 		String sOtherPIN = null; //jtfOtherPIN.getText();
 		// Only save actual PINs for other state and only save PINs or HERDS State PremIds (they aren't really LIDS!)
@@ -2368,10 +2448,14 @@ public final class CivetEditDialog extends JFrame {
 		String sStreetAddress = jtfAddress.getText();
 		String sCity = jtfThisCity.getText();
 		String sZipcode = jtfZip.getText();
+		String sThisState = jtfThisState.getText();
 		String sThisCounty = jtfThisCounty.getText();
 		if( sThisCounty == null || sThisCounty.trim().length() == 0 ) {
 			try {
-				sThisCounty = CountyUtils.getCounty(sZipcode);
+				String sThisHerdsCounty = CountyUtils.getCounty(sZipcode);
+				if( sThisHerdsCounty != null ) {
+					sThisCounty = Counties.getHerdsCounty(sThisState, sThisHerdsCounty);
+				}
 			} catch (IOException e) {
 				logger.error(e);
 			}

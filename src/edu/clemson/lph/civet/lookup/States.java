@@ -119,6 +119,8 @@ public class States extends DBComboBoxModel implements DBTableSource {
 	public void refresh() {
 		hValuesKeys.clear();
 		hKeysValues.clear();
+		hValuesCodes.clear();
+		hCodesValues.clear();
 		super.removeAllElements();
 		if( bBlank ) {
 			super.addElement("");
@@ -133,6 +135,8 @@ public class States extends DBComboBoxModel implements DBTableSource {
 			super.addElement(sState);
 			hValuesKeys.put(sState, sCode);
 			hKeysValues.put(sCode, sState);
+			hValuesCodes.put(sState, sCode);
+			hCodesValues.put(sCode, sState);
 		}
 
 	}

@@ -269,14 +269,6 @@ public class StdeCviXmlBuilder {
 			else {
 				town.setTextContent("Not Provided");
 			}
-			if( sCounty != null ) {
-				Node county = childNodeByName( address, "County");
-				if( county == null ) {
-					county = doc.createElement("County");
-					address.appendChild(county);
-					county.setTextContent(sCounty.trim());
-				}
-			}
 			Node state = childNodeByName( address, "State");
 			if( state == null ) {
 				state = doc.createElement("State");
@@ -288,6 +280,14 @@ public class StdeCviXmlBuilder {
 			else {
 				logger.error("Attempt to add address with no state.", new Exception());
 				state.setTextContent("ERROR");				
+			}
+			if( sCounty != null ) {
+				Node county = childNodeByName( address, "County");
+				if( county == null ) {
+					county = doc.createElement("County");
+					address.insertBefore(county,state);
+					county.setTextContent(sCounty.trim());
+				}
 			}
 			Node zip = childNodeByName( address, "ZIP" );
 			if( zip == null ) {

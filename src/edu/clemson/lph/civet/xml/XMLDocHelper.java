@@ -133,6 +133,24 @@ public class XMLDocHelper {
 		return eRet;
 	}
 	
+	public void updateElementByPath( String sPath, String sValue ) {
+		Element e = null;
+		try {
+			XPath xPath = factory.newXPath();
+			NodeList nodes = (NodeList)xPath.evaluate(sPath, doc.getDocumentElement(), XPathConstants.NODESET);
+			if( nodes == null || nodes.getLength() == 0 ) return;
+			for (int i = 0; i < nodes.getLength(); ++i) {
+				if( nodes.item(i).getNodeType() == Node.ELEMENT_NODE ) {
+					e = (Element)nodes.item(i);
+					e.setTextContent(sValue);
+				}
+			}
+		} catch (XPathExpressionException ex) {
+			logger.error("Error evaluating xpath " + sPath, ex);
+		}
+	}
+
+	
 	public Element getElementByPathAndAttribute( String sPath, String sAttributeName, String sAttributeValue ) {
 		return getElementByPathAndAttribute(doc.getDocumentElement(), sPath, sAttributeName, sAttributeValue );
 	}

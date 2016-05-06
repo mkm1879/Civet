@@ -70,6 +70,7 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 
 	public CivetEditOrderTraversalPolicy( Container parent ) {
 		synchronized( parent.getTreeLock() ) {
+//			int i = 0;
 			for( Component c : getAllComponents(parent) ) {
 				if( ( c instanceof JTextField || c instanceof JComboBox  || c instanceof DBComboBox
 						|| c instanceof JButton || c instanceof JCheckBox || c instanceof JRadioButton ) 
@@ -78,6 +79,7 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 					if( c instanceof JTextField && !((JTextField)c).isEditable() )
 						continue;
 					aComponents.add(c);
+//					System.out.println( i++ + " " + c.getClass().getName() );
 				}
 			}
 		}
@@ -104,6 +106,7 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 	}
 	
 	public void addComponentOrder( Component cFrom, Component cTo ) {
+		System.out.println( "From " + cFrom.getClass().getName() + " to " + cTo.getClass().getName() );
 		if( cFrom != cTo )
 			hMainMap.put(cFrom, cTo);
 	}
@@ -211,6 +214,10 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 	 */
 	@Override
 	public Component getComponentAfter(Container aContainer, Component aComponent) {
+		// This nonsense is because when JComboBox is typed <String> the component we actually
+		// leave is a borderless text box.  The JComboBox is its parent.  That is what we have mapped.
+		if( aComponent.getParent().getClass() == JComboBox.class )
+			aComponent = aComponent.getParent();
 		Component cNext = hMap.get(aComponent);
 		if( cNext != null )
 			return cNext;
@@ -363,20 +370,21 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 		hComponentIndexes.put("ThisName",23 );
 		hComponentIndexes.put("ThisAddress",24 );
 		hComponentIndexes.put("ThisCity",25 );
-		hComponentIndexes.put("ThisZipcode",26 );
-		hComponentIndexes.put("Species",27 );
-		hComponentIndexes.put("Number",28 );
-		hComponentIndexes.put("InspectedDate",29 );
-		hComponentIndexes.put("ReceivedDate",30 );
-		hComponentIndexes.put("CertificateNumber",31 );
-		hComponentIndexes.put("ThisIssuedBy",32 );
-		hComponentIndexes.put("OtherIssuedBy",33 );
-		hComponentIndexes.put("ShowAllVets",34 );
-		hComponentIndexes.put("Purpose",35 );
-		hComponentIndexes.put("ErrorsButton",36 );
-		hComponentIndexes.put("AddPageButton",37 );
-		hComponentIndexes.put("AddAnimalIDsButton",38 );
-		hComponentIndexes.put("SaveNextButton",39 );
+		hComponentIndexes.put("ThisCounty",26 );
+		hComponentIndexes.put("ThisZipcode",27 );
+		hComponentIndexes.put("Species",28 );
+		hComponentIndexes.put("Number",29 );
+		hComponentIndexes.put("InspectedDate",30 );
+		hComponentIndexes.put("ReceivedDate",31 );
+		hComponentIndexes.put("CertificateNumber",32 );
+		hComponentIndexes.put("ThisIssuedBy",33 );
+		hComponentIndexes.put("OtherIssuedBy",34 );
+		hComponentIndexes.put("ShowAllVets",35 );
+		hComponentIndexes.put("Purpose",36 );
+		hComponentIndexes.put("ErrorsButton",37 );
+		hComponentIndexes.put("AddPageButton",38 );
+		hComponentIndexes.put("AddAnimalIDsButton",39 );
+		hComponentIndexes.put("SaveNextButton",40 );
 
 	}
 	

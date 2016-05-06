@@ -634,7 +634,23 @@ public class CivetConfig {
 			sRet = null; 
 		return sRet;
 	}
-
+	
+	public static String getCountiesTableFile() {
+		String sRet = props.getProperty("countiesTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("countiesTableFile");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+	
+	public static String getCountyAliasesTableFile() {
+		String sRet = props.getProperty("countyAliasesTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) exitError("countyAliasesTableFile");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+	
 	public static String getVetTableFile() {
 		String sRet = props.getProperty("vetTableFile");
 		if( sRet == null || sRet.trim().length() == 0 ) exitError("vetTableFile");
@@ -1134,6 +1150,28 @@ public class CivetConfig {
 		if( !f.exists() || !f.isFile() ) {
 			return ( "stateVetTableFile\n" + sRet + " does not exist or is not a file");			
 		}
+		
+		sRet = props.getProperty("zipcodeTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("zipcodeTableFile");
+		f = new File( sRet );
+		if( !f.exists() || !f.isFile() ) {
+			return ( "zipcodeTableFile\n" + sRet + " does not exist or is not a file");			
+		}
+		
+		sRet = props.getProperty("countiesTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("countiesTableFile");
+		f = new File( sRet );
+		if( !f.exists() || !f.isFile() ) {
+			return ( "countiesTableFile\n" + sRet + " does not exist or is not a file");			
+		}
+		
+		sRet = props.getProperty("countyAliasesTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) return ("countyAliasesTableFile");
+		f = new File( sRet );
+		if( !f.exists() || !f.isFile() ) {
+			return ( "countyAliasesTableFile\n" + sRet + " does not exist or is not a file");			
+		}
+		
 		sRet = props.getProperty("sppTableFile");
 		if( sRet == null || sRet.trim().length() == 0 ) return ("sppTableFile");
 		sRet = props.getProperty("purposeTableFile");

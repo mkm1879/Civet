@@ -39,10 +39,10 @@ OtherCounty=
 # ThisState is not editable
 ThisPhone= 
 # This will be overridden if Premise is found
-ThisPIN=ThisCity
+ThisPIN=
 ThisName= 
 ThisAddress= 
-ThisCity= 
+ThisCity= ThisZipcode
 ThisZipcode= 
 Species= 
 Number= 

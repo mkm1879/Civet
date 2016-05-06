@@ -4,24 +4,21 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
-
+import java.awt.Dimension;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.JTable;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 
 @SuppressWarnings("serial")
 public class ConfigTabPanel extends JPanel {
 	private JPanel pRows;
 	private int iYPosition = 5;
+	private JScrollPane spPrefs;
 
 	/**
 	 * Create the panel.
 	 */
 	public ConfigTabPanel() {
 		setLayout(new BorderLayout(0, 0));
-		JScrollPane spPrefs = new JScrollPane();
+		spPrefs = new JScrollPane();
 		spPrefs.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		add(spPrefs);
 		pRows = new JPanel();
@@ -33,6 +30,8 @@ public class ConfigTabPanel extends JPanel {
 		panel.setBounds( 2, iYPosition, 600, 25 );
 		iYPosition += 27;
 		pRows.add(panel);
+		// Needed to let scrollpane know if slider is required.
+		pRows.setPreferredSize(new Dimension(iYPosition + 10, 600));
 	}
 
 }
