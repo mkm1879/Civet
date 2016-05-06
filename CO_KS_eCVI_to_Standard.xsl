@@ -78,7 +78,7 @@
                     <xsl:element name="Phone">
                         <xsl:attribute name="Type">Unknown</xsl:attribute>
                         <xsl:attribute name="Number">
-                            <xsl:value-of select="phoneNum"/>
+                            <xsl:value-of select="translate(phoneNum,' ()-','')"/>
                         </xsl:attribute>
                     </xsl:element>
                 </xsl:if>
@@ -186,7 +186,7 @@
                 <xsl:element name="Phone">
                     <xsl:attribute name="Type">Unknown</xsl:attribute>
                     <xsl:attribute name="Number">
-                        <xsl:value-of select="$data/phoneNum"/>
+                         <xsl:value-of select="translate($data/phoneNum,' ()-','')"/>
                     </xsl:attribute>
                 </xsl:element>
             </xsl:if>
@@ -417,6 +417,18 @@
                 <xsl:text>wk</xsl:text>
             </xsl:when>
             <xsl:when test="$ageTime = 'D'">
+                <xsl:text>d</xsl:text>
+            </xsl:when>
+            <xsl:when test="$ageTime = 'Years'">
+                <xsl:text>a</xsl:text>
+            </xsl:when>
+            <xsl:when test="$ageTime = 'Months'">
+                <xsl:text>mo</xsl:text>
+            </xsl:when>
+            <xsl:when test="$ageTime = 'Weeks'">
+                <xsl:text>wk</xsl:text>
+            </xsl:when>
+            <xsl:when test="$ageTime = 'Days'">
                 <xsl:text>d</xsl:text>
             </xsl:when>
             <!-- Is this the appropriate way to react to no age units? -->
