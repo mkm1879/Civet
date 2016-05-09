@@ -314,8 +314,12 @@ public class StdeCviXml {
 		String sOriginalCounty = helper.getElementTextByPath(sCountyPath);
 		if( sOriginalCounty != null ) {
 			sRet = Counties.getHerdsCounty(sState, sOriginalCounty);
-			if( sOriginalCounty.equalsIgnoreCase(sRet) )
-				helper.updateElementByPath(sCountyPath, sRet);
+			if( !sOriginalCounty.equalsIgnoreCase(sRet) ) {
+				if( sRet != null && sRet.trim().length() > 3 )
+					helper.updateElementByPath( sCountyPath, sRet);
+				else
+					helper.removeElementByPath( sCountyPath );
+			}
 		}
 		return sRet;
 	}
@@ -401,8 +405,12 @@ public class StdeCviXml {
 		sRet = Counties.getHerdsCounty(sState, sOriginalCounty);
 		if( sOriginalCounty != null ) {
 			sRet = Counties.getHerdsCounty(sState, sOriginalCounty);
-			if( !sOriginalCounty.equalsIgnoreCase(sRet) )
-				helper.updateElementByPath( sCountyPath, sRet);
+			if( !sOriginalCounty.equalsIgnoreCase(sRet) ) {
+				if( sRet != null && sRet.trim().length() > 3 )
+					helper.updateElementByPath( sCountyPath, sRet);
+				else
+					helper.removeElementByPath( sCountyPath );
+			}
 		}
 		return sRet;
 	}
