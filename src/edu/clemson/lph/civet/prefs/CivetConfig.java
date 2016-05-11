@@ -533,9 +533,10 @@ public class CivetConfig {
 			File f = new File( sRet );
 			if( !f.exists() || !f.isDirectory() ) {
 				logger.error( "bulkLoadDirPath " + sRet + " does not exist or is not a folder");
-				System.exit(1);
+				sRet = "./";
 			}
 		}
+			else sRet = "./";
 		return sRet;
 	}
 	
@@ -545,27 +546,27 @@ public class CivetConfig {
 			File f = new File( sRet );
 			if( !f.exists() || !f.isDirectory() ) {
 				logger.error( "nineDashThreeLoadDirPath " + sRet + " does not exist or is not a folder");
-				sRet = ".//"; 
+				sRet = "./"; 
 			}
 		}
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = ".//"; 
+		else 
+			sRet = "./"; 
 		return sRet;
 	}
 
 	public static String getVspsDirPath() {
 		String sRet = props.getProperty("vspsDirPath");
 		if( sRet == null || sRet.trim().length() == 0 ) {
-			logger.error( "vspsLoadDirPath not set using install folder");
-			return ".//";
+			logger.error( "vspsLoadDirPath not set.  Using install folder");
+			return "./";
 		}
 		File f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
 			logger.error( "vspsLoadDirPath " + sRet + " does not exist or is not a folder");
-			sRet = ".//";
+			sRet = "./";
 		}
 		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = ".//"; 
+			sRet = "./"; 
 		return sRet;
 	}
 
