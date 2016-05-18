@@ -36,9 +36,11 @@ ToBeFiledDirPath=E:\\Documents\\Civet\\CivetToBeFiled\\
 EmailOutDirPath=E:\\Documents\\Civet\\CivetToBeMailedOut\\
 EmailErrorsDirPath=E:\\Documents\\Civet\\CivetToBeMailedErrors\\
 OutputDirPath=E:\\Documents\\Civet\\CivetOutbox\\
+<<<<<<< HEAD
 vspsDirPath=
 
 #Files
+nineDashThreeLoadDirPath=E:\\Documents\\Civet\\NPIPData\\
 CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
 StdSchema=E:\\Documents\\Civet\\ecviDraftRelaxed.xsd
 acrobatPath=

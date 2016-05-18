@@ -209,7 +209,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			String sCVINumber = data.getCVINumber();
 			String sSpecies = data.getSpecies();
 			String sSpeciesCode = null;
-			if( sSpecies == null || sSpecies.trim().equalsIgnoreCase("Poultry") ) {
+			if( sSpecies == null ) {
 				sSpeciesCode = "OTH";
 			}
 			else if( sSpecies.trim().length() == 3 ) {

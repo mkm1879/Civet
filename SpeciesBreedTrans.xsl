@@ -38,6 +38,7 @@
             <xsl:when test="$species ='OYS'">OYS</xsl:when>
             <xsl:when test="$species ='PGN'">PGN</xsl:when>
             <xsl:when test="$species ='POR'">POR</xsl:when>
+            <xsl:when test="$species ='POU'">POU</xsl:when>
             <xsl:when test="$species ='QUA'">QUA</xsl:when>
             <xsl:when test="$species ='RTT'">RTT</xsl:when>
             <xsl:when test="$species ='SAL'">SAL</xsl:when>
