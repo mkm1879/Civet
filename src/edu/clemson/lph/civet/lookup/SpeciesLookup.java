@@ -205,6 +205,7 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 			hStdSpecies.put("OYS", "Oysters");
 			hStdSpecies.put("PGN", "Pigeon");
 			hStdSpecies.put("POR", "Porcine (Swine)");
+			hStdSpecies.put("POU", "Poultry");
 			hStdSpecies.put("QUA", "Quail");
 			hStdSpecies.put("RTT", "Ratites (Emus, Ostriches, etc.)");
 			hStdSpecies.put("SAL", "Salmon");
