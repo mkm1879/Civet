@@ -74,7 +74,9 @@ public class CivetConfig {
 	 */
 	public static String[] listLocalNetAddresses() {
 		String sAddresses = props.getProperty("localNetAddresses");
-		if( sAddresses == null ) exitError("localNetAddresses");
+		if( sAddresses == null || sAddresses.trim().length() == 0 ) {
+			sAddresses = "130.127.169.203";
+		}
 		StringTokenizer tok = new StringTokenizer( sAddresses, ",");
 		List<String>lAddresses = new ArrayList<String>();
 		while( tok.hasMoreTokens() ) {
@@ -866,14 +868,17 @@ public class CivetConfig {
 	public static String getDbServer() {
 		String sRet = props.getProperty("dbServer");
 		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
+			sRet = "LPHSQL"; 
 		return sRet;
 	}
 
 	public static int getDbPort() {
 		int iRet = -1;
 		String sRet = props.getProperty("dbPort");
-		if( sRet != null ) {
+		if( sRet == null ) {
+			iRet = 1433;
+		}
+		else {
 			try {
 				iRet = Integer.parseInt(sRet);
 			} catch( NumberFormatException nfe ) {
@@ -888,14 +893,14 @@ public class CivetConfig {
 	public static String getDbPortString() {
 		String sRet = props.getProperty("dbPort");
 		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
+			sRet = "1433"; 
 		return sRet;
 	}
 
 	public static String getDbDatabaseName() {
 		String sRet = props.getProperty("dbDatabaseName");
 		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
+			sRet = "USAHERDS"; 
 		return sRet;
 	}
 

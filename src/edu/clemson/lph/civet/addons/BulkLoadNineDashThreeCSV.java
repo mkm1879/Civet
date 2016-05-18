@@ -151,6 +151,9 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 								 logger.error(e);
 							}
 						}
+						if( "EGG".equalsIgnoreCase( data.getProduct() ) ) {
+							addToEggCVIs(data.getCVINumber());
+						}
 						String sXML = buildXml( data );
 //			System.out.println(sXML);
 						// Send it!
@@ -164,7 +167,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 								if( e.getMessage().contains("timed out")) {
 									try {
 										logger.info("Sleeping after timeout");
-										sleep(2000L);
+										sleep(5000L);
 									} catch (InterruptedException e1) { }
 									iTries++;
 								}
@@ -175,6 +178,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 							}
 						}
 						if( sRet == null || !sRet.trim().startsWith("00") ) {
+							if( sRet == null ) sRet = "Transmission level error";
 							logger.error( sRet, new Exception("Error submitting NPIP 9-3 spreadsheet CVI to USAHERDS: " +
 														data.getCVINumber() ) );
 							logger.error(sXML);
@@ -314,6 +318,31 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			}
 			return bRet;
 		}
+		
+		private boolean addToEggCVIs( String sCVINbr ) {
+			boolean bRet = false;
+			// NOTE: There is no generator for this now.  Make one in AddOns and distribute to other states????
+			String sQuery = "INSERT INTO USAHERDS_LPH.dbo.EggCVIs VALUES( ? )";
+			Connection conn = factory.makeDBConnection();
+			try {
+				PreparedStatement ps = conn.prepareStatement(sQuery);
+				ps.setString(1, sCVINbr);
+				int iRet = ps.executeUpdate();
+				if( iRet > 0 ) {
+					bRet = true;
+				}
+			} catch( SQLException e ) {
+				logger.error("Error in query: " + sQuery, e);
+			} finally {
+				try {
+					if( conn != null && !conn.isClosed() )
+						conn.close();
+				} catch( Exception e2 ) {
+				}
+			}
+			return bRet;
+		}
+
 	
 	}// end inner class TWorkSave
 	
