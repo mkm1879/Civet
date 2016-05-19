@@ -270,8 +270,10 @@ public class SaveCVIThread extends Thread {
 	
 	private String buildXml() {
 		// NOTE: Starting with everything in original.
-		stdXml.validateHerdsOriginCounty();
-		stdXml.validateHerdsDestinationCounty();
+		if( stdXml != null ) {
+			stdXml.validateHerdsOriginCounty();
+			stdXml.validateHerdsDestinationCounty();
+		}
 		StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder(stdXml);
 		VetLookup vet = new VetLookup( iIssuedByKey );
 		xmlBuilder.setCviNumber(sCVINo);
