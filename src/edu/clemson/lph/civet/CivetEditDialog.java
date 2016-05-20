@@ -2470,7 +2470,7 @@ public final class CivetEditDialog extends JFrame {
 		String sZipcode = jtfZip.getText();
 		String sThisState = jtfThisState.getText();
 		String sThisCounty = jtfThisCounty.getText();
-		if( sThisCounty == null || sThisCounty.trim().length() == 0 ) {
+		if( sThisCounty == null || sThisCounty.trim().length() < 3 ) {
 			try {
 				String sThisHerdsCounty = CountyUtils.getCounty(sZipcode);
 				if( sThisHerdsCounty != null ) {

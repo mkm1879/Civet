@@ -281,7 +281,7 @@ public class StdeCviXmlBuilder {
 				logger.error("Attempt to add address with no state.", new Exception());
 				state.setTextContent("ERROR");				
 			}
-			if( sCounty != null ) {
+			if( sCounty != null && sCounty.trim().length() >= 3 ) {
 				Node county = childNodeByName( address, "County");
 				if( county == null ) {
 					county = doc.createElement("County");
