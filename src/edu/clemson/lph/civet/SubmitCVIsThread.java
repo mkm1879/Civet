@@ -38,6 +38,14 @@ public class SubmitCVIsThread extends Thread {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}
 	private CivetWebServices service = null;
+	protected List<File> allFiles = null;
+	protected String sCurrentFilePath = "";
+	protected ProgressDialog prog;
+	protected String sProgTitle = "Civet: Processing File";
+	protected String sProgPrompt = "File: ";
+	protected String sOutPath;
+	CivetInbox parent = null;
+	
 	public SubmitCVIsThread(CivetInbox parent, List<File> files) {
 		this.parent = parent;
 		this.allFiles = files;
@@ -47,13 +55,6 @@ public class SubmitCVIsThread extends Thread {
 		prog.setVisible(true);
 		service = new CivetWebServices();
 	}
-	protected List<File> allFiles = null;
-	protected String sCurrentFilePath = "";
-	protected ProgressDialog prog;
-	protected String sProgTitle = "Civet: Processing File";
-	protected String sProgPrompt = "File: ";
-	protected String sOutPath;
-	CivetInbox parent = null;
 	
 	@Override
 	public void run() {
