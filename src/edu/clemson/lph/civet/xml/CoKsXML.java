@@ -155,6 +155,21 @@ public class CoKsXML {
 		return sRet;
 	}
 	
+	
+	private String nodeToString(Node node, boolean bOmitDeclaration) {
+		String sOmit = bOmitDeclaration ? "yes" : "no";
+		StringWriter sw = new StringWriter();
+		try {
+			Transformer t = TransformerFactory.newInstance().newTransformer();
+			t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, sOmit);
+			t.setOutputProperty(OutputKeys.INDENT, "yes");
+			t.transform(new DOMSource(node), new StreamResult(sw));
+		} catch (TransformerException te) {
+			logger.error("nodeToString Transformer Exception", te);
+		}
+		return sw.toString();
+	}
+
 	public String toStdXMLString() {
 		String sRet = null;
 		String sXSLT = CivetConfig.getCoKsXSLTFile();
@@ -250,20 +265,7 @@ public class CoKsXML {
 		else
 			return null;
 	}
-		
-	private String nodeToString(Node node, boolean bOmitDeclaration) {
-		String sOmit = bOmitDeclaration ? "yes" : "no";
-		StringWriter sw = new StringWriter();
-		try {
-			Transformer t = TransformerFactory.newInstance().newTransformer();
-			t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, sOmit);
-			t.setOutputProperty(OutputKeys.INDENT, "yes");
-			t.transform(new DOMSource(node), new StreamResult(sw));
-		} catch (TransformerException te) {
-			logger.error("nodeToString Transformer Exception", te);
-		}
-		return sw.toString();
-	}
+
 	
 	public ArrayList<String> listSpeciesCodes() {
 		ArrayList<String> aRet = new ArrayList<String>();

@@ -43,6 +43,7 @@ public class CviMetaDataXml {
 	public static final String CVI_SRC_VSPS = "VSPS";
 	public static final String CVI_SRC_SWINE = "SWINE_SS";
 	public static final String CVI_SRC_9dash3 = "9_Dash_3";
+	public static final String CVI_SRC_PERMIT = "Permit_Form";
 	private Document doc = null;
 	
 	public CviMetaDataXml() {
