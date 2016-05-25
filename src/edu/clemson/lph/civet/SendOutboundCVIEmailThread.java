@@ -138,9 +138,12 @@ public class SendOutboundCVIEmailThread extends Thread {
 									iPart++;
 								}
 								else {
+									String sAddress = CivetConfig.getEmailTestTo();
+									if( sAddress == null ) sAddress = sCurrentEmail;
 									MessageDialog.messageWait(prog.getWindowParent(), "Civet: Message Failed",
-											"EMail Failed to " + sState + " at " + sCurrentEmail + "\n" + sCurrentEmailError );
+											"EMail Failed to " + sState + " at " + sAddress + "\n" + sCurrentEmailError );
 									sCurrentEmailError = "";
+									// How to bail out gracefully on fatal error?
 								}
 						}
 						aCVIsOut.clear();
@@ -235,7 +238,8 @@ public class SendOutboundCVIEmailThread extends Thread {
 			logger.info("Email sent to: " + sEmail + " at " + sState + " returned " + bRet);
 		} catch (AuthenticationFailedException e1) {
 			sCurrentEmailError = e1.getMessage();
-			MessageDialog.messageWait( prog.getWindowParent(), "Civet: Invalid UserID/Password", "Authentication failure to Email system");
+			MessageDialog.messageWait( prog.getWindowParent(), "Civet: Invalid UserID/Password", 
+					"Authentication failure to Email system:\n" + CivetConfig.getSmtpHost());
 			MailMan.setDefaultUserID( null );
 			MailMan.setDefaultPassword( null );
 			// NOTE: This is still not 100% right.  If an authentication error happens AFTER some have been sent

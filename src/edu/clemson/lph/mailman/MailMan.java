@@ -280,7 +280,7 @@ public class MailMan {
 			bRet = false;
 		}
 		return bRet;
-					}
+	}
 
 	private static Properties setupProperties() {
 		Properties props = new Properties();

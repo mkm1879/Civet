@@ -56,6 +56,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 	private CviMetaDataXml cviMetaData = null;
 	private String sCurrentCVINumber;
 	private ArrayList<File> aSentCVIFiles = new ArrayList<File>();
+	private String sCurrentEmailError = "";
 	
 	public SendInboundErrorsEmailThread( CivetInbox parent, ProgressDialog prog ) {
 		this.parent = parent;
@@ -150,8 +151,12 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 									iPart++;
 								}
 								else {
+									String sAddress = CivetConfig.getEmailTestTo();
+									if( sAddress == null ) sAddress = sCurrentEmail;
 									MessageDialog.messageWait(prog.getWindowParent(), "Civet: Message Failed",
-											"EMail Failed to " + sState + " at " + sCurrentEmail);
+											"EMail Failed to " + sState + " at " + sAddress + "\n" + sCurrentEmailError);
+									sCurrentEmailError = "";
+									// How to bail out gracefully on fatal error?
 								}
 						}
 						aCVIsOut.clear();
@@ -228,13 +233,20 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 					"CVIs With Errors From " + sState + " to " + sHomeState + (iPart>1?" Part " + iPart:""),
 					sInBoundCVIErrorMessage, aFiles);
 		} catch (AuthenticationFailedException e1) {
-			MessageDialog.messageWait( prog.getWindowParent(), "Civet: Invalid UserID/Password", "Authentication failure to Email system");
+			sCurrentEmailError = e1.getMessage();
+			MessageDialog.messageWait( prog.getWindowParent(), "Civet: Invalid UserID/Password", 
+					"Authentication failure to Email system:\n" + CivetConfig.getSmtpHost());
 			MailMan.setDefaultUserID( null );
 			MailMan.setDefaultPassword( null );
 			// NOTE: This is still not 100% right.  If authentication fails part way through we will exit the enclosing try that catches this.
 			throw( e1 );
 		} catch (MailException me) {
+			sCurrentEmailError = me.getMessage();
 			logger.error(me.getMessage() + "\nInvalid MIMEFile Specification\n" + me.getMessage() );
+			bRet = false;
+		}  catch( Exception e ) {
+			sCurrentEmailError = e.getMessage();
+			logger.error("Could not send error ", e);
 			bRet = false;
 		}
 		return bRet;

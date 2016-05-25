@@ -56,6 +56,11 @@ countiesTableFile=E:\\EclipseJava\\Civet\\CountyTable.csv
 zipcodeTableFile=E:\\EclipseJava\\Civet\\ZipTable.csv
 countyAliasesTableFile=E:\\EclipseJava\\Civet\\CountyAliasesTable.csv
 
+localNetAddresses=130.127.169.203
+dbServer=LPHStage
+dbPort=1433
+dbDatabaseName=USAHERDS
+
 #Robot
 robotInputPath=E:\\Documents\\Civet\\CivetRobotIn
 robotCompleteOutPath=E:\\Documents\\Civet\\CivetRobotComplete
