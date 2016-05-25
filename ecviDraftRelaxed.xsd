@@ -292,6 +292,11 @@
                     <xs:documentation>Porcine (Swine)</xs:documentation>
                 </xs:annotation>
             </xs:enumeration>
+            <xs:enumeration value="POU">
+                <xs:annotation>
+                    <xs:documentation>Poultry</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
             <xs:enumeration value="QUA">
                 <xs:annotation>
                     <xs:documentation>Quail</xs:documentation>

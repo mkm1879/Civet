@@ -99,7 +99,7 @@ public class TwoLineQuestionDialog extends JDialog {
 	}
 	
 	public void setVisible( boolean bVis ) {
-		if( mDummyParent != null ) {
+		if( mDummyParent != null && mDummyParent.isVisible() ) {
 			mDummyParent.setVisible(bVis);
 			if(!bVis ) {
 				mDummyParent.dispose();
