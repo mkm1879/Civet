@@ -158,7 +158,7 @@ public final class CivetEditDialog extends JFrame {
 	JTextField jtfPhone;
 	JTextField jtfAddress;
 	JTextField jtfThisCity;
-	JTextField jtfThisCounty;  // Hidden
+	JComboBox<String> cbThisCounty;  // Hidden
 	JTextField jtfZip;
 	DBNumericField jtfNumber;
 	DateField jtfDateInspected;
@@ -300,6 +300,17 @@ public final class CivetEditDialog extends JFrame {
 		if( sOtherState != null ) {
 			for( String sCounty : Counties.getCounties(sOtherState) ) {
 				cbOtherCounty.addItem(sCounty);
+			}
+		}
+	}
+
+	private void refreshThisCounties() {
+		cbThisCounty.removeAllItems();
+		cbThisCounty.addItem(null);
+		String sThisState = CivetConfig.getHomeStateAbbr();
+		if( sThisState != null ) {
+			for( String sCounty : Counties.getCounties(sThisState) ) {
+				cbThisCounty.addItem(sCounty);
 			}
 		}
 	}
@@ -979,12 +990,12 @@ public final class CivetEditDialog extends JFrame {
 		       String sValue = lThisCity.getText();
 		       if( "City:".equals(sValue)) {
 		    	   lThisCity.setText("County:");
-		    	   jtfThisCounty.setVisible(true);
+		    	   cbThisCounty.setVisible(true);
 		    	   jtfThisCity.setVisible(false);
 		       }
 		       else {
 		    	   lThisCity.setText("City:");
-		    	   jtfThisCounty.setVisible(false);
+		    	   cbThisCounty.setVisible(false);
 		    	   jtfThisCity.setVisible(true);
 		       }
 		    }  
@@ -1006,15 +1017,10 @@ public final class CivetEditDialog extends JFrame {
 		gbc_jtfThisCity.gridy = 5;
 		pThisState.add(jtfThisCity, gbc_jtfThisCity);
 		// This control is hidden but used to force parallel logic
-		jtfThisCounty = new JTextField();
-		jtfThisCounty.addFocusListener(new java.awt.event.FocusAdapter() {
-			public void focusLost(FocusEvent e) {
-				logger.info("jtfThisCounty (focusLost) set to: " + Counties.getHerdsCounty(jtfThisState.getText(), jtfThisCounty.getText()));
-				jtfThisCounty.setText(Counties.getHerdsCounty(jtfThisState.getText(), jtfThisCounty.getText()));;
-			}
-		});
-		jtfThisCounty.setVisible(false);
-		pThisState.add(jtfThisCounty, gbc_jtfThisCity );
+		cbThisCounty = new JComboBox<String>();
+		cbThisCounty.setVisible(false);
+		refreshThisCounties();
+		pThisState.add(cbThisCounty, gbc_jtfThisCity );
 		
 
 		JLabel lThisZipCode = new JLabel("ZipCode:");
@@ -1035,13 +1041,13 @@ public final class CivetEditDialog extends JFrame {
 			@Override
 			public void focusLost(FocusEvent arg0) {
 				checkZipcode( jtfZip );
-				if( jtfThisCounty.getText() == null || jtfThisCounty.getText().trim().length() == 0 ) {
+				if( cbThisCounty.getSelectedItem() == null || ((String)cbThisCounty.getSelectedItem()).trim().length() == 0 ) {
 					String sZipCounty;
 					try {
 						sZipCounty = CountyUtils.getCounty(jtfZip.getText());
 						if( sZipCounty != null ) {
 							String sHerdsCounty = Counties.getHerdsCounty(jtfThisState.getText(), sZipCounty);
-							jtfThisCounty.setText(sHerdsCounty);
+							cbThisCounty.setSelectedItem(sHerdsCounty);
 						}
 					} catch (IOException e) {
 						logger.error(e);
@@ -1842,7 +1848,7 @@ public final class CivetEditDialog extends JFrame {
 				jtfThisName.setText(dlg.getSelectedPremName());
 				jtfAddress.setText(dlg.getSelectedAddress());
 				jtfThisCity.setText(dlg.getSelectedCity());
-				jtfThisCounty.setText(dlg.getSelectedCounty());
+				cbThisCounty.setSelectedItem(Counties.getHerdsCounty(CivetConfig.getHomeStateAbbr(), dlg.getSelectedCounty()));
 				jtfZip.setText(dlg.getSelectedZipCode());
 				String sNewPhone = dlg.getSelectedPhone();
 				if( jtfPhone.getText() == null || jtfPhone.getText().trim().length() == 0 ) {
@@ -1868,7 +1874,7 @@ public final class CivetEditDialog extends JFrame {
 							jtfThisName.setText(model.getPremName());
 							jtfAddress.setText(model.getAddress());
 							jtfThisCity.setText(model.getCity());
-							jtfThisCounty.setText(model.getCounty());
+							cbThisCounty.setSelectedItem(Counties.getHerdsCounty(CivetConfig.getHomeStateAbbr(), model.getCounty()));
 							jtfZip.setText(model.getZipCode());
 							String sNewPhone = model.getPhone();
 							if( jtfPhone.getText() == null || jtfPhone.getText().trim().length() == 0 ) {
@@ -1904,7 +1910,7 @@ public final class CivetEditDialog extends JFrame {
 				jtfThisName.setText(dlg.getSelectedPremName());
 				jtfAddress.setText(dlg.getSelectedAddress());
 				jtfThisCity.setText(dlg.getSelectedCity());
-				jtfThisCounty.setText(dlg.getSelectedCounty());
+				cbThisCounty.setSelectedItem(Counties.getHerdsCounty(CivetConfig.getHomeStateAbbr(), dlg.getSelectedCounty()));
 				jtfZip.setText(dlg.getSelectedZipCode());
 				String sPin = dlg.getSelectedPremId();
 				if( sPin != null && sPin.trim().length() != 7 ) {
@@ -1943,7 +1949,7 @@ public final class CivetEditDialog extends JFrame {
 					jtfThisName.setText(dlg.getSelectedPremName());
 					jtfAddress.setText(dlg.getSelectedAddress());
 					jtfThisCity.setText(dlg.getSelectedCity());
-					jtfThisCounty.setText(dlg.getSelectedCounty());
+					cbThisCounty.setSelectedItem(Counties.getHerdsCounty(CivetConfig.getHomeStateAbbr(), dlg.getSelectedCounty()));
 					jtfZip.setText(dlg.getSelectedZipCode());
 					String sPin = dlg.getSelectedPremId();
 					if( sPin != null && sPin.trim().length() != 7 ) {
@@ -1991,7 +1997,7 @@ public final class CivetEditDialog extends JFrame {
 			jtfPhone.setText("");
 			jtfAddress.setText("");
 			jtfThisCity.setText("");
-			jtfThisCounty.setText("");
+			cbThisCounty.setSelectedItem(null);
 			jtfZip.setText("");
 			jtfDateInspected.setText("");
 			jtfDateReceived.setText("");
@@ -2153,7 +2159,7 @@ public final class CivetEditDialog extends JFrame {
 					String sThisCountyIn = xStd.getOriginCounty();
 					String sThisZip = xStd.getOriginZip();
 					String sThisHerdsCounty = getCounty( sThisStateCode, sThisCountyIn, sThisZip );
-					jtfThisCounty.setText(sThisHerdsCounty);
+					cbThisCounty.setSelectedItem(sThisHerdsCounty);
 					jtfZip.setText(xStd.getOriginZip());
 					String sNAN = xStd.getVetNAN();
 					if( sNAN != null && sNAN.trim().length() > 0 ) {
@@ -2210,7 +2216,7 @@ public final class CivetEditDialog extends JFrame {
 					String sThisCountyIn = xStd.getDestinationCounty();
 					String sThisZip = xStd.getDestinationZip();
 					String sThisHerdsCounty = getCounty( sThisState, sThisCountyIn, sThisZip);
-					jtfThisCounty.setText(sThisHerdsCounty);
+					cbThisCounty.setSelectedItem(sThisHerdsCounty);
 					jtfZip.setText(xStd.getDestinationZip());
 					String sVetName = xStd.getVetName();
 					jtfIssuedBy.setText(sVetName);
@@ -2469,7 +2475,7 @@ public final class CivetEditDialog extends JFrame {
 		String sCity = jtfThisCity.getText();
 		String sZipcode = jtfZip.getText();
 		String sThisState = jtfThisState.getText();
-		String sThisCounty = jtfThisCounty.getText();
+		String sThisCounty = (String)cbThisCounty.getSelectedItem();
 		if( sThisCounty == null || sThisCounty.trim().length() < 3 ) {
 			try {
 				String sThisHerdsCounty = CountyUtils.getCounty(sZipcode);
