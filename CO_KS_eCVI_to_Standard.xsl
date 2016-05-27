@@ -221,7 +221,7 @@
         <xsl:param name="table"/>
         <xsl:for-each select="$table/item">
             <xsl:variable name="head" select="headCt"/>
-            <xsl:if test="number($head) = 1">
+            <xsl:if test="number($head) = 1 and ./offID and ./offID != ''">
                 <xsl:element name="Animal">
                     <xsl:if test="./ageNum and ./ageNum != ''">
                         <xsl:attribute name="Age">
@@ -289,7 +289,7 @@
         <xsl:param name="table"/>
         <xsl:for-each select="$table/item">
             <xsl:variable name="head" select="headCt"/>
-            <xsl:if test="number($head) > 1">
+            <xsl:if test="number($head) > 1 or not(./offID) or ./offID = ''">
                 <xsl:element name="GroupLot">
                     <xsl:attribute name="Quantity">
                         <xsl:value-of select="headCt"/>
