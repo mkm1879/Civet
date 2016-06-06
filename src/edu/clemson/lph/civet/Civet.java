@@ -62,7 +62,7 @@ public class Civet {
 		CivetConfig.checkAllConfig();
 		logger.setLevel(CivetConfig.getLogLevel());
 		logger.info("Civet running build: " + CivetInbox.VERSION);
-		if( args.length == 1) {
+		if( args.length == 1  && !args[0].toLowerCase().equals("-robot") ) {
 			String sFile = args[0];
 			if( sFile != null && ( sFile.toLowerCase().endsWith(".cvi") || sFile.toLowerCase().endsWith(".pdf")) ) {
 				previewFile( sFile );

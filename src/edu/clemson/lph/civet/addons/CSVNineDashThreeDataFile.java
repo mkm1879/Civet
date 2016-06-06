@@ -173,7 +173,10 @@ public class CSVNineDashThreeDataFile {
 	}
 	
 	public String getConsigneePIN() {
-		return get("ConsigneePIN");
+		String sPIN = get("ConsigneePIN");
+		if( sPIN != null ) 
+			sPIN = sPIN.toUpperCase();
+		return sPIN;
 	}
 	public String getConsigneeBusiness() {
 		return get("ConsigneeBusiness");
@@ -201,7 +204,10 @@ public class CSVNineDashThreeDataFile {
 		return formatZip( get("ConsigneeZip") );
 	}
 	public String getConsignorPIN() {
-		return get("ConsignorPIN");
+		String sPIN = get("ConsignorPIN");
+		if( sPIN != null ) 
+			sPIN = sPIN.toUpperCase();
+		return sPIN;
 	}
 	public String getConsignorBusiness() {
 		return get("ConsignorBusiness");
