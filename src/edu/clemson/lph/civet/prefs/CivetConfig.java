@@ -49,6 +49,7 @@ public class CivetConfig {
 	private static final int LGPL = 0;
 	private static final int XFA = 1;
 	private static final long DEFAULT_MAX_ANIMALS = 100;
+	private static final long DEFAULT_WS_TIMEOUT = 2 * 60 * 1000;  // Two minutes
 	private static int iJPedalType = UNK;
 	private static String sHERDSUserName = null;
 	private static String sHERDSPassword = null;
@@ -800,6 +801,23 @@ public class CivetConfig {
 			System.exit(1);
 		}
 		return iRet;
+	}
+	
+	public static long getWSTimeout() {
+		long lTimeout = DEFAULT_WS_TIMEOUT; // Two minutes
+		String sRet = props.getProperty("wsTimeout");
+		if( sRet == null || sRet.trim().length() == 0 ) { 
+			return DEFAULT_WS_TIMEOUT;
+		}
+		try {
+			lTimeout = Integer.parseInt(sRet);
+		} catch( NumberFormatException nfe ) {
+			logger.error( "Cannot read maxAnimals " + sRet + " as an integer number");
+			logger.error(nfe);
+			return DEFAULT_WS_TIMEOUT;
+		}
+		
+		return lTimeout;
 	}
 	
 	public static long getMaxAnimals() {

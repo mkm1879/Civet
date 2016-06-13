@@ -76,6 +76,7 @@ public class CivetWebServices {
 		String sRet = null;
 		String sURL = CivetConfig.getHERDSWebServiceURL();
 		ExternalMessagesStub stub = new ExternalMessagesStub(sURL);
+		stub._getServiceClient().getOptions().setTimeOutInMilliSeconds(CivetConfig.getWSTimeout());
 		AddExternalMessage proxy = new AddExternalMessage();
 		proxy.setUserName(CivetConfig.getHERDSUserName());
 		proxy.setPassword(CivetConfig.getHERDSPassword());

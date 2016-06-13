@@ -167,7 +167,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 								if( e.getMessage().contains("timed out")) {
 									try {
 										logger.info("Sleeping after timeout");
-										sleep(5000L);
+										sleep(10000L);
 									} catch (InterruptedException e1) { }
 									iTries++;
 								}
