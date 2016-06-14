@@ -810,9 +810,9 @@ public class CivetConfig {
 			return DEFAULT_WS_TIMEOUT;
 		}
 		try {
-			lTimeout = Integer.parseInt(sRet);
+			lTimeout = Long.parseLong(sRet);
 		} catch( NumberFormatException nfe ) {
-			logger.error( "Cannot read maxAnimals " + sRet + " as an integer number");
+			logger.error( "Cannot read wsTimeout " + sRet + " as an long integer number");
 			logger.error(nfe);
 			return DEFAULT_WS_TIMEOUT;
 		}

@@ -143,14 +143,6 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 							}
 							continue;
 						}
-						if( !("live animal".equalsIgnoreCase( data.getProduct() )) ) {
-							try {
-								String sLineOut = data.getCVINumber() + ", " + data.getProduct() + "\r\n";
-							    Files.write(Paths.get("NonAnimalCVIs.txt"), sLineOut.getBytes(), CREATE_OR_APPEND);
-							}catch (IOException e) {
-								 logger.error(e);
-							}
-						}
 						if( "EGG".equalsIgnoreCase( data.getProduct() ) ) {
 							addToEggCVIs(data.getCVINumber());
 						}
