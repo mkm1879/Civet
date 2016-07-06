@@ -22,7 +22,9 @@ import edu.clemson.lph.civet.CSVFilter;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
+import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
@@ -105,7 +107,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			this.sFilePath = sFilePath;
 			this.parent = parent;
 			this.factory = factory;
-			service = new CivetWebServices();
+			service = CivetWebServiceFactory.getService();
 		}
 		
 		private String formatMessage( int iRow, int iMax ) {

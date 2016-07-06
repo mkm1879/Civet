@@ -22,7 +22,9 @@ import edu.clemson.lph.civet.CSVFilter;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
+import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.dialogs.*;
@@ -91,7 +93,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 			this.prog = prog;
 			this.sFilePath = sFilePath;
 			this.fParent = fParent;
-			service = new CivetWebServices();
+			service = CivetWebServiceFactory.getService();
 		}
 		public void run() {
 			// Create CSVDataFile object from CSV file

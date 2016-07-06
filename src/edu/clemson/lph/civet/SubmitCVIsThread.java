@@ -27,7 +27,9 @@ import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
+import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.FileUtils;
@@ -53,7 +55,7 @@ public class SubmitCVIsThread extends Thread {
 		prog = new ProgressDialog(parent, sProgTitle, sProgPrompt );
 		prog.setAuto(true);
 		prog.setVisible(true);
-		service = new CivetWebServices();
+		service = CivetWebServiceFactory.getService();
 	}
 	
 	@Override
@@ -123,7 +125,8 @@ public class SubmitCVIsThread extends Thread {
 				}
 			});		
 			// If successfully sent, record the number in CertNbrs.txt
-			if( sRet != null && !sRet.toLowerCase().contains("error") && sRet.startsWith("00") ) {
+			System.out.println( service.getSuccessMessage() );
+			if( sRet != null && !sRet.toLowerCase().contains("error") && sRet.contains(service.getSuccessMessage() ) ) {
 				if( !CertificateNbrLookup.addCertificateNbr(sCertNbr) ) {
 					MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " Added twice.\n" +
 							"Please report to developer.");

@@ -32,7 +32,9 @@ import org.w3c.dom.Element;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
+import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.dialogs.MessageDialog;
@@ -55,7 +57,7 @@ public class InsertVspsCviThread extends Thread {
 		prog = new ProgressDialog(parent, "Civet: VSPS Import", sProgMsg);
 		prog.setAuto(true);
 		prog.setVisible(true);
-		service = new CivetWebServices();
+		service = CivetWebServiceFactory.getService();
 	}
 
 	@Override
