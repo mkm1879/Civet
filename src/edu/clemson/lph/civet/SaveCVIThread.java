@@ -263,11 +263,50 @@ public class SaveCVIThread extends Thread {
 		}
 		if( bAttachmentFileBytes == null || sAttachmentFileName == null )
 			logger.error( "Reached end of setupFilenameAndContent with no name or content");
+		
 		sXmlFileName = "CVI_" + sOriginStateCode + "_To_" + sDestinationStateCode + "_" + sCVINo + ".cvi";
+		checkExistingFiles( sOriginalFileName, sXmlFileName );
 		sAttachmentFileName = FileUtils.replaceInvalidFileNameChars(sAttachmentFileName);
 		sXmlFileName = FileUtils.replaceInvalidFileNameChars(sXmlFileName);		
 	}
 	
+	/**
+	 * Look for existing .cvi files whose names will change due to state or cvi number edits
+	 * Delete any existing.
+	 * @param sExisting filename
+	 * @param sNew filename
+	 */
+	private void checkExistingFiles(String sExisting, String sNew) {
+		if( sExisting != null && sExisting.toLowerCase().endsWith(".cvi") && !sExisting.equalsIgnoreCase(sNew) ) {
+			// Appears we opened and changed an existing .cvi file need to delete existing before saving.
+			String sEmailOutDir = CivetConfig.getEmailOutDirPath();
+			String sEmailErrorsDir = CivetConfig.getEmailErrorsDirPath();
+			String sToFileDir = CivetConfig.getToFileDirPath();
+			File fEmailOut = new File ( sEmailOutDir + sExisting );
+			File fEmailErrors = new File ( sEmailErrorsDir + sExisting );
+			File fToFile = new File ( sToFileDir + sExisting );
+			try { 
+				if( fEmailOut.exists() && fEmailOut.isFile() )
+					fEmailOut.delete();
+			} catch( Exception e ) {
+				logger.error("Could not delete file " + fEmailOut, e);
+			}
+			try { 
+				if( fEmailErrors.exists() && fEmailErrors.isFile() )
+					fEmailErrors.delete();
+			} catch( Exception e ) {
+				logger.error("Could not delete file " + fEmailErrors, e);
+			}
+			try { 
+				if( fToFile.exists() && fToFile.isFile() )
+					fToFile.delete();
+			} catch( Exception e ) {
+				logger.error("Could not delete file " + fToFile, e);
+			}
+		}
+	}
+
+
 	private String buildXml() {
 		// NOTE: Starting with everything in original.
 		if( stdXml != null ) {
