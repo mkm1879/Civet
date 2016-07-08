@@ -222,6 +222,7 @@ public final class CivetEditDialog extends JFrame {
 	private boolean bPreview;
 	private String sDefaultPurpose;
 	JLabel lThisCity;
+	boolean bGotoLast = false; // Flag to open thread to goto last page when finished loading.
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -564,10 +565,17 @@ public final class CivetEditDialog extends JFrame {
 	}
 
 	void doEditLast() {
+		doEditLast( false );
+	}
+		
+	void doEditLast(boolean bLastPage) {
 		File fLast = controller.getLastSavedFile();
 		File aFiles[] = new File[1];
 		aFiles[0] = fLast;
 		CivetEditDialog dlgLast = new CivetEditDialog(this);
+		if( bLastPage ) {
+			dlgLast.bGotoLast = true;
+		}
 		dlgLast.openFiles(aFiles, false);
 		dlgLast.setVisible(true);
 	}
@@ -1521,8 +1529,8 @@ public final class CivetEditDialog extends JFrame {
 	 * Open previously selected files.
 	 * @param selectedFiles
 	 */
-	public void openFiles(File selectedFiles[], boolean bView ) {
-		controller.setCurrentFiles(selectedFiles, bView);
+	public void openFiles(File selectedFiles[], boolean bViewOnly ) {
+		controller.setCurrentFiles(selectedFiles, bViewOnly);
 	}
 
 	/**
@@ -1705,6 +1713,11 @@ public final class CivetEditDialog extends JFrame {
 			return;
 		}
 		controller.setPage(iPage);
+	}
+	
+	void gotoLastPage() {
+		int iPages = controller.getNumberOfPages();
+		controller.setPage(iPages);
 	}
 	
 	void setupForm( String sFileName, int iPageNo, int iPagesInFile, int iFileNo, int iFiles, boolean bPageComplete ) {

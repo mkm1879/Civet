@@ -89,6 +89,7 @@ public class AddPageToCviThread extends Thread {
 				dlg.saveComplete();
 				prog.setVisible(false);
 				prog.dispose();
+				dlg.doEditLast(true);
 			}
 		});
 	}
