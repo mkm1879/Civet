@@ -68,7 +68,7 @@ public class CivetWebServicesNew implements CivetWebServices {
 			HttpPostClient postXML = new HttpPostClient();
 			postXML.authenticate();
 			postXML.addParameter("MessageType", CVI_UPLOAD_MESSAGE_TYPE);
-			postXML.addParameter("ParticipantType", CVI_UPLOAD_SOURCE );
+			postXML.addParameter("Source", CVI_UPLOAD_SOURCE );
 			postXML.addParameter("Message", sXML);
 			if( postXML.getURL(sURL) ) {
 				System.out.println(postXML.getBody());
