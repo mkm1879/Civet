@@ -165,6 +165,22 @@ public class AddAnimalsDialog extends JDialog {
 							int aRows[] = tblIDs.getSelectedRows();
 							AddAnimalsDialog.this.model.deleteRows( aRows );
 						}
+						else if ( e.getKeyCode() == KeyEvent.VK_ENTER ) {
+							if( AddAnimalsDialog.this.jtfNewId.getText().trim().length() > 0 ) {
+								if( AddAnimalsDialog.this.jtfAddNum.getText().trim().length() > 0 ) {
+									// Do add number
+									addIDs();
+								}
+								else {
+									// Do add
+									addID();
+								}
+							}
+							else {
+								// Do save (misnomer, Cancel requires active restore
+								setVisible( false );
+							}
+						}
 					}
 				});
 			}
