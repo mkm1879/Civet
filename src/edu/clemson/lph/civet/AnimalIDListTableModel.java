@@ -108,8 +108,10 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 	@Override
 	public String getColumnName( int arg0 ) {
 		if( arg0 == 0 )
-			return "Species";
+			return "Row";
 		else if( arg0 == 1 )
+			return "Species";
+		else if( arg0 == 2 )
 			return "Animal ID";
 		else 
 			return null;
@@ -122,7 +124,7 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 2;
+		return 3;
 	}
 
 	@Override
@@ -132,10 +134,12 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int iRow, int iCol) {
-		if( rows != null &&  iCol >=0 && iCol <= 1 && iRow >=0 && iRow < rows.size() ) {
+		if( rows != null &&  iCol >=0 && iCol <= 2 && iRow >=0 && iRow < rows.size() ) {
 			if( iCol == 0 )
+				return Integer.toString(iRow + 1);
+			if( iCol == 1 )
 				return rows.get(iRow).sSpecies;
-			if( iCol == 1)
+			if( iCol == 2)
 				return rows.get(iRow).sTag;
 			else
 				return null;
