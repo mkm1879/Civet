@@ -102,7 +102,7 @@ public class AddAnimalsDialog extends JDialog {
 				jtfNewId.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						addID();
+						doEnter();
 					}
 				});
 				panel.add(jtfNewId);
@@ -114,7 +114,7 @@ public class AddAnimalsDialog extends JDialog {
 				btnAdd.addActionListener( new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						addID();
+						doEnter();
 					}
 				});
 			}
@@ -124,7 +124,7 @@ public class AddAnimalsDialog extends JDialog {
 				jtfAddNum.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						addIDs();
+						doEnter();
 					}
 				});
 				panel.add(jtfAddNum);
@@ -164,22 +164,6 @@ public class AddAnimalsDialog extends JDialog {
 						if( e.getKeyCode() == KeyEvent.VK_DELETE ) {
 							int aRows[] = tblIDs.getSelectedRows();
 							AddAnimalsDialog.this.model.deleteRows( aRows );
-						}
-						else if ( e.getKeyCode() == KeyEvent.VK_ENTER ) {
-							if( AddAnimalsDialog.this.jtfNewId.getText().trim().length() > 0 ) {
-								if( AddAnimalsDialog.this.jtfAddNum.getText().trim().length() > 0 ) {
-									// Do add number
-									addIDs();
-								}
-								else {
-									// Do add
-									addID();
-								}
-							}
-							else {
-								// Do save (misnomer, Cancel requires active restore
-								setVisible( false );
-							}
 						}
 					}
 				});
@@ -260,6 +244,23 @@ public class AddAnimalsDialog extends JDialog {
 		}
 		jtfNewId.setText("");
 		jtfNewId.requestFocus();
+	}
+	
+	private void doEnter() {
+		if( jtfNewId.getText().trim().length() > 0 ) {
+			if( jtfAddNum.getText().trim().length() > 0 ) {
+				// Do add number
+				addIDs();
+			}
+			else {
+				// Do add
+				addID();
+			}
+		}
+		else {
+			// Do save (misnomer, Cancel requires active restore
+			setVisible( false );
+		}
 	}
 	
 	private void addIDs() {
