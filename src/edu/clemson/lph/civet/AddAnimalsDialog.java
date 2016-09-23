@@ -167,6 +167,11 @@ public class AddAnimalsDialog extends JDialog {
 						}
 					}
 				});
+				tblIDs.getColumnModel().getColumn(0).setPreferredWidth(30);
+				tblIDs.getColumnModel().getColumn(0).setMinWidth(30);
+				tblIDs.getColumnModel().getColumn(0).setMaxWidth(30);
+				tblIDs.getColumnModel().getColumn(1).setPreferredWidth(130);
+				tblIDs.getColumnModel().getColumn(1).setMaxWidth(130);
 			}
 		}
 		{
