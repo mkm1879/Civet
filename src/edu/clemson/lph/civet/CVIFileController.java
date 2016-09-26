@@ -160,7 +160,7 @@ public class CVIFileController {
 	 * as needed inside each method.
 	 */
 	public void setPage( int iPage ) {
-		if (isPageable() && iPage > 0 && iPage <= iPages ) {
+		if (iPage > 0 && iPage <= iPages ) {
 			iPageNo = iPage;
 			try {
 				dlg.getPdfDecoder().decodePage(iPageNo);
