@@ -30,6 +30,7 @@ import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.db.*;
 import edu.clemson.lph.dialogs.*;
+import edu.clemson.lph.utils.CountyUtils;
 import edu.clemson.lph.utils.PremCheckSum;
 import edu.clemson.lph.utils.StringUtils;
 
@@ -158,26 +159,28 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 								sRet = service.sendCviXML(sXML);
 								iTries = 4;
 							} catch( Exception e ) {
-								if( e.getMessage().contains("timed out")) {
-									try {
-										logger.info("Sleeping after timeout");
-										sleep(10000L);
-									} catch (InterruptedException e1) { }
+								if( sRet.contains("99,Timeout expired")) {
+									logger.info("Time out CVI Number: " + data.getCVINumber() + '\n' + e.getMessage() );
 									iTries++;
 								}
 								else {
 									sRet = null;
-									iTries = 4;
+									break;  // Give up
 								}
 							}
 						}
 						if( sRet == null || !sRet.trim().startsWith("00") ) {
-							if( sRet == null ) sRet = "Transmission level error";
-							logger.error( sRet, new Exception("Error submitting NPIP 9-3 spreadsheet CVI to USAHERDS: " +
-														data.getCVINumber() ) );
-							logger.error(sXML);
-							MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting to USAHERDS: " + 
-														data.getCVINumber() + "\n" + sRet);
+							if( sRet.contains("99,Timeout expired")) {
+								logger.info("Time out CVI Number: " + data.getCVINumber() );
+							}
+							else {
+								sRet = "Transmission level error";
+								logger.error( sRet, new Exception("Error submitting NPIP 9-3 spreadsheet CVI to USAHERDS: " +
+										data.getCVINumber() ) );
+								logger.error(sXML);
+								MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting to USAHERDS: " + 
+										data.getCVINumber() + "\n" + sRet);
+							}
 						}
 
 					} // Next Row
@@ -256,9 +259,11 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			xmlBuilder.setPurpose("other");
 			// We don't enter the person name, normally  or add logic to tell prem name from person name.
 			Element origin = xmlBuilder.setOrigin(sSourcePIN, data.getConsignorBusiness(), data.getConsignorName(), null );
-			xmlBuilder.setAddress(origin, data.getConsignorStreet(), data.getConsignorCity(), null, sConsignorState, data.getConsignorZip());
+			String sOriginCounty = CountyUtils.getCounty(data.getConsignorZip());
+			xmlBuilder.setAddress(origin, data.getConsignorStreet(), data.getConsignorCity(), sOriginCounty, sConsignorState, data.getConsignorZip());
 			Element destination = xmlBuilder.setDestination(sDestinationPIN, data.getConsigneeBusiness(), data.getConsigneeName(), null );
-			xmlBuilder.setAddress(destination, data.getConsigneeStreet(), data.getConsigneeCity(), null, sConsigneeState, data.getConsigneeZip());
+			String sDestCounty = CountyUtils.getCounty(data.getConsigneeZip());
+			xmlBuilder.setAddress(destination, data.getConsigneeStreet(), data.getConsigneeCity(), sDestCounty, sConsigneeState, data.getConsigneeZip());
 
 			Integer iNum = data.getAnimalCount();
 			if( iNum == null ) {
