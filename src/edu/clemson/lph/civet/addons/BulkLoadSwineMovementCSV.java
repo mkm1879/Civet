@@ -82,24 +82,35 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 	}
 
 	// Also create TWorkAddSpecies and TWorkAddPage
-	class TWorkCSV extends Thread {
+	class TWorkCSV extends Thread implements ThreadCancelListener {
 		String sFilePath;
 		ProgressDialog prog;
 		JFrame fParent;
 		CivetWebServices service;
+		volatile boolean bCanceled = false;
+		
 		public TWorkCSV( ProgressDialog prog, String sFilePath, JFrame fParent ) {
 			this.prog = prog;
 			this.sFilePath = sFilePath;
 			this.fParent = fParent;
 			service = new CivetWebServices();
+			prog.setCancelListener(this);
 		}
+		
+		@Override
+		public void cancelThread() {
+			bCanceled = true;
+			interrupt();
+		}
+
+		
 		public void run() {
 			// Create CSVDataFile object from CSV file
 			CSVDataFile data;
 			try {
 				data = new CSVDataFile( sFilePath );
 				// Iterate over the CSV file
-				while( data.nextRow() ) {
+				while( data.nextRow() && !bCanceled ) {
 					prog.setMessage(sProgMessage + getCVINumber(data)); 
 					String sXML = buildXml( data );
 //			System.out.println(sXML);
