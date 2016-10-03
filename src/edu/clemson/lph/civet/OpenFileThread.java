@@ -29,6 +29,7 @@ import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.dialogs.QuestionDialog;
+import edu.clemson.lph.dialogs.ThreadCancelListener;
 import edu.clemson.lph.pdfgen.MergePDF;
 import edu.clemson.lph.utils.FileUtils;
 
