@@ -80,9 +80,9 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 						continue;
 					aComponents.add(c);
 //					System.out.println( i++ + " " + c.getClass().getName() );
-					if( c.getClass().getName().endsWith( "JComboBox" ) ) {
-						System.out.println( "c is a JComboBox with selected: " + ((JComboBox)c).getSelectedItem() );
-					}
+//					if( c.getClass().getName().endsWith( "JComboBox" ) ) {
+//						System.out.println( "c is a JComboBox with selected: " + ((JComboBox)c).getSelectedItem() );
+//					}
 				}
 			}
 		}
