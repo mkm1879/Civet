@@ -1744,6 +1744,7 @@ public final class CivetEditDialog extends JFrame {
 		jtfOtherAddress.setEnabled(bEditable);
 		jtfOtherCity.setEnabled(bEditable);
 		jtfOtherZip.setEnabled(bEditable);
+		cbOtherCounty.setEditable(false);
 		cbOtherCounty.setEnabled(bEditable);
 		jtfThisPIN.setEnabled(bEditable);
 		jtfPhone.setEnabled(bEditable);
@@ -1753,7 +1754,6 @@ public final class CivetEditDialog extends JFrame {
 		jtfCVINo.setEnabled(bEditable);
 		cbSpecies.setEnabled(bEditable);
 		jtfNumber.setEnabled(bEditable);
-		cbOtherCounty.setEditable(bEditable);
 		jtfThisState.setFocusable(false);
 		jtfThisState.setEnabled(bEditable);
 		jtfThisPIN.setEditable(bEditable);
@@ -1761,6 +1761,8 @@ public final class CivetEditDialog extends JFrame {
 		jtfPhone.setEditable(bEditable);
 		jtfAddress.setEditable(bEditable);
 		jtfThisCity.setEditable(bEditable);
+		cbThisCounty.setEditable(false);
+		cbThisCounty.setEnabled(bEditable);
 		jtfZip.setEditable(bEditable);
 		jtfDateInspected.setEnabled(bEditable);
 		jtfDateInspected.setEditable(bEditable);
