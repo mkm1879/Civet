@@ -164,6 +164,7 @@ public class SaveCVIThread extends Thread {
 		if( aErrorKeysIn != null )
 			for( String sErrorKey : aErrorKeysIn )
 				this.aErrorKeys.add( sErrorKey );
+		aErrorKeysIn.clear();
 		this.sErrorNotes = sErrorNotes;
 		this.aAnimalIDs = new ArrayList<AnimalIDRecord>();
 		if( aAnimalIDs != null )
