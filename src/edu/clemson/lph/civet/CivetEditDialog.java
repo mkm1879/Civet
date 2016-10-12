@@ -139,7 +139,7 @@ public final class CivetEditDialog extends JFrame {
 	ArrayList<SpeciesRecord> aSpecies = new ArrayList<SpeciesRecord>();
 	AnimalIDListTableModel idListModel = new AnimalIDListTableModel();
 	private ArrayList<String> aErrorKeys;
-	private String sErrorNotes;
+	private String sErrorNotes = null;
 	private String sPriorPhone;
 	private String sPriorAddress;
 	private String sPriorCity;
@@ -1585,11 +1585,14 @@ public final class CivetEditDialog extends JFrame {
 		if( (dateInspected != null && dateReceived != null && dateInspected.getTime() > dateReceived.getTime() )
 				|| ( jtfDateInspected.isAcceptedDate() && jtfDateInspected.isFuture() ) ) {
 			String sShortName = ErrorTypeLookup.getShortNameForDescription("Pre-dated signature");
-			if( aErrorKeys == null )
-				aErrorKeys = new ArrayList<String>();
-			if( !aErrorKeys.contains(sShortName) ) 
-				aErrorKeys.add(sShortName);
-			lError.setVisible(true);
+			// Don't add if error table doesn't include Pre-dated.
+			if( sShortName != null ) {
+				if( aErrorKeys == null )
+					aErrorKeys = new ArrayList<String>();
+				if( !aErrorKeys.contains(sShortName) ) 
+					aErrorKeys.add(sShortName);
+				lError.setVisible(true);
+			}
 		}
 	}
 
@@ -2067,6 +2070,7 @@ public final class CivetEditDialog extends JFrame {
 		}
 		idListModel.clear();
 		aErrorKeys = new ArrayList<String>();
+		sErrorNotes = null;
 		aSpecies = new ArrayList<SpeciesRecord>();
 		lError.setVisible(false);
 		bMultiSpecies = false;
