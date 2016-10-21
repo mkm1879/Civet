@@ -138,8 +138,8 @@ public final class CivetEditDialog extends JFrame {
 
 	ArrayList<SpeciesRecord> aSpecies = new ArrayList<SpeciesRecord>();
 	AnimalIDListTableModel idListModel = new AnimalIDListTableModel();
-	private ArrayList<String> aErrorKeys;
-	private String sErrorNotes;
+	ArrayList<String> aErrorKeys;
+	String sErrorNotes;
 	private String sPriorPhone;
 	private String sPriorAddress;
 	private String sPriorCity;
@@ -2064,6 +2064,7 @@ public final class CivetEditDialog extends JFrame {
 		}
 		idListModel.clear();
 		aErrorKeys = new ArrayList<String>();
+		sErrorNotes = null;
 		aSpecies = new ArrayList<SpeciesRecord>();
 		lError.setVisible(false);
 		bMultiSpecies = false;

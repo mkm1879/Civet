@@ -63,6 +63,7 @@ public class CivetConfig {
 	private static Boolean bSmall;
 	private static boolean bStateIDChecksum;
 	private static Boolean bAutoOpenPDF;
+	private static Boolean bOpenAfterAdd = null;
 	
 
 	public static Properties getProps() {
@@ -146,6 +147,21 @@ public class CivetConfig {
 			}
 		}
 		return bSaveCopies;
+	}	
+	
+	public static boolean isOpenAfterAdd() {
+		if( bOpenAfterAdd  == null ) {
+			String sVal = props.getProperty("openAfterAdd");
+			if( sVal == null || sVal.trim().length() == 0 )
+				bOpenAfterAdd = true;
+			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bOpenAfterAdd = true;
+			}
+			else {
+				bOpenAfterAdd = false;
+			}
+		}
+		return bOpenAfterAdd;
 	}	
 	
 	public static boolean hasBrokenLIDs() {

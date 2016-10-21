@@ -168,6 +168,8 @@ public class DBNumericField extends JTextField{
 		this.addFocusListener(new java.awt.event.FocusAdapter() {
 			public void focusLost(FocusEvent e) {
 				String sText = getText();
+				if( sText == null || sText.trim().length() == 0 )
+					return;
 				if( !isNumber(sText) ) {
 					java.awt.Container parent = getParent();
 					while( !(parent instanceof JDialog) && parent != null ) parent = parent.getParent();

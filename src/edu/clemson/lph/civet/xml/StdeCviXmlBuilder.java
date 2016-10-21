@@ -611,6 +611,31 @@ public class StdeCviXmlBuilder {
 		return bRet;
 	}
 	
+	public void addToGroup( String sSpecies, int iNum ) {
+		if( isValidDoc() && sSpecies != null && sSpecies.trim().length() > 0 ) {
+			NodeList groups = root.getElementsByTagName("GroupLot");
+			for( int i = 0; i < groups.getLength(); i++ ) {
+				Node nNext = groups.item(i);
+				if( nNext instanceof Element ) {
+					Element group = (Element)nNext;
+					String sSpeciesCode = group.getAttribute("SpeciesCode");
+					if( sSpecies.equalsIgnoreCase(sSpeciesCode) ) {
+						String sNum = group.getAttribute("Quantity");
+						try {
+						int iNumPrev = Integer.parseInt(sNum);
+						iNum += iNumPrev;
+						} catch( NumberFormatException nfe ) {
+							logger.error("Could not parse group size " + sNum, nfe);
+						}
+						group.setAttribute("Quantity", Integer.toString(iNum));
+						break;
+					}
+				}
+			}
+			
+		}
+	}
+	
 	public void addPDFAttachement( byte[] pdfBytes, String sFileName ) {
 		if( isValidDoc() && pdfBytes != null && pdfBytes.length > 0 ) {
 			String sPDF64 = new String(Base64.encodeBase64(pdfBytes));
@@ -630,18 +655,47 @@ public class StdeCviXmlBuilder {
 	}
 	
 	public void addMetadataAttachement( CviMetaDataXml metaData ) {
+		Element attach = null;
+		Element payload = null;
+		// Find CviMetadata.xml attachment if it exists
+		NodeList attachments = root.getElementsByTagName("Attachment");
+		for( int i = 0; i < attachments.getLength(); i++ ) {
+			Node nNext = attachments.item(i);
+			if( nNext instanceof Element ) {
+				Element attachment = (Element)nNext;
+				String sFileName = attachment.getAttribute("Filename");
+				if( sFileName != null && "CviMetadata.xml".equals(sFileName) ) {
+					attach = attachment;
+					NodeList payloads = attach.getElementsByTagName("Payload");
+					for( int j = 0; j < payloads.getLength(); j++ ) {
+						Node nNextPayload = payloads.item(j);
+						if( nNextPayload instanceof Element ) {
+							payload = (Element)nNextPayload;
+							break;
+						}
+					}
+					break;
+				}
+			}
+		}
 		String sXML = metaData.getXmlString();
 		try {
 			byte[] xmlBytes = sXML.getBytes("UTF-8");
 			if( isValidDoc() && xmlBytes != null && xmlBytes.length > 0 ) {
 				String sMetadata64 = javax.xml.bind.DatatypeConverter.printBase64Binary(xmlBytes);
-				Element attach = doc.createElement("Attachment");
-				root.appendChild(attach);
-				attach.setAttribute("DocType", "Other");
-				attach.setAttribute("MimeType", "text/xml");
-				attach.setAttribute("Filename", "CviMetadata.xml");
-				Element payload = doc.createElement("Payload");
-				attach.appendChild(payload);
+				if( attach == null || payload == null ) {
+					if( attach == null ) {
+						attach = doc.createElement("Attachment");
+						root.appendChild(attach);
+						attach.setAttribute("DocType", "Other");
+						attach.setAttribute("MimeType", "text/xml");
+						attach.setAttribute("Filename", "CviMetadata.xml");
+					}
+					if( payload == null ) {
+						payload = doc.createElement("Payload");
+						attach.appendChild(payload);
+					}
+				}
 				payload.setTextContent(sMetadata64);
 			}
 		} catch (UnsupportedEncodingException e1) {

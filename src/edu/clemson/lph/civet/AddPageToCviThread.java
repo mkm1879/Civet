@@ -31,7 +31,9 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.pdfgen.MergePDF;
@@ -46,10 +48,19 @@ public class AddPageToCviThread extends Thread {
 	private byte[] pageBytes;
 	private StdeCviXml stdXml = null;
 	
+	private ArrayList<SpeciesRecord> aSpecies;
+	private AnimalIDListTableModel idListModel;
+	private ArrayList<String> aErrorKeys;
+	private String sErrorNotes;
+
 	public AddPageToCviThread(CivetEditDialog dlg, File fAddToFile, byte[] pageBytes) {
 		this.dlg = dlg;
 		this.currentFile = fAddToFile;
 		this.pageBytes = pageBytes;
+		this.aSpecies = dlg.aSpecies;
+		this.idListModel = dlg.idListModel;
+		this.aErrorKeys = dlg.aErrorKeys;
+		this.sErrorNotes = dlg.sErrorNotes;
 		prog = new ProgressDialog(dlg, "Civet", "Opening CVI File " + this.currentFile.getName() );
 		prog.setAuto(true);
 		prog.setVisible(true);
@@ -61,6 +72,7 @@ public class AddPageToCviThread extends Thread {
 			fileBytes = FileUtils.readBinaryFile( currentFile.getAbsolutePath() );
 			String sXml = new String( fileBytes, "UTF-8" );
 			stdXml = new StdeCviXml( sXml );
+			addNewSppAndErrors( stdXml, aSpecies, idListModel, aErrorKeys, sErrorNotes );
 			rawPdfBytes = stdXml.getOriginalCVI();
 			String sFileName = stdXml.getOriginalCVIFileName();
 			ByteArrayInputStream basFirst = new ByteArrayInputStream( rawPdfBytes );
@@ -89,11 +101,56 @@ public class AddPageToCviThread extends Thread {
 				dlg.saveComplete();
 				prog.setVisible(false);
 				prog.dispose();
-				dlg.doEditLast(true);
+				if( CivetConfig.isOpenAfterAdd() )
+					dlg.doEditLast(true);
 			}
 		});
 	}
 	
+	private void addNewSppAndErrors(StdeCviXml stdXml, ArrayList<SpeciesRecord> aSpecies, AnimalIDListTableModel idListModel,
+			ArrayList<String> aErrorKeys, String sErrorNotes) {
+		try {
+		 StdeCviXmlBuilder builder = new StdeCviXmlBuilder( stdXml );
+		 java.util.Date dInsp = stdXml.getIssueDate();
+
+		 if( idListModel != null && idListModel.getRowCount() > 0 ) {
+		 for( AnimalIDRecord r : idListModel.getRows() ) {
+			 String sSpecies = r.sSpeciesCode;
+			 String sTag = r.sTag;
+			 builder.addAnimal( sSpecies, dInsp, null, null, null, null, sTag );
+		 }
+		 }
+		 if( aSpecies != null && aSpecies.size() > 0 ) {
+		 for( SpeciesRecord r : aSpecies ) {
+			 String sSpecies = r.sSpeciesCode;
+			 int iNum = r.iNumber;
+			 if( !builder.hasGroup(sSpecies) ) {
+				 builder.addGroup(iNum, null, sSpecies, null, null);
+			 }
+			 else {
+				 builder.addToGroup(sSpecies, iNum);
+			 }
+		 }
+		 }
+		 CviMetaDataXml meta = stdXml.getMetaData();
+		 if( aErrorKeys != null && aErrorKeys.size() > 0 ) {
+			 for( String sError : aErrorKeys ) {
+				 meta.addError(sError);
+			 }
+		 }
+		 if( sErrorNotes != null && sErrorNotes.trim().length() > 0 ) {
+			 String sPrevNote = meta.getErrorNote();
+			 if( sPrevNote != null )
+				 sErrorNotes = sPrevNote + " : " + sErrorNotes;
+			 meta.setErrorNote(sErrorNotes);
+		 }
+		 builder.addMetadataAttachement(meta);
+		 stdXml = new StdeCviXml(builder.getXMLString());
+		} catch( Exception e ) {
+			logger.error("Unexpected error in addNewSppAndErrors", e);
+		}
+	}
+
 	private void saveXml(String sStdXml, File fOut) {
 		try {
 			PrintWriter pw = new PrintWriter( new FileOutputStream( fOut ) );
