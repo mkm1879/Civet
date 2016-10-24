@@ -127,9 +127,6 @@ public class AddPageToCviThread extends Thread {
 			 if( !builder.hasGroup(sSpecies) ) {
 				 builder.addGroup(iNum, null, sSpecies, null, null);
 			 }
-			 else {
-				 builder.addToGroup(sSpecies, iNum);
-			 }
 		 }
 		 }
 		 CviMetaDataXml meta = stdXml.getMetaData();

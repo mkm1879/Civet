@@ -588,6 +588,7 @@ public final class CivetEditDialog extends JFrame {
 		}
 		byte[] bExtractedPageBytes = controller.extractPagesToNewPDF();
 		File fLastSavedFile = controller.getLastSavedFile();
+		updateSpeciesList(false);
 		AddPageToCviThread addThread = new AddPageToCviThread( this, fLastSavedFile, bExtractedPageBytes );
 		addThread.start();
 	}
