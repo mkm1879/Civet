@@ -80,6 +80,9 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 						continue;
 					aComponents.add(c);
 //					System.out.println( i++ + " " + c.getClass().getName() );
+//					if( c.getClass().getName().endsWith( "JComboBox" ) ) {
+//						System.out.println( "c is a JComboBox with selected: " + ((JComboBox)c).getSelectedItem() );
+//					}
 				}
 			}
 		}
@@ -87,7 +90,7 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 		cAltFirst = aComponents.get(0);
 		populateControlNameMap();
 		selectMainMap();
-//   // Keep this code around in case I need to check enumeration keys
+   // Keep this code around in case I need to check enumeration keys
 //		for( int i = 0; i < aComponents.size(); i++ )
 //			System.out.println( "Component i=" + i + " is a " + aComponents.get(i).getClass().getName() );
 	}

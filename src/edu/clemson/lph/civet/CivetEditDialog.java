@@ -223,6 +223,7 @@ public final class CivetEditDialog extends JFrame {
 	private String sDefaultPurpose;
 	JLabel lThisCity;
 	boolean bGotoLast = false; // Flag to open thread to goto last page when finished loading.
+	private String sPrevCVINo;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -1745,6 +1746,7 @@ public final class CivetEditDialog extends JFrame {
 		jtfOtherAddress.setEnabled(bEditable);
 		jtfOtherCity.setEnabled(bEditable);
 		jtfOtherZip.setEnabled(bEditable);
+		cbOtherCounty.setEditable(false);
 		cbOtherCounty.setEnabled(bEditable);
 		jtfThisPIN.setEnabled(bEditable);
 		jtfPhone.setEnabled(bEditable);
@@ -1754,7 +1756,6 @@ public final class CivetEditDialog extends JFrame {
 		jtfCVINo.setEnabled(bEditable);
 		cbSpecies.setEnabled(bEditable);
 		jtfNumber.setEnabled(bEditable);
-		cbOtherCounty.setEditable(bEditable);
 		jtfThisState.setFocusable(false);
 		jtfThisState.setEnabled(bEditable);
 		jtfThisPIN.setEditable(bEditable);
@@ -1762,6 +1763,8 @@ public final class CivetEditDialog extends JFrame {
 		jtfPhone.setEditable(bEditable);
 		jtfAddress.setEditable(bEditable);
 		jtfThisCity.setEditable(bEditable);
+		cbThisCounty.setEditable(false);
+		cbThisCounty.setEnabled(bEditable);
 		jtfZip.setEditable(bEditable);
 		jtfDateInspected.setEnabled(bEditable);
 		jtfDateInspected.setEditable(bEditable);
@@ -2455,6 +2458,17 @@ public final class CivetEditDialog extends JFrame {
 	}
 	
 	private void doSave() {
+		String sCVINo = jtfCVINo.getText();
+		if( sCVINo.equalsIgnoreCase(sPrevCVINo) ) {
+			MessageDialog.showMessage(CivetEditDialog.this, "Civet Error", "Certificate number " + sCVINo + " hasn't changed since last save");
+			jtfCVINo.requestFocus();
+			return;
+		}
+		if( CertificateNbrLookup.certficateNbrExists(jtfCVINo.getText()) ) {
+			MessageDialog.showMessage(CivetEditDialog.this, "Civet Error", "Certificate number " + sCVINo + " already exists");
+			jtfCVINo.requestFocus();
+			return;
+		}
 		// If save() finds errors be sure form is editable so they can be corrected.
 		if( !save() )
 			setFormEditable( true );
@@ -2581,6 +2595,8 @@ public final class CivetEditDialog extends JFrame {
 			String sExistingFileName = controller.getCurrentFileName();
 			deleteFile( sExistingFileName );
 		}
+		// Messy way of checking for rapid fire duplicate entry
+		sPrevCVINo = sCVINo;
 		thread.start();
 		return true;
 	}

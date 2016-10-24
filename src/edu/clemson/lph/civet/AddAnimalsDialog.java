@@ -102,7 +102,7 @@ public class AddAnimalsDialog extends JDialog {
 				jtfNewId.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						addID();
+						doEnter();
 					}
 				});
 				panel.add(jtfNewId);
@@ -114,7 +114,7 @@ public class AddAnimalsDialog extends JDialog {
 				btnAdd.addActionListener( new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						addID();
+						doEnter();
 					}
 				});
 			}
@@ -124,7 +124,7 @@ public class AddAnimalsDialog extends JDialog {
 				jtfAddNum.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						addIDs();
+						doEnter();
 					}
 				});
 				panel.add(jtfAddNum);
@@ -167,6 +167,11 @@ public class AddAnimalsDialog extends JDialog {
 						}
 					}
 				});
+				tblIDs.getColumnModel().getColumn(0).setPreferredWidth(30);
+				tblIDs.getColumnModel().getColumn(0).setMinWidth(30);
+				tblIDs.getColumnModel().getColumn(0).setMaxWidth(30);
+				tblIDs.getColumnModel().getColumn(1).setPreferredWidth(130);
+				tblIDs.getColumnModel().getColumn(1).setMaxWidth(130);
 			}
 		}
 		{
@@ -239,6 +244,23 @@ public class AddAnimalsDialog extends JDialog {
 		}
 		jtfNewId.setText("");
 		jtfNewId.requestFocus();
+	}
+	
+	private void doEnter() {
+		if( jtfNewId.getText().trim().length() > 0 ) {
+			if( jtfAddNum.getText().trim().length() > 0 ) {
+				// Do add number
+				addIDs();
+			}
+			else {
+				// Do add
+				addID();
+			}
+		}
+		else {
+			// Do save (misnomer, Cancel requires active restore
+			setVisible( false );
+		}
 	}
 	
 	private void addIDs() {
