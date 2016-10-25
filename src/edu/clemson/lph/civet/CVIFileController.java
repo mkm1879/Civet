@@ -531,6 +531,32 @@ public class CVIFileController {
 	}
 
 	/**
+	 * @return if this is an mCVI PDF and we can read it with its XML file.
+	 */
+	public boolean isMCviDocument() {
+		boolean bRet = false;
+		if( currentFileName.toLowerCase().endsWith(".pdf") ) {
+			try {
+				String sDataFile = getMCviDataFilename( getCurrentFile() );
+				File fDataFile = new File( sDataFile );
+				if( fDataFile.exists() ) 
+					bRet = true;
+			} catch( Exception e ) {
+				bRet = false;
+			}
+		}
+		return bRet;
+	}
+	
+	public static String getMCviDataFilename( File fCVI ) {
+		String sRet = null;
+		String sCVIPath = fCVI.getAbsolutePath();
+		int iLastDot = sCVIPath.lastIndexOf('.');
+		sRet = sCVIPath.substring(0,iLastDot) + ".XML";
+		return sRet;
+	}
+	
+	/**
 	 * Get the appropriate byte array to include in standard XML.  This will be read from file for Images or XFAPDF files
 	 * and extracted pages from other PDF files.
 	 * @return byte array or null if not available (why not?)
@@ -632,6 +658,9 @@ public class CVIFileController {
 			if( aPagesComplete == null )
 				mPagesComplete.put(currentFilePath, new ArrayList<Integer>());
 			aPagesInCurrent.clear();
+			if( isMCviDocument() ) {
+				dlg.populateFromMCvi(getMCviDataFilename(getCurrentFile()));
+			}
 			if( isXFADocument() ) {
 				if( !CivetConfig.isJPedalXFA() && CivetConfig.isAutoOpenPdf() ) {
 					PDFOpener opener = new PDFOpener(dlg);

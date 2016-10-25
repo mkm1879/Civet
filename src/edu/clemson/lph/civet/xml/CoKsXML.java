@@ -65,6 +65,24 @@ public class CoKsXML {
 		xmlString = nodeToString( xmlNode, false );
 	}
 	
+	public CoKsXML(String sDataXml) {
+		xmlString = sDataXml;
+		try {
+			Document dom = XMLUtility.stringToDom(sDataXml);
+			xmlNode = dom.getDocumentElement();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+		
+	}
+
 	public String getVersion() {
 		String sRet = null;
 		Document doc = null;
