@@ -30,9 +30,10 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
+import edu.clemson.lph.dialogs.ThreadCancelListener;
 import edu.clemson.lph.utils.FileUtils;
 
-public class SubmitCVIsThread extends Thread {
+public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 	protected static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
@@ -45,21 +46,31 @@ public class SubmitCVIsThread extends Thread {
 	protected String sProgPrompt = "File: ";
 	protected String sOutPath;
 	CivetInbox parent = null;
+	volatile boolean bCanceled = false;
 	
 	public SubmitCVIsThread(CivetInbox parent, List<File> files) {
 		this.parent = parent;
 		this.allFiles = files;
 		sOutPath = CivetConfig.getOutputDirPath();
 		prog = new ProgressDialog(parent, sProgTitle, sProgPrompt );
+		prog.setCancelListener(this);
 		prog.setAuto(true);
 		prog.setVisible(true);
 		service = new CivetWebServices();
 	}
 	
 	@Override
+	public void cancelThread() {
+		bCanceled = true;
+		interrupt();
+	}
+
+	@Override
 	public void run() {
 		try {
 			for( File fThis : allFiles ) {
+				if( bCanceled )
+					break;
 				final String sName = fThis.getName();
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
@@ -102,7 +113,6 @@ public class SubmitCVIsThread extends Thread {
 				}
 			});		
 		}
-		doLater();
 	}
 
 	private void processFile(File fThis) {

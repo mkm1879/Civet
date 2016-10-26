@@ -20,24 +20,30 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
+import javax.swing.JButton;
 
 @SuppressWarnings("serial")
 public class ProgressDialog extends JDialog {
-	  protected JPanel panel1 = new JPanel();
-	  JProgressBar jProgressBar1 = new JProgressBar();
-	  JLabel lProgress = new JLabel();
-	  int iValue;
-	  int iMax = 9;
-	  int iClients = 0;
-	  boolean bAuto = false;
-	  boolean bCancel = false;
-	  String sMsg = "Working ...";
-	  JLabel lMsg = new JLabel();
+	protected JPanel panel1 = new JPanel();
+	private  JProgressBar jProgressBar1 = new JProgressBar();
+	private JLabel lProgress = new JLabel();
+	private int iValue;
+	private int iMax = 9;
+	private int iClients = 0;
+	private boolean bAuto = false;
+	private boolean bCancel = false;
+	private String sMsg = "Working ...";
+	private JLabel lMsg = new JLabel();
+	private ThreadCancelListener cancelListener = null;
+	private JButton btnCancel;
 
 	/**
 	 * Create the dialog.
@@ -103,6 +109,11 @@ public class ProgressDialog extends JDialog {
 	    }
 	  }
 	  
+	  public void setCancelListener( ThreadCancelListener l ) {
+		  this.cancelListener = l;
+		  btnCancel.setVisible(true);
+	  }
+	  
 	  public void setMax( int iMax ) {
 		  this.iMax = iMax;
 		  jProgressBar1.setMaximum(iMax);
@@ -152,6 +163,22 @@ public class ProgressDialog extends JDialog {
 	    panel1.add(lMsg);
 	    panel1.add(jProgressBar1);
 	    panel1.add(lProgress);
+	    
+	    btnCancel = new JButton("Cancel");
+	    btnCancel.setBounds(104, 100, 91, 23);
+	    panel1.add(btnCancel);
+	    btnCancel.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if( cancelListener != null ) {
+					if( YesNoDialog.ask(ProgressDialog.this, "Civet: Cancel Thread", "Are you sure you want to cancel " + sMsg + "?") ) {
+						cancelListener.cancelThread();
+					}
+				}
+			}
+	    });
+	    btnCancel.setVisible(false);
+	    
 	    this.setSize(new Dimension(332, 150));
 	  }
 }

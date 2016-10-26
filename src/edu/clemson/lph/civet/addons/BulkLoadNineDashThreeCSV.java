@@ -93,12 +93,13 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 	}
 
 	// Also create TWorkAddSpecies and TWorkAddPage
-	class TWork93CSV extends Thread {
+	class TWork93CSV extends Thread implements ThreadCancelListener {
 		String sFilePath;
 		ProgressDialog prog;
 		Window parent;
 		CivetWebServices service;
 		DatabaseConnectionFactory factory;
+		volatile boolean bCanceled = false;
 
 		
 		public TWork93CSV( ProgressDialog prog, DatabaseConnectionFactory factory, String sFilePath, Window parent ) {
@@ -107,11 +108,18 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			this.parent = parent;
 			this.factory = factory;
 			service = new CivetWebServices();
+			prog.setCancelListener(this);
 		}
 		
 		private String formatMessage( int iRow, int iMax ) {
 			String sOut = String.format("Record %d of %d imported", iRow, iMax);
 			return sOut;
+		}
+		
+		@Override
+		public void cancelThread() {
+			bCanceled = true;
+			interrupt();
 		}
 		
 		public void run() {
@@ -129,11 +137,16 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 				prog.setValue(iRow);
 				prog.setMessage( formatMessage( iRow, iMax) );
 					// Iterate over the CSV file
-					while( data.nextRow() ) {
+					while( data.nextRow() && !bCanceled) {
 						// Let USAHERDS catch up.
 						try {
 							Thread.sleep(500L);
-						} catch (InterruptedException e1) { }
+						} catch (InterruptedException e1) { 
+							if( bCanceled ) {
+								exitThread(false);
+								return;
+							}
+						}
 						prog.setMessage(sProgMsg + data.getCVINumber() );
 						if( cviExists( data.getCVINumber(), data.getConsignorState() )) {
 							try {
@@ -339,6 +352,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			}
 			return bRet;
 		}
+
 
 	
 	}// end inner class TWorkSave
