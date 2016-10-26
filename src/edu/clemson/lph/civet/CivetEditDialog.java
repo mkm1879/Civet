@@ -1586,11 +1586,14 @@ public final class CivetEditDialog extends JFrame {
 		if( (dateInspected != null && dateReceived != null && dateInspected.getTime() > dateReceived.getTime() )
 				|| ( jtfDateInspected.isAcceptedDate() && jtfDateInspected.isFuture() ) ) {
 			String sShortName = ErrorTypeLookup.getShortNameForDescription("Pre-dated signature");
-			if( aErrorKeys == null )
-				aErrorKeys = new ArrayList<String>();
-			if( !aErrorKeys.contains(sShortName) ) 
-				aErrorKeys.add(sShortName);
-			lError.setVisible(true);
+			// Don't add if error table doesn't include Pre-dated.
+			if( sShortName != null ) {
+				if( aErrorKeys == null )
+					aErrorKeys = new ArrayList<String>();
+				if( !aErrorKeys.contains(sShortName) ) 
+					aErrorKeys.add(sShortName);
+				lError.setVisible(true);
+			}
 		}
 	}
 

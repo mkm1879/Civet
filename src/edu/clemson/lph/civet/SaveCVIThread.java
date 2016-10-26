@@ -31,6 +31,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
+import edu.clemson.lph.civet.lookup.ErrorTypeLookup;
 import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
 import edu.clemson.lph.civet.lookup.PremisesLocalStore;
 import edu.clemson.lph.civet.lookup.PurposeLookup;
@@ -163,6 +164,7 @@ public class SaveCVIThread extends Thread {
 		if( aErrorKeysIn != null )
 			for( String sErrorKey : aErrorKeysIn )
 				this.aErrorKeys.add( sErrorKey );
+		aErrorKeysIn.clear();
 		this.sErrorNotes = sErrorNotes;
 		this.aAnimalIDs = new ArrayList<AnimalIDRecord>();
 		if( aAnimalIDs != null )
@@ -378,8 +380,16 @@ public class SaveCVIThread extends Thread {
 		metaData.setBureauReceiptDate(dDateReceived);
 		if( aErrorKeys != null )
 			for( String sErr : aErrorKeys ) {
-				if( sErr != null )
-				metaData.addError(sErr);
+				if( sErr != null ) {
+					String sErrorDesc = ErrorTypeLookup.getDescriptionForErrorKey(sErr);
+					if( sErrorDesc == null || sErrorDesc.trim().length() == 0 ) {
+						logger.error("Error key " + sErr + " lacks a description");
+						aErrorKeys.remove(sErr);
+					}
+					else {
+						metaData.addError(sErr);
+					}
+				}
 			}
 		if( sErrorNotes != null && sErrorNotes.trim().length() > 0 )
 			metaData.setErrorNote(sErrorNotes);
@@ -425,9 +435,18 @@ public class SaveCVIThread extends Thread {
 		String sFilePath = null;
 		if( !bImport ) 
 			sFilePath = CivetConfig.getEmailOutDirPath() + sXmlFileName;
-		else if( aErrorKeys != null && aErrorKeys.size() > 0 )
-			sFilePath = CivetConfig.getEmailErrorsDirPath() + sXmlFileName;
-		else 
+		else if( aErrorKeys != null && aErrorKeys.size() > 0 ) {
+			for( String sKey : aErrorKeys ) {
+				if( sKey != null ) {
+					sFilePath = CivetConfig.getEmailErrorsDirPath() + sXmlFileName;
+					break;
+				}
+				else {
+					logger.error("Null error key encountered in saveCVI. " + sCVINo);
+				}
+			}
+		}
+		if( sFilePath == null ) 
 			return;
 		File fileOut = new File(sFilePath);
 		try {
