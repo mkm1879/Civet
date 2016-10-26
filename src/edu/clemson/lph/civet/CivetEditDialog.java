@@ -1660,17 +1660,19 @@ public final class CivetEditDialog extends JFrame {
     			}
     			String sMCviDataFile = CVIFileController.getMCviDataFilename(fCurrent);
     			File fMCviDataFile = new File( sMCviDataFile );
-    			File fMovedFile = new File( dir, fMCviDataFile.getName() );
-    			if( fMovedFile.exists() ) {
-    				MessageDialog.showMessage(this, "Civet Error", fMovedFile.getAbsolutePath() + " already exists in OutBox.\n" +
+    			if(fMCviDataFile.exists() ) {
+    				File fMovedFile = new File( dir, fMCviDataFile.getName() );
+    				if( fMovedFile.exists() ) {
+    					MessageDialog.showMessage(this, "Civet Error", fMovedFile.getAbsolutePath() + " already exists in OutBox.\n" +
     							"Check that it really is a duplicate and manually delete.");
-    				String sOutPath = fNew.getAbsolutePath();
-    				sOutPath = FileUtils.incrementFileName(sOutPath);
-    				fNew = new File( sOutPath );
-    			}
-    			success = fMCviDataFile.renameTo(fMovedFile);
-    			if (!success) {
-    				MessageDialog.showMessage(this, "Civet Error", "Could not move " + fMCviDataFile.getAbsolutePath() + " to " + fMovedFile.getAbsolutePath() );
+    					String sOutPath = fNew.getAbsolutePath();
+    					sOutPath = FileUtils.incrementFileName(sOutPath);
+    					fNew = new File( sOutPath );
+    				}
+    				success = fMCviDataFile.renameTo(fMovedFile);
+    				if (!success) {
+    					MessageDialog.showMessage(this, "Civet Error", "Could not move " + fMCviDataFile.getAbsolutePath() + " to " + fMovedFile.getAbsolutePath() );
+    				}
     			}
     		}
     	}
