@@ -1655,6 +1655,20 @@ public final class CivetEditDialog extends JFrame {
     			else {
     				iFiles++; 
     			}
+    			String sMCviDataFile = CVIFileController.getMCviDataFilename(fCurrent);
+    			File fMCviDataFile = new File( sMCviDataFile );
+    			File fMovedFile = new File( dir, fMCviDataFile.getName() );
+    			if( fMovedFile.exists() ) {
+    				MessageDialog.showMessage(this, "Civet Error", fMovedFile.getAbsolutePath() + " already exists in OutBox.\n" +
+    							"Check that it really is a duplicate and manually delete.");
+    				String sOutPath = fNew.getAbsolutePath();
+    				sOutPath = FileUtils.incrementFileName(sOutPath);
+    				fNew = new File( sOutPath );
+    			}
+    			success = fMCviDataFile.renameTo(fMovedFile);
+    			if (!success) {
+    				MessageDialog.showMessage(this, "Civet Error", "Could not move " + fMCviDataFile.getAbsolutePath() + " to " + fMovedFile.getAbsolutePath() );
+    			}
     		}
     	}
     	if( iFiles > 0 )
@@ -2388,11 +2402,28 @@ public final class CivetEditDialog extends JFrame {
 
 	}
 	
+	
+	/**
+	 * Convert CO/KS xml supplied with mCVI PDF to standard and extract data from there.
+	 * "Virtual" parameter PDF File loaded in pdfDecoder.
+	 */
+	void populateFromMCvi(String sDataFile) {
+		File fDataFile = new File( sDataFile );
+		try {
+			String sDataXml = FileUtils.readTextFile(fDataFile);
+			CoKsXML coks = new CoKsXML( sDataXml );
+			populateFromCoKs(coks);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+	}
 	/**
 	 * Convert CO/KS xml to standard and extract data from there.
 	 * "Virtual" parameter PDF File loaded in pdfDecoder.
 	 */
 	void populateFromPDF() {
+		// This is always true.  Waste of cycles.
 		if( controller.isXFADocument() ) {
 			byte[] pdfBytes = controller.getCurrentPdfBytes();
 			Node xmlNode = PDFUtils.getXFADataNode(pdfBytes);
@@ -2401,34 +2432,38 @@ public final class CivetEditDialog extends JFrame {
 				return;
 			}
 			CoKsXML coks = new CoKsXML( xmlNode );
-			StdeCviXml std = coks.getStdeCviXml();
-			if( std == null ) {
-				MessageDialog.messageWait(this, "Civet Error:", "Could not convert PDF content to USAHA Standard XML using XSLT\n" +
-						CivetConfig.getCoKsXSLTFile());
-			}
-			else {
-				String sPurposeCode = std.getMovementPurpose();
-				if( sPurposeCode != null && sPurposeCode.equalsIgnoreCase("other") ) {
-					String sMsg = "Importing Purpose OTHER. \nUpdate in database later if possible.\nPurpose in PDF: ";
-					String sPurpose =  coks.getPurposeCode();
-						sMsg = sMsg + sPurpose;
-					sMsg = sMsg.substring(0,sMsg.length());
-					MessageDialog.messageLater(null, "Civet Warning: Other Purpose", sMsg );					
-				}
-				String sSppCodes = std.getSpeciesCodes();
-				if( sSppCodes != null && sSppCodes.contains("OTH") ) {
-					String sMsg = "Importing Species OTHER. \nUpdate in database later if possible.\nSpecies Codes in PDF: ";
-					for( String sSpp : coks.listSpeciesCodes() )
-						sMsg = sMsg + sSpp + ", ";
-					sMsg = sMsg.substring(0,sMsg.length()-2);
-					MessageDialog.messageLater(null, "Civet Warning: Other Species", sMsg );
-				}
-				populateFromStdXml( std );
-				if( jtfDateReceived.getDate() == null && CivetConfig.isDefaultReceivedDate() ) {
-					jtfDateReceived.setDate(new java.util.Date());
-				}
-			}
+			populateFromCoKs(coks);
 
+		}
+	}
+
+	private void populateFromCoKs(CoKsXML coks) {
+		StdeCviXml std = coks.getStdeCviXml();
+		if( std == null ) {
+			MessageDialog.messageWait(this, "Civet Error:", "Could not convert PDF content to USAHA Standard XML using XSLT\n" +
+					CivetConfig.getCoKsXSLTFile());
+		}
+		else {
+			String sPurposeCode = std.getMovementPurpose();
+			if( sPurposeCode != null && sPurposeCode.equalsIgnoreCase("other") ) {
+				String sMsg = "Importing Purpose OTHER. \nUpdate in database later if possible.\nPurpose in PDF: ";
+				String sPurpose =  coks.getPurposeCode();
+					sMsg = sMsg + sPurpose;
+				sMsg = sMsg.substring(0,sMsg.length());
+				MessageDialog.messageLater(null, "Civet Warning: Other Purpose", sMsg );					
+			}
+			String sSppCodes = std.getSpeciesCodes();
+			if( sSppCodes != null && sSppCodes.contains("OTH") ) {
+				String sMsg = "Importing Species OTHER. \nUpdate in database later if possible.\nSpecies Codes in PDF: ";
+				for( String sSpp : coks.listSpeciesCodes() )
+					sMsg = sMsg + sSpp + ", ";
+				sMsg = sMsg.substring(0,sMsg.length()-2);
+				MessageDialog.messageLater(null, "Civet Warning: Other Species", sMsg );
+			}
+			populateFromStdXml( std );
+			if( jtfDateReceived.getDate() == null && CivetConfig.isDefaultReceivedDate() ) {
+				jtfDateReceived.setDate(new java.util.Date());
+			}
 		}
 	}
 	

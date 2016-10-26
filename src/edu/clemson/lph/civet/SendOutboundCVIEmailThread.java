@@ -227,6 +227,10 @@ public class SendOutboundCVIEmailThread extends Thread {
 					sFileName = thisCVI.getOriginState() + "_To_" + thisCVI.getDestinationState() + 
 							"_" + thisCVI.getCertificateNumber() + ".pdf";
 					byte pdfBytes[] = thisCVI.getOriginalCVI();
+					String sCVIFilename = thisCVI.getOriginalCVIFileName();
+					MIMEFile mMCviDataFile = getMCviDataFile(sCVIFilename);
+					if( mMCviDataFile != null )
+						aFiles.add(mMCviDataFile);
 					aFiles.add(new MIMEFile(sFileName,"application/pdf",pdfBytes));
 				}
 			}
@@ -261,6 +265,39 @@ public class SendOutboundCVIEmailThread extends Thread {
 		}
 		return bRet;
 	}
-
+	
+	/**
+	 * The original filename has been decorated by now so we jump through hoops to see
+	 * if the matching datafile exists in outbox.  And pull it out and rename it if it does.
+	 * @param sOrginalCVIFilename
+	 * @return
+	 */
+	private MIMEFile getMCviDataFile( String sCVIFilename ) {
+		MIMEFile mRet = null;
+		try {
+			// Check for mCVI data bundle in outbox.
+			String sOriginalCVIFilename = sCVIFilename.substring(sCVIFilename.lastIndexOf('_')+1);
+			if( sOriginalCVIFilename.contains("(")) {
+				sOriginalCVIFilename = sOriginalCVIFilename.substring(0,sOriginalCVIFilename.lastIndexOf('('));
+				sOriginalCVIFilename = sOriginalCVIFilename + ".pdf";
+				String sStateCode = CivetConfig.getHomeStateAbbr();
+				if( !sOriginalCVIFilename.startsWith(sStateCode + "-") )
+					sOriginalCVIFilename = sStateCode + "-" + sOriginalCVIFilename;
+			}
+			File dir = new File(CivetConfig.getOutputDirPath());
+			File fCVI = new File(dir, sOriginalCVIFilename);
+			String sMCviDataFilename = CVIFileController.getMCviDataFilename(fCVI);
+			File fMCviData = new File( sMCviDataFilename);
+			if( fMCviData.exists() ) {
+				byte mCviDataBytes[] = FileUtils.readBinaryFile(fMCviData);
+				sMCviDataFilename = sCVIFilename.substring(0,sCVIFilename.lastIndexOf('.')) + ".XML";
+				mRet =  new MIMEFile(sMCviDataFilename, "text/xml", mCviDataBytes);
+			}	
+		} catch( Exception e ) {
+			logger.error(e);
+		}
+		return mRet;
+	}
+ 
 }// End class SendOutboundCVIEmailThread
 
