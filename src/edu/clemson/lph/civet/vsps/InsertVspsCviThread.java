@@ -37,9 +37,10 @@ import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
+import edu.clemson.lph.dialogs.ThreadCancelListener;
 import edu.clemson.lph.utils.FileUtils;
 
-public class InsertVspsCviThread extends Thread {
+public class InsertVspsCviThread extends Thread implements ThreadCancelListener {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	Window parent;
 	VspsCviFile cviFile;
@@ -47,15 +48,22 @@ public class InsertVspsCviThread extends Thread {
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_VSPS;
 	private CivetWebServices service = null;
 	private String sProgMsg = "Processing VSPS CVI: ";
-
+	volatile boolean bCanceled = false;
 
 	public InsertVspsCviThread(Window parent, VspsCviFile cviFile ) {
 		this.parent = parent;
 		this.cviFile = cviFile;
 		prog = new ProgressDialog(parent, "Civet: VSPS Import", sProgMsg);
 		prog.setAuto(true);
+		prog.setCancelListener(this);
 		prog.setVisible(true);
 		service = new CivetWebServices();
+	}
+	
+	@Override
+	public void cancelThread() {
+		bCanceled = true;
+		interrupt();
 	}
 
 	@Override
@@ -63,6 +71,8 @@ public class InsertVspsCviThread extends Thread {
 		VspsCvi cvi;
 		try {
 			while( (cvi = cviFile.nextCVI() ) != null ) {
+				if( bCanceled )
+					break;
 				if( cvi.getStatus().equals("SAVED") )  // Ignore Saved but not issued CVIs
 					continue;
 				if( (cvi.getOrigin() == null || cvi.getOrigin().getState() == null) &&  (cvi.getConsignor() == null || cvi.getConsignor().getState() == null))
