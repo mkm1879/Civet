@@ -161,10 +161,11 @@ public class SaveCVIThread extends Thread {
 			for( Iterator<SpeciesRecord> iter = aSpeciesIn.iterator(); iter.hasNext(); )
 				this.aSpecies.add( iter.next() );
 		this.aErrorKeys = new ArrayList<String>();
-		if( aErrorKeysIn != null )
+		if( aErrorKeysIn != null ) {
 			for( String sErrorKey : aErrorKeysIn )
 				this.aErrorKeys.add( sErrorKey );
-		aErrorKeysIn.clear();
+			aErrorKeysIn.clear();
+		}
 		this.sErrorNotes = sErrorNotes;
 		this.aAnimalIDs = new ArrayList<AnimalIDRecord>();
 		if( aAnimalIDs != null )
