@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -11,13 +12,17 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import edu.clemson.lph.civet.AddAnimalsDialog;
 import edu.clemson.lph.civet.AnimalIDListTableModel;
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.controls.DateField;
 
 import java.awt.GridLayout;
 
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JScrollPane;
@@ -30,6 +35,9 @@ import javax.swing.UIManager;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 @SuppressWarnings("serial")
 public class NineDashThreeDialog extends JDialog {
@@ -38,10 +46,14 @@ public class NineDashThreeDialog extends JDialog {
 //	     logger.setLevel(CivetConfig.getLogLevel());
 //	}
 
-	private JTextField jtfCVINo;
-	private JTextField jtfDate;
+	JTextField jtfCVINo;
+	DateField jtfDate;
+	JComboBox<String> cbSpecies = new JComboBox<String>();
+	JComboBox<String> cbProduct = new JComboBox<String>();
+	
 	AnimalIDListTableModel idModel = new AnimalIDListTableModel();
-
+	JList<String> lbSpecies;
+	DefaultListModel<String> mSpListModel = new DefaultListModel<String>();
 	/**
 	 * Launch the application.
 	 */
@@ -63,7 +75,7 @@ public class NineDashThreeDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public NineDashThreeDialog() {
-		setBounds(100, 100, 700, 450);
+		setBounds(100, 100, 700, 500);
 		setTitle("Civet: NPIP 9-3 Entry Form");
 		getContentPane().setLayout(new BorderLayout());
 		{
@@ -79,17 +91,17 @@ public class NineDashThreeDialog extends JDialog {
 			pCertificate.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 			getContentPane().add(pCertPane, BorderLayout.NORTH);
 			pCertPane.add(pCertificate);
-			pCertificate.setPreferredSize(new Dimension(650,150));
+			pCertificate.setPreferredSize(new Dimension(650,200));
 			GridBagLayout gbl_pCertificate = new GridBagLayout();
 			gbl_pCertificate.columnWidths = new int[] {89, 90, 120, 30, 30};
-			gbl_pCertificate.rowHeights = new int[] {10, 0, 20, 22, 22, 0, 0};
-			gbl_pCertificate.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-			gbl_pCertificate.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+			gbl_pCertificate.rowHeights = new int[] {30, 10, 22, 22, 22, 22, 33, 33, 0, 30};
+			gbl_pCertificate.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+			gbl_pCertificate.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 			pCertificate.setLayout(gbl_pCertificate);
 			{
 				JLabel label = new JLabel("");
 				GridBagConstraints gbc_label = new GridBagConstraints();
-				gbc_label.insets = new Insets(0, 0, 5, 5);
+				gbc_label.insets = new Insets(0, 0, 5, 0);
 				gbc_label.gridx = 5;
 				gbc_label.gridy = 1;
 				pCertificate.add(label, gbc_label);
@@ -135,7 +147,7 @@ public class NineDashThreeDialog extends JDialog {
 				pCertificate.add(lblNewLabel_1, gbc_lblNewLabel_1);
 			}
 			{
-				jtfDate = new JTextField();
+				jtfDate = new DateField();
 				GridBagConstraints gbc_jtfDate = new GridBagConstraints();
 				gbc_jtfDate.fill = GridBagConstraints.HORIZONTAL;
 				gbc_jtfDate.anchor = GridBagConstraints.NORTHWEST;
@@ -146,46 +158,105 @@ public class NineDashThreeDialog extends JDialog {
 				jtfDate.setColumns(10);
 			}
 			{
+				JLabel lblProduct = new JLabel("Product:");
+				lblProduct.setHorizontalAlignment(SwingConstants.RIGHT);
+				GridBagConstraints gbc_lblProduct = new GridBagConstraints();
+				gbc_lblProduct.fill = GridBagConstraints.HORIZONTAL;
+				gbc_lblProduct.insets = new Insets(0, 0, 5, 5);
+				gbc_lblProduct.gridx = 0;
+				gbc_lblProduct.gridy = 4;
+				pCertificate.add(lblProduct, gbc_lblProduct);
+			}
+			{
+				
+				GridBagConstraints gbc_cbProduct = new GridBagConstraints();
+				gbc_cbProduct.insets = new Insets(0, 0, 5, 5);
+				gbc_cbProduct.gridwidth = 3;
+				gbc_cbProduct.anchor = GridBagConstraints.NORTH;
+				gbc_cbProduct.fill = GridBagConstraints.HORIZONTAL;
+				gbc_cbProduct.gridx = 1;
+				gbc_cbProduct.gridy = 4;
+				cbProduct.addItem("");
+				cbProduct.addItem("Live Animals");
+				cbProduct.addItem("Eggs");
+				cbProduct.setSelectedItem("");
+				pCertificate.add(cbProduct, gbc_cbProduct);
+			}
+			{
 				JLabel lblNewLabel_2 = new JLabel("Species:");
 				lblNewLabel_2.setHorizontalAlignment(SwingConstants.RIGHT);
 				GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
 				gbc_lblNewLabel_2.fill = GridBagConstraints.HORIZONTAL;
 				gbc_lblNewLabel_2.insets = new Insets(0, 0, 5, 5);
 				gbc_lblNewLabel_2.gridx = 0;
-				gbc_lblNewLabel_2.gridy = 4;
+				gbc_lblNewLabel_2.gridy = 5;
 				pCertificate.add(lblNewLabel_2, gbc_lblNewLabel_2);
 			}
 			{
-				JComboBox<String> cbSpecies = new JComboBox<String>();
+				
 				GridBagConstraints gbc_cbSpecies = new GridBagConstraints();
 				gbc_cbSpecies.gridwidth = 3;
 				gbc_cbSpecies.anchor = GridBagConstraints.NORTH;
 				gbc_cbSpecies.fill = GridBagConstraints.HORIZONTAL;
 				gbc_cbSpecies.insets = new Insets(0, 0, 5, 5);
 				gbc_cbSpecies.gridx = 1;
-				gbc_cbSpecies.gridy = 4;
+				gbc_cbSpecies.gridy = 5;
+				cbSpecies.addItem("");
+				cbSpecies.addItem("Chicken");
+				cbSpecies.addItem("Turkey");
+				cbSpecies.addItem("Pigeon");
+				cbSpecies.setSelectedItem("");
 				pCertificate.add(cbSpecies, gbc_cbSpecies);
 			}
 			{
-				JLabel lblProduct = new JLabel("Product:");
-				lblProduct.setHorizontalAlignment(SwingConstants.RIGHT);
-				GridBagConstraints gbc_lblProduct = new GridBagConstraints();
-				gbc_lblProduct.fill = GridBagConstraints.HORIZONTAL;
-				gbc_lblProduct.insets = new Insets(0, 0, 0, 5);
-				gbc_lblProduct.gridx = 0;
-				gbc_lblProduct.gridy = 5;
-				pCertificate.add(lblProduct, gbc_lblProduct);
+				JButton btnAddSpecies = new JButton("Add");
+				btnAddSpecies.addActionListener( new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						String species = (String)cbSpecies.getSelectedItem();
+						mSpListModel.addElement(species);
+					}
+					
+				});
+				btnAddSpecies.setVerticalAlignment(SwingConstants.TOP);
+				GridBagConstraints gbc_btnAddSpecies = new GridBagConstraints();
+				gbc_btnAddSpecies.anchor = GridBagConstraints.EAST;
+				gbc_btnAddSpecies.insets = new Insets(0, 0, 5, 5);
+				gbc_btnAddSpecies.gridx = 0;
+				gbc_btnAddSpecies.gridy = 6;
+				pCertificate.add(btnAddSpecies, gbc_btnAddSpecies);
 			}
 			{
-				JComboBox<String> cbProduct = new JComboBox<String>();
-				GridBagConstraints gbc_cbProduct = new GridBagConstraints();
-				gbc_cbProduct.insets = new Insets(0, 0, 0, 5);
-				gbc_cbProduct.gridwidth = 3;
-				gbc_cbProduct.anchor = GridBagConstraints.NORTH;
-				gbc_cbProduct.fill = GridBagConstraints.HORIZONTAL;
-				gbc_cbProduct.gridx = 1;
-				gbc_cbProduct.gridy = 5;
-				pCertificate.add(cbProduct, gbc_cbProduct);
+				JScrollPane spSpecies = new JScrollPane();
+				
+				lbSpecies = new JList<String>(mSpListModel);
+				spSpecies.setViewportView(lbSpecies);
+				GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+				gbc_scrollPane.gridheight = 3;
+				gbc_scrollPane.gridwidth = 3;
+				gbc_scrollPane.insets = new Insets(0, 0, 0, 5);
+				gbc_scrollPane.fill = GridBagConstraints.BOTH;
+				gbc_scrollPane.gridx = 1;
+				gbc_scrollPane.gridy = 6;
+				pCertificate.add(spSpecies, gbc_scrollPane);
+			}
+			{
+				JButton bRemove = new JButton("Remove");
+				bRemove.addActionListener( new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						int iSelected = lbSpecies.getSelectedIndex();
+						if( iSelected >= 0 )
+							mSpListModel.remove(iSelected);
+					}
+					
+				});
+				GridBagConstraints gbc_bRemove = new GridBagConstraints();
+				gbc_bRemove.anchor = GridBagConstraints.EAST;
+				gbc_bRemove.insets = new Insets(0, 0, 0, 5);
+				gbc_bRemove.gridx = 0;
+				gbc_bRemove.gridy = 8;
+				pCertificate.add(bRemove, gbc_bRemove);
 			}
 			JPanel pIDs = new JPanel();
 			{
@@ -195,9 +266,17 @@ public class NineDashThreeDialog extends JDialog {
 				pIDs.add(lblNewLabel_3);
 			}
 			{
-				JButton btnNewButton = new JButton("Add IDs");
-				btnNewButton.setBounds(27, 76, 73, 23);
-				pIDs.add(btnNewButton);
+				JButton bAddIDs = new JButton("Add IDs");
+				bAddIDs.setBounds(27, 76, 73, 23);
+				pIDs.add(bAddIDs);
+				bAddIDs.addActionListener( new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						addIDs();
+					}
+					
+				});
+				
 			}
 			{
 				pIDs.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
@@ -211,13 +290,12 @@ public class NineDashThreeDialog extends JDialog {
 				}
 			}
 			JScrollPane spIDs = new JScrollPane();
-			spIDs.setBounds(110, 11, 223, 128);
+			spIDs.setBounds(110, 11, 223, 170);
 			pIDs.add(spIDs);
 			JTable tblIDs = new JTable();
 			tblIDs.setModel(idModel);
-			tblIDs.setPreferredSize(new Dimension(200,120));
+			tblIDs.setPreferredSize(new Dimension(200, 200));
 			TableColumnModel tcm = tblIDs.getColumnModel();
-			tcm.removeColumn(tcm.getColumn(0));
 			tcm.removeColumn(tcm.getColumn(0));
 			spIDs.setViewportView(tblIDs);
 			{
@@ -257,6 +335,17 @@ public class NineDashThreeDialog extends JDialog {
 				}
 			}
 		}
+	}
+
+	protected void addIDs() {
+		HashMap<String, String> hSpecies = new HashMap<String, String>();
+		for( int i = 0; i < mSpListModel.getSize(); i++ ) {
+			String sSpecies = mSpListModel.elementAt(i);
+			String sSpCode = SpeciesLookup.getSpeciesCode(sSpecies);
+			hSpecies.put(sSpCode, sSpecies);
+		}
+		AddAnimalsDialog dlg = new AddAnimalsDialog( hSpecies, idModel );
+		dlg.setVisible(true);
 	}
 
 }
