@@ -15,6 +15,8 @@ import org.apache.log4j.PropertyConfigurator;
 import edu.clemson.lph.civet.AddAnimalsDialog;
 import edu.clemson.lph.civet.AnimalIDListTableModel;
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.CivetInbox;
+import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.controls.DateField;
@@ -30,6 +32,7 @@ import javax.swing.JTable;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.TableColumnModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import java.awt.GridBagLayout;
@@ -42,9 +45,6 @@ import java.util.HashMap;
 @SuppressWarnings("serial")
 public class NineDashThreeDialog extends JDialog {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-//	static {
-//	     logger.setLevel(CivetConfig.getLogLevel());
-//	}
 
 	JTextField jtfCVINo;
 	DateField jtfDate;
@@ -52,8 +52,15 @@ public class NineDashThreeDialog extends JDialog {
 	JComboBox<String> cbProduct = new JComboBox<String>();
 	
 	AnimalIDListTableModel idModel = new AnimalIDListTableModel();
+	JTable tblIDs;
 	JList<String> lbSpecies;
 	DefaultListModel<String> mSpListModel = new DefaultListModel<String>();
+	ManualOrderFocusTraversalPolicy policy = new ManualOrderFocusTraversalPolicy();
+
+	ParticipantPanel pConsignor = new ParticipantPanel();
+	ParticipantPanel pConsignee = new ParticipantPanel();
+	
+	JButton okButton;
 	/**
 	 * Launch the application.
 	 */
@@ -63,6 +70,11 @@ public class NineDashThreeDialog extends JDialog {
 			CivetConfig.checkAllConfig();
 			logger.setLevel(CivetConfig.getLogLevel());
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			try {
+				CivetConfig.initWebServices();
+			} catch (Exception e) {
+				logger.error("Error running main program in event thread", e);
+			}
 			NineDashThreeDialog dialog = new NineDashThreeDialog();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
@@ -93,7 +105,7 @@ public class NineDashThreeDialog extends JDialog {
 			pCertPane.add(pCertificate);
 			pCertificate.setPreferredSize(new Dimension(650,200));
 			GridBagLayout gbl_pCertificate = new GridBagLayout();
-			gbl_pCertificate.columnWidths = new int[] {89, 90, 120, 30, 30};
+			gbl_pCertificate.columnWidths = new int[] {80, 120, 90, 55, 5};
 			gbl_pCertificate.rowHeights = new int[] {30, 10, 22, 22, 22, 22, 33, 33, 0, 30};
 			gbl_pCertificate.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 			gbl_pCertificate.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
@@ -118,6 +130,7 @@ public class NineDashThreeDialog extends JDialog {
 			}
 			{
 				jtfCVINo = new JTextField();
+				policy.addControl(jtfCVINo);
 				GridBagConstraints gbc_jtfCVINo = new GridBagConstraints();
 				gbc_jtfCVINo.gridwidth = 3;
 				gbc_jtfCVINo.anchor = GridBagConstraints.NORTH;
@@ -127,14 +140,6 @@ public class NineDashThreeDialog extends JDialog {
 				gbc_jtfCVINo.gridy = 2;
 				pCertificate.add(jtfCVINo, gbc_jtfCVINo);
 				jtfCVINo.setColumns(10);
-			}
-			{
-				JLabel lblNewLabel_4 = new JLabel("New label");
-				GridBagConstraints gbc_lblNewLabel_4 = new GridBagConstraints();
-				gbc_lblNewLabel_4.insets = new Insets(0, 0, 5, 5);
-				gbc_lblNewLabel_4.gridx = 3;
-				gbc_lblNewLabel_4.gridy = 2;
-				pCertificate.add(lblNewLabel_4, gbc_lblNewLabel_4);
 			}
 			{
 				JLabel lblNewLabel_1 = new JLabel("Date:");
@@ -148,6 +153,7 @@ public class NineDashThreeDialog extends JDialog {
 			}
 			{
 				jtfDate = new DateField();
+				policy.addControl(jtfDate);
 				GridBagConstraints gbc_jtfDate = new GridBagConstraints();
 				gbc_jtfDate.fill = GridBagConstraints.HORIZONTAL;
 				gbc_jtfDate.anchor = GridBagConstraints.NORTHWEST;
@@ -181,6 +187,7 @@ public class NineDashThreeDialog extends JDialog {
 				cbProduct.addItem("Eggs");
 				cbProduct.setSelectedItem("");
 				pCertificate.add(cbProduct, gbc_cbProduct);
+				policy.addControl(cbProduct);
 			}
 			{
 				JLabel lblNewLabel_2 = new JLabel("Species:");
@@ -207,6 +214,7 @@ public class NineDashThreeDialog extends JDialog {
 				cbSpecies.addItem("Pigeon");
 				cbSpecies.setSelectedItem("");
 				pCertificate.add(cbSpecies, gbc_cbSpecies);
+				policy.addControl(cbSpecies);
 			}
 			{
 				JButton btnAddSpecies = new JButton("Add");
@@ -225,20 +233,7 @@ public class NineDashThreeDialog extends JDialog {
 				gbc_btnAddSpecies.gridx = 0;
 				gbc_btnAddSpecies.gridy = 6;
 				pCertificate.add(btnAddSpecies, gbc_btnAddSpecies);
-			}
-			{
-				JScrollPane spSpecies = new JScrollPane();
-				
-				lbSpecies = new JList<String>(mSpListModel);
-				spSpecies.setViewportView(lbSpecies);
-				GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-				gbc_scrollPane.gridheight = 3;
-				gbc_scrollPane.gridwidth = 3;
-				gbc_scrollPane.insets = new Insets(0, 0, 0, 5);
-				gbc_scrollPane.fill = GridBagConstraints.BOTH;
-				gbc_scrollPane.gridx = 1;
-				gbc_scrollPane.gridy = 6;
-				pCertificate.add(spSpecies, gbc_scrollPane);
+				policy.addControl(btnAddSpecies);
 			}
 			{
 				JButton bRemove = new JButton("Remove");
@@ -257,6 +252,21 @@ public class NineDashThreeDialog extends JDialog {
 				gbc_bRemove.gridx = 0;
 				gbc_bRemove.gridy = 8;
 				pCertificate.add(bRemove, gbc_bRemove);
+				policy.addControl(bRemove);
+			}
+			{
+				JScrollPane spSpecies = new JScrollPane();
+				
+				lbSpecies = new JList<String>(mSpListModel);
+				spSpecies.setViewportView(lbSpecies);
+				GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+				gbc_scrollPane.gridheight = 3;
+				gbc_scrollPane.gridwidth = 3;
+				gbc_scrollPane.insets = new Insets(0, 0, 0, 5);
+				gbc_scrollPane.fill = GridBagConstraints.BOTH;
+				gbc_scrollPane.gridx = 1;
+				gbc_scrollPane.gridy = 6;
+				pCertificate.add(spSpecies, gbc_scrollPane);
 			}
 			JPanel pIDs = new JPanel();
 			{
@@ -267,6 +277,7 @@ public class NineDashThreeDialog extends JDialog {
 			}
 			{
 				JButton bAddIDs = new JButton("Add IDs");
+				policy.addControl(bAddIDs);
 				bAddIDs.setBounds(27, 76, 73, 23);
 				pIDs.add(bAddIDs);
 				bAddIDs.addActionListener( new ActionListener() {
@@ -292,7 +303,7 @@ public class NineDashThreeDialog extends JDialog {
 			JScrollPane spIDs = new JScrollPane();
 			spIDs.setBounds(110, 11, 223, 170);
 			pIDs.add(spIDs);
-			JTable tblIDs = new JTable();
+			tblIDs = new JTable();
 			tblIDs.setModel(idModel);
 			tblIDs.setPreferredSize(new Dimension(200, 200));
 			TableColumnModel tcm = tblIDs.getColumnModel();
@@ -308,14 +319,30 @@ public class NineDashThreeDialog extends JDialog {
 				pParticipants.setLayout(gl_pParticipants);
 				getContentPane().add(pParticipants, BorderLayout.CENTER);
 				{
-					ParticipantPanel pConsignor = new ParticipantPanel();
 					pConsignor.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+					pConsignor.setParent(this);
 					pParticipants.add(pConsignor);
+					policy.addControl(pConsignor.jtfPIN);
+					policy.addControl(pConsignor.jtfBusiness);
+					policy.addControl(pConsignor.jtfName);
+					policy.addControl(pConsignor.jtfAddress);
+					policy.addControl(pConsignor.jtfCity);
+					policy.addControl(pConsignor.cbState);
+					policy.addControl(pConsignor.jtfZip);
+					policy.addControl(pConsignor.cbCounty);
 				}
 				{
-					ParticipantPanel pConsignee = new ParticipantPanel();
 					pConsignee.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+					pConsignee.setParent(this);
 					pParticipants.add(pConsignee);
+					policy.addControl(pConsignee.jtfPIN);
+					policy.addControl(pConsignee.jtfBusiness);
+					policy.addControl(pConsignee.jtfName);
+					policy.addControl(pConsignee.jtfAddress);
+					policy.addControl(pConsignee.jtfCity);
+					policy.addControl(pConsignee.cbState);
+					policy.addControl(pConsignee.jtfZip);
+					policy.addControl(pConsignee.cbCounty);
 				}
 			}
 			{
@@ -323,17 +350,79 @@ public class NineDashThreeDialog extends JDialog {
 				buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER));
 				getContentPane().add(buttonPane, BorderLayout.SOUTH);
 				{
-					JButton okButton = new JButton("OK");
-					okButton.setActionCommand("OK");
+					okButton = new JButton("Save");
 					buttonPane.add(okButton);
 					getRootPane().setDefaultButton(okButton);
+					okButton.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							doSave();
+							clear();
+						}
+					});
 				}
 				{
 					JButton cancelButton = new JButton("Cancel");
-					cancelButton.setActionCommand("Cancel");
+					cancelButton.addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							setVisible(false);
+						}
+					});
 					buttonPane.add(cancelButton);
 				}
 			}
+			this.setFocusTraversalPolicy(policy);
+		}
+	}
+	
+	public void participantComplete( ParticipantPanel participant ) {
+		if( participant == pConsignor ) {
+			pConsignee.jtfPIN.requestFocus();
+		}
+		else {
+			okButton.requestFocus();
+		}
+	}
+	 
+	private void doSave() {
+		// Gather values and save.
+		// In case one sp and not in list yet.
+		if( mSpListModel.getSize() == 0 ) {
+			String sSpecies = (String)cbSpecies.getSelectedItem();
+			mSpListModel.addElement(sSpecies);
+		}
+	}
+	
+	private void clear() {
+		jtfCVINo.setText("");
+		jtfDate.setText("");
+		cbProduct.setSelectedItem("Live animal");
+		cbSpecies.setSelectedItem(null);
+		mSpListModel.clear();
+		idModel.clear();
+		idModel.fireTableDataChanged();
+		if( !pConsignor.ckSticky.isSelected() )
+		{
+			pConsignor.jtfPIN.setText("");
+			pConsignor.jtfBusiness.setText("");
+			pConsignor.jtfName.setText("");
+			pConsignor.jtfAddress.setText("");
+			pConsignor.jtfCity.setText("");
+			pConsignor.cbState.setSelectedItem(null);
+			pConsignor.jtfZip.setText("");
+			pConsignor.cbCounty.setSelectedItem(null);
+		}
+		if( !pConsignee.ckSticky.isSelected() )
+		{
+			pConsignee.jtfPIN.setText("");
+			pConsignee.jtfBusiness.setText("");
+			pConsignee.jtfName.setText("");
+			pConsignee.jtfAddress.setText("");
+			pConsignee.jtfCity.setText("");
+			pConsignee.cbState.setSelectedItem(null);
+			pConsignee.jtfZip.setText("");
+			pConsignee.cbCounty.setSelectedItem(null);
 		}
 	}
 
@@ -343,6 +432,12 @@ public class NineDashThreeDialog extends JDialog {
 			String sSpecies = mSpListModel.elementAt(i);
 			String sSpCode = SpeciesLookup.getSpeciesCode(sSpecies);
 			hSpecies.put(sSpCode, sSpecies);
+		}
+		if( hSpecies.size() == 0 ) {
+			String sSpecies = (String)cbSpecies.getSelectedItem();
+			mSpListModel.addElement(sSpecies);
+			String sSpCode = SpeciesLookup.getSpeciesCode(sSpecies);
+			hSpecies.put(sSpCode, sSpecies);		
 		}
 		AddAnimalsDialog dlg = new AddAnimalsDialog( hSpecies, idModel );
 		dlg.setVisible(true);

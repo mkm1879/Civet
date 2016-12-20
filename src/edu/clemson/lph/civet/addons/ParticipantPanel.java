@@ -5,13 +5,41 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.CivetEditDialog;
+import edu.clemson.lph.civet.CivetInbox;
+import edu.clemson.lph.civet.lookup.Counties;
+import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
+import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.webservice.PremisesSearchDialog;
+import edu.clemson.lph.civet.webservice.PremisesTableModel;
+import edu.clemson.lph.civet.webservice.UsaHerdsLookupPrems;
+import edu.clemson.lph.civet.webservice.WebServiceException;
+import edu.clemson.lph.controls.DBComboBox;
+import edu.clemson.lph.controls.SearchTextField;
+import edu.clemson.lph.dialogs.MessageDialog;
+import edu.clemson.lph.utils.CountyUtils;
+import edu.clemson.lph.utils.PremCheckSum;
+
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.Window;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.Beans;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
@@ -22,23 +50,31 @@ public class ParticipantPanel extends JPanel {
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}
-	JTextField jtfPIN;
+	JCheckBox ckSticky;
+	SearchTextField jtfPIN;
+	private PremisesSearchDialog premSearch = new PremisesSearchDialog();
 	JTextField jtfBusiness;
 	JTextField jtfName;
 	JTextField jtfAddress;
 	JTextField jtfCity;
 	JTextField jtfZip;
-	JComboBox<String> cbState;
-	
+	DBComboBox cbState;
+	JComboBox<String> cbCounty;
+	private boolean bInSearch = false;
+	NineDashThreeDialog myParent = null;
 
+	public void setParent( NineDashThreeDialog parent ) {
+		myParent = parent;
+	}
+	
 	/**
 	 * Create the panel.
 	 */
 	public ParticipantPanel() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[] {30, 0, 0, 0, 0, 0, 0, 0, 0};
+		gridBagLayout.columnWidths = new int[] {30, 50, 120, 90, 55, 5};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, 0.0};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
@@ -59,13 +95,13 @@ public class ParticipantPanel extends JPanel {
 		gbc_lblNewLabel.gridy = 1;
 		add(lblNewLabel, gbc_lblNewLabel);
 		
-		JCheckBox chkSticky = new JCheckBox("");
+		ckSticky = new JCheckBox("");
 		GridBagConstraints gbc_chkSticky = new GridBagConstraints();
 		gbc_chkSticky.anchor = GridBagConstraints.NORTH;
 		gbc_chkSticky.insets = new Insets(0, 0, 5, 0);
 		gbc_chkSticky.gridx = 4;
 		gbc_chkSticky.gridy = 1;
-		add(chkSticky, gbc_chkSticky);
+		add(ckSticky, gbc_chkSticky);
 		
 		JLabel lblPin = new JLabel("PIN:");
 		lblPin.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -76,7 +112,14 @@ public class ParticipantPanel extends JPanel {
 		gbc_lblPin.gridy = 3;
 		add(lblPin, gbc_lblPin);
 		
-		jtfPIN = new JTextField();
+		jtfPIN = new SearchTextField();
+		jtfPIN.setSearchDialog( premSearch );
+		jtfPIN.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				jtfThisPIN_focusLost(e);
+			}
+		});
+		
 		GridBagConstraints gbc_jtfPIN = new GridBagConstraints();
 		gbc_jtfPIN.anchor = GridBagConstraints.NORTH;
 		gbc_jtfPIN.insets = new Insets(0, 0, 5, 5);
@@ -171,7 +214,7 @@ public class ParticipantPanel extends JPanel {
 		gbc_lblState.gridy = 8;
 		add(lblState, gbc_lblState);
 		
-		cbState = new JComboBox<String>();
+		cbState = new DBComboBox();
 		GridBagConstraints gbc_cbState = new GridBagConstraints();
 		gbc_cbState.gridwidth = 3;
 		gbc_cbState.insets = new Insets(0, 0, 5, 5);
@@ -179,6 +222,12 @@ public class ParticipantPanel extends JPanel {
 		gbc_cbState.gridx = 2;
 		gbc_cbState.gridy = 8;
 		add(cbState, gbc_cbState);
+		cbState.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				refreshOtherCounties();
+			}
+		});
 		
 		JLabel lblZip = new JLabel("Zip:");
 		lblZip.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -197,7 +246,26 @@ public class ParticipantPanel extends JPanel {
 		gbc_jtfZip.gridy = 9;
 		add(jtfZip, gbc_jtfZip);
 		jtfZip.setColumns(10);
-		
+		jtfZip.addFocusListener( new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent arg0) {
+			}
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				checkZipcode( jtfZip );
+				String sZip = jtfZip.getText();
+				if( sZip != null && sZip.trim().length() > 0 ) {
+					try {
+						String sZipCounty = CountyUtils.getCounty(sZip);
+						String sHerdsCounty = Counties.getHerdsCounty(cbState.getSelectedCode(), sZipCounty);
+						cbCounty.setSelectedItem(sHerdsCounty);
+					} catch (IOException e) {
+						logger.error(e);
+					}
+				}
+			}
+		});
+
 		JLabel lblCounty = new JLabel("County:");
 		lblCounty.setHorizontalAlignment(SwingConstants.RIGHT);
 		GridBagConstraints gbc_lblCounty = new GridBagConstraints();
@@ -207,8 +275,8 @@ public class ParticipantPanel extends JPanel {
 		gbc_lblCounty.gridy = 10;
 		add(lblCounty, gbc_lblCounty);
 		
-		JComboBox cbCounty = new JComboBox();
 		GridBagConstraints gbc_cbCounty = new GridBagConstraints();
+		cbCounty = new JComboBox<String>();
 		gbc_cbCounty.gridwidth = 3;
 		gbc_cbCounty.insets = new Insets(0, 0, 0, 5);
 		gbc_cbCounty.fill = GridBagConstraints.HORIZONTAL;
@@ -216,6 +284,151 @@ public class ParticipantPanel extends JPanel {
 		gbc_cbCounty.gridy = 10;
 		add(cbCounty, gbc_cbCounty);
 
+		initializeDBComponents();
+	}
+	
+	private void refreshOtherCounties() {
+		cbCounty.removeAllItems();
+		cbCounty.addItem(null);
+		String sOtherState = cbState.getSelectedCode();
+		if( sOtherState != null ) {
+			for( String sCounty : Counties.getCounties(sOtherState) ) {
+				cbCounty.addItem(sCounty);
+			}
+		}
+	}
+	
+	
+	protected void checkZipcode(JTextField jtfZip) {
+		if( jtfZip == null ) return;
+		String sZip = jtfZip.getText().trim();
+		if( sZip == null || sZip.trim().length() == 0 )
+			return;
+	      Pattern r = Pattern.compile("^\\d{5}(-?\\d{4})?$");
+
+	      // Now create matcher object.
+	      Matcher m = r.matcher(sZip);
+	      if( !m.find() ) {
+	    	  MessageDialog.showMessage(this.getWindowParent(), "Civet Error:", sZip + " is not a valid zipcode");
+	    	  jtfZip.requestFocus();
+	      }
+	}
+	
+	private Window getWindowParent() {
+		Window wP = null;
+		Container p = getParent();
+		while( p != null && !(p instanceof Window) ) {
+			p = p.getParent();
+		}
+		return wP;
+	}
+
+	private void initializeDBComponents() {
+		if( !Beans.isDesignTime() ) {
+			try {
+			
+				cbState.setModel( new States() );
+				cbState.setBlankDefault(true);
+				cbState.refresh();
+			}
+			catch( Exception e ) {
+				logger.error(e.getMessage() + "\nError loading values from lookup tables",e);
+				MessageDialog.showMessage(getWindowParent(), "Civet Error: Database", "Error loading values from lookup tables" );
+				e.printStackTrace();
+			}
+			
+		}
+	}
+	
+	void jtfThisPIN_focusLost(FocusEvent e) {
+		boolean bFound = false;
+		String sThisPremId = jtfPIN.getText();		
+		if( sThisPremId == null || sThisPremId.trim().length() == 0 ) return;
+		// Here we mimic the behavior of the PinField control.  We couldn't be both a SearchTextField
+		// and a PinField.  Maybe should have used a decorator pattern instead of inheritance!
+		String sUpperPin = sThisPremId.toUpperCase();
+		boolean bValid = false;
+		try {
+			if( PremCheckSum.isValid(sUpperPin) ) {
+				bValid = true;
+			}
+		} catch (Exception es) {
+			//
+		}
+		if( !bValid ) {
+			MessageDialog.showMessage(getWindowParent(), 
+						"Civet: Premises ID Error", sThisPremId + " is not a valid Premises ID", MessageDialog.OK_ONLY);
+			return;
+		}
+		else {
+			sThisPremId = sUpperPin;
+			jtfPIN.setText(sUpperPin);
+		}
+		if( bInSearch ) 
+			return; 
+		bInSearch = true;
+		// don't overwrite existing content UNLESS sticky is on so the content may be 
+		// from last entry.
+		if( ckSticky.isSelected() || (
+			(jtfBusiness.getText() == null || jtfBusiness.getText().trim().length() == 0) &&
+			(jtfAddress.getText() == null || jtfAddress.getText().trim().length() == 0) &&
+			(jtfCity.getText() == null || jtfCity.getText().trim().length() == 0) &&
+			(jtfZip.getText() == null || jtfZip.getText().trim().length() == 0) ) ) {
+			// Sort out whether we have a PIN or a LID
+			String sStatePremisesId = null;
+			String sFedPremisesId = null;
+			if( sThisPremId != null && sThisPremId.trim().length() == 7 )
+				sFedPremisesId = sThisPremId;
+			else {
+				sStatePremisesId = sThisPremId;
+			}
+			PremisesSearchDialog dlg = (PremisesSearchDialog)jtfPIN.getSearchDialog(); 
+			if( dlg.exitOK() ) {
+				jtfBusiness.setText(dlg.getSelectedPremName());
+				jtfAddress.setText(dlg.getSelectedAddress());
+				jtfCity.setText(dlg.getSelectedCity());
+				String sStateCode = dlg.getSelectedStateCode();
+				cbState.setSelectedItem(States.getState(sStateCode));
+				cbCounty.setSelectedItem(dlg.getSelectedCounty());
+				jtfZip.setText(dlg.getSelectedZipCode());
+				bFound = true;
+			}
+			else {
+				// Note, this route is broken until search logic gets refined.
+				PremisesTableModel model;
+				try {
+					model = new UsaHerdsLookupPrems( sStatePremisesId, sFedPremisesId );
+					if( model.getRowCount() == 1 ) {
+						if( model.next() ) {
+							jtfPIN.setText(sThisPremId);
+							jtfBusiness.setText(model.getPremName());
+							jtfAddress.setText(model.getAddress());
+							jtfCity.setText(model.getCity());
+							String sStateCode = model.getStateCode();
+							cbState.setSelectedItem(States.getState(sStateCode));
+							cbCounty.setSelectedItem(model.getCounty());
+							jtfZip.setText(model.getZipCode());
+							bFound = true;
+						}
+					}
+					else {
+						MessageDialog.showMessage(getWindowParent(), "Civet: Error Premises Not Found", 
+								"Found " + model.getRowCount() + " premises for " + jtfPIN.getText());
+					}
+				} catch (WebServiceException e1) {
+					MessageDialog.showMessage(getWindowParent(), "Civet: Error", "Web Service Failure\n" + e1.getMessage());
+					logger.error("Web Service Failure", e1);
+				}
+			}
+		}
+		bInSearch = false;
+		if( bFound ) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					myParent.participantComplete(ParticipantPanel.this);
+				}
+			});
+		}
 	}
 
 }
