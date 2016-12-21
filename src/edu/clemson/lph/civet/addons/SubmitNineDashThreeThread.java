@@ -27,14 +27,14 @@ import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
+import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.PremCheckSum;
 
 public class SubmitNineDashThreeThread extends Thread {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private static final OpenOption[] CREATE_OR_APPEND = new OpenOption[] { StandardOpenOption.APPEND, StandardOpenOption.CREATE };
-	private static final String sProgMsg = "Loading 9-3: ";
+//	private static final String sProgMsg = "Loading 9-3: ";
 	
-	ProgressDialog prog;
 	Window parent;
 	CivetWebServices service;
 	DatabaseConnectionFactory factory;
@@ -88,9 +88,6 @@ public class SubmitNineDashThreeThread extends Thread {
 			 String sDestinationCity, 
 			 String sDestinationCounty, 
 			 String sDestinationZipCode  ) {
-		prog = new ProgressDialog(parent, "Civet", "Saving NPIP 9-3");
-		prog.setAuto(true);
-		prog.setVisible(true);
 		this.parent = parent;
 		this.factory = factory;
 		this.sCVINo = sCVINo; 
@@ -117,9 +114,11 @@ public class SubmitNineDashThreeThread extends Thread {
 		service = new CivetWebServices();
 	}
 	
+	/**
+	 * Most of this is duplicate code from the other submission threads.  Should refactor.
+	 */
 	public void run() {
 		try {
-			prog.setMessage(sProgMsg + sCVINo );
 			if( cviExists( sCVINo, sOriginStateCode )) {
 				try {
 					String sLineOut = sCVINo + " from " + sOriginStateCode + " already exists\r\n";
@@ -129,7 +128,7 @@ public class SubmitNineDashThreeThread extends Thread {
 				}
 				exitThread(false);
 			}
-			if( "EGG".equalsIgnoreCase( sProduct ) ) {
+			if( "Eggs".equalsIgnoreCase( sProduct ) ) {
 				addToEggCVIs(sCVINo);
 			}
 			String sXML = buildXml();
@@ -174,16 +173,20 @@ public class SubmitNineDashThreeThread extends Thread {
 		exitThread(true);
 	}
 
+	/**
+	 * For future use.
+	 * @param bSuccess
+	 */
 	private void exitThread( boolean bSuccess ) {
-		final boolean bDone = bSuccess;
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				prog.setVisible(false);
-				prog.dispose();
-				if( bDone )
-					;
-			}
-		});
+//		final boolean bDone = bSuccess;
+//		SwingUtilities.invokeLater(new Runnable() {
+//			public void run() {
+//				prog.setVisible(false);
+//				prog.dispose();
+//				if( bDone )
+//					;
+//			}
+//		});
 	}
 	
 	private String buildXml() throws IOException {
@@ -250,7 +253,14 @@ public class SubmitNineDashThreeThread extends Thread {
 		return xmlBuilder.getXMLString();
 	}
 
+	/**
+	 * Duplicate checking is only available for local SC use with direct DB access.
+	 * @param sCVINbr
+	 * @param sState
+	 * @return
+	 */
 	private boolean cviExists( String sCVINbr, String sState ) {
+		if( factory == null ) return false;
 		boolean bRet = false;
 		// NOTE: There is no generator for this now.  Make one in AddOns and distribute to other states????
 		String sQuery = "SELECT * FROM USAHERDS.dbo.CVIs c \n" +
@@ -279,24 +289,28 @@ public class SubmitNineDashThreeThread extends Thread {
 	
 	private boolean addToEggCVIs( String sCVINbr ) {
 		boolean bRet = false;
-		// NOTE: There is no generator for this now.  Make one in AddOns and distribute to other states????
-		String sQuery = "INSERT INTO USAHERDS_LPH.dbo.EggCVIs VALUES( ? )";
-		Connection conn = factory.makeDBConnection();
-		try {
-			PreparedStatement ps = conn.prepareStatement(sQuery);
-			ps.setString(1, sCVINbr);
-			int iRet = ps.executeUpdate();
-			if( iRet > 0 ) {
-				bRet = true;
-			}
-		} catch( SQLException e ) {
-			logger.error("Error in query: " + sQuery, e);
-		} finally {
+		if( factory != null ) {
+			String sQuery = "INSERT INTO USAHERDS_LPH.dbo.EggCVIs VALUES( ? )";
+			Connection conn = factory.makeDBConnection();
 			try {
-				if( conn != null && !conn.isClosed() )
-					conn.close();
-			} catch( Exception e2 ) {
+				PreparedStatement ps = conn.prepareStatement(sQuery);
+				ps.setString(1, sCVINbr);
+				int iRet = ps.executeUpdate();
+				if( iRet > 0 ) {
+					bRet = true;
+				}
+			} catch( SQLException e ) {
+				logger.error("Error in query: " + sQuery, e);
+			} finally {
+				try {
+					if( conn != null && !conn.isClosed() )
+						conn.close();
+				} catch( Exception e2 ) {
+				}
 			}
+		}
+		else {
+			FileUtils.writeTextFile(sCVINbr + "\n", "EggCVIs.txt", true);
 		}
 		return bRet;
 	}

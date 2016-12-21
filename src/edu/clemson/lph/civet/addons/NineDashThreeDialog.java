@@ -7,17 +7,20 @@ import java.awt.FlowLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.AddAnimalsDialog;
+import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.AnimalIDListTableModel;
 import edu.clemson.lph.civet.AnimalIDRecord;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.SpeciesRecord;
+import edu.clemson.lph.civet.lookup.Counties;
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -25,6 +28,7 @@ import edu.clemson.lph.controls.DBNumericField;
 import edu.clemson.lph.controls.DateField;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
 import edu.clemson.lph.dialogs.ProgressDialog;
+import edu.clemson.lph.utils.CountyUtils;
 
 import java.awt.GridLayout;
 
@@ -46,14 +50,17 @@ import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 @SuppressWarnings("serial")
-public class NineDashThreeDialog extends JDialog {
+public class NineDashThreeDialog extends JFrame {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 
-	static DatabaseConnectionFactory factory = null;
+	DatabaseConnectionFactory factory = null;
 	JTextField jtfCVINo;
 	DateField jtfDate;
 	JComboBox<String> cbSpecies = new JComboBox<String>();
@@ -63,17 +70,19 @@ public class NineDashThreeDialog extends JDialog {
 	JTable tblIDs;
 	JList<String> lbSpecies;
 	ArrayList<SpeciesRecord> aSpecies = new ArrayList<SpeciesRecord>();
+	// maintaining this hashmap is redundant but done to match the signature 
+	// of the AddAnimalsDialog borrowed from the main Civet code base.
 	HashMap<String, String> hSpecies = new HashMap<String, String>();
 	DefaultListModel<String> mSpListModel = new DefaultListModel<String>();
 	ManualOrderFocusTraversalPolicy policy = new ManualOrderFocusTraversalPolicy();
 
-	ParticipantPanel pConsignor = new ParticipantPanel();
-	ParticipantPanel pConsignee = new ParticipantPanel();
+	ParticipantPanel pConsignor = new ParticipantPanel("Consignor");
+	ParticipantPanel pConsignee = new ParticipantPanel("Consignee");
 	
 	JButton okButton;
 	DBNumericField jtfNumber;
 	/**
-	 * Launch the application.
+	 * Launch the application.  Just for testing.
 	 */
 	public static void main(String[] args) {
 		try {
@@ -86,9 +95,7 @@ public class NineDashThreeDialog extends JDialog {
 			} catch (Exception e) {
 				logger.error("Error running main program in event thread", e);
 			}
-			if( factory == null )
-				factory = InitAddOns.getFactory();
-			NineDashThreeDialog dialog = new NineDashThreeDialog();
+			NineDashThreeDialog dialog = new NineDashThreeDialog(null, null);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -99,7 +106,8 @@ public class NineDashThreeDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public NineDashThreeDialog() {
+	public NineDashThreeDialog(Window parent, DatabaseConnectionFactory factory) {
+		this.factory = factory;
 		setBounds(100, 100, 700, 500);
 		setTitle("Civet: NPIP 9-3 Entry Form");
 		getContentPane().setLayout(new BorderLayout());
@@ -198,7 +206,7 @@ public class NineDashThreeDialog extends JDialog {
 				cbProduct.addItem("");
 				cbProduct.addItem("Live Animals");
 				cbProduct.addItem("Eggs");
-				cbProduct.setSelectedItem("");
+				cbProduct.setSelectedItem("Live Animals");
 				pCertificate.add(cbProduct, gbc_cbProduct);
 				policy.addControl(cbProduct);
 			}
@@ -230,6 +238,7 @@ public class NineDashThreeDialog extends JDialog {
 			}
 			{
 				JLabel lblNumber = new JLabel("Number:");
+				
 				GridBagConstraints gbc_lblNumber = new GridBagConstraints();
 				gbc_lblNumber.anchor = GridBagConstraints.EAST;
 				gbc_lblNumber.insets = new Insets(0, 0, 5, 5);
@@ -239,6 +248,15 @@ public class NineDashThreeDialog extends JDialog {
 			}
 			{
 				jtfNumber = new DBNumericField();
+				jtfNumber.addFocusListener( new FocusListener() {
+					@Override
+					public void focusGained(FocusEvent arg0) {
+					}
+					@Override
+					public void focusLost(FocusEvent arg0) {
+						updateSpecies();
+					}
+				});
 				GridBagConstraints gbc_textField = new GridBagConstraints();
 				gbc_textField.insets = new Insets(0, 0, 5, 5);
 				gbc_textField.fill = GridBagConstraints.HORIZONTAL;
@@ -247,44 +265,6 @@ public class NineDashThreeDialog extends JDialog {
 				pCertificate.add(jtfNumber, gbc_textField);
 				jtfNumber.setColumns(5);
 				policy.addControl(jtfNumber);
-			}
-
-			{
-				JButton btnAddSpecies = new JButton("Add");
-				btnAddSpecies.addActionListener( new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						String species = (String)cbSpecies.getSelectedItem();
-						mSpListModel.addElement(species);
-					}
-					
-				});
-				btnAddSpecies.setVerticalAlignment(SwingConstants.TOP);
-				GridBagConstraints gbc_btnAddSpecies = new GridBagConstraints();
-				gbc_btnAddSpecies.anchor = GridBagConstraints.EAST;
-				gbc_btnAddSpecies.insets = new Insets(0, 0, 5, 5);
-				gbc_btnAddSpecies.gridx = 0;
-				gbc_btnAddSpecies.gridy = 6;
-				pCertificate.add(btnAddSpecies, gbc_btnAddSpecies);
-				policy.addControl(btnAddSpecies);
-			}
-			{
-				JButton bRemove = new JButton("Remove");
-				bRemove.addActionListener( new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						int iSelected = lbSpecies.getSelectedIndex();
-						if( iSelected >= 0 )
-							mSpListModel.remove(iSelected);
-					}
-					
-				});
-				GridBagConstraints gbc_bRemove = new GridBagConstraints();
-				gbc_bRemove.anchor = GridBagConstraints.EAST;
-				gbc_bRemove.insets = new Insets(0, 0, 5, 5);
-				gbc_bRemove.gridx = 0;
-				gbc_bRemove.gridy = 8;
-				pCertificate.add(bRemove, gbc_bRemove);
 			}
 			{
 				JScrollPane spSpecies = new JScrollPane();
@@ -299,6 +279,44 @@ public class NineDashThreeDialog extends JDialog {
 				gbc_scrollPane.gridx = 1;
 				gbc_scrollPane.gridy = 6;
 				pCertificate.add(spSpecies, gbc_scrollPane);
+			}
+			
+			//			{
+			//				JButton btnAddSpecies = new JButton("Add");
+			//				btnAddSpecies.addActionListener( new ActionListener() {
+			//					@Override
+			//					public void actionPerformed(ActionEvent e) {
+			//						String species = (String)cbSpecies.getSelectedItem();
+			//						mSpListModel.addElement(species);
+			//					}
+			//					
+			//				});
+			//				btnAddSpecies.setVerticalAlignment(SwingConstants.TOP);
+			//				GridBagConstraints gbc_btnAddSpecies = new GridBagConstraints();
+			//				gbc_btnAddSpecies.anchor = GridBagConstraints.EAST;
+			//				gbc_btnAddSpecies.insets = new Insets(0, 0, 5, 5);
+			//				gbc_btnAddSpecies.gridx = 0;
+			//				gbc_btnAddSpecies.gridy = 6;
+			//				pCertificate.add(btnAddSpecies, gbc_btnAddSpecies);
+			//				policy.addControl(btnAddSpecies);
+			//			}
+			{
+				JButton bRemove = new JButton("Remove");
+				bRemove.addActionListener( new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						int iSelected = lbSpecies.getSelectedIndex();
+						if( iSelected >= 0 )
+							mSpListModel.remove(iSelected);
+					}
+
+				});
+				GridBagConstraints gbc_bRemove = new GridBagConstraints();
+				gbc_bRemove.anchor = GridBagConstraints.EAST;
+				gbc_bRemove.insets = new Insets(0, 0, 15, 5);
+				gbc_bRemove.gridx = 0;
+				gbc_bRemove.gridy = 8;
+				pCertificate.add(bRemove, gbc_bRemove);
 			}
 			JPanel pIDs = new JPanel();
 			{
@@ -325,22 +343,16 @@ public class NineDashThreeDialog extends JDialog {
 				pIDs.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 				pIDs.setLayout(null);
 				pCertPane.add(pIDs);
-				{
-					idModel.addRow("CHI", "Chicken", "scnpip12345");
-					idModel.addRow("CHI", "Chicken", "scnpip12346");
-					idModel.addRow("CHI", "Chicken", "scnpip12347");
-					idModel.addRow("CHI", "Chicken", "scnpip12348");
-				}
+				JScrollPane spIDs = new JScrollPane();
+				spIDs.setBounds(110, 11, 223, 170);
+				pIDs.add(spIDs);
+				tblIDs = new JTable();
+				tblIDs.setModel(idModel);
+				tblIDs.setPreferredSize(new Dimension(200, 200));
+				TableColumnModel tcm = tblIDs.getColumnModel();
+				tcm.removeColumn(tcm.getColumn(0));
+				spIDs.setViewportView(tblIDs);
 			}
-			JScrollPane spIDs = new JScrollPane();
-			spIDs.setBounds(110, 11, 223, 170);
-			pIDs.add(spIDs);
-			tblIDs = new JTable();
-			tblIDs.setModel(idModel);
-			tblIDs.setPreferredSize(new Dimension(200, 200));
-			TableColumnModel tcm = tblIDs.getColumnModel();
-			tcm.removeColumn(tcm.getColumn(0));
-			spIDs.setViewportView(tblIDs);
 			{
 				JPanel pParticipants = new JPanel();
 				GridLayout gl_pParticipants = new GridLayout();
@@ -452,8 +464,9 @@ public class NineDashThreeDialog extends JDialog {
 	private void clear() {
 		jtfCVINo.setText("");
 		jtfDate.setText("");
-		cbProduct.setSelectedItem("Live animal");
+		cbProduct.setSelectedItem("Live Animals");
 		cbSpecies.setSelectedItem(null);
+		jtfNumber.setText("");
 		aSpecies = new ArrayList<SpeciesRecord>();
 		mSpListModel.clear();
 		idModel.clear();
@@ -508,6 +521,11 @@ public class NineDashThreeDialog extends JDialog {
 		if( !aSpecies.contains(srThis) ) {
 			aSpecies.add(srThis);
 		}
+		else {
+			SpeciesRecord rExisting = aSpecies.get(aSpecies.indexOf(srThis) );
+			rExisting.iNumber = iNumber;
+		}
 	}
+
 
 }

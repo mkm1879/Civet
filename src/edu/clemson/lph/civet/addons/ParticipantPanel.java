@@ -50,6 +50,7 @@ public class ParticipantPanel extends JPanel {
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}
+	String sLabel;
 	JCheckBox ckSticky;
 	SearchTextField jtfPIN;
 	private PremisesSearchDialog premSearch = new PremisesSearchDialog();
@@ -70,7 +71,8 @@ public class ParticipantPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public ParticipantPanel() {
+	public ParticipantPanel(String sLabel) {
+		this.sLabel = sLabel;
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {30, 50, 120, 90, 55, 5};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -78,7 +80,7 @@ public class ParticipantPanel extends JPanel {
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		JLabel lblConsignor = new JLabel("Consignor");
+		JLabel lblConsignor = new JLabel(sLabel);
 		lblConsignor.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GridBagConstraints gbc_lblConsignor = new GridBagConstraints();
 		gbc_lblConsignor.gridwidth = 2;
