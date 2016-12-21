@@ -232,6 +232,8 @@ public class NineDashThreeDialog extends JFrame {
 				cbSpecies.addItem("Chicken");
 				cbSpecies.addItem("Turkey");
 				cbSpecies.addItem("Pigeon");
+				cbSpecies.addItem("Duck");
+				cbSpecies.addItem("Poultry");
 				cbSpecies.setSelectedItem("");
 				pCertificate.add(cbSpecies, gbc_cbSpecies);
 				policy.addControl(cbSpecies);
@@ -493,6 +495,7 @@ public class NineDashThreeDialog extends JFrame {
 			pConsignee.jtfZip.setText("");
 			pConsignee.cbCounty.setSelectedItem(null);
 		}
+		jtfCVINo.requestFocus();
 	}
 
 	protected void addIDs() {
