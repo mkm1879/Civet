@@ -1,6 +1,7 @@
 package edu.clemson.lph.civet.addons;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 
@@ -40,6 +41,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EtchedBorder;
 import javax.swing.table.TableColumnModel;
+import javax.swing.text.JTextComponent;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -495,6 +497,7 @@ public class NineDashThreeDialog extends JFrame {
 			pConsignee.jtfZip.setText("");
 			pConsignee.cbCounty.setSelectedItem(null);
 		}
+		setAllFocus();
 		jtfCVINo.requestFocus();
 	}
 
@@ -529,6 +532,34 @@ public class NineDashThreeDialog extends JFrame {
 			rExisting.iNumber = iNumber;
 		}
 	}
+	
+	/**
+	 * This is used by setAllFocus to make each field select the entire text 
+	 * when tabbed into so it can be easily overwritten.
+	 * @param e
+	 */
+	private void selectAll(FocusEvent e) {
+		Component c = e.getComponent();
+		if( c instanceof JTextComponent ) {
+			((JTextComponent)c).selectAll();
+		}
+	}
 
-
+	/** 
+	 * As a control is entered, select all.  
+	 */
+	private void setAllFocus() {
+		jtfCVINo.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfDate.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		pConsignor.setAllFocus();
+		pConsignee.setAllFocus();
+	}
 }

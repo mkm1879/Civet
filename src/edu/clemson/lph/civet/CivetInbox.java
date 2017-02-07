@@ -61,7 +61,7 @@ import edu.clemson.lph.civet.vsps.VspsCviFile;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "3.18 Local";
+	public static final String VERSION = "3.18a Local";
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());

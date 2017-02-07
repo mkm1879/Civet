@@ -43,6 +43,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.text.JTextComponent;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
@@ -436,4 +437,53 @@ public class ParticipantPanel extends JPanel {
 		}
 	}
 
+	/**
+	 * This is used by setAllFocus to make each field select the entire text 
+	 * when tabbed into so it can be easily overwritten.
+	 * @param e
+	 */
+	private void selectAll(FocusEvent e) {
+		Component c = e.getComponent();
+		if( c instanceof JTextComponent ) {
+			((JTextComponent)c).selectAll();
+		}
+	}
+
+	/** 
+	 * As a control is entered, select all.  
+	 * Called from the main 9-3 dialog so protected visibility
+	 */
+	void setAllFocus() {
+		jtfPIN.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfBusiness.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfName.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfAddress.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfCity.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+		jtfZip.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusGained(FocusEvent e) {
+				selectAll(e);
+			}
+		});
+	}
+	
 }
