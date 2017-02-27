@@ -78,8 +78,8 @@ public class NineDashThreeDialog extends JFrame {
 	DefaultListModel<String> mSpListModel = new DefaultListModel<String>();
 	ManualOrderFocusTraversalPolicy policy = new ManualOrderFocusTraversalPolicy();
 
-	ParticipantPanel pConsignor = new ParticipantPanel("Consignor");
-	ParticipantPanel pConsignee = new ParticipantPanel("Consignee");
+	ParticipantPanel pConsignor = new ParticipantPanel("Consignor (Shipper)");
+	ParticipantPanel pConsignee = new ParticipantPanel("Consignee (Purchaser)");
 	
 	JButton okButton;
 	DBNumericField jtfNumber;
@@ -422,6 +422,7 @@ public class NineDashThreeDialog extends JFrame {
 			}
 			this.setFocusTraversalPolicy(policy);
 		}
+		setAllFocus();
 	}
 	
 	public void participantComplete( ParticipantPanel participant ) {

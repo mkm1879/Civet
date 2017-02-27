@@ -156,7 +156,7 @@ public class SubmitNineDashThreeThread extends Thread {
 					logger.info("Time out CVI Number: " + sCVINo );
 				}
 				else {
-					sRet = "Transmission level error";
+					sRet = "Transmission level error\n" + sRet;
 					logger.error( sRet, new Exception("Error submitting NPIP 9-3 spreadsheet CVI to USAHERDS: " +
 							sCVINo ) );
 					logger.error(sXML);
