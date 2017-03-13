@@ -36,11 +36,9 @@ ToBeFiledDirPath=E:\\Documents\\CivetTest\\CivetToBeFiled\\
 EmailOutDirPath=E:\\Documents\\CivetTest\\CivetToBeMailedOut\\
 EmailErrorsDirPath=E:\\Documents\\CivetTest\\CivetToBeMailedErrors\\
 OutputDirPath=E:\\Documents\\CivetTest\\CivetOutbox\\
-<<<<<<< HEAD
 vspsDirPath=
 
 #Files
-nineDashThreeLoadDirPath=E:\\Documents\\CivetTest\\NPIPData\\
 CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
 StdSchema=E:\\Documents\\Civet\\ecviDraftRelaxed.xsd
 acrobatPath=
@@ -52,14 +50,9 @@ sppTableFile=SpeciesTable.csv
 errorTypeTableFile=ErrorTypeTable.csv
 purposeTableFile=PurposeTable.csv
 stateVetTableFile=StateVetTable.csv
-countiesTableFile=E:\\Documents\\CivetTest\\CountyTable.csv
 zipcodeTableFile=E:\\Documents\\CivetTest\\ZipTable.csv
+countiesTableFile=E:\\Documents\\CivetTest\\CountyTable.csv
 countyAliasesTableFile=E:\\Documents\\CivetTest\\CountyAliasesTable.csv
-
-localNetAddresses=130.127.169.203
-dbServer=LPHStage
-dbPort=1433
-dbDatabaseName=USAHERDS
 
 #Robot
 robotInputPath=E:\\Documents\\CivetTest\\CivetRobotIn
