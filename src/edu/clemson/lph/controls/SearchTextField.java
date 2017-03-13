@@ -108,6 +108,7 @@ public class SearchTextField extends JTextField {
 			// We assume a live db connection here.
 			if( searchDialog != null ) {
 				searchDialog.setDeltas(deltaX, deltaY);
+				searchDialog.clear();
 				searchDialog.setVisible(true);
 				if (searchDialog.exitOK()) {
 					String sKey = searchDialog.getSelectedKey();
