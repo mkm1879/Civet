@@ -2634,7 +2634,8 @@ public final class CivetEditDialog extends JFrame {
 				bAttachmentBytes = controller.getCurrentPdfBytes();
 			}
 		}
-		SaveCVIThread thread = new SaveCVIThread(this, stdXml, bAttachmentBytes,
+		String sOpenedAsFileName = controller.getCurrentFileName();
+		SaveCVIThread thread = new SaveCVIThread(this, stdXml, sOpenedAsFileName, bAttachmentBytes,
 				sAttachmentFileName, fAttachmentFile, bInbound, bXFA, sOtherStateCode,
 				sOtherName, sOtherAddress, sOtherCity, sOtherCounty, sOtherZipcode, sOtherPIN,
 				sThisPremisesId, sThisName, sPhone,
@@ -2644,10 +2645,6 @@ public final class CivetEditDialog extends JFrame {
 				aSpecies,
 				aErrorKeys, sErrorNotes,
 				idListModel.getRows()	);
-		if( isReopened() ) {
-			String sExistingFileName = controller.getCurrentFileName();
-			deleteFile( sExistingFileName );
-		}
 		// Messy way of checking for rapid fire duplicate entry
 		sPrevCVINo = sCVINo;
 		thread.start();

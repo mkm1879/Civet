@@ -57,6 +57,7 @@ public class SaveCVIThread extends Thread {
 	private byte bAttachmentFileBytes[] = null;
 	private String sOriginalFileName = null;
 	private File fOriginalFile = null; // Original file IF it is to be stored in message
+	private String sOpenedAsFileName = null;
 	private String sXmlFileName;
 	private boolean bImport;
 	private String sOriginStateCode;
@@ -90,7 +91,7 @@ public class SaveCVIThread extends Thread {
 	private boolean bCancel = false;
 	private boolean bXFA = false;
 
-	public SaveCVIThread(CivetEditDialog dlg, StdeCviXml stdXmlIn,
+	public SaveCVIThread(CivetEditDialog dlg, StdeCviXml stdXmlIn, String sOpenedAsFileName,
 			byte[] bAttachmentBytesIn, String sOriginalFileName, File fOriginalFileIn, boolean bImport, boolean bXFAIn,
 			String sOtherStateCode, String sOtherName, String sOtherAddress, String sOtherCity, 
 			String sOtherCounty, String sOtherZipcode, String sOtherPIN,
@@ -110,6 +111,7 @@ public class SaveCVIThread extends Thread {
 		this.bAttachmentBytes = bAttachmentBytesIn;
 		this.sOriginalFileName = sOriginalFileName;
 		this.fOriginalFile = fOriginalFileIn;
+		this.sOpenedAsFileName = sOpenedAsFileName;
 		this.dDateIssued = dDateIssued;
 		this.dDateReceived = dDateReceived;
 		this.iIssuedByKey = iIssuedByKey;
@@ -268,7 +270,7 @@ public class SaveCVIThread extends Thread {
 			logger.error( "Reached end of setupFilenameAndContent with no name or content");
 		
 		sXmlFileName = "CVI_" + sOriginStateCode + "_To_" + sDestinationStateCode + "_" + sCVINo + ".cvi";
-		checkExistingFiles( sOriginalFileName, sXmlFileName );
+		checkExistingFiles( sOpenedAsFileName, sXmlFileName );
 		sAttachmentFileName = FileUtils.replaceInvalidFileNameChars(sAttachmentFileName);
 		sXmlFileName = FileUtils.replaceInvalidFileNameChars(sXmlFileName);		
 	}
