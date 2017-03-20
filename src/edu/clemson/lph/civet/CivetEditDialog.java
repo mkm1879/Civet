@@ -2031,6 +2031,8 @@ public final class CivetEditDialog extends JFrame {
 	 * Clearing the form is complicated by various modes and settings.
 	 */
 	private void clearForm() {
+		// Always start with a blank search box.
+		jtfThisPIN.getSearchDialog().clear(); 
 		// clear the form and select main map if the check box is not checked or we just did an XFA
 		if( !ckSticky.isSelected() || (controller.isLastSavedXFA() && getPageNo() == 1) ){
 			traversal.selectMainMap();
