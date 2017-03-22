@@ -19,6 +19,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.File;
 import java.io.FileFilter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.swing.table.TableRowSorter;
@@ -113,8 +114,16 @@ public class StdXMLFilesTableModel extends FilesTableModel {
 			return null;
 		else {
 			String aRow[] = aRows.get(iRow);
-			if( iColumn >= 0 && iColumn <= 7 )
+			if( iColumn >= 0 && iColumn <= 7 && iColumn != 5 && iColumn != 6)
 				return aRow[iColumn];
+			else if( iColumn == 5 || iColumn == 6 ) {
+				try {
+					return df.parse(aRow[iColumn]);
+				} catch (ParseException e) {
+					logger.error(e);
+					return "";
+				}
+			}
 			else
 				return "Error";
 		}

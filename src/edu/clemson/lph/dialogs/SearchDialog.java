@@ -20,6 +20,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 public interface SearchDialog<A> {
 	public void setDeltas(int deltaX, int deltaY);
 	public void center();
+	public void clear();
 	public boolean exitOK();
 	public void setVisible(boolean bShow);
 	public A getSelectedKey();

@@ -224,6 +224,7 @@ public final class CivetEditDialog extends JFrame {
 	JLabel lThisCity;
 	boolean bGotoLast = false; // Flag to open thread to goto last page when finished loading.
 	private String sPrevCVINo;
+	private boolean bInEditLast;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -568,17 +569,29 @@ public final class CivetEditDialog extends JFrame {
 	void doEditLast() {
 		doEditLast( false );
 	}
+	
+	public void setInEditLast( boolean bInEditLast ) {
+		this.bInEditLast = bInEditLast;
+	}
+	
+	public boolean isInEditLast() {
+		return bInEditLast;
+	}
 		
 	void doEditLast(boolean bLastPage) {
 		File fLast = controller.getLastSavedFile();
 		File aFiles[] = new File[1];
 		aFiles[0] = fLast;
 		CivetEditDialog dlgLast = new CivetEditDialog(this);
+		dlgLast.setInEditLast(true);
 		if( bLastPage ) {
 			dlgLast.bGotoLast = true;
 		}
 		dlgLast.openFiles(aFiles, false);
 		dlgLast.setVisible(true);
+		if( bInEditLast ) {
+			this.setVisible(false);
+		}
 	}
 	
 	void doAddToLast() {
@@ -2018,6 +2031,8 @@ public final class CivetEditDialog extends JFrame {
 	 * Clearing the form is complicated by various modes and settings.
 	 */
 	private void clearForm() {
+		// Always start with a blank search box.
+		jtfThisPIN.getSearchDialog().clear(); 
 		// clear the form and select main map if the check box is not checked or we just did an XFA
 		if( !ckSticky.isSelected() || (controller.isLastSavedXFA() && getPageNo() == 1) ){
 			traversal.selectMainMap();
@@ -2621,7 +2636,8 @@ public final class CivetEditDialog extends JFrame {
 				bAttachmentBytes = controller.getCurrentPdfBytes();
 			}
 		}
-		SaveCVIThread thread = new SaveCVIThread(this, stdXml, bAttachmentBytes,
+		String sOpenedAsFileName = controller.getCurrentFileName();
+		SaveCVIThread thread = new SaveCVIThread(this, stdXml, sOpenedAsFileName, bAttachmentBytes,
 				sAttachmentFileName, fAttachmentFile, bInbound, bXFA, sOtherStateCode,
 				sOtherName, sOtherAddress, sOtherCity, sOtherCounty, sOtherZipcode, sOtherPIN,
 				sThisPremisesId, sThisName, sPhone,
@@ -2631,10 +2647,6 @@ public final class CivetEditDialog extends JFrame {
 				aSpecies,
 				aErrorKeys, sErrorNotes,
 				idListModel.getRows()	);
-		if( isReopened() ) {
-			String sExistingFileName = controller.getCurrentFileName();
-			deleteFile( sExistingFileName );
-		}
 		// Messy way of checking for rapid fire duplicate entry
 		sPrevCVINo = sCVINo;
 		thread.start();

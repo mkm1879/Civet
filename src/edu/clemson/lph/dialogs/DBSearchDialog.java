@@ -99,6 +99,10 @@ public class DBSearchDialog extends JDialog implements SearchDialog<Integer> {
 		this.deltaX = deltaX;
 		this.deltaY = deltaY;
 	}
+	
+	public void clear() {
+		// TODO override in specific class.
+	}
 
 	public void center() {
 		//Center the window

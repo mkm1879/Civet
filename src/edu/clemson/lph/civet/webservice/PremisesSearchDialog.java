@@ -195,6 +195,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 	}
 
 	public void clear() {
+		bOK = false;
 			sPremisesId = null;
 		 jtfAddress1.setText(null);
 		 jtfCity.setText(null);

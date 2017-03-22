@@ -49,7 +49,7 @@ public class MIMEFile {
 			throw new MailException( "MIME type " + sMimeType + " not valid");
 		}
 		if( fileBytes == null || fileBytes.length <= 0 ) {
-			throw new MailException( "File Empty" );
+			throw new MailException( "File (" + sFileName + ") Empty" );
 		}
 		this.setFileName(sFileName);
 		this.setMimeType(sMimeType);
