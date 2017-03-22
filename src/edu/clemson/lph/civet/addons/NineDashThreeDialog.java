@@ -511,6 +511,10 @@ public class NineDashThreeDialog extends JFrame {
 	private void updateSpecies() {
 		String sSpecies = (String)cbSpecies.getSelectedItem();
 		String sSpCode = SpeciesLookup.getSpeciesCode(sSpecies);
+		if( sSpCode.equals("ERROR") ) {
+			logger.error((String)cbSpecies.getSelectedItem() + " resulted in ERROR on lookup");
+			return;
+		}
 		String sNumber = jtfNumber.getText();
 		int iNumber = 1;
 		try {
