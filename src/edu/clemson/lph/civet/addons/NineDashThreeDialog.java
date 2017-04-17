@@ -28,6 +28,7 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.controls.DBNumericField;
 import edu.clemson.lph.controls.DateField;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.CountyUtils;
 
@@ -405,7 +406,6 @@ public class NineDashThreeDialog extends JFrame {
 						@Override
 						public void actionPerformed(ActionEvent e) {
 							doSave();
-							clear();
 						}
 					});
 				}
@@ -438,6 +438,12 @@ public class NineDashThreeDialog extends JFrame {
 		// Gather values and save.
 		// In case one sp and not in list yet.
 		updateSpecies();
+		java.util.Date issueDate = jtfDate.getDate();
+		if( issueDate == null ) {
+			MessageDialog.showMessage(this, "Civet Error", "Date Issued Is Required");
+			jtfDate.requestFocus();
+			return;
+		}
 		ArrayList<AnimalIDRecord> aAnimalIDs = idModel.cloneRows();
 		SubmitNineDashThreeThread submitThread = 
 				new SubmitNineDashThreeThread( factory, (Window)this,
@@ -510,6 +516,11 @@ public class NineDashThreeDialog extends JFrame {
 
 	private void updateSpecies() {
 		String sSpecies = (String)cbSpecies.getSelectedItem();
+		if( sSpecies == null || sSpecies.trim().length() == 0 ) {
+			if( jtfNumber.getText().trim().length() != 0 ) {
+				logger.error("Number added without species");
+			}
+ 		}
 		String sSpCode = SpeciesLookup.getSpeciesCode(sSpecies);
 		if( sSpCode.equals("ERROR") ) {
 			logger.error((String)cbSpecies.getSelectedItem() + " resulted in ERROR on lookup");
