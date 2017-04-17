@@ -58,6 +58,8 @@ public class AddAnimalsDialog extends JDialog {
 	HashMap<String, String> hSpecies;
 	private JComboBox<String> cbSpecies;
 	private JTextField jtfPrefix;
+	private int iDefaultWidth = 675;
+	private int iLongSpeciesLen = 7;
 
 
 	/**
@@ -70,7 +72,7 @@ public class AddAnimalsDialog extends JDialog {
 		ImageIcon appIcon = new ImageIcon(getClass().getResource("/edu/clemson/lph/civet/res/civet32.png"));
 		this.setIconImage(appIcon.getImage());
 		setTitle("Civet: Add Animal IDs");
-		setBounds(500, 400, 675, 400);
+		setBounds(500, 400, iDefaultWidth, 400);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -86,6 +88,11 @@ public class AddAnimalsDialog extends JDialog {
 				cbSpecies = new JComboBox<String>();
 				for( Map.Entry<String, String> e : hSpecies.entrySet() ) {
 					String sSpecies = e.getValue();
+					if( sSpecies.trim().length() > iLongSpeciesLen ) {
+						int iAdd = (sSpecies.trim().length() - iLongSpeciesLen) * 15;
+						setBounds(500, 400, iDefaultWidth + iAdd, 400);
+						
+					}
 					cbSpecies.addItem(sSpecies);
 				}
 				panel.add(cbSpecies);
@@ -105,6 +112,17 @@ public class AddAnimalsDialog extends JDialog {
 						doEnter();
 					}
 				});
+				jtfNewId.addKeyListener( new KeyAdapter() {
+					@Override
+					public void keyPressed(KeyEvent e) {
+						if( e.getKeyCode() == KeyEvent.VK_V 
+								&& ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)
+								&& ((e.getModifiers() & KeyEvent.SHIFT_MASK) != 0)) {
+							pasteIDs();
+						}
+					}
+				});
+
 				panel.add(jtfNewId);
 				jtfNewId.setColumns(25);
 			}
