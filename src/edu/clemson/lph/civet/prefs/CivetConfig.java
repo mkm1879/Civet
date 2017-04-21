@@ -36,7 +36,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.webservice.CivetWebServices;
+import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.TwoLineQuestionDialog;
 import edu.clemson.lph.mailman.MailMan;
@@ -404,7 +404,6 @@ public class CivetConfig {
 		sHERDSPassword = sPass;
 	}
 
-
 	public static void initWebServices() {
 		String sUser = null;
 		String sPass = null;
@@ -426,7 +425,7 @@ public class CivetConfig {
 					sUser = dlg.getAnswerOne();
 					sPass = dlg.getAnswerTwo();
 					dlg.dispose();
-					bValid = CivetWebServices.validUSAHERDSCredentials(sUser, sPass);
+					bValid = CivetWebServicesNew.validUSAHERDSCredentials(sUser, sPass);
 				}
 				setHERDSUserName( sUser );
 				setHERDSPassword( sPass );

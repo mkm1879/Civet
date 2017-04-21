@@ -27,6 +27,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.XMLUtility;
 
 /**
@@ -47,9 +48,7 @@ import edu.clemson.lph.utils.XMLUtility;
 public class UsaHerdsWebServiceLookup {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
-		// BasicConfigurator replaced with PropertyConfigurator.
-	     PropertyConfigurator.configure("CivetConfig.txt");
-	     logger.setLevel(Level.ERROR);
+	     logger.setLevel(CivetConfig.getLogLevel());
 	}
 	// Here or in the CivetWebServices class have the list of lookup types as constants.
 	public final static String LOOKUP_ERRORS = "CVIErrorTypes"; 
@@ -61,7 +60,7 @@ public class UsaHerdsWebServiceLookup {
 	private WebServiceLookupRow currentRow;
 
 	public UsaHerdsWebServiceLookup( String sLookupType ) throws WebServiceException {
-		CivetWebServices service = new CivetWebServices();
+		CivetWebServices service = CivetWebServiceFactory.getService();
 		Document doc = service.getCivetLookupDocument(sLookupType);
 		if( doc == null ) {
 			logger.error("Failed Lookup, null document", new Exception());

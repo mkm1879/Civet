@@ -27,6 +27,7 @@ Class-Path: .
  lib/jai_imageio_idrsolutionBuild.jar 
  lib/log4j-1.2.17.jar 
  lib/javax.mail.jar 
+ lib/javax.json-1.0.4.jar
  lib/neethi-3.0.2.jar 
  lib/sqljdbc4.jar 
  lib/wsdl4j-1.6.2.jar
