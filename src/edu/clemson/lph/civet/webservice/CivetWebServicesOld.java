@@ -146,7 +146,7 @@ public class CivetWebServicesOld implements CivetWebServices {
 		return dOut;
 	}
 
-	public static boolean validUSAHERDSCredentials( String sUserName, String sPassword ) throws WebServiceException {
+	public boolean validUSAHERDSCredentials( String sUserName, String sPassword ) {
 		boolean bRet = true;
 		String sURL = null;
 		try {
@@ -172,10 +172,11 @@ public class CivetWebServicesOld implements CivetWebServices {
 			}
 			writer.close();
 		} catch (RuntimeException re) {
-			throw re;
+			logger.error(re);
+			bRet = false;
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new WebServiceException(e);
+			logger.error(e);
+			bRet = false;
 		}
 		return bRet;
 	}

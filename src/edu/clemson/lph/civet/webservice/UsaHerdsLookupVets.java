@@ -18,6 +18,7 @@ You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.zip.DataFormatException;
 
@@ -31,6 +32,7 @@ import org.w3c.dom.NodeList;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.utils.CSVWriter;
+import edu.clemson.lph.utils.LabeledCSVParser;
 import edu.clemson.lph.utils.XMLUtility;
 
 /**
@@ -79,7 +81,10 @@ public class UsaHerdsLookupVets {
 	public UsaHerdsLookupVets( boolean bAccredOnly ) throws WebServiceException {
 		CivetWebServices service = CivetWebServiceFactory.getService();
 		Document doc = service.getCivetVets( null, null, null, null, bAccredOnly);
-		populateRows(doc);
+		if( doc != null )
+			populateRows(doc);
+		else
+			populateRows("VetTable.csv");
 		iCurrentRow = -1;
 	}
 	
@@ -267,6 +272,51 @@ public class UsaHerdsLookupVets {
 			}
 		}
 	}
+	
+	/**
+	 * Hope this can be temporary
+	 * @param sFileName
+	 */
+	private void populateRows( String sFileName ) {
+		rows = new ArrayList<WebServiceVetRow>();
+		try {
+			LabeledCSVParser parser = new LabeledCSVParser( sFileName );
+			int i = 0;
+			do {
+				try {
+				WebServiceVetRow row = new WebServiceVetRow(
+						Integer.parseInt(parser.getValue("VetKey")),
+						parser.getValue("FormattedName"),
+						parser.getValue("FirstName"),
+						parser.getValue("LastName"),
+						parser.getValue("Address"), "",
+						parser.getValue("City"),
+						parser.getValue("State"),
+						parser.getValue("ZipCode"), "", "", 
+						parser.getValue("Phone"), "",
+						parser.getValue("LicNo"),
+						parser.getValue("NAN"),
+						parser.getValue("NANLevel"),
+						parser.getValue("NANStatus") );
+				rows.add(row);
+				if( i++ < 2 ) {
+					for(String s : parser.getCurrent() ) {
+						System.out.print(s + ", ");
+					}
+				}
+				} catch( NumberFormatException nfe ) {
+					logger.error("Bad key " + parser.getValue("VetKey") + " " + parser.getValue("FormattedName"));
+					// Press on
+				}
+			} while( parser.getNext() != null );
+			parser.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+		
+	}
+
 	
 	public boolean first() {
 		if( rows == null || rows.size() == 0 ) return false;

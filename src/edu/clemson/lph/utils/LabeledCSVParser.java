@@ -67,6 +67,17 @@ public class LabeledCSVParser extends CSVParserWrapper {
 		return aHeader.toArray(new String[0]);
 	}
 	
+	public String getValue( String sLabel ) throws IOException {
+		String sRet = null;
+		int iIdx = getLabelIdx( sLabel );
+		if( iIdx < 0 ) return null;
+		List<String> row = getCurrent();
+		if( row != null )
+			sRet = row.get(iIdx);
+		return sRet;
+	}
+	
+
 	/**
 	 * Convenience method to sort alphabetically on specified column
 	 * @param iCol column to sort (see LabeledCSVParser.getLabelIdx( ColumnLabel ) )

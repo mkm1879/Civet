@@ -16,6 +16,8 @@ public interface CivetWebServices {
 	public abstract String sendCviXML(String sXML) throws RemoteException;
 	
 	public abstract String getSuccessMessage();
+	
+	public abstract boolean validUSAHERDSCredentials(String sUser, String sPass);
 
 	/**
 	 * Get a named Lookup table as a while( next() ) get...() style list of 

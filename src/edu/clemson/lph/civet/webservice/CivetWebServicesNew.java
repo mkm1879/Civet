@@ -125,7 +125,7 @@ public class CivetWebServicesNew implements CivetWebServices {
 		return dOut;
 	}
 
-	public static boolean validUSAHERDSCredentials( String sUserName, String sPassword ) throws WebServiceException {
+	public boolean validUSAHERDSCredentials( String sUserName, String sPassword ) {
 		boolean bRet = true;
 		String sURL = CivetConfig.getHERDSWebServiceURL();
 		String sToken = UsaHerdsWebServiceAuthentication.getToken(sURL, sUserName, sPassword);
@@ -263,7 +263,7 @@ public class CivetWebServicesNew implements CivetWebServices {
 				sOut = vetSearch.getBody();
 			}
 			else {
-				logger.error("Error in Lookup Premises" + sURL + '\n' + vetSearch.getError());
+				logger.error("Error in Lookup Vets\n" + sURL + '\n' + vetSearch.getError());
 			}
 			dOut = XMLUtility.stringToDom(sOut);
 		} catch (RuntimeException re) {

@@ -204,6 +204,14 @@ public class CSVParserWrapper {
 			return null;
 	}	
 	
+	public List<String> getCurrent() {
+		if( aRows != null && iRows > iCurrent ) 
+			return aRows.get(iCurrent);
+		else
+			return null;
+	}	
+
+	
 	public void close() {
 		// Ignore only resources are Java objects to G.C.
 	}
