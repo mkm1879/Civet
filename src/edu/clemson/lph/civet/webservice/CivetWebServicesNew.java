@@ -46,7 +46,7 @@ public class CivetWebServicesNew implements CivetWebServices {
 	}
 	private static final String CVI_UPLOAD_MESSAGE_TYPE = "Civet XML";
 	private static final String CVI_UPLOAD_SOURCE = "Civet";
-	private String CVI_SUCCESS_MESSAGE = "Insert Successful";
+	private String CVI_SUCCESS_MESSAGE = "Success";
 	private static final String LOOKUPS_URL = "/api/Civet/GetLookups/";
 	private static final String POST_PREM_URL = "/api/Civet/SearchPremises";
 	private static final String POST_VETS_URL = "/api/CIVET/SearchVets";
@@ -71,7 +71,7 @@ public class CivetWebServicesNew implements CivetWebServices {
 			postXML.addParameter("Source", CVI_UPLOAD_SOURCE );
 			postXML.addParameter("Message", sXML);
 			if( postXML.getURL(sURL) ) {
-				System.out.println(postXML.getBody());
+//				System.out.println(postXML.getBody());
 				sRet = postXML.getBody();
 			}
 			else {
@@ -110,7 +110,7 @@ public class CivetWebServicesNew implements CivetWebServices {
 			HttpGetClient purpose = new HttpGetClient();
 			purpose.authenticate();
 			if( purpose.getURL(sURL) ) {
-				System.out.println(purpose.getBody());
+//				System.out.println(purpose.getBody());
 				sOut = purpose.getBody();
 			}
 			else {
@@ -168,7 +168,7 @@ public class CivetWebServicesNew implements CivetWebServices {
 			if( sClassType != null )
 				premSearch.addParameter("classType", sClassType);
 			if( premSearch.getURL(sURL) ) {
-				System.out.println(premSearch.getBody());
+//				System.out.println(premSearch.getBody());
 				sOut = premSearch.getBody();
 			}
 			else {
@@ -217,7 +217,7 @@ public class CivetWebServicesNew implements CivetWebServices {
 				vetSearch.addParameter("lic", sLicNbr);
 			vetSearch.addParameter("accreditedOnly", "false");
 			if( vetSearch.getURL(sURL) ) {
-				System.out.println(vetSearch.getBody());
+//				System.out.println(vetSearch.getBody());
 				sOut = vetSearch.getBody();
 			}
 			else {
@@ -259,7 +259,7 @@ public class CivetWebServicesNew implements CivetWebServices {
 			else
 				vetSearch.addParameter("accreditedOnly", "false");
 			if( vetSearch.getURL(sURL) ) {
-				System.out.println(vetSearch.getBody());
+//				System.out.println(vetSearch.getBody());
 				sOut = vetSearch.getBody();
 			}
 			else {

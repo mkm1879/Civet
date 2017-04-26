@@ -22,7 +22,7 @@ import java.io.PrintStream;
 import org.apache.log4j.Logger;
 
 public class StdErrLog {
-	    private static final Logger logger = Logger.getLogger(edu.clemson.lph.civet.Civet.class);
+	    private static final Logger logger = Logger.getLogger(edu.clemson.lph.civet.Civet.class.getName());
 
 	    public static void tieSystemErrToLog() {
 	        System.setErr(createLoggingProxy(System.err));
