@@ -4,8 +4,8 @@ homeStateAbbr=SC
 homeStateKey=56
 
 #HERDS
-#herdsWebServiceURL=http://LPHStage/usaherds/WebService/ExternalMessages.asmx
-herdsWebServiceURL=https://corp-hbg-04.compaid.com/USAHerds.API
+herdsWebServiceURL=http://LPHStage/usaherds/WebService/ExternalMessages.asmx
+#herdsWebServiceURL=https://corp-hbg-04.compaid.com/USAHerds.API
 brokenLIDs=true
 stateIDChecksum=FALSE
 standAlone=no
