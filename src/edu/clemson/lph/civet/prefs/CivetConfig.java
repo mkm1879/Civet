@@ -19,7 +19,6 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -38,7 +37,6 @@ import org.apache.log4j.Logger;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
-import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.TwoLineQuestionDialog;
 import edu.clemson.lph.mailman.MailMan;
