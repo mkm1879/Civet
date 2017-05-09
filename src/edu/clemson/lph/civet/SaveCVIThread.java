@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.swing.SwingUtilities;
@@ -47,7 +48,7 @@ import edu.clemson.lph.utils.IDTypeGuesser;
 
 public class SaveCVIThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private static final long MAX_SANE_SIZE = 5000000;
+	private static final long MAX_SANE_SIZE = 10000000;
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_CIVET;
 	private CivetEditDialog dlg;
 	private ProgressDialog prog;
@@ -84,6 +85,7 @@ public class SaveCVIThread extends Thread {
 	private String sIssuedByName;
 	private String sCVINo;
 	private ArrayList<SpeciesRecord> aSpecies;
+	private HashMap<String, String> mSpeciesChanges;
 	private ArrayList<String> aErrorKeys;
 	private ArrayList<AnimalIDRecord> aAnimalIDs;
 	private String sErrorNotes;
@@ -100,6 +102,7 @@ public class SaveCVIThread extends Thread {
 			java.util.Date dDateIssued, java.util.Date dDateReceived, Integer iIssuedByKey, String sIssuedByName, String sCVINo,
 			String sMovementPurpose,
 			ArrayList<SpeciesRecord> aSpeciesIn,
+			HashMap<String, String> mSpeciesChanges,
 			ArrayList<String> aErrorKeysIn, String sErrorNotes,
 			ArrayList<AnimalIDRecord> aAnimalIDs) {
 		this.bImport = bImport;
@@ -168,6 +171,7 @@ public class SaveCVIThread extends Thread {
 				this.aErrorKeys.add( sErrorKey );
 			aErrorKeysIn.clear();
 		}
+		this.mSpeciesChanges = mSpeciesChanges;
 		this.sErrorNotes = sErrorNotes;
 		this.aAnimalIDs = new ArrayList<AnimalIDRecord>();
 		if( aAnimalIDs != null )
@@ -319,6 +323,10 @@ public class SaveCVIThread extends Thread {
 			stdXml.validateHerdsDestinationCounty();
 		}
 		StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder(stdXml);
+		for( String sPreviousCode : mSpeciesChanges.keySet() ) {
+			String sNewCode = mSpeciesChanges.get(sPreviousCode);
+			xmlBuilder.updateSpecies(sPreviousCode, sNewCode);
+		}
 		VetLookup vet = new VetLookup( iIssuedByKey );
 		xmlBuilder.setCviNumber(sCVINo);
 		xmlBuilder.setIssueDate(dDateIssued);

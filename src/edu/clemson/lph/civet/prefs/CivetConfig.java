@@ -863,6 +863,17 @@ public class CivetConfig {
 		return sRet;
 	}
 	
+	/**
+	 * get the string for the default species but allow it to not exist.
+	 * @return
+	 */
+	public static String getDefaultSpecies() {
+		String sRet = props.getProperty("defaultSpecies");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+	
 	public static boolean isJPedalXFA() {
 		boolean bRet = false;
 		if( iJPedalType == UNK ) {

@@ -139,6 +139,7 @@ public final class CivetEditDialog extends JFrame {
 	ArrayList<SpeciesRecord> aSpecies = new ArrayList<SpeciesRecord>();
 	AnimalIDListTableModel idListModel = new AnimalIDListTableModel();
 	ArrayList<String> aErrorKeys;
+	HashMap<String,String> mSpeciesChanges;
 	String sErrorNotes;
 	private String sPriorPhone;
 	private String sPriorAddress;
@@ -225,6 +226,8 @@ public final class CivetEditDialog extends JFrame {
 	boolean bGotoLast = false; // Flag to open thread to goto last page when finished loading.
 	private String sPrevCVINo;
 	private boolean bInEditLast;
+	private String sPreviousSpecies;
+	private boolean bInClearForm = false;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -332,8 +335,15 @@ public final class CivetEditDialog extends JFrame {
 				cbOtherState.refresh();
 				
 				cbSpecies.setModel( new SpeciesLookup() );
-				cbSpecies.setBBlankDefault(true);
+				cbSpecies.addItemListener( new ItemListener() {
+					@Override
+					public void itemStateChanged(ItemEvent e) {
+						doCheckSpeciesChange(e);
+					}
+				});
+				cbSpecies.setBlankDefault(true);
 				cbSpecies.refresh();
+				mSpeciesChanges = new HashMap<String, String>();
 				
 				vetLookup = new VetLookup();
 				vetLookup.setLevel2Check(true);
@@ -364,6 +374,41 @@ public final class CivetEditDialog extends JFrame {
 		else {
 		    this.setSize(new Dimension(732, 819));
 
+		}
+	}
+
+	private void doCheckSpeciesChange(ItemEvent ie) {
+		if( bInClearForm )
+			return;
+		if(ie.getStateChange() == ItemEvent.DESELECTED) //edit: bracket was missing
+		{
+			sPreviousSpecies = (String)ie.getItem();
+		}
+		else if(ie.getStateChange() == ItemEvent.SELECTED)
+		{
+			String sNewSpecies = (String)ie.getItem();
+			if( sPreviousSpecies != null && sPreviousSpecies.trim().length() > 0 &&
+					sNewSpecies != null && sNewSpecies.trim().length() > 0 &&
+					!sNewSpecies.equals(sPreviousSpecies) ) {
+				if( YesNoDialog.ask(CivetEditDialog.this, "Civet: Species Change",
+						"This will change all occurances of " + sPreviousSpecies +" to " + sNewSpecies 
+						+ ".\nProceed?") ) {
+					// Species has changed.  Change Previous to New where ever if exists.
+					String sPreviousCode = (new SpeciesLookup(sPreviousSpecies, true)).getSpeciesCode();
+					String sNewCode = (new SpeciesLookup(sNewSpecies, true)).getSpeciesCode();
+					System.out.println( "Old: " + sPreviousCode + " to " + sNewCode );
+					mSpeciesChanges.put(sPreviousCode, sNewCode);
+					for( SpeciesRecord sr : aSpecies ) {
+						if(sPreviousCode.equals(sr.sSpeciesCode))
+							sr.sSpeciesCode = sNewCode;
+					}
+					for( AnimalIDRecord ar : idListModel.getRows() ) {
+						if(sPreviousCode.equals(ar.sSpeciesCode))
+							ar.sSpeciesCode = sNewCode;
+					}
+				}
+			}
+			sPreviousSpecies = null;
 		}
 	}
 
@@ -2031,6 +2076,7 @@ public final class CivetEditDialog extends JFrame {
 	 * Clearing the form is complicated by various modes and settings.
 	 */
 	private void clearForm() {
+		bInClearForm = true;
 		// Always start with a blank search box.
 		jtfThisPIN.getSearchDialog().clear(); 
 		// clear the form and select main map if the check box is not checked or we just did an XFA
@@ -2053,7 +2099,12 @@ public final class CivetEditDialog extends JFrame {
 			jtfDateInspected.setText("");
 			jtfDateReceived.setText("");
 			jtfCVINo.setText("");
-			cbSpecies.setSelectedKey(-1);
+			String sSpDefault = CivetConfig.getDefaultSpecies();
+			if( sSpDefault != null )
+				cbSpecies.setSelectedValue(sSpDefault);
+			else
+				cbSpecies.setSelectedKey(-1);
+			mSpeciesChanges = new HashMap<String, String>();
 			jtfNumber.setText("");
 			cbIssuedBy.setSelectedKey(-1);
 			jtfIssuedBy.setText("");
@@ -2106,6 +2157,7 @@ public final class CivetEditDialog extends JFrame {
 		aSpecies = new ArrayList<SpeciesRecord>();
 		lError.setVisible(false);
 		bMultiSpecies = false;
+		bInClearForm = false;
 	}
 	
 	/**
@@ -2174,6 +2226,7 @@ public final class CivetEditDialog extends JFrame {
 			return;
 		}
 		else {
+			bInClearForm = true;
 			String sOriginState = xStd.getOriginState();
 			if( sOriginState != null ) {
 				sOriginState = States.getState(sOriginState);
@@ -2318,6 +2371,7 @@ public final class CivetEditDialog extends JFrame {
 				if( c != null)
 					c.requestFocus();
 			}
+			bInClearForm = true;
 		}
 	}
 	
@@ -2458,6 +2512,7 @@ public final class CivetEditDialog extends JFrame {
 	}
 
 	private void populateFromCoKs(CoKsXML coks) {
+		bInClearForm = true;
 		StdeCviXml std = coks.getStdeCviXml();
 		if( std == null ) {
 			MessageDialog.messageWait(this, "Civet Error:", "Could not convert PDF content to USAHA Standard XML using XSLT\n" +
@@ -2485,6 +2540,7 @@ public final class CivetEditDialog extends JFrame {
 				jtfDateReceived.setDate(new java.util.Date());
 			}
 		}
+		bInClearForm = false;
 	}
 	
 
@@ -2645,6 +2701,7 @@ public final class CivetEditDialog extends JFrame {
 				dDateIssued, dDateReceived, iIssuedByKey, sIssuedByName, sCVINo,
 				sMovementPurpose,
 				aSpecies,
+				mSpeciesChanges,
 				aErrorKeys, sErrorNotes,
 				idListModel.getRows()	);
 		// Messy way of checking for rapid fire duplicate entry

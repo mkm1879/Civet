@@ -149,6 +149,39 @@ public class XMLDocHelper {
 			logger.error("Error evaluating xpath " + sPath, ex);
 		}
 	}
+	
+	public void updateAttributeByPath( String sPath, String sAttribute, String sValue ) {
+		Element e = null;
+		try {
+			XPath xPath = factory.newXPath();
+			NodeList nodes = (NodeList)xPath.evaluate(sPath, doc.getDocumentElement(), XPathConstants.NODESET);
+			if( nodes == null || nodes.getLength() == 0 ) return;
+			for (int i = 0; i < nodes.getLength(); ++i) {
+				if( nodes.item(i).getNodeType() == Node.ELEMENT_NODE ) {
+					e = (Element)nodes.item(i);
+					e.setAttribute(sAttribute, sValue);
+				}
+			}
+		} catch (XPathExpressionException ex) {
+			logger.error("Error evaluating xpath " + sPath, ex);
+		}
+	}
+	
+	public void updateAttribute( Node n, String sAttribute, String sValue ) {
+		Element e = null;
+		try {
+			NodeList nodes = n.getChildNodes();
+			if( nodes == null || nodes.getLength() == 0 ) return;
+			for (int i = 0; i < nodes.getLength(); ++i) {
+				if( nodes.item(i).getNodeType() == Node.ELEMENT_NODE ) {
+					e = (Element)nodes.item(i);
+					e.setAttribute(sAttribute, sValue);
+				}
+			}
+		} catch (Exception ex) {
+			logger.error("Error evaluating updating attribute", ex);
+		}
+	}
 
 	
 	public Element getElementByPathAndAttribute( String sPath, String sAttributeName, String sAttributeValue ) {

@@ -18,6 +18,7 @@ saveCopies=true
 smallScreen=
 rotation=0
 defaultPurpose=Other
+defaultSpecies=Cattle Beef
 autoOpenPdf=yes
 
 #Email

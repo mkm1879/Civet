@@ -571,6 +571,21 @@ public class StdeCviXmlBuilder {
 		}
 	}
 	
+	
+	public void updateSpecies( String sPreviousSpecies, String sNewSpecies ) {
+		if( !isValidDoc() ) 
+			return;
+		ArrayList<Element> eAnimals = XMLUtility.listChildElementsByName(root, "Animal");
+		for( Element eAnimal : eAnimals) {
+			String sExistingCode = eAnimal.getAttribute("SpeciesCode");
+			if( sExistingCode != null && sExistingCode.equals(sPreviousSpecies) ) {
+				eAnimal.setAttribute("SpeciesCode", sNewSpecies);
+			}
+		}
+		return;
+	}
+
+	
 	public Element addGroup( int iNum, String sDescription, String sSpecies, String sAge, String sSex ) {
 		Element group = null;
 		if( isValidDoc() && iNum > 0 ) {

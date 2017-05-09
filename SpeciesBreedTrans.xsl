@@ -8,8 +8,8 @@
     <xsl:template name="Species">
         <xsl:param name="species"/>
         <xsl:choose>
-            <xsl:when test="$species ='BBOV'">BOV</xsl:when>
-            <xsl:when test="$species ='DBOV'">BOV</xsl:when>
+            <xsl:when test="$species ='BBOV'">BEF</xsl:when>
+            <xsl:when test="$species ='DBOV'">DAI</xsl:when>
             <xsl:when test="$species ='AQU'">AQU</xsl:when>
             <xsl:when test="$species ='AVI'">AVI</xsl:when>
             <xsl:when test="$species ='BEF'">BEF</xsl:when>
