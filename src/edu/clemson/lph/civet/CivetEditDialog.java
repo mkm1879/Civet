@@ -62,6 +62,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
@@ -338,7 +339,14 @@ public final class CivetEditDialog extends JFrame {
 				cbSpecies.addItemListener( new ItemListener() {
 					@Override
 					public void itemStateChanged(ItemEvent e) {
-						doCheckSpeciesChange(e);
+						final ItemEvent eLocal = e;
+						if(bInClearForm)
+							return;
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								doCheckSpeciesChange(eLocal);
+							}
+						});
 					}
 				});
 				cbSpecies.setBlankDefault(true);
@@ -378,8 +386,6 @@ public final class CivetEditDialog extends JFrame {
 	}
 
 	private void doCheckSpeciesChange(ItemEvent ie) {
-		if( bInClearForm )
-			return;
 		if(ie.getStateChange() == ItemEvent.DESELECTED) //edit: bracket was missing
 		{
 			sPreviousSpecies = (String)ie.getItem();
@@ -390,9 +396,12 @@ public final class CivetEditDialog extends JFrame {
 			if( sPreviousSpecies != null && sPreviousSpecies.trim().length() > 0 &&
 					sNewSpecies != null && sNewSpecies.trim().length() > 0 &&
 					!sNewSpecies.equals(sPreviousSpecies) ) {
-				if( YesNoDialog.ask(CivetEditDialog.this, "Civet: Species Change",
+				YesNoDialog dlg = new YesNoDialog(CivetEditDialog.this, "Civet: Species Change",
 						"This will change all occurances of " + sPreviousSpecies +" to " + sNewSpecies 
-						+ ".\nProceed?") ) {
+						+ ".\nProceed?");
+				dlg.setVisible(true);
+				dlg.requestFocus();
+				if( dlg.getAnswer() ) {
 					// Species has changed.  Change Previous to New where ever if exists.
 					String sPreviousCode = (new SpeciesLookup(sPreviousSpecies, true)).getSpeciesCode();
 					String sNewCode = (new SpeciesLookup(sNewSpecies, true)).getSpeciesCode();
@@ -406,6 +415,11 @@ public final class CivetEditDialog extends JFrame {
 						if(sPreviousCode.equals(ar.sSpeciesCode))
 							ar.sSpeciesCode = sNewCode;
 					}
+				}
+				else {
+					bInClearForm = true;
+					cbSpecies.setSelectedItem(sPreviousSpecies);
+					bInClearForm = false;
 				}
 			}
 			sPreviousSpecies = null;
