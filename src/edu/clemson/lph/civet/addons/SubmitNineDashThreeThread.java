@@ -12,8 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import javax.swing.SwingUtilities;
-
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
@@ -21,6 +19,7 @@ import edu.clemson.lph.civet.AnimalIDRecord;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.SpeciesRecord;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
@@ -111,7 +110,7 @@ public class SubmitNineDashThreeThread extends Thread {
 		this.sDestinationCity = sDestinationCity; 
 		this.sDestinationCounty = sDestinationCounty; 
 		this.sDestinationZipCode = sDestinationZipCode;
-		service = new CivetWebServices();
+		service = CivetWebServiceFactory.getService();
 	}
 	
 	/**

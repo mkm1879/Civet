@@ -63,6 +63,12 @@ robotXMLOutPath=E:\\Documents\\CivetTest\\CivetRobotXML
 robotOutputFormat=STD
 robotWaitSeconds=15
 
+#Local stuff
+localNetAddresses=130.127.169.203
+dbServer=LPHSQL
+dbPort=1433
+dbDatabaseName=USAHERDS
+
 #Logging
 logLevel=INFO
 log4j.rootLogger=info, stdout, R
