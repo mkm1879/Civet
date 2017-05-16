@@ -28,6 +28,7 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
@@ -342,11 +343,20 @@ public final class CivetEditDialog extends JFrame {
 						final ItemEvent eLocal = e;
 						if(bInClearForm)
 							return;
+						doCheckSpeciesChange(eLocal);
+					}
+				});
+				cbSpecies.addFocusListener( new FocusAdapter() {
+					@Override
+					public void focusLost(FocusEvent e) {
+						if(bInClearForm)
+							return;
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
-								doCheckSpeciesChange(eLocal);
+								doCheckSpeciesChange();
 							}
 						});
+						
 					}
 				});
 				cbSpecies.setBlankDefault(true);
@@ -386,13 +396,14 @@ public final class CivetEditDialog extends JFrame {
 	}
 
 	private void doCheckSpeciesChange(ItemEvent ie) {
-		if(ie.getStateChange() == ItemEvent.DESELECTED) //edit: bracket was missing
-		{
+		if(ie.getStateChange() == ItemEvent.DESELECTED) {
 			sPreviousSpecies = (String)ie.getItem();
 		}
-		else if(ie.getStateChange() == ItemEvent.SELECTED)
+	}
+	
+	private void doCheckSpeciesChange() {
 		{
-			String sNewSpecies = (String)ie.getItem();
+			String sNewSpecies = cbSpecies.getSelectedValue();
 			if( sPreviousSpecies != null && sPreviousSpecies.trim().length() > 0 &&
 					sNewSpecies != null && sNewSpecies.trim().length() > 0 &&
 					!sNewSpecies.equals(sPreviousSpecies) ) {

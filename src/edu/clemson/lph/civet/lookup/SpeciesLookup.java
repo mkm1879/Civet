@@ -81,6 +81,16 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 		this.sSpeciesCode = spp.sSppCode;
 	}
 	
+	public static String getSpeciesName( String sSpeciesCode ) {
+		SpeciesLookup me = new SpeciesLookup( sSpeciesCode );
+		return me.getSpeciesName();
+	}
+	
+	public static String getSpeciesCode( String sSpecies ) {
+		SpeciesLookup me = new SpeciesLookup( sSpecies, true );
+		return me.getSpeciesCode();
+	}
+	
 	public Integer getKey() {
 		return -1;
 	}
