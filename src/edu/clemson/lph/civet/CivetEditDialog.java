@@ -229,6 +229,7 @@ public final class CivetEditDialog extends JFrame {
 	private String sPrevCVINo;
 	private boolean bInEditLast;
 	private String sPreviousSpecies;
+	private boolean bSppEntered = false;
 	private boolean bInClearForm = false;
 
 	/**
@@ -404,6 +405,7 @@ public final class CivetEditDialog extends JFrame {
 	private void doCheckSpeciesChange2() {
 		{
 			String sNewSpecies = cbSpecies.getSelectedValue();
+			if( bSppEntered ) {
 			if( sPreviousSpecies != null && sPreviousSpecies.trim().length() > 0 &&
 					sNewSpecies != null && sNewSpecies.trim().length() > 0 &&
 					!sNewSpecies.equals(sPreviousSpecies) ) {
@@ -433,6 +435,8 @@ public final class CivetEditDialog extends JFrame {
 					bInClearForm = false;
 				}
 			}
+			}
+			bSppEntered = true;
 			sPreviousSpecies = null;
 		}
 	}
@@ -2101,6 +2105,7 @@ public final class CivetEditDialog extends JFrame {
 	 * Clearing the form is complicated by various modes and settings.
 	 */
 	private void clearForm() {
+		bSppEntered = false;
 		bInClearForm = true;
 		// Always start with a blank search box.
 		jtfThisPIN.getSearchDialog().clear(); 
@@ -2251,6 +2256,7 @@ public final class CivetEditDialog extends JFrame {
 			return;
 		}
 		else {
+			bSppEntered = true;
 			bInClearForm = true;
 			String sOriginState = xStd.getOriginState();
 			if( sOriginState != null ) {
