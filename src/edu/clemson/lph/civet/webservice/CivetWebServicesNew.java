@@ -18,8 +18,11 @@ You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import edu.clemson.lph.civet.webservice.HttpGetClient;
+import edu.clemson.lph.dialogs.MessageDialog;
 
 import java.rmi.RemoteException;
+
+import javax.swing.SwingUtilities;
 
 import org.w3c.dom.Document;
 import org.apache.log4j.Logger;
@@ -75,7 +78,9 @@ public class CivetWebServicesNew implements CivetWebServices {
 				sRet = postXML.getBody();
 			}
 			else {
-				logger.error("Error in Add External Message " + sURL + '\n' + postXML.getError());
+				sRet = postXML.getError();
+				logger.error("Error in Add External Message " + sURL + '\n' + sRet);
+				throw new RemoteException(sRet);
 			}
 
 		} catch (RuntimeException re) {
