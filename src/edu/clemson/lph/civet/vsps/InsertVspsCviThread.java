@@ -86,7 +86,7 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 //		System.out.println(sXML);
 				// Send it!
 				String sRet = service.sendCviXML(sXML);
-				if( sRet == null || !sRet.trim().startsWith("00") ) {
+				if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {
 					String sCVINbr = cvi.getCVINumber();
 					logger.error( new Exception("Error submitting VSPS spreadsheet CVI " + sCVINbr + " to USAHERDS: ") );
 					FileUtils.writeTextFile(sXML, sCVINbr + "_Error.xml");

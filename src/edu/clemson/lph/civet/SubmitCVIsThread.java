@@ -142,10 +142,6 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 					MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " Added twice.\n" +
 							"Please report to developer.");
 				}
-				else {
-					MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " had unexpected error.\n" +
-							"Please report to developer.");
-				}
 			}
 		} catch (final Exception e) {
 			SwingUtilities.invokeLater(new Runnable() {
