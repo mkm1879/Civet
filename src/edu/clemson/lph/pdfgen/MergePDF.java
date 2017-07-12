@@ -263,6 +263,7 @@ public class MergePDF {
 			doc.open();
 			imageIn.scaleToFit( pagesize.getWidth(), pagesize.getHeight()  );
 			doc.add(imageIn);
+			doc.close();
 			aOut = baosPDF.toByteArray();
 		} catch (DocumentException e) {
 			logger.error(e);
@@ -274,7 +275,9 @@ public class MergePDF {
 				docWriter.close();
 			try {
 				baosPDF.close();
-			} catch (IOException e) {}
+			} catch (IOException e) {
+				logger.error("Error closing generated pdf", e);
+			}
 		}
 		return aOut;
 	}
