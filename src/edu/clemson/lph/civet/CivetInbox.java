@@ -392,7 +392,7 @@ public class CivetInbox extends JFrame {
 		}
 	}
 
-	void refreshTables() {
+	public void refreshTables() {
 		if( currentModel != null ) {
 			currentModel.refresh();
 			tblInBox.setModel(currentModel);

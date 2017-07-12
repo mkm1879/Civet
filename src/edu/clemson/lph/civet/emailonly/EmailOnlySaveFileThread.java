@@ -29,8 +29,8 @@ public class EmailOnlySaveFileThread extends Thread {
 	public void run() {
 		
 		try {
-			FileUtils.writeBinaryFile(fileBytes, sFileName);
-			
+			String sOutPath = CivetConfig.getEmailOnlySendDirPath() + sFileName;
+			FileUtils.writeBinaryFile(fileBytes, sOutPath);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
