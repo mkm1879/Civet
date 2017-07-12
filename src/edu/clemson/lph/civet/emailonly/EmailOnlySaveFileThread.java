@@ -1,9 +1,10 @@
-package edu.clemson.lph.civet;
+package edu.clemson.lph.civet.emailonly;
 
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
+import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.FileUtils;
@@ -29,6 +30,7 @@ public class EmailOnlySaveFileThread extends Thread {
 		
 		try {
 			FileUtils.writeBinaryFile(fileBytes, sFileName);
+			
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();

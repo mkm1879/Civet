@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet;
+package edu.clemson.lph.civet.emailonly;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -8,6 +8,8 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 
 import javax.swing.ImageIcon;
@@ -27,7 +29,9 @@ import org.apache.log4j.PropertyConfigurator;
 import org.jpedal.PdfDecoder;
 import org.jpedal.objects.PdfPageData;
 
+import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.lookup.States;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.controls.DBComboBox;
 import edu.clemson.lph.utils.FileUtils;
 
@@ -51,15 +55,17 @@ public class EmailOnlyDialog extends JDialog {
 		private int iFiles;
 		private float fScale;
 		private int iRotation;
-		private static int iCount = 1;
 		JScrollPane display;
 		JPanel altDisplay;
 		JPanel pView;
 		DBComboBox cbState;
+		private JButton bSaveNext;
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		CivetConfig.checkAllConfig();
+		logger.setLevel(CivetConfig.getLogLevel());
 		try {
 			EmailOnlyDialog dialog = new EmailOnlyDialog((Window)null);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -95,6 +101,7 @@ public class EmailOnlyDialog extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			
+			iRotation = CivetConfig.getRotation();
 			JButton bRotate = new JButton("Rotate");
 			bRotate.setIcon( new ImageIcon(getClass().getResource("/edu/clemson/lph/civet/res/rotate.gif")));
 			bRotate.setToolTipText("Rotate Viewer");
@@ -109,17 +116,25 @@ public class EmailOnlyDialog extends JDialog {
 			});
 			buttonPane.add(bRotate);
 			
-			JButton btnPrev = new JButton("Prev");
-			buttonPane.add(btnPrev);
-			
 			cbState = new DBComboBox();
 			cbState.setModel( new States() );
 			cbState.setBlankDefault(true);
-			cbState.refresh();
+			cbState.addFocusListener( new FocusListener() {
+				@Override
+				public void focusGained(FocusEvent arg0) {
+				}
 
+				@Override
+				public void focusLost(FocusEvent arg0) {
+					bSaveNext.requestFocus();
+				}
+				
+			});
+			cbState.refresh();
+			
 			buttonPane.add(cbState);
 			
-			JButton bSaveNext = new JButton("Save-Next");
+			bSaveNext = new JButton("Save-Next");
 			bSaveNext.addActionListener( new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -132,16 +147,29 @@ public class EmailOnlyDialog extends JDialog {
 	}
 	
 	private void doSaveNext() {
-		byte[] fileBytes = controller.getCurrentPdfBytes();
-		String sFileName = cbState.getSelectedCode() + "_" + controller.getCurrentFileName();
-		EmailOnlySaveFileThread saveThread = new EmailOnlySaveFileThread( this, fileBytes, sFileName );
-		saveThread.start();
+		String sState = cbState.getSelectedCode();
+		if( sState != null && sState.trim().length() > 0 ) {
+			byte[] fileBytes = controller.getCurrentPdfBytes();
+			String sFileName = sState + "_" + controller.getCurrentFileName();
+			int iPage = controller.getCurrentPageNo();
+			if( iPage > 1 )
+				sFileName = FileUtils.getRoot(sFileName) + "(" + iPage + ")" + FileUtils.getExt(sFileName);
+			EmailOnlySaveFileThread saveThread = new EmailOnlySaveFileThread( this, fileBytes, sFileName );
+			saveThread.start();
+			cbState.requestFocus();
+		}
+		else {
+			if( !controller.pageForward() ) {
+				setVisible(false);
+			}
+		}
 	}
 	
 	public void saveComplete() {
-		if( !controller.pageForward() )
+		if( !controller.pageForward() ) {
 			setVisible(false);
-
+		}
+		cbState.requestFocus();
 	}
 	
 	private void setupViewPanel() {	
@@ -197,7 +225,7 @@ public class EmailOnlyDialog extends JDialog {
 		open.setDialogTitle("Civet: Open multiple PDF and Image Files");
 		open.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		open.setFileFilter(new FileNameExtensionFilter(
-		        "Image, PDF, and Civet Files", "jpg", "png", "pdf", "jpeg", "gif", "bmp", "cvi"));
+		        "Image, PDF, and Civet Files", "jpg", "png", "pdf", "jpeg", "gif", "bmp"));
 		open.setMultiSelectionEnabled(true);
 
 		int resultOfFileSelect = JFileChooser.ERROR_OPTION;
@@ -255,11 +283,7 @@ public class EmailOnlyDialog extends JDialog {
 	}
 	public String getViewerTitle() { return viewerTitle; }
 	
-	void setupForm( String sFileName, int iPageNo, int iPagesInFile, int iFileNo, int iFiles, boolean bPageComplete ) {
+	void setupForm( String sFileName ) {
 		setTitle(getViewerTitle() + sFileName);
-		setPage(iPageNo);
-		setPages(iPagesInFile);
-		setFile(iFileNo);
-		setFiles(iFiles);
 	}
 }

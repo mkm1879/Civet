@@ -227,6 +227,11 @@ public class FileUtils {
 		return sFileName.substring(sFileName.lastIndexOf('.'));
 	}
 	
+	public static String getRoot( String sFileName ) {
+		if( !sFileName.contains(".") ) return "";
+		return sFileName.substring(0,sFileName.lastIndexOf('.'));
+	}
+	
 	
 	
 	public static File writeTextFile( String sText, String sFileOut ) {

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package edu.clemson.lph.civet;
+package edu.clemson.lph.civet.emailonly;
 
 import java.io.File;
 
@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
 
+import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
