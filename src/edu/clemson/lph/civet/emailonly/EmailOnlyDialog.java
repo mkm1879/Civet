@@ -30,9 +30,12 @@ import org.jpedal.PdfDecoder;
 import org.jpedal.objects.PdfPageData;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.CivetInbox;
+import edu.clemson.lph.civet.SendOutboundCVIEmailThread;
 import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.controls.DBComboBox;
+import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.FileUtils;
 
 
@@ -47,7 +50,7 @@ public class EmailOnlyDialog extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 		@SuppressWarnings("unused")
-		private Window parent;
+		private CivetInbox parent;
 		private String viewerTitle = "Civet: Email Only: ";
 		private PdfDecoder pdfDecoder;
 		private EmailOnlyFileController controller;
@@ -67,7 +70,7 @@ public class EmailOnlyDialog extends JDialog {
 		CivetConfig.checkAllConfig();
 		logger.setLevel(CivetConfig.getLogLevel());
 		try {
-			EmailOnlyDialog dialog = new EmailOnlyDialog((Window)null);
+			EmailOnlyDialog dialog = new EmailOnlyDialog((CivetInbox)null);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.selectFiles();
 			dialog.setVisible(true);
@@ -79,7 +82,7 @@ public class EmailOnlyDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public EmailOnlyDialog(Window parent) {
+	public EmailOnlyDialog(CivetInbox parent) {
 		this.parent = parent;
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		controller = new EmailOnlyFileController( this ); 
@@ -147,20 +150,23 @@ public class EmailOnlyDialog extends JDialog {
 	}
 	
 	private void doSaveNext() {
+		String sFromState = CivetConfig.getHomeStateAbbr();
 		String sState = cbState.getSelectedCode();
 		if( sState != null && sState.trim().length() > 0 ) {
 			byte[] fileBytes = controller.getCurrentPdfBytes();
-			String sFileName = sState + "_" + controller.getCurrentFileName();
+			String sFileName = sFromState + "_to_" + sState + "_" + FileUtils.getRoot(controller.getCurrentFileName());
 			int iPage = controller.getCurrentPageNo();
 			if( iPage > 1 )
-				sFileName = FileUtils.getRoot(sFileName) + "(" + iPage + ")" + FileUtils.getExt(sFileName);
+				sFileName += "(" + iPage + ")";
+			sFileName += ".pdf";
 			EmailOnlySaveFileThread saveThread = new EmailOnlySaveFileThread( this, fileBytes, sFileName );
 			saveThread.start();
 			cbState.requestFocus();
 		}
-		else {
+		else {  // If no state is selected, just skip file and go to next. No need to wait for saveThread.
 			if( !controller.pageForward() ) {
 				setVisible(false);
+				doSend();
 			}
 		}
 	}
@@ -168,8 +174,20 @@ public class EmailOnlyDialog extends JDialog {
 	public void saveComplete() {
 		if( !controller.pageForward() ) {
 			setVisible(false);
+			doSend();
 		}
 		cbState.requestFocus();
+	}
+	
+	private void doSend() {
+		if( !CivetConfig.initEmail(true) )
+			return;
+		ProgressDialog prog = new ProgressDialog(this, "Civet", "Emailing Email Only CVIs");
+		prog.setAuto(true);
+		prog.setVisible(true);
+		EmailOnlySendFilesThread tThread = new EmailOnlySendFilesThread(parent, prog);
+		tThread.start();
+
 	}
 	
 	private void setupViewPanel() {	

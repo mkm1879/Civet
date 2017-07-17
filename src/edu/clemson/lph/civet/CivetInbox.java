@@ -22,6 +22,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -34,6 +35,7 @@ import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -50,6 +52,7 @@ import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.mailman.MailMan;
 import edu.clemson.lph.utils.Validator;
 import edu.clemson.lph.civet.files.EmailFilesTableModel;
+import edu.clemson.lph.civet.emailonly.EmailOnlyDialog;
 import edu.clemson.lph.civet.files.DateCellRenderer;
 import edu.clemson.lph.civet.files.FilesTableModel;
 import edu.clemson.lph.civet.files.SourceFilesTableModel;
@@ -111,6 +114,7 @@ public class CivetInbox extends JFrame {
 	JMenu menuHelp = new JMenu();
 	JMenuItem menuItemAbout = new JMenuItem();
 	private JMenuItem menuItemSendLog;
+	private JMenuItem menuEmailOnly;
 
 
 	// for design time only remove before distribution
@@ -357,6 +361,16 @@ public class CivetInbox extends JFrame {
 			}
 		});
 		menuExperimental.add(menuItemVSPS);
+		menuEmailOnly = new JMenuItem("Email Files Only");
+		menuEmailOnly.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				EmailOnlyDialog dialog = new EmailOnlyDialog(CivetInbox.this);
+				dialog.selectFiles();
+				dialog.setVisible(true);
+			}
+		});
+		menuExperimental.add(menuEmailOnly);
 		menuBar1.add(menuExperimental);
 		
 		menuBar1.add(menuHelp);

@@ -538,13 +538,13 @@ public class CivetConfig {
 	}
 
 	public static String getEmailOnlyEmailTemplate() {
-		String sRet = props.getProperty("EmailOnlyEmailTemplate");
+		String sRet = props.getProperty("EmailOnlyMessage");
 		if( sRet == null || sRet.trim().length() == 0 ) {
-			sRet = "EmailOnlyTemplate.txt";
+			sRet = "EmailOnlyMessage.txt";
 		}
 		File f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
-			logger.error( "EmailOnlySendDirPath " + sRet + " does not exist or is not a file");
+			logger.error( "EmailOnlyMessage " + sRet + " does not exist or is not a file");
 			System.exit(1);
 		}
 		if( sRet != null && sRet.trim().length() == 0 ) 
