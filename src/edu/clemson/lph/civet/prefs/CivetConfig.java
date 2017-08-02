@@ -519,6 +519,55 @@ public class CivetConfig {
 			sRet = null; 
 		return sRet;
 	}
+
+	public static String getEmailOnlySendDirPath() {
+		String sRet = props.getProperty("EmailOnlySendDirPath");
+		if( sRet == null || sRet.trim().length() == 0 ) {
+			File fOut = new File( getOutputDirPath() );
+			File fRoot = fOut.getParentFile();
+			sRet = fRoot.getAbsolutePath() + "\\EmailOnlySend\\";
+		}
+		File f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			logger.error( "EmailOnlySendDirPath " + sRet + " does not exist or is not a folder");
+			System.exit(1);
+		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+
+	public static String getEmailOnlyEmailTemplate() {
+		String sRet = props.getProperty("EmailOnlyMessage");
+		if( sRet == null || sRet.trim().length() == 0 ) {
+			sRet = "EmailOnlyMessage.txt";
+		}
+		File f = new File( sRet );
+		if( !f.exists() || !f.isFile() ) {
+			logger.error( "EmailOnlyMessage " + sRet + " does not exist or is not a file");
+			System.exit(1);
+		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+
+	public static String getEmailOnlyDirPath() {
+		String sRet = props.getProperty("EmailOnlyInputPath");
+		if( sRet == null || sRet.trim().length() == 0 ) {
+			File fOut = new File( getOutputDirPath() );
+			File fRoot = fOut.getParentFile();
+			sRet = fRoot.getAbsolutePath() + "\\EmailOnlyIn\\";
+		}
+		File f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			logger.error( "EmailOnlyDirPath " + sRet + " does not exist or is not a folder");
+			System.exit(1);
+		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
 	
 	public static String getEmailErrorsDirPath() {
 		String sRet = props.getProperty("EmailErrorsDirPath");
