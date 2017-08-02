@@ -40,14 +40,14 @@ import edu.clemson.lph.dialogs.*;
 public class EmailOnlySendFilesThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private ProgressDialog prog;
-	private CivetInbox parent;
+	private EmailOnlyDialog parent;
 	private HashMap<String, ArrayList<File>> mStateMap;
 	private static String sEmailOnlyMessage = null;
 	private StateVetLookup stateVet = null;
 	private ArrayList<File> aSentCVIFiles = new ArrayList<File>();
 	private String sCurrentEmailError = "";
 	
-	public EmailOnlySendFilesThread( CivetInbox parent, ProgressDialog prog ) {
+	public EmailOnlySendFilesThread( EmailOnlyDialog parent, ProgressDialog prog ) {
 		this.parent = parent;
 		this.prog = prog;
 		mStateMap = new HashMap<String, ArrayList<File>>();
@@ -159,7 +159,6 @@ public class EmailOnlySendFilesThread extends Thread {
 		} 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				parent.refreshTables();
 				prog.setVisible(false);
 				prog.dispose();
 			}

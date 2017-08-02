@@ -150,7 +150,7 @@ public class SubmitNineDashThreeThread extends Thread {
 					}
 				}
 			}
-			if( sRet == null || !sRet.trim().startsWith("00") ) {
+			if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {
 				if( sRet.contains("99,Timeout expired")) {
 					logger.info("Time out CVI Number: " + sCVINo );
 				}

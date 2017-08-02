@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -147,13 +148,14 @@ public class EmailOnlyDialog extends JDialog {
 			buttonPane.add(bSaveNext);
 			setupViewPanel();
 		}
+		cbState.requestFocus();
 	}
 	
 	private void doSaveNext() {
 		String sFromState = CivetConfig.getHomeStateAbbr();
 		String sState = cbState.getSelectedCode();
 		if( sState != null && sState.trim().length() > 0 ) {
-			byte[] fileBytes = controller.getCurrentPdfBytes();
+			byte[] fileBytes = controller.extractPagesToNewPDF();
 			String sFileName = sFromState + "_to_" + sState + "_" + FileUtils.getRoot(controller.getCurrentFileName());
 			int iPage = controller.getCurrentPageNo();
 			if( iPage > 1 )
@@ -185,9 +187,8 @@ public class EmailOnlyDialog extends JDialog {
 		ProgressDialog prog = new ProgressDialog(this, "Civet", "Emailing Email Only CVIs");
 		prog.setAuto(true);
 		prog.setVisible(true);
-		EmailOnlySendFilesThread tThread = new EmailOnlySendFilesThread(parent, prog);
+		EmailOnlySendFilesThread tThread = new EmailOnlySendFilesThread(this, prog);
 		tThread.start();
-
 	}
 	
 	private void setupViewPanel() {	

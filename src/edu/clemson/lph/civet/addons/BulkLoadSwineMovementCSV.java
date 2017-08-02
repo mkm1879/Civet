@@ -119,7 +119,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 //			System.out.println(sXML);
 					// Send it!
 					String sRet = service.sendCviXML(sXML);
-					if( sRet == null || !sRet.trim().startsWith("00") ) {
+					if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {
 						logger.error( sRet, new Exception("Error submitting swine spreadsheet CVI to USAHERDS: ") );
 						MessageDialog.messageLater(fParent, "Civet WS Error", "Error submitting to USAHERDS: " + sRet);
 					}

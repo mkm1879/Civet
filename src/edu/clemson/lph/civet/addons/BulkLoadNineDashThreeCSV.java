@@ -175,7 +175,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 								}
 							}
 						}
-						if( sRet == null || !sRet.trim().startsWith("00") ) {
+						if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {
 							if( sRet.contains("99,Timeout expired")) {
 								logger.info("Time out CVI Number: " + data.getCVINumber() );
 							}

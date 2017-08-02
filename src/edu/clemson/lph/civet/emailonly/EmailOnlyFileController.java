@@ -1,9 +1,16 @@
 package edu.clemson.lph.civet.emailonly;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.jpedal.PdfDecoder;
+
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfCopy;
+import com.itextpdf.text.pdf.PdfImportedPage;
+import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -123,6 +130,35 @@ public class EmailOnlyFileController {
 			logger.error(e);
 		}
 	}
+	
+	/**
+	 * From the current pdfDecoder, extract the page(s) in aPagesInCurrent to a new pdfData buffer as output stream.
+	 * @param aPages int[]
+	 * @return byte[]
+	 */
+	public byte[] extractPagesToNewPDF() {
+		ByteArrayOutputStream baOut = new ByteArrayOutputStream();
+		try {
+			byte[] pdfDataIn = rawPdfBytes;
+			PdfReader reader = new PdfReader(pdfDataIn);
+			com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+			PdfCopy writer = new PdfCopy(document, baOut);
+			document.open();
+			PdfImportedPage pip = writer.getImportedPage(reader, iPageNo );
+			writer.addPage(pip);
+			document.close();
+		} catch( IOException ioe ) {
+			logger.info("IO error extracting pages to byte array", ioe);
+			// This is a bug if the exception happens just returning the original pdf
+			return rawPdfBytes;
+		} catch( DocumentException de ) {
+			logger.info(de.getMessage() + "\nDocument error extracting pages to byte array");
+			// This is a bug if the exception happens just returning the original pdf
+			return rawPdfBytes;
+		}
+		return baOut.toByteArray();
+	}// End decode pages to new PDF
+
 
 
 
