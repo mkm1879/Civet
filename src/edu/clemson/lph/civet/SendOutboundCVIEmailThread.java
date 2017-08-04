@@ -239,7 +239,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 			bRet = MailMan.sendIt(sEmail, sFileCopyAddress,
 					 "CVIs From " + sHomeState + " to " + sState + (iPart>1?" Part " + iPart:""),
 					sOutBoundCVIMessage, aFiles);
-			logger.info("Email sent to: " + sEmail + " at " + sState + " returned " + bRet);
+//			logger.info("Email sent to: " + sEmail + " at " + sState + " returned " + bRet);
 		} catch (AuthenticationFailedException e1) {
 			sCurrentEmailError = e1.getMessage();
 			MessageDialog.messageWait( prog.getWindowParent(), "Civet: Invalid UserID/Password", 

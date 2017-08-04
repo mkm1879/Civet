@@ -239,7 +239,7 @@ public class EmailOnlyDialog extends JDialog {
 	 * opens a chooser and allows user to select One or more pdf or jpg files and opens a pdf created from them.
 	 */
 	public void selectFiles() {
-		File fDir = new File( CivetConfig.getEmailOnlyDirPath() );
+		File fDir = new File( CivetConfig.getEmailOnlyPath() );
 		JFileChooser open = new JFileChooser( fDir );
 		open.setDialogTitle("Civet: Open multiple PDF and Image Files");
 		open.setFileSelectionMode(JFileChooser.FILES_ONLY);

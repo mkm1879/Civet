@@ -54,7 +54,7 @@ public class EmailOnlySendFilesThread extends Thread {
 	}
 
 	public void run() {
-		String sEmailOutDir = CivetConfig.getEmailOnlySendDirPath();
+		String sEmailOutDir = CivetConfig.getEmailOnlySendPath();
 		int iFiles = 0;
 		int iUnsent = 0;
 		try {

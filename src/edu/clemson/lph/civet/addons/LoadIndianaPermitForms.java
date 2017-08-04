@@ -208,7 +208,7 @@ public class LoadIndianaPermitForms implements AddOn, ThreadListener {
 					}
 				});		
 				// If successfully sent, record the number in CertNbrs.txt
-				if( sRet != null && !sRet.toLowerCase().contains("error") && ( sRet.startsWith("00") || sRet.contains("Success") ) ) {
+				if( sRet != null && !sRet.toLowerCase().contains("error")  && sRet.contains(service.getSuccessMessage() ) ) {
 					if( !CertificateNbrLookup.addCertificateNbr(sCertNbr) ) {
 						MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " Added twice.\n" +
 								"Please report to developer.");
