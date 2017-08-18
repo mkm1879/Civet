@@ -383,6 +383,12 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 		for( String sVetName : setVetNames ) {
 			 int iVetKey = vetNameMap.get(sVetName).iVetKey;
 			 int iNANLevel = vetNameMap.get(sVetName).iNANLevel;
+			 if( CivetConfig.isCheckAccredStatus() ) {
+				 String sNANStatus = vetNameMap.get(sVetName).sNANStatus;
+				 if( bLevel2Check && !"Active".equalsIgnoreCase(sNANStatus) ) {
+					 continue;
+				 }
+			 }
 			 if( bLevel2Check && iNANLevel < 2 ) {
 				 continue;
 			 }

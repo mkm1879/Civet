@@ -64,6 +64,7 @@ public class CivetConfig {
 	private static boolean bStateIDChecksum;
 	private static Boolean bAutoOpenPDF;
 	private static Boolean bOpenAfterAdd = null;
+	private static Boolean bCheckAccredStatus;
 	
 
 	public static Properties getProps() {
@@ -726,6 +727,21 @@ public class CivetConfig {
 			sRet = null; 
 		return sRet;
 	}
+	
+	public static boolean isCheckAccredStatus() {
+		if( bCheckAccredStatus  == null ) {
+			String sVal = props.getProperty("checkAccreditationStatus");
+			if( sVal == null || sVal.trim().length() == 0 )
+				bCheckAccredStatus = false;
+			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bCheckAccredStatus = true;
+			}
+			else {
+				bCheckAccredStatus = false;
+			}
+		}
+		return bCheckAccredStatus;
+	}	
 
 	public static String getStateVetTableFile() {
 		String sRet = props.getProperty("stateVetTableFile");

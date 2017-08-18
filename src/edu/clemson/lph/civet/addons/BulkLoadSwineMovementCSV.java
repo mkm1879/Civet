@@ -169,8 +169,11 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 
 		int iNum = data.getNumber();
 		String sSpecies = "POR";
-		String sGender = "Gender Unknown";
-		xmlBuilder.addGroup(iNum, "Swine Group Lot", sSpecies, null, sGender);
+		String sAge = data.getAge();
+		String sGender = data.getSex();
+		if( sGender == null )
+			sGender = "Gender Unknown";
+		xmlBuilder.addGroup(iNum, "Swine Group Lot", sSpecies, sAge, sGender);
 		CviMetaDataXml metaData = new CviMetaDataXml();
 		metaData.setCertificateNbr(sCviNumber);
 		metaData.setBureauReceiptDate(data.getSavedDate());

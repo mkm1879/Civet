@@ -4,7 +4,6 @@ homeStateAbbr=SC
 homeStateKey=56
 
 #HERDS
-#herdsWebServiceURL=http://LPHStage/usaherds/WebService/ExternalMessages.asmx
 herdsWebServiceURL=http://LPHStage/USAHerds.API
 brokenLIDs=true
 stateIDChecksum=FALSE
@@ -18,8 +17,8 @@ saveCopies=true
 smallScreen=
 rotation=0
 defaultPurpose=Other
-defaultSpecies=Cattle Beef
 autoOpenPdf=yes
+checkAccreditationStatus=TRUE
 
 #Email
 smtpHost=smtp.googlemail.com
@@ -39,6 +38,8 @@ EmailOutDirPath=E:\\Documents\\CivetTest\\CivetToBeMailedOut\\
 EmailErrorsDirPath=E:\\Documents\\CivetTest\\CivetToBeMailedErrors\\
 OutputDirPath=E:\\Documents\\CivetTest\\CivetOutbox\\
 vspsDirPath=
+EmailOnlyInputPath=
+EmailOnlySendPath=
 
 #Files
 CoKsXSLTFile=CO_KS_eCVI_to_Standard.xsl
@@ -47,6 +48,7 @@ acrobatPath=
 ExportEmailTemplate=E:\\Documents\\CivetTest\\CivetExportsEmailMessage.txt
 ImportErrorsEmailTemplate=E:\\Documents\\CivetTest\\CivetImportsErrorEmailMessage.txt
 ImportErrorsLetterTemplate=E:\\Documents\\CivetTest\\CivetImportsErrorLetterTemplate.txt
+EmailOnlyMessage=.\\EmailOnlyMessage.txt
 vetTableFile=E:\\Documents\\CivetTest\\VetTable.csv
 sppTableFile=SpeciesTable.csv
 errorTypeTableFile=ErrorTypeTable.csv
@@ -62,12 +64,6 @@ robotCompleteOutPath=E:\\Documents\\CivetTest\\CivetRobotComplete
 robotXMLOutPath=E:\\Documents\\CivetTest\\CivetRobotXML
 robotOutputFormat=STD
 robotWaitSeconds=15
-
-#Local stuff
-localNetAddresses=130.127.169.203
-dbServer=LPHSQL
-dbPort=1433
-dbDatabaseName=USAHERDS
 
 #Logging
 logLevel=INFO
