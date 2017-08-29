@@ -972,39 +972,36 @@ public class CivetConfig {
 		}
 		return bAutoOpenPDF;
 	}
+
+	public static String getAcrobatPath() {
+		String sRet = props.getProperty("acrobatPath");
+		if( sRet != null ) {
+			File f = new File( sRet );
+			if( !f.exists() || !f.isFile() ) {
+				sRet = null;
+			}
+		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+
 	
 
 	// These are only used by direct database "add ons" so don't start-up check but leave in.
 	public static String getDbServer() {
-		String sRet = props.getProperty("dbServer");
-		if( sRet == null || sRet.trim().length() == 0 ) 
-			sRet = "LPHSQL"; 
+		String sRet = "LPHSQL"; 
 		return sRet;
 	}
 
 	public static int getDbPort() {
-		int iRet = -1;
-		String sRet = props.getProperty("dbPort");
-		if( sRet == null ) {
-			iRet = 1433;
-		}
-		else {
-			try {
-				iRet = Integer.parseInt(sRet);
-			} catch( NumberFormatException nfe ) {
-				logger.error( "Cannot read dbPort " + sRet + " as an integer number");
-				logger.error(nfe);
-				System.exit(1);
-			}
-		}
+		int iRet = 1433;
 		return iRet;
 	}
 
 
 	public static String getDbDatabaseName() {
-		String sRet = props.getProperty("dbDatabaseName");
-		if( sRet == null || sRet.trim().length() == 0 ) 
-			sRet = "USAHERDS"; 
+		String sRet = "USAHERDS"; 
 		return sRet;
 	}
 
@@ -1023,20 +1020,7 @@ public class CivetConfig {
 	}
 	
 
-	public static String getAcrobatPath() {
-		String sRet = props.getProperty("acrobatPath");
-		if( sRet != null ) {
-			File f = new File( sRet );
-			if( !f.exists() || !f.isFile() ) {
-				sRet = null;
-			}
-		}
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
-		return sRet;
-	}
-
-
+	// These are used to store db user credentials NOT as true config file data
 	/**
 	 * Get the Database UserName
 	 * @return
@@ -1064,6 +1048,8 @@ public class CivetConfig {
 	public static void setDBPassword( String sPass ) {
 		sDBPassword = sPass;
 	}
+	
+	// Internal implementation details
 	
 	/**
 	 * Generic crash out routine.
