@@ -977,7 +977,7 @@ public class CivetConfig {
 	// These are only used by direct database "add ons" so don't start-up check but leave in.
 	public static String getDbServer() {
 		String sRet = props.getProperty("dbServer");
-		if( sRet != null && sRet.trim().length() == 0 ) 
+		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = "LPHSQL"; 
 		return sRet;
 	}
@@ -1000,16 +1000,10 @@ public class CivetConfig {
 		return iRet;
 	}
 
-	public static String getDbPortString() {
-		String sRet = props.getProperty("dbPort");
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = "1433"; 
-		return sRet;
-	}
 
 	public static String getDbDatabaseName() {
 		String sRet = props.getProperty("dbDatabaseName");
-		if( sRet != null && sRet.trim().length() == 0 ) 
+		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = "USAHERDS"; 
 		return sRet;
 	}
