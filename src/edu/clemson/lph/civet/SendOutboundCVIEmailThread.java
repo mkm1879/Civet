@@ -43,7 +43,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 	private ProgressDialog prog;
 	private CivetInbox parent;
 	private HashMap<String, ArrayList<File>> mStateMap;
-	private ArrayList<File> aSentCVIFiles = new ArrayList<File>();
+	private ArrayList<File> aSentCVIFiles;
 	private String sCurrentEmailError = "";
 	
 	public SendOutboundCVIEmailThread( CivetInbox parent, ProgressDialog prog ) {
@@ -58,6 +58,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 
 	public void run() {
 		String sEmailOutDir = CivetConfig.getEmailOutDirPath();
+		aSentCVIFiles = new ArrayList<File>();
 		int iFiles = 0;
 		int iUnsent = 0;
 		try {
