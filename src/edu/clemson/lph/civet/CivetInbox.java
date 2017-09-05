@@ -1,6 +1,6 @@
 package edu.clemson.lph.civet;
 /*
-Copyright 2014 Michael K Martin
+Copyright 2014-2017 Michael K Martin
 
 This file is part of Civet.
 
@@ -22,7 +22,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -35,7 +34,6 @@ import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -64,7 +62,7 @@ import edu.clemson.lph.civet.vsps.VspsCviFile;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "4.0 Beta4g Local";
+	public static final String VERSION = "4.0";
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
