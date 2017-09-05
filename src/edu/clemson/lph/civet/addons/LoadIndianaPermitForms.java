@@ -28,7 +28,9 @@ import org.w3c.dom.Node;
 import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
+import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
+import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
@@ -100,7 +102,7 @@ public class LoadIndianaPermitForms implements AddOn, ThreadListener {
 			this.prog = prog;
 			this.files = files;
 			this.parent = parent;
-			service = new CivetWebServices();
+			service = CivetWebServiceFactory.getService();
 		}
 		
 		public void run() {
@@ -206,7 +208,7 @@ public class LoadIndianaPermitForms implements AddOn, ThreadListener {
 					}
 				});		
 				// If successfully sent, record the number in CertNbrs.txt
-				if( sRet != null && !sRet.toLowerCase().contains("error") && sRet.startsWith("00") ) {
+				if( sRet != null && !sRet.toLowerCase().contains("error")  && sRet.contains(service.getSuccessMessage() ) ) {
 					if( !CertificateNbrLookup.addCertificateNbr(sCertNbr) ) {
 						MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " Added twice.\n" +
 								"Please report to developer.");

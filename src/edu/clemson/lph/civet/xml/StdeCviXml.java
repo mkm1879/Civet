@@ -246,6 +246,35 @@ public class StdeCviXml {
 		return sb.toString();
 	}
 	
+	public void updateSpeciesCodes( String sPreviousCode, String sNewCode ) {
+		NodeList animals = listAnimals();
+		NodeList groups = listGroups();
+		if( animals != null ) {
+			for( int i = 0; i < animals.getLength(); i++ ) {
+				Node n = animals.item(i);
+				String sSp = getSpeciesCode(n);
+				if( sPreviousCode.equals(sSp) )
+					setSpeciesCode(n, sNewCode);
+			}
+		}
+		if( groups != null ) {
+			for( int j = 0; j < groups.getLength(); j++ ) {
+				Node n = groups.item(j);
+				String sSp = getSpeciesCode(n);
+				if( sPreviousCode.equals(sSp) )
+					setSpeciesCode(n, sNewCode);
+			}
+		}
+		return;
+	}
+
+	public void setSpeciesCode(Node nAnimal, String sNewCode) {
+		String sPath = "";
+		String sAttr = "SpeciesCode";
+		helper.updateAttribute(nAnimal, sPath, sAttr);
+		return;
+	}
+	
 
 	public String getAnimalID(Node nAnimal) {
 		String sRet = null;

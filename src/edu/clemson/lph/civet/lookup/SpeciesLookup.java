@@ -81,6 +81,16 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 		this.sSpeciesCode = spp.sSppCode;
 	}
 	
+	public static String getSpeciesName( String sSpeciesCode ) {
+		SpeciesLookup me = new SpeciesLookup( sSpeciesCode );
+		return me.getSpeciesName();
+	}
+	
+	public static String getSpeciesCode( String sSpecies ) {
+		SpeciesLookup me = new SpeciesLookup( sSpecies, true );
+		return me.getSpeciesCode();
+	}
+	
 	public Integer getKey() {
 		return -1;
 	}
@@ -94,11 +104,12 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 	}
 		
 	private void readSppTable() {
-		String sVetFile = CivetConfig.getSppTableFile();
+		String sSppFile = CivetConfig.getSppTableFile();
 		populateStdMap();
 		try {
-			LabeledCSVParser parser = new LabeledCSVParser(sVetFile);
-			parser.sort( parser.getLabelIdx("USDACode") );
+			LabeledCSVParser parser = new LabeledCSVParser(sSppFile);
+//			parser.sort( parser.getLabelIdx("USDACode") );
+			parser.sort( parser.getLabelIdx("Description") );
 			sppNameMap = new HashMap<String, Spp>();
 			sppCodeMap = new HashMap<String, Spp>();
 			lSearchRows = new ArrayList<ArrayList<Object>>();

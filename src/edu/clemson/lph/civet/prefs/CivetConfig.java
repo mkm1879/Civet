@@ -19,7 +19,6 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -36,6 +35,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.TwoLineQuestionDialog;
@@ -64,6 +64,7 @@ public class CivetConfig {
 	private static boolean bStateIDChecksum;
 	private static Boolean bAutoOpenPDF;
 	private static Boolean bOpenAfterAdd = null;
+	private static Boolean bCheckAccredStatus;
 	
 
 	public static Properties getProps() {
@@ -404,7 +405,6 @@ public class CivetConfig {
 		sHERDSPassword = sPass;
 	}
 
-
 	public static void initWebServices() {
 		String sUser = null;
 		String sPass = null;
@@ -426,7 +426,8 @@ public class CivetConfig {
 					sUser = dlg.getAnswerOne();
 					sPass = dlg.getAnswerTwo();
 					dlg.dispose();
-					bValid = CivetWebServices.validUSAHERDSCredentials(sUser, sPass);
+					CivetWebServices service = CivetWebServiceFactory.getService();
+					bValid = service.validUSAHERDSCredentials(sUser, sPass);
 				}
 				setHERDSUserName( sUser );
 				setHERDSPassword( sPass );
@@ -513,6 +514,55 @@ public class CivetConfig {
 		File f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
 			logger.error( "EmailOutDirPath " + sRet + " does not exist or is not a folder");
+			System.exit(1);
+		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+
+	public static String getEmailOnlySendPath() {
+		String sRet = props.getProperty("EmailOnlySendPath");
+		if( sRet == null || sRet.trim().length() == 0 ) {
+			File fOut = new File( getOutputDirPath() );
+			File fRoot = fOut.getParentFile();
+			sRet = fRoot.getAbsolutePath() + "\\EmailOnlySend\\";
+		}
+		File f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			logger.error( "EmailOnlySendPath " + sRet + " does not exist or is not a folder");
+			System.exit(1);
+		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+
+	public static String getEmailOnlyEmailTemplate() {
+		String sRet = props.getProperty("EmailOnlyMessage");
+		if( sRet == null || sRet.trim().length() == 0 ) {
+			sRet = "EmailOnlyMessage.txt";
+		}
+		File f = new File( sRet );
+		if( !f.exists() || !f.isFile() ) {
+			logger.error( "EmailOnlyMessage " + sRet + " does not exist or is not a file");
+			System.exit(1);
+		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+
+	public static String getEmailOnlyPath() {
+		String sRet = props.getProperty("EmailOnlyInputPath");
+		if( sRet == null || sRet.trim().length() == 0 ) {
+			File fOut = new File( getOutputDirPath() );
+			File fRoot = fOut.getParentFile();
+			sRet = fRoot.getAbsolutePath() + "\\EmailOnlyIn\\";
+		}
+		File f = new File( sRet );
+		if( !f.exists() || !f.isDirectory() ) {
+			logger.error( "EmailOnlyInputPath " + sRet + " does not exist or is not a folder");
 			System.exit(1);
 		}
 		if( sRet != null && sRet.trim().length() == 0 ) 
@@ -677,6 +727,21 @@ public class CivetConfig {
 			sRet = null; 
 		return sRet;
 	}
+	
+	public static boolean isCheckAccredStatus() {
+		if( bCheckAccredStatus  == null ) {
+			String sVal = props.getProperty("checkAccreditationStatus");
+			if( sVal == null || sVal.trim().length() == 0 )
+				bCheckAccredStatus = false;
+			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bCheckAccredStatus = true;
+			}
+			else {
+				bCheckAccredStatus = false;
+			}
+		}
+		return bCheckAccredStatus;
+	}	
 
 	public static String getStateVetTableFile() {
 		String sRet = props.getProperty("stateVetTableFile");
@@ -863,6 +928,17 @@ public class CivetConfig {
 		return sRet;
 	}
 	
+	/**
+	 * get the string for the default species but allow it to not exist.
+	 * @return
+	 */
+	public static String getDefaultSpecies() {
+		String sRet = props.getProperty("defaultSpecies");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+	
 	public static boolean isJPedalXFA() {
 		boolean bRet = false;
 		if( iJPedalType == UNK ) {
@@ -896,45 +972,36 @@ public class CivetConfig {
 		}
 		return bAutoOpenPDF;
 	}
+
+	public static String getAcrobatPath() {
+		String sRet = props.getProperty("acrobatPath");
+		if( sRet != null ) {
+			File f = new File( sRet );
+			if( !f.exists() || !f.isFile() ) {
+				sRet = null;
+			}
+		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+
 	
 
 	// These are only used by direct database "add ons" so don't start-up check but leave in.
 	public static String getDbServer() {
-		String sRet = props.getProperty("dbServer");
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = "LPHSQL"; 
+		String sRet = "LPHSQL"; 
 		return sRet;
 	}
 
 	public static int getDbPort() {
-		int iRet = -1;
-		String sRet = props.getProperty("dbPort");
-		if( sRet == null ) {
-			iRet = 1433;
-		}
-		else {
-			try {
-				iRet = Integer.parseInt(sRet);
-			} catch( NumberFormatException nfe ) {
-				logger.error( "Cannot read dbPort " + sRet + " as an integer number");
-				logger.error(nfe);
-				System.exit(1);
-			}
-		}
+		int iRet = 1433;
 		return iRet;
 	}
 
-	public static String getDbPortString() {
-		String sRet = props.getProperty("dbPort");
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = "1433"; 
-		return sRet;
-	}
 
 	public static String getDbDatabaseName() {
-		String sRet = props.getProperty("dbDatabaseName");
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = "USAHERDS"; 
+		String sRet = "USAHERDS"; 
 		return sRet;
 	}
 
@@ -953,20 +1020,7 @@ public class CivetConfig {
 	}
 	
 
-	public static String getAcrobatPath() {
-		String sRet = props.getProperty("acrobatPath");
-		if( sRet != null ) {
-			File f = new File( sRet );
-			if( !f.exists() || !f.isFile() ) {
-				sRet = null;
-			}
-		}
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
-		return sRet;
-	}
-
-
+	// These are used to store db user credentials NOT as true config file data
 	/**
 	 * Get the Database UserName
 	 * @return
@@ -994,6 +1048,8 @@ public class CivetConfig {
 	public static void setDBPassword( String sPass ) {
 		sDBPassword = sPass;
 	}
+	
+	// Internal implementation details
 	
 	/**
 	 * Generic crash out routine.

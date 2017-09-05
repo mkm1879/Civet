@@ -22,7 +22,9 @@ import edu.clemson.lph.civet.CSVFilter;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
+import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.dialogs.*;
@@ -93,7 +95,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 			this.prog = prog;
 			this.sFilePath = sFilePath;
 			this.fParent = fParent;
-			service = new CivetWebServices();
+			service = CivetWebServiceFactory.getService();
 			prog.setCancelListener(this);
 		}
 		
@@ -101,6 +103,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 		public void cancelThread() {
 			bCanceled = true;
 			interrupt();
+			service = CivetWebServiceFactory.getService();
 		}
 
 		
@@ -116,7 +119,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 //			System.out.println(sXML);
 					// Send it!
 					String sRet = service.sendCviXML(sXML);
-					if( sRet == null || !sRet.trim().startsWith("00") ) {
+					if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {
 						logger.error( sRet, new Exception("Error submitting swine spreadsheet CVI to USAHERDS: ") );
 						MessageDialog.messageLater(fParent, "Civet WS Error", "Error submitting to USAHERDS: " + sRet);
 					}
@@ -166,8 +169,11 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 
 		int iNum = data.getNumber();
 		String sSpecies = "POR";
-		String sGender = "Gender Unknown";
-		xmlBuilder.addGroup(iNum, "Swine Group Lot", sSpecies, null, sGender);
+		String sAge = data.getAge();
+		String sGender = data.getSex();
+		if( sGender == null )
+			sGender = "Gender Unknown";
+		xmlBuilder.addGroup(iNum, "Swine Group Lot", sSpecies, sAge, sGender);
 		CviMetaDataXml metaData = new CviMetaDataXml();
 		metaData.setCertificateNbr(sCviNumber);
 		metaData.setBureauReceiptDate(data.getSavedDate());

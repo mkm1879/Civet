@@ -19,7 +19,9 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
+import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.civet.xml.CoKsXML;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXml;
@@ -100,9 +102,9 @@ public class COKSRobot extends Thread {
 						sXML = stdXml.getXMLString();
 						if( bLoggedIn ) {
 							try {
-								CivetWebServices herds = new CivetWebServices();
-								String sRet = herds.sendCviXML(sXML);
-								if( !sRet.startsWith(CivetWebServices.CVI_SUCCESS_MESSAGE) ) {
+								CivetWebServices service = CivetWebServiceFactory.getService();
+								String sRet = service.sendCviXML(sXML);
+								if( !sRet.contains(service.getSuccessMessage()) ) {
 									saveToXml(fXML, sXML);
 									logger.error("Could not submit to HERDS\nSaving to Robot XML folder");
 									logger.info("Processed File: " + file.getName() + " to: " + fXML.getName() );

@@ -222,9 +222,14 @@ public class FileUtils {
 		return sFileName.substring(0,sFileName.lastIndexOf('.'));
 	}
 	
-	private static String getExt( String sFileName ) {
+	public static String getExt( String sFileName ) {
 		if( !sFileName.contains(".") ) return "";
 		return sFileName.substring(sFileName.lastIndexOf('.'));
+	}
+	
+	public static String getRoot( String sFileName ) {
+		if( !sFileName.contains(".") ) return "";
+		return sFileName.substring(0,sFileName.lastIndexOf('.'));
 	}
 	
 	

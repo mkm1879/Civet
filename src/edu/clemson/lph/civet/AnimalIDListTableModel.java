@@ -105,6 +105,14 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 		return rowsOut;
 	}
 	
+	public final ArrayList<AnimalIDRecord> cloneRows() {
+		final ArrayList<AnimalIDRecord> rowsOut = new ArrayList<AnimalIDRecord>();
+		for( AnimalIDRecord record : rows ) {
+			rowsOut.add(record);
+		}
+		return rowsOut;
+	}
+	
 	@Override
 	public String getColumnName( int arg0 ) {
 		if( arg0 == 0 )

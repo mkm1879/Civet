@@ -32,7 +32,9 @@ import org.w3c.dom.Element;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
+import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.dialogs.MessageDialog;
@@ -57,7 +59,7 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 		prog.setAuto(true);
 		prog.setCancelListener(this);
 		prog.setVisible(true);
-		service = new CivetWebServices();
+		service = CivetWebServiceFactory.getService();
 	}
 	
 	@Override
@@ -84,7 +86,7 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 //		System.out.println(sXML);
 				// Send it!
 				String sRet = service.sendCviXML(sXML);
-				if( sRet == null || !sRet.trim().startsWith("00") ) {
+				if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {
 					String sCVINbr = cvi.getCVINumber();
 					logger.error( new Exception("Error submitting VSPS spreadsheet CVI " + sCVINbr + " to USAHERDS: ") );
 					FileUtils.writeTextFile(sXML, sCVINbr + "_Error.xml");

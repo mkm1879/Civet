@@ -22,9 +22,9 @@ import edu.clemson.lph.civet.CSVFilter;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
 import edu.clemson.lph.db.*;
 import edu.clemson.lph.dialogs.*;
@@ -34,7 +34,6 @@ import edu.clemson.lph.utils.StringUtils;
 
 import java.awt.Window;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
@@ -43,11 +42,7 @@ import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 
 import javax.swing.*;
 
@@ -107,7 +102,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			this.sFilePath = sFilePath;
 			this.parent = parent;
 			this.factory = factory;
-			service = new CivetWebServices();
+			service = CivetWebServiceFactory.getService();
 			prog.setCancelListener(this);
 		}
 		
@@ -180,7 +175,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 								}
 							}
 						}
-						if( sRet == null || !sRet.trim().startsWith("00") ) {
+						if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {
 							if( sRet.contains("99,Timeout expired")) {
 								logger.info("Time out CVI Number: " + data.getCVINumber() );
 							}

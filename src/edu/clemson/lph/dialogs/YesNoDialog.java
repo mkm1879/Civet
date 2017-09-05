@@ -154,7 +154,7 @@ public class YesNoDialog extends JDialog {
 		panel1.setPreferredSize(new Dimension(400, 150));
 		jlQuestion.setText(sQuestion);
 		getContentPane().add(panel1);
-		jlQuestion.setBounds(16, 20, 364, 42);
+		jlQuestion.setBounds(16, 20, 364, 60);
 		panel1.add(jlQuestion);
 		jbNo.setBounds(207, 93, 90, 25);
 		panel1.add(jbNo);

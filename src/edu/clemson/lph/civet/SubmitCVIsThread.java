@@ -26,7 +26,9 @@ import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
+import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.dialogs.ThreadCancelListener;
@@ -55,7 +57,7 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 		prog.setCancelListener(this);
 		prog.setAuto(true);
 		prog.setVisible(true);
-		service = new CivetWebServices();
+		service = CivetWebServiceFactory.getService();
 	}
 	
 	@Override
@@ -77,7 +79,9 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 					}
 				});		
 				sCurrentFilePath = fThis.getAbsolutePath();
-				processFile( fThis );
+				if( !processFile( fThis ) ) {
+					continue;
+				}
 				if( CivetConfig.isSaveCopies() ) {
 					File fOut = new File( sOutPath + sName );
 	    			while( fOut.exists() ) {
@@ -114,7 +118,7 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 		}
 	}
 
-	private void processFile(File fThis) {
+	private boolean processFile(File fThis) {
 		try {
 			String sXML = FileUtils.readTextFile(fThis);
 			String sCertNbr = getCertNbr( sXML );
@@ -122,7 +126,7 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 			if( CertificateNbrLookup.certficateNbrExists(sCertNbr) ) {
 				MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " already exists.\n" +
 						"Resolve conflict and try again.");
-				return;
+				return false;
 			}
 			String sRet = service.sendCviXML(sXML);
 			final String sReturn = sRet;
@@ -132,26 +136,28 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 				}
 			});		
 			// If successfully sent, record the number in CertNbrs.txt
-			if( sRet != null && !sRet.toLowerCase().contains("error") && sRet.startsWith("00") ) {
+			System.out.println( service.getSuccessMessage() );
+			if( sRet != null && !sRet.toLowerCase().contains("error") && sRet.contains(service.getSuccessMessage() ) ) {
 				if( !CertificateNbrLookup.addCertificateNbr(sCertNbr) ) {
 					MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " Added twice.\n" +
 							"Please report to developer.");
-					return;
 				}
-			}
-			else {
-				throw new Exception( "Error from web service\n" + sRet);
 			}
 		} catch (final Exception e) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					logger.error("Error in uploading file to USAHERDS", e);
 					if( e.getMessage().contains("There was an exception running the extensions") ) {
-						MessageDialog.showMessage(null, "Civet Error", "Error Uploading.\nCheck the size of your scanned PDFs");
+						MessageDialog.showMessage(parent, "Civet Error", "Error Uploading.\nCheck the size of your scanned PDFs");
+					}
+					if( e.getMessage().contains("Authorization has been denied") ) {
+						MessageDialog.showMessage(parent, "Civet Error", "Upload Permission Denied");
 					}
 				}
-			});		
+			});
+			return false;
 		} 
+		return true;
 	}
 	
 	private String getCertNbr( String sXML ) {
