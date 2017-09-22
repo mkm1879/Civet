@@ -156,7 +156,9 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 		if( data.getSourceState().equalsIgnoreCase(CivetConfig.getHomeStateAbbr()) && vet != null ) {
 			String sVetName = vet.getLastName() + ", " + vet.getFirstName();
 			eVet = xmlBuilder.setVet(sVetName, vet.getLicenseNo(), vet.getNAN(), vet.getPhoneDigits());
-			xmlBuilder.setAddress(eVet, vet.getAddress(), vet.getCity(), null, vet.getState(), vet.getZipCode());
+			String sVetState = vet.getState();
+			if( sVetState != null && sVetState.trim().length() == 2 )
+				xmlBuilder.setAddress(eVet, vet.getAddress(), vet.getCity(), null, vet.getState(), vet.getZipCode());
 		}
 		else {
 			xmlBuilder.setVet(data.getVet());

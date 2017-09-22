@@ -23,7 +23,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import sun.misc.Regexp;
+//import sun.misc.Regexp;
 
 import java.io.*;
 import java.util.regex.Matcher;

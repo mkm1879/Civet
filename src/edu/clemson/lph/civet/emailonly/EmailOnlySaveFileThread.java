@@ -41,7 +41,6 @@ public class EmailOnlySaveFileThread extends Thread {
 	    }
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				dlg.saveComplete();
 				prog.setVisible(false);
 				prog.dispose();
 			}

@@ -189,6 +189,8 @@ public class CSVDataFile {
 	public String getSourceState() {
 		String sRet = get( "SourceState".toUpperCase() );
 		if( sRet == null ) sRet = get( "Source State".toUpperCase() );
+		if( sRet == null ) sRet = get( "From State".toUpperCase() );
+		if( sRet == null ) sRet = get( "FromState".toUpperCase() );
 		return sRet;
 	}
 	
@@ -242,6 +244,8 @@ public class CSVDataFile {
 		if( sRet == null ) sRet = get( "Dest State".toUpperCase() );
 		if( sRet == null ) sRet = get( "DestinationState".toUpperCase() );
 		if( sRet == null ) sRet = get( "Destination State".toUpperCase() );
+		if( sRet == null ) sRet = get( "To State".toUpperCase() );
+		if( sRet == null ) sRet = get( "ToState".toUpperCase() );
 		return sRet;
 	}
 
@@ -257,6 +261,9 @@ public class CSVDataFile {
 	public String getVet() {
 		String sRet = get( "Vet".toUpperCase() );
 		if( sRet == null ) sRet = get( "Veterinarian".toUpperCase() );
+		if( sRet == null ) sRet = get( "Vet".toUpperCase() );
+		if( sRet == null && getCompany().equals("Cactus") ) sRet = "Peter Schneider";
+		if( sRet == null && getCompany().equals("CFF") ) sRet = "Peter Schneider";
 		return sRet;
 	}
 

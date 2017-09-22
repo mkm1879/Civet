@@ -26,6 +26,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextField;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
@@ -46,6 +48,8 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
 import org.apache.log4j.Logger;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 @SuppressWarnings("serial")
 public class AddAnimalsDialog extends JDialog {
@@ -132,6 +136,7 @@ public class AddAnimalsDialog extends JDialog {
 				btnAdd.addActionListener( new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
+						jtfAddNum.setText("");
 						doEnter();
 					}
 				});
@@ -190,6 +195,13 @@ public class AddAnimalsDialog extends JDialog {
 				tblIDs.getColumnModel().getColumn(0).setMaxWidth(30);
 				tblIDs.getColumnModel().getColumn(1).setPreferredWidth(130);
 				tblIDs.getColumnModel().getColumn(1).setMaxWidth(130);
+				
+				TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(tblIDs.getModel());
+				tblIDs.setRowSorter(sorter);
+//				List<RowSorter.SortKey> sortKeys = new ArrayList<>(25);
+//				sortKeys.add(new RowSorter.SortKey(2, SortOrder.ASCENDING));
+//				sortKeys.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
+//				sorter.setSortKeys(sortKeys);
 			}
 		}
 		{
