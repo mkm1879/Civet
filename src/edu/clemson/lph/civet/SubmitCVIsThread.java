@@ -119,9 +119,10 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 	}
 
 	private boolean processFile(File fThis) {
+		boolean bRet = false;
 		try {
 			String sXML = FileUtils.readTextFile(fThis);
-			String sCertNbr = getCertNbr( sXML );
+			final String sCertNbr = getCertNbr( sXML );
 			// Check but don't add yet.
 			if( CertificateNbrLookup.certficateNbrExists(sCertNbr) ) {
 				MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " already exists.\n" +
@@ -138,10 +139,15 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 			// If successfully sent, record the number in CertNbrs.txt
 			System.out.println( service.getSuccessMessage() );
 			if( sRet != null && !sRet.toLowerCase().contains("error") && sRet.contains(service.getSuccessMessage() ) ) {
+				bRet = true;
 				if( !CertificateNbrLookup.addCertificateNbr(sCertNbr) ) {
 					MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " Added twice.\n" +
 							"Please report to developer.");
 				}
+			}
+			else {  // Should have thrown an exception but just in case.
+				MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " failed to upload.\n See Civet.log");
+				bRet = false;
 			}
 		} catch (final Exception e) {
 			SwingUtilities.invokeLater(new Runnable() {
@@ -153,11 +159,14 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 					if( e.getMessage().contains("Authorization has been denied") ) {
 						MessageDialog.showMessage(parent, "Civet Error", "Upload Permission Denied");
 					}
+					else {
+						MessageDialog.showMessage(parent, "Civet Error",  "Certificate failed to upload.\nSee Civet.log");						
+					}
 				}
 			});
-			return false;
+			bRet = false;
 		} 
-		return true;
+		return bRet;
 	}
 	
 	private String getCertNbr( String sXML ) {
