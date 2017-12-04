@@ -149,6 +149,9 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 					if( e.getMessage().contains("There was an exception running the extensions") ) {
 						MessageDialog.showMessage(null, "Civet Error", "Error Uploading.\nCheck the size of your scanned PDFs");
 					}
+					else {
+						MessageDialog.showMessage(null, "Civet Error", "Error Uploading.\n See Civet.log");
+					}
 				}
 			});		
 		} 
