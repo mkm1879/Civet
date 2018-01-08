@@ -479,6 +479,7 @@ public class NineDashThreeDialog extends JFrame {
 		cbSpecies.setSelectedItem(null);
 		jtfNumber.setText("");
 		aSpecies = new ArrayList<SpeciesRecord>();
+		hSpecies.clear();
 		mSpListModel.clear();
 		idModel.clear();
 		idModel.fireTableDataChanged();
