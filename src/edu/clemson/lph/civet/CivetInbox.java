@@ -56,6 +56,7 @@ import edu.clemson.lph.civet.files.FilesTableModel;
 import edu.clemson.lph.civet.files.SourceFilesTableModel;
 import edu.clemson.lph.civet.files.StdXMLFilesTableModel;
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
+import edu.clemson.lph.civet.lookup.StateVetTableEditDlg;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.prefs.ConfigDialog;
 import edu.clemson.lph.civet.vsps.VspsCviFile;
@@ -88,6 +89,7 @@ public class CivetInbox extends JFrame {
 	JButton bOpenAll = new JButton();
 	JMenu menuFile = new JMenu();
 	JMenuItem menuItemEditPrefs = new JMenuItem();
+	JMenuItem menuItemEditStateVets = new JMenuItem();
 	JMenuItem menuItemFileOpen = new JMenuItem();
 	JMenuItem menuItemFileOpenAll = new JMenuItem();
 	JMenuItem menuItemFileExit = new JMenuItem();
@@ -149,13 +151,22 @@ public class CivetInbox extends JFrame {
 		bOpen.setToolTipText("Open selected files or browse for files");
 		
 		menuItemEditPrefs.setText("Edit Preferences in CivetConfig.txt");
-		menuItemEditPrefs.setToolTipText("Open selected files or browse for files");
+		menuItemEditPrefs.setToolTipText("Edit Preferences configuration in dialog");
 		menuItemEditPrefs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				doEditPrefs();
 			}
 		});
 		menuFile.add(menuItemEditPrefs);
+		
+		menuItemEditStateVets.setText("Edit State Vet Table");
+		menuItemEditStateVets.setToolTipText("Edit State Vet Table in dialog");
+		menuItemEditStateVets.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				doEditStateVets();
+			}
+		});
+		menuFile.add(menuItemEditStateVets);
 		
 		menuItemFileOpen.setText("Open File(s)");
 		menuItemFileOpen.setToolTipText("Open selected files or browse for files");
@@ -458,7 +469,11 @@ public class CivetInbox extends JFrame {
 	private void doEditPrefs() {
 		ConfigDialog dlg = new ConfigDialog();
 		dlg.setVisible(true);
-		
+	}
+	
+	private void doEditStateVets() {
+		StateVetTableEditDlg dlg = new StateVetTableEditDlg();
+		dlg.setVisible(true);
 	}
 
 	private void doOpenAll() {

@@ -1,56 +1,56 @@
-Prefix,LName,FName,MailAddress,Mail City,MailZip,MailState,State,Email,CVIEmail,CVIErrorEmail,FileType
-,Gerlach,Robert,5251 Dr. MLK Jr. Ave,Anchorage,99507,AK,ALASKA,bob.gerlach@alaska.gov,"Minnie.keller@alaska.gov,decosv.akanimals@alaska.gov",,PDF
-,Frazier,Anthony,1445 Federal Drive,Montgomery,36107-1123,AL,ALABAMA,tony.frazier@agi.alabama.gov,sharon.fulmer@agi.alabama.gov,Dynetta.Burton@agi.alabama.gov,PDF
-,Doss,Brandon,P.O. Box 8505,Little Rock,72205,AR,ARKANSAS,bdoss@alpc.ar.gov,cviar@alpc.ar.gov,,PDF
-,Mundschenk,Peter,1688 West Adams Street,Phoenix,85007,AZ,ARIZONA,PMundschenk@azda.gov,CVI@azda.gov,,PDF
-,Jones,Annette,"1220 N Street, Room A-107",Sacramento,95814,CA,CALIFORNIA,annette.jones@cdfa.ca.gov,evet@cdfa.ca.gov,,PDF
-,Roehr,Keith,305 Interlocken Parkway,Broomfield,80021,CO,COLORADO,Keith.Roehr@state.co.us,animalhealth@state.co.us,,PDF
-,Lis,Mary,"165 Capitol Ave, Rm G-8A",Hartford,6106,CT,CONNECTICUT,mary.lis@ct.gov,ctstate.vet@ct.gov,,PDF
-,Delvento,Vito,899 North Capitol St NE,Washington,20002,DC,DISTRICT OF COLUMBIA,vito.delvento@dc.gov,lakisha.thompson@dc.gov,,PDF
-,Hirst,Heather,2320 S. DuPont Highway,Dover,19901,DE,DELAWARE,heather.hirst@state.de.us,Robert.moore@state.de.us,,PDF
-,Short,Michael,407 South Calhoun St,Tallahassee,32399-0800,FL,FLORIDA,michael.short@freshfromflorida.com,FlaOCVI@freshfromflorida.com,,PDF
-,Cobb,Robert,"19 Martin Luther King Jr. Dr., SW",Atlanta,30334-4201,GA,GEORGIA,Robert.Cobb@agr.georgia.gov,AnimalHealth@agr.georgia.gov,,PDF
-,Poole,Thomas,163 Dairy Road,Mangilao,96913,GU,GUAM,,gu.agri@yahoo.com,,PDF
-,Wong,Raquel,99-941 Halawa Valley Street,Aiea,96701,HI,HAWAII,raquel.l.wong@hawaii.gov,"hdoaic@hawaii.gov, rabiesfree@hawaii.gov",,PDF
-,Schmitt,David,720 NE 44th Ct,Ankeny,50021,IA,IOWA,David.Schmitt@iowaAgriculture.gov,Karla.Crawford@iowaagriculture.gov,,PDF
-,Barton,Bill,P.O. Box 7249,Boise,83712,ID,IDAHO,bill.barton@isda.idaho.gov,jeni.marple@agri.idaho.gov,,PDF
-,Ernst,Mark,P.O. Box 19281,Springfield,62794-9281,IL,ILLINOIS,mark.ernst@Illinois.gov,AGR.CVI@Illinois.gov,,PDF
-,Marsh,Bret,"Discovery Hall Suite 100, 1202 E 38th Street",Indianapolis,46205,IN,INDIANA,bmarsh@boah.in.gov,ecvi@boah.in.gov,,CVI
-,Smith,Justin,1320 Research Park Dr,Manhattan,66502,KS,KANSAS,justin.smith@ks.gov , kda.ICVI@ks.gov (exports)  kda.ksimports@ks.gov,,PDF
-,Stout,Robert,109 Corporate Dr,Frankfort,40601,KY,KENTUCKY,robert.stout@ky.gov,agr.cvi@ky.gov,,PDF
-,Robbins,Brent,P.O. Box 1951,Baton Rouge,70821,LA,LOUISIANA,brobbins@ldaf.la.gov,vetreports@ldaf.state.la.us,,PDF
-,O'Connor,Lorraine,"251 Causeway St., Suite 500",Boston,02114-2151,MA,MASSACHUSETTS,lorraine.o'connor@state.ma.us,cvi@massmail.state.ma.us,,PDF
-,Radebaugh,Michael,50 Harry S. Truman Parkway,Annapolis,21401,MD,MARYLAND,michael.radebaugh@maryland.gov,animalhealth.mda@maryland.gov,,PDF
-,Walsh,Michelle,"State House, Station 28",Augusta,04333-0028,ME,MAINE,michelle.walsh@maine.gov,AnimalHealth.AGR@maine.gov,,PDF
-,Averill,James,P.O. Box 30017,Lansing,48909,MI,MICHIGAN,averillj1@michigan.gov,CVI@michigan.gov,,PDF
-,Thompson,Beth,625 North Robert St.,St. Paul,55155,MN,MINNESOTA,Beth.thompson@state.mn.us,Trace@state.mn.us,,PDF
-,Hickam,Linda,P.O. Box 630,Jefferson City,65102-0630,MO,MISSOURI,linda.hickam@mda.mo.gov,mohealth.certificates@mda.mo.gov,,PDF
-,Seman,Richard ,P.O. Box 10007,Saipan,96950-8907,MP,NORTHERN MARIANA ISLANDS,rbsdfw@itecnmi.com,rbsdfw@itecnmi.com,,PDF
-,Watson,James,P.O. Box 3889,Jackson,39207,MS,MISSISSIPPI,JimW@mdac.ms.gov,Msstatevet@mdac.ms.gov,,PDF
-,Zaluski,Martin,P.O. Box 202001,Helena,59620-2001,MT,MONTANA,mzaluski@mt.gov,livpermits@mt.gov,,PDF
-,Meckes,R. Douglas,1030 Mail Service Center,Raleigh,27601,NC,NORTH CAROLINA,doug.meckes@ncagr.gov,joe.web@ncagr.gov,,PDF
-,Keller,Susan,"600 E. Boulevard Ave., Dept. 602",Bismark,58505,ND,NORTH DAKOTA,skeller@nd.gov,tcelley@nd.gov,,PDF
-,Hughes,Dennis,P.O. Box 94787,Lincoln,68509-4787,NE,NEBRASKA,dennis.hughes@nebraska.gov,agr.cvi@nebraska.gov,,PDF
-,Crawford,Stephen,25 Capitol St,Concord,3301,NH,NEW HAMPSHIRE,Stephen.Crawford@agr.nh.gov,cindy.heisler@agr.nh.gov,,PDF
-,Tamassia,Manoel,P.O. Box 330,Trenton,8625,NJ,NEW JERSEY,manoel.tamassia@ag.state.nj.us,NJADT@ag.state.nj.us,,PDF
-,Zimmerman,Ralph,"300 San Mateo NE, Ste. 1000",Albuquerque,87108,NM,NEW MEXICO,ralph.zimmerman@state.nm.us,statevet@nmlbonline.com,,PDF
-,Goicoechea,J. J.,1567 Orca Way,Reno,89506,NV,NEVADA,jgoicoechea@agri.nv.gov,icvis@agri.nv.gov,,PDF
-,Smith,David,10 B Airline Drive,Albany,12235,NY,NEW YORK,david.smith@agriculture.ny.gov,melissa.konwisarz@agriculture.ny.gov,,PDF
-,Forshey,Tony,8995 E. Main Street,Reynoldsburg,43068,OH,OHIO,tforshey@agri.ohio.gov,"HAllen@agri.ohio.gov, sarah.martin@agri.ohio.gov",,PDF
-,Hall,Rod,P.O. Box 528804,Oklahoma City,73105,OK,OKLAHOMA,rod.hall@ag.ok.gov,Health.Certificates@ag.ok.gov,Export.certificates@ag.ok.gov,PDF
-,LeaMaster,Brad,"635 Capital St., NE",Salem,97301-1531,OR,OREGON,bleamaster@oda.state.or.us,ahforms@oda.state.or.us,,PDF
-,Wolfgang,Dave,2301 N. Cameron St.,Harrisburg,17110-9408,PA,PENNSYLVANIA,davwolfgan@pa.gov,pacvisubmission@pa.gov,,PDF
-,Diaz-Collazo,Hector,Commonwealth of Puerto Rico Box 10163,Santurce,00908,PR,PUERTO RICO,,"aperez@agricultura.pr.gov, caolivo@agricultura.pr.gov",,PDF
-,Marshall,Scott,"235 Promenade Street, Rm 370",Providence,02908,RI,RHODE ISLAND,scott.marshall@dem.ri.gov,"DEM.AGRsmanimalcvi@dem.ri.gov,DEM.AGRlganimalcvi@dem.ri.gov",,PDF
-,Parr,Boyd,P. O. Box 102406,Columbia ,29224,SC,SOUTH CAROLINA,bparr@clemson.edu,scvetcert@clemson.edu,,CVI
-,Oedekoven,Dustin,411 S. Fort St.,Pierre,57501,SD,SOUTH DAKOTA,dustin.oedekoven@state.sd.us,aibmail@state.sd.us,,PDF
-,Hatcher,Charles,P.O. Box 40627,Nashville,37204,TN,TENNESSEE,charles.hatcher@tn.gov,animal.health@tn.gov,,PDF
-,Schwartz,Andy,P.O. Box 12966,Austin,78758,TX,TEXAS,andy.schwartz@tahc.texas.gov,cvi_submit@tahc.texas.gov,tahc_disapproved_cvi@tahc.texas.gov,PDF
-,Pittman,Barry,PO Box 146500,Salt Lake City,84114-6500,UT,UTAH,bpittman@utah.gov,cvi@utah.gov,,PDF
-,Broaddus,Charles,102 Governor St,Richmond,23219,VA,VIRGINIA,charles.broaddus@vdacs.virginia.gov,cvi@vdacs.virginia.gov,,PDF
-,Bradford,Bethany,PO Box 2148,Kingshill,00851,VI,VIRGIN ISLANDS OF THE U.S.,bethany.bradford@doa.vi.gov,,,PDF
-,Haas,Kristin,116 State Street,Montpelier,05620-2901,VT,VERMONT,Kristin.Haas@svermont.gov,"AGR.animalHealth@vermont.gov,Kristin.Haas@vermont.gov",,PDF
-,Joseph,Brian,P.O. Box 42560,Olympia,98504-2506,WA,WASHINGTON,,WAImportCVI@agr.wa.gov,,PDF
-,McGraw,Paul,P.O. Box 8911,Madison,53708-8911,WI,WISCONSIN,paul.mcgraw@wisconsin.gov,DATCPAnimalImports@wisconsin.gov,,PDF
-,Maxwell,James,"1900 Kanawha Blvd., East",Charleston,25305-0172,WV,WEST VIRGINIA,jmaxwell@wvda.us,"jcantley@wvda.us, jzirkle@wvda.us",,PDF
-,Logan,Jim,1934 Wyott Dr,Cheyenne,82002,WY,WYOMING,Jim.Logan@wyo.gov,health.cert@wyo.gov,,PDF
+"Prefix","FName","LName","MailAddress","Mail City","MailState","State","MailZip","Email","CVIEmail","CVIErrorEmail","FileType"
+"","Robert","Gerlach","5251 Dr. MLK Jr. Ave","Anchorage","AK","ALASKA","99507","bob.gerlach@alaska.gov","Minnie.keller@alaska.gov,decosv.akanimals@alaska.gov","","PDF"
+"The great","Anthony","Frazier","1445 Federal Drive","Montgomery","AL","ALABAMA","36107-1123","","Dynetta.Burton@agi.alabama.gov","Dynetta.Burton@agi.alabama.gov","CVI"
+"","Brandon","Doss","P.O. Box 8505","Little Rock","AR","ARKANSAS","72205","bdoss@alpc.ar.gov","cviar@alpc.ar.gov","","PDF"
+"","Peter","Mundschenk","1688 West Adams Street","Phoenix","AZ","ARIZONA","85007","PMundschenk@azda.gov","CVI@azda.gov","","PDF"
+"","Annette","Jones","1220 N Street, Room A-107","Sacramento","CA","CALIFORNIA","95814","annette.jones@cdfa.ca.gov","evet@cdfa.ca.gov","","PDF"
+"","Keith","Roehr","305 Interlocken Parkway","Broomfield","CO","COLORADO","80021","Keith.Roehr@state.co.us","animalhealth@state.co.us","","PDF"
+"","Mary","Lis","165 Capitol Ave, Rm G-8A","Hartford","CT","CONNECTICUT","6106","mary.lis@ct.gov","ctstate.vet@ct.gov","","PDF"
+"","Heather","Hirst","2320 S. DuPont Highway","Dover","DE","DELAWARE","19901","heather.hirst@state.de.us","Robert.moore@state.de.us","","PDF"
+"","Michael","Short","407 South Calhoun St","Tallahassee","FL","FLORIDA","32399-0800","michael.short@freshfromflorida.com","FlaOCVI@freshfromflorida.com","","PDF"
+"Can you hear me?","Robert","Cobb","19 Martin Luther King Jr. Dr., SW","Atlanta","GA","GEORGIA","30334-4201","","AnimalHealth@agr.georgia.gov","","PDF"
+"","Thomas","Poole","163 Dairy Road","Mangilao","GU","GUAM","96913","","gu.agri@yahoo.com","","PDF"
+"","Raquel","Wong","99-941 Halawa Valley Street","Aiea","HI","HAWAII","96701","raquel.l.wong@hawaii.gov","hdoaic@hawaii.gov, rabiesfree@hawaii.gov","","PDF"
+"","David","Schmitt","720 NE 44th Ct","Ankeny","IA","IOWA","50021","David.Schmitt@iowaAgriculture.gov","Karla.Crawford@iowaagriculture.gov","","PDF"
+"","Bill","Barton","P.O. Box 7249","Boise","ID","IDAHO","83712","bill.barton@isda.idaho.gov","jeni.marple@agri.idaho.gov","","PDF"
+"","Mark","Ernst","P.O. Box 19281","Springfield","IL","ILLINOIS","62794-9281","mark.ernst@Illinois.gov","AGR.CVI@Illinois.gov","","PDF"
+"","Bret","Marsh","Discovery Hall Suite 100, 1202 E 38th Street","Indianapolis","IN","INDIANA","46205","bmarsh@boah.in.gov","ecvi@boah.in.gov","","CVI"
+"","Justin","Smith","1320 Research Park Dr","Manhattan","KS","KANSAS","66502","justin.smith@ks.gov "," kda.ICVI@ks.gov (exports)  kda.ksimports@ks.gov","","PDF"
+"","Robert","Stout","109 Corporate Dr","Frankfort","KY","KENTUCKY","40601","robert.stout@ky.gov","agr.cvi@ky.gov","","PDF"
+"","Brent","Robbins","P.O. Box 1951","Baton Rouge","LA","LOUISIANA","70821","brobbins@ldaf.la.gov","vetreports@ldaf.state.la.us","","PDF"
+"","Lorraine","O'Connor","251 Causeway St., Suite 500","Boston","MA","MASSACHUSETTS","02114-2151","lorraine.o'connor@state.ma.us","cvi@massmail.state.ma.us","","PDF"
+"","Michael","Radebaugh","50 Harry S. Truman Parkway","Annapolis","MD","MARYLAND","21401","michael.radebaugh@maryland.gov","animalhealth.mda@maryland.gov","","PDF"
+"","Michelle","Walsh","State House, Station 28","Augusta","ME","MAINE","04333-0028","michelle.walsh@maine.gov","AnimalHealth.AGR@maine.gov","","PDF"
+"","James","Averill","P.O. Box 30017","Lansing","MI","MICHIGAN","48909","averillj1@michigan.gov","CVI@michigan.gov","","PDF"
+"","Beth","Thompson","625 North Robert St.","St. Paul","MN","MINNESOTA","55155","Beth.thompson@state.mn.us","Trace@state.mn.us","","PDF"
+"","Linda","Hickam","P.O. Box 630","Jefferson City","MO","MISSOURI","65102-0630","linda.hickam@mda.mo.gov","mohealth.certificates@mda.mo.gov","","PDF"
+"","Richard ","Seman","P.O. Box 10007","Saipan","MP","NORTHERN MARIANA ISLANDS","96950-8907","rbsdfw@itecnmi.com","rbsdfw@itecnmi.com","","PDF"
+"","James","Watson","P.O. Box 3889","Jackson","MS","MISSISSIPPI","39207","JimW@mdac.ms.gov","Msstatevet@mdac.ms.gov","","PDF"
+"","Martin","Zaluski","P.O. Box 202001","Helena","MT","MONTANA","59620-2001","mzaluski@mt.gov","livpermits@mt.gov","","PDF"
+"","R. Douglas","Meckes","1030 Mail Service Center","Raleigh","NC","NORTH CAROLINA","27601","doug.meckes@ncagr.gov","joe.web@ncagr.gov","","PDF"
+"","Susan","Keller","600 E. Boulevard Ave., Dept. 602","Bismark","ND","NORTH DAKOTA","58505","skeller@nd.gov","tcelley@nd.gov","","PDF"
+"","Dennis","Hughes","P.O. Box 94787","Lincoln","NE","NEBRASKA","68509-4787","dennis.hughes@nebraska.gov","agr.cvi@nebraska.gov","","PDF"
+"","Stephen","Crawford","25 Capitol St","Concord","NH","NEW HAMPSHIRE","3301","Stephen.Crawford@agr.nh.gov","cindy.heisler@agr.nh.gov","","PDF"
+"","Manoel","Tamassia","P.O. Box 330","Trenton","NJ","NEW JERSEY","8625","manoel.tamassia@ag.state.nj.us","NJADT@ag.state.nj.us","","PDF"
+"","Ralph","Zimmerman","300 San Mateo NE, Ste. 1000","Albuquerque","NM","NEW MEXICO","87108","ralph.zimmerman@state.nm.us","statevet@nmlbonline.com","","PDF"
+"","J. J.","Goicoechea","1567 Orca Way","Reno","NV","NEVADA","89506","jgoicoechea@agri.nv.gov","icvis@agri.nv.gov","","PDF"
+"","David","Smith","10 B Airline Drive","Albany","NY","NEW YORK","12235","david.smith@agriculture.ny.gov","melissa.konwisarz@agriculture.ny.gov","","PDF"
+"","Tony","Forshey","8995 E. Main Street","Reynoldsburg","OH","OHIO","43068","tforshey@agri.ohio.gov","HAllen@agri.ohio.gov, sarah.martin@agri.ohio.gov","","PDF"
+"","Rod","Hall","P.O. Box 528804","Oklahoma City","OK","OKLAHOMA","73105","rod.hall@ag.ok.gov","Health.Certificates@ag.ok.gov","Export.certificates@ag.ok.gov","PDF"
+"","Brad","LeaMaster","635 Capital St., NE","Salem","OR","OREGON","97301-1531","bleamaster@oda.state.or.us","ahforms@oda.state.or.us","","PDF"
+"","Dave","Wolfgang","2301 N. Cameron St.","Harrisburg","PA","PENNSYLVANIA","17110-9408","davwolfgan@pa.gov","pacvisubmission@pa.gov","","PDF"
+"","Hector","Diaz-Collazo","Commonwealth of Puerto Rico Box 10163","Santurce","PR","PUERTO RICO","00908","","aperez@agricultura.pr.gov, caolivo@agricultura.pr.gov","","PDF"
+"","Scott","Marshall","235 Promenade Street, Rm 370","Providence","RI","RHODE ISLAND","02908","scott.marshall@dem.ri.gov","DEM.AGRsmanimalcvi@dem.ri.gov,DEM.AGRlganimalcvi@dem.ri.gov","","PDF"
+"","Boyd","Parr","P. O. Box 102406","Columbia ","SC","SOUTH CAROLINA","29224","","scvetcert@clemson.edu","","CVI"
+"","Dustin","Oedekoven","411 S. Fort St.","Pierre","SD","SOUTH DAKOTA","57501","dustin.oedekoven@state.sd.us","aibmail@state.sd.us","","PDF"
+"","Charles","Hatcher","P.O. Box 40627","Nashville","TN","TENNESSEE","37204","charles.hatcher@tn.gov","animal.health@tn.gov","","PDF"
+"","Andy","Schwartz","P.O. Box 12966","Austin","TX","TEXAS","78758","andy.schwartz@tahc.texas.gov","cvi_submit@tahc.texas.gov","tahc_disapproved_cvi@tahc.texas.gov","PDF"
+"","Barry","Pittman","PO Box 146500","Salt Lake City","UT","UTAH","84114-6500","bpittman@utah.gov","cvi@utah.gov","","PDF"
+"","Charles","Broaddus","102 Governor St","Richmond","VA","VIRGINIA","23219","charles.broaddus@vdacs.virginia.gov","cvi@vdacs.virginia.gov","","PDF"
+"","Bethany","Bradford","PO Box 2148","Kingshill","VI","VIRGIN ISLANDS OF THE U.S.","00851","bethany.bradford@doa.vi.gov","","","PDF"
+"","Kristin","Haas","116 State Street","Montpelier","VT","VERMONT","05620-2901","Kristin.Haas@svermont.gov","AGR.animalHealth@vermont.gov,Kristin.Haas@vermont.gov","","PDF"
+"","Brian","Joseph","P.O. Box 42560","Olympia","WA","WASHINGTON","98504-2506","","WAImportCVI@agr.wa.gov","","PDF"
+"","Paul","McGraw","P.O. Box 8911","Madison","WI","WISCONSIN","53708-8911","paul.mcgraw@wisconsin.gov","DATCPAnimalImports@wisconsin.gov","","PDF"
+"","James","Maxwell","1900 Kanawha Blvd., East","Charleston","WV","WEST VIRGINIA","25305-0172","jmaxwell@wvda.us","jcantley@wvda.us, jzirkle@wvda.us","","PDF"
+"","Jim","Logan","1934 Wyott Dr","Cheyenne","WY","WYOMING","82002","Jim.Logan@wyo.gov","health.cert@wyo.gov","","PDF"
+"","Vito","Delvento","899 North Capitol St NE","Washington","DC","DISTRICT OF COLUMBIA","20002","vito.delvento@dc.gov","lakisha.thompson@dc.gov","","PDF"
