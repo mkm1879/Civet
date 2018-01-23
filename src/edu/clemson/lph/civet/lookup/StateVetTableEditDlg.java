@@ -13,6 +13,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -28,10 +29,6 @@ import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
 public class StateVetTableEditDlg extends JDialog {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	static {
-	     logger.setLevel(CivetConfig.getLogLevel());
-	}
 	private final JPanel pSelectState = new JPanel();
 	private ImageIcon appIcon;
 	private JComboBox<String> cbSelectedState;
@@ -54,6 +51,7 @@ public class StateVetTableEditDlg extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
+			PropertyConfigurator.configure("CivetConfig.txt");
 			CivetConfig.checkAllConfig();
 
 			StateVetTableEditDlg dialog = new StateVetTableEditDlg();
@@ -445,7 +443,13 @@ public class StateVetTableEditDlg extends JDialog {
 	
 	private void doFillForm() {
 		String sState = (String)cbSelectedState.getSelectedItem();
+		if( sState.startsWith("NORTHERN")) {
+			System.out.println("Found " + sState);
+		}
 		lu = new StateVetLookup(sState);
+		if( sState.startsWith("NORTHERN")) {
+			System.out.println("Found " + lu.getState());
+		}
 		jtfState.setText(lu.getState());
 		jtfPrefix.setText(lu.getPrefix());
 		jtfLastName.setText(lu.getLastName());

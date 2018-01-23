@@ -71,6 +71,7 @@ public class States extends DBComboBoxModel implements DBTableSource {
 		states.put("NY", "NEW YORK");
 		states.put("NC", "NORTH CAROLINA");
 		states.put("ND", "NORTH DAKOTA");
+		states.put("MP", "NORTHERN MARIANA ISLANDS");
 		states.put("OH", "OHIO");
 		states.put("OK", "OKLAHOMA");
 		states.put("OR", "OREGON");
