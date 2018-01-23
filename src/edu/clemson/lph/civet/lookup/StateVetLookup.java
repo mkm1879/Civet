@@ -227,7 +227,7 @@ public class StateVetLookup implements DBTableSource {
 	public void setCVIEmail(String sCVIEmail) {
 		if( vet == null ) return;
 		if( sCVIEmail == null || (sCVIEmail.trim().length() == 0) )
-			 vet.sEmail = "";
+			 vet.sCVIEmail = "";
 		else
 			vet.sCVIEmail = sCVIEmail;
 	}
@@ -235,9 +235,9 @@ public class StateVetLookup implements DBTableSource {
 	public void setCVIErrorEmail(String sCVIErrorEmail) {
 		if( vet == null ) return;
 		if( sCVIErrorEmail == null || (sCVIErrorEmail.trim().length() == 0) )
-			 vet.sEmail = "";
+			 vet.sCVIErrorEmail = "";
 		else
-			vet.sCVIEmail = sCVIErrorEmail;
+			vet.sCVIErrorEmail = sCVIErrorEmail;
 	}
 	
 	public void setFileType(String sFileType) {

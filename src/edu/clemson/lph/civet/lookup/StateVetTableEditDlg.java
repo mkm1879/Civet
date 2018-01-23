@@ -460,14 +460,17 @@ public class StateVetTableEditDlg extends JDialog {
 		jtfStateCode.setText(lu.getStateCode());
 		jtfZipCode.setText(lu.getZipCode());
 		jtfEmail.setText(lu.getEmail());
+		
 		if( lu.getCVIEmail() != null && (lu.getEmail() == null || (!lu.getCVIEmail().equalsIgnoreCase(lu.getEmail()))))
 			jtfCVIEmail.setText(lu.getCVIEmail());
 		else 
 			jtfCVIEmail.setText("");
+		
 		if( lu.getCVIErrorEmail() != null && (lu.getCVIEmail() == null || (!lu.getCVIErrorEmail().equalsIgnoreCase(lu.getCVIEmail()))))
 			jtfCVIErrorEmail.setText(lu.getCVIErrorEmail());
 		else 
 			jtfCVIErrorEmail.setText("");
+		
 		cbFileType.setSelectedItem(lu.getFileType());
 	}
 	
