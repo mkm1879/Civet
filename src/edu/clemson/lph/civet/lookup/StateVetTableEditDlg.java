@@ -66,6 +66,7 @@ public class StateVetTableEditDlg extends JDialog {
 	 * Create the dialog.
 	 */
 	public StateVetTableEditDlg() {
+		this.setModal(true);
 		initGui();
 		initDB();
 	}
