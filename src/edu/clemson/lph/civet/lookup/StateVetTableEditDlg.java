@@ -444,13 +444,7 @@ public class StateVetTableEditDlg extends JDialog {
 	
 	private void doFillForm() {
 		String sState = (String)cbSelectedState.getSelectedItem();
-		if( sState.startsWith("NORTHERN")) {
-			System.out.println("Found " + sState);
-		}
 		lu = new StateVetLookup(sState);
-		if( sState.startsWith("NORTHERN")) {
-			System.out.println("Found " + lu.getState());
-		}
 		jtfState.setText(lu.getState());
 		jtfPrefix.setText(lu.getPrefix());
 		jtfLastName.setText(lu.getLastName());
