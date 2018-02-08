@@ -29,7 +29,7 @@ public class EmailOnlySaveFileThread extends Thread {
 	public void run() {
 		
 		try {
-			String sSendPath = CivetConfig.getEmailOnlySendDirPath() + sFileName;
+			String sSendPath = CivetConfig.getEmailOnlySendPath() + sFileName;
 			FileUtils.writeBinaryFile(fileBytes, sSendPath);
 		}
 		catch (Exception ex) {
@@ -41,7 +41,6 @@ public class EmailOnlySaveFileThread extends Thread {
 	    }
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				dlg.saveComplete();
 				prog.setVisible(false);
 				prog.dispose();
 			}

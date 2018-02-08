@@ -41,8 +41,8 @@ import edu.clemson.lph.dialogs.*;
 public class SCDatabaseConnectionFactory implements DatabaseConnectionFactory {
 	private final static Logger logger = Logger.getLogger(Civet.class.getName());
 	private String sServerName = CivetConfig.getDbServer();
-	private String sServerPort = CivetConfig.getDbPortString();
-	private int iServerPort = CivetConfig.getDbPort();
+	private Integer iServerPort = CivetConfig.getDbPort();
+	private String sServerPort = iServerPort.toString();
 	private String sDatabaseName = CivetConfig.getDbDatabaseName();
 	private String sUserName;
 	private String sPassword;

@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.Encodings;
 import edu.clemson.lph.utils.XMLUtility;
 
@@ -167,6 +168,7 @@ public class CivetWebServicesOld implements CivetWebServices {
 			String sOut = swOut.toString();
 //			System.out.println(sOut);
 			if( sOut.contains("Invalid Username/Password")) {
+				MessageDialog.messageWait(null, "Civet: USAHERDS Password Error", "Invalid Username/Password");
 				logger.error(sOut);
 				bRet = false;
 			}

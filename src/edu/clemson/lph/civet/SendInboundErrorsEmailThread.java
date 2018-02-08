@@ -55,7 +55,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 	private String sCurrentState = null;
 	private CviMetaDataXml cviMetaData = null;
 	private String sCurrentCVINumber;
-	private ArrayList<File> aSentCVIFiles = new ArrayList<File>();
+	private ArrayList<File> aSentCVIFiles;
 	private String sCurrentEmailError = "";
 	
 	public SendInboundErrorsEmailThread( CivetInbox parent, ProgressDialog prog ) {
@@ -66,6 +66,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 
 	public void run() {
 		String sEmailOutDir = CivetConfig.getEmailErrorsDirPath();
+		aSentCVIFiles = new ArrayList<File>();
 		int iFiles = 0;
 		int iUnsent = 0;
 		try {

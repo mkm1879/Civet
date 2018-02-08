@@ -183,6 +183,7 @@ public class ConfigDialog extends JDialog {
 		String sMailUser = MailMan.getDefaultUserID();
 		String sMailPass = MailMan.getDefaultPassword();
 		CivetConfig.initEmail(false);
+		CivetConfig.initConfig();
 		MailMan.setDefaultUserID(sMailUser);
 		MailMan.setDefaultPassword(sMailPass);
 		setVisible(false);

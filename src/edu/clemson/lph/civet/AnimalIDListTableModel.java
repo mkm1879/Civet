@@ -23,6 +23,8 @@ import javax.swing.table.AbstractTableModel;
 
 import org.apache.log4j.Logger;
 
+import edu.clemson.lph.dialogs.MessageDialog;
+
 @SuppressWarnings("serial")
 public class AnimalIDListTableModel extends AbstractTableModel {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
@@ -63,8 +65,14 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 	}
 	
 	public void addRow( AnimalIDRecord rowIn ) {
-		rows.add(rowIn);
-		fireTableDataChanged();
+		if( rows.contains(rowIn) ) {
+			MessageDialog.showMessage(null, "Civet: Duplicate ID", "ID " + rowIn.sTag + 
+					                        " is already in the list for species " + rowIn.sSpecies);
+		}
+		else {
+			rows.add(rowIn);
+			fireTableDataChanged();
+		}
 	}
 	
 	public void addRow( String sSpeciesCode, String sSpecies, String sTag ) {
@@ -126,8 +134,17 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 	}
 	
 	@Override
-	public Class<?> getColumnClass( int arg0 ) {
-		return String.class;
+	public Class<?> getColumnClass( int column ) {
+		switch (column) {
+		case 0:
+			return Integer.class;
+		case 1:
+			return String.class;
+		case 2:
+			return String.class;
+		default:
+			return String.class;
+		}
 	}
 
 	@Override
@@ -144,7 +161,7 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 	public Object getValueAt(int iRow, int iCol) {
 		if( rows != null &&  iCol >=0 && iCol <= 2 && iRow >=0 && iRow < rows.size() ) {
 			if( iCol == 0 )
-				return Integer.toString(iRow + 1);
+				return iRow + 1; // Integer.toString(iRow + 1);
 			if( iCol == 1 )
 				return rows.get(iRow).sSpecies;
 			if( iCol == 2)

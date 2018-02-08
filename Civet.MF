@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Class-Path: . 
  lib/jpedal.jar 
+ lib/jpedal-xfa.jar 
  lib/jpedal-daily.jar 
  lib/jpedal_LGPL.jar 
  lib/addons.jar 

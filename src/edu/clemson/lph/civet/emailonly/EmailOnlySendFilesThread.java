@@ -54,7 +54,7 @@ public class EmailOnlySendFilesThread extends Thread {
 	}
 
 	public void run() {
-		String sEmailOutDir = CivetConfig.getEmailOnlySendDirPath();
+		String sEmailOutDir = CivetConfig.getEmailOnlySendPath();
 		int iFiles = 0;
 		int iUnsent = 0;
 		try {
@@ -97,7 +97,6 @@ public class EmailOnlySendFilesThread extends Thread {
 				stateVet = new StateVetLookup( sState );
 				String sCurrentEmail = stateVet.getCVIErrorEmail(); 
 				ArrayList<File> aCVIsIn = mStateMap.get(sState);
-				ArrayList<StdeCviXml> aCVIsOut = new ArrayList<StdeCviXml>();
 				ArrayList<File> aCVIFilesOut = new ArrayList<File>();
 				long lAttachmentsSize = 0;
 				int iPart = 1;
@@ -111,7 +110,7 @@ public class EmailOnlySendFilesThread extends Thread {
 					lAttachmentsSize += pdfBytes.length;
 					// Three reasons to pack up and send.  #, Total Size, No more.
 					iPdf++;
-					if( aCVIsOut.size() >= 5 || lAttachmentsSize > CivetConfig.getMaxAttachSize() || iPdf >= aCVIsIn.size() ) {					
+					if( aCVIFilesOut.size() >= 5 || lAttachmentsSize > CivetConfig.getMaxAttachSize() || iPdf >= aCVIsIn.size() ) {					
 						if( sCurrentEmail == null || !sCurrentEmail.contains("@") ) {
 							MessageDialog.messageWait(prog.getWindowParent(), "Civet: Email", "No email address for state " +
 									sState + " be sure to mail physical copies");

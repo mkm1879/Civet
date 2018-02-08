@@ -2882,9 +2882,9 @@ public final class CivetEditDialog extends JFrame {
 		if( dlgErrorDialog.isExitOK() ) {
 			sErrorNotes = dlgErrorDialog.getNotes();
 			logger.info( "Error note: " + sErrorNotes);
-			for( String sError : aErrorKeys ) {
-				logger.info("Error key " + sError + " noted");
-			}
+//			for( String sError : aErrorKeys ) {
+//				logger.info("Error key " + sError + " noted");
+//			}
 			// Process the error list and notes
 			if( aErrorKeys.size() > 0 ) {
 				lError.setVisible(true);

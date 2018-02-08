@@ -1,6 +1,6 @@
 package edu.clemson.lph.civet;
 /*
-Copyright 2014 Michael K Martin
+Copyright 2014-2017 Michael K Martin
 
 This file is part of Civet.
 
@@ -22,7 +22,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -35,7 +34,6 @@ import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -58,13 +56,14 @@ import edu.clemson.lph.civet.files.FilesTableModel;
 import edu.clemson.lph.civet.files.SourceFilesTableModel;
 import edu.clemson.lph.civet.files.StdXMLFilesTableModel;
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
+import edu.clemson.lph.civet.lookup.StateVetTableEditDlg;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.prefs.ConfigDialog;
 import edu.clemson.lph.civet.vsps.VspsCviFile;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "4.0 Beta3d Local";
+	public static final String VERSION = "4.1a";
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
@@ -90,6 +89,7 @@ public class CivetInbox extends JFrame {
 	JButton bOpenAll = new JButton();
 	JMenu menuFile = new JMenu();
 	JMenuItem menuItemEditPrefs = new JMenuItem();
+	JMenuItem menuItemEditStateVets = new JMenuItem();
 	JMenuItem menuItemFileOpen = new JMenuItem();
 	JMenuItem menuItemFileOpenAll = new JMenuItem();
 	JMenuItem menuItemFileExit = new JMenuItem();
@@ -151,13 +151,22 @@ public class CivetInbox extends JFrame {
 		bOpen.setToolTipText("Open selected files or browse for files");
 		
 		menuItemEditPrefs.setText("Edit Preferences in CivetConfig.txt");
-		menuItemEditPrefs.setToolTipText("Open selected files or browse for files");
+		menuItemEditPrefs.setToolTipText("Edit Preferences configuration in dialog");
 		menuItemEditPrefs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				doEditPrefs();
 			}
 		});
 		menuFile.add(menuItemEditPrefs);
+		
+		menuItemEditStateVets.setText("Edit State Vet Table");
+		menuItemEditStateVets.setToolTipText("Edit State Vet Table in dialog");
+		menuItemEditStateVets.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				doEditStateVets();
+			}
+		});
+		menuFile.add(menuItemEditStateVets);
 		
 		menuItemFileOpen.setText("Open File(s)");
 		menuItemFileOpen.setToolTipText("Open selected files or browse for files");
@@ -460,7 +469,11 @@ public class CivetInbox extends JFrame {
 	private void doEditPrefs() {
 		ConfigDialog dlg = new ConfigDialog();
 		dlg.setVisible(true);
-		
+	}
+	
+	private void doEditStateVets() {
+		StateVetTableEditDlg dlg = new StateVetTableEditDlg();
+		dlg.setVisible(true);
 	}
 
 	private void doOpenAll() {

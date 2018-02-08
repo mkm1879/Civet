@@ -43,7 +43,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 	private ProgressDialog prog;
 	private CivetInbox parent;
 	private HashMap<String, ArrayList<File>> mStateMap;
-	private ArrayList<File> aSentCVIFiles = new ArrayList<File>();
+	private ArrayList<File> aSentCVIFiles;
 	private String sCurrentEmailError = "";
 	
 	public SendOutboundCVIEmailThread( CivetInbox parent, ProgressDialog prog ) {
@@ -58,6 +58,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 
 	public void run() {
 		String sEmailOutDir = CivetConfig.getEmailOutDirPath();
+		aSentCVIFiles = new ArrayList<File>();
 		int iFiles = 0;
 		int iUnsent = 0;
 		try {
@@ -239,7 +240,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 			bRet = MailMan.sendIt(sEmail, sFileCopyAddress,
 					 "CVIs From " + sHomeState + " to " + sState + (iPart>1?" Part " + iPart:""),
 					sOutBoundCVIMessage, aFiles);
-			logger.info("Email sent to: " + sEmail + " at " + sState + " returned " + bRet);
+//			logger.info("Email sent to: " + sEmail + " at " + sState + " returned " + bRet);
 		} catch (AuthenticationFailedException e1) {
 			sCurrentEmailError = e1.getMessage();
 			MessageDialog.messageWait( prog.getWindowParent(), "Civet: Invalid UserID/Password", 

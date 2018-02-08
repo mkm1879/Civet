@@ -68,7 +68,7 @@ public class CSVDataFile {
 			sCompany = f.getName().substring(0, iUnderscore);
 		}
 		else {
-			sCompany = "UN";
+			sCompany = "UN_";
 		}
 		FileReader fr = new FileReader( f );
 		CSVParserWrapper parser = new CSVParserWrapper(fr);
@@ -189,6 +189,8 @@ public class CSVDataFile {
 	public String getSourceState() {
 		String sRet = get( "SourceState".toUpperCase() );
 		if( sRet == null ) sRet = get( "Source State".toUpperCase() );
+		if( sRet == null ) sRet = get( "From State".toUpperCase() );
+		if( sRet == null ) sRet = get( "FromState".toUpperCase() );
 		return sRet;
 	}
 	
@@ -242,6 +244,8 @@ public class CSVDataFile {
 		if( sRet == null ) sRet = get( "Dest State".toUpperCase() );
 		if( sRet == null ) sRet = get( "DestinationState".toUpperCase() );
 		if( sRet == null ) sRet = get( "Destination State".toUpperCase() );
+		if( sRet == null ) sRet = get( "To State".toUpperCase() );
+		if( sRet == null ) sRet = get( "ToState".toUpperCase() );
 		return sRet;
 	}
 
@@ -257,6 +261,9 @@ public class CSVDataFile {
 	public String getVet() {
 		String sRet = get( "Vet".toUpperCase() );
 		if( sRet == null ) sRet = get( "Veterinarian".toUpperCase() );
+		if( sRet == null ) sRet = get( "Vet".toUpperCase() );
+		if( sRet == null && getCompany().equals("Cactus") ) sRet = "Peter Schneider";
+		if( sRet == null && getCompany().equals("CFF") ) sRet = "Peter Schneider";
 		return sRet;
 	}
 
@@ -271,6 +278,65 @@ public class CSVDataFile {
 			logger.error( "Cannot parse " + sNumber + " as an Integer" );
 		}
 		return iNumber;
+	}
+	
+	public String getSex() {
+		String sSexOut = "Gender Unknown";
+		String sSexIn = get("Sex".toUpperCase());
+		if( sSexIn != null ) {
+			if( "Gilts".equals(sSexIn) || "Sows".equals(sSexIn) )
+				sSexOut = "Female";
+			else if( "Mixed".equals(sSexIn) )
+				sSexOut = "Other";
+			else if( "Barrows".equals(sSexIn) || "Boars".equals(sSexIn) )
+				sSexOut = "Male";
+		}
+		return sSexOut;
+	}
+	
+	public String getAge() {
+		String sAgeOut = null;
+		String sAgeNum = null;
+		String sAgeUnits = null;
+		String sAgeIn = get("Age".toUpperCase());
+		if( sAgeIn != null ) {
+			if( sAgeIn.toLowerCase().endsWith("days") )
+				sAgeUnits = "d";
+			else if( sAgeIn.toLowerCase().endsWith("weeks") )
+				sAgeUnits = "wk";
+			else if( sAgeIn.toLowerCase().endsWith("months") )
+				sAgeUnits = "mo";
+			else if( sAgeIn.toLowerCase().endsWith("years") )
+				sAgeUnits = "a";
+			sAgeNum = sAgeIn.substring(0,sAgeIn.indexOf(' '));
+			try {
+				int iAgeNum = Integer.parseInt(sAgeNum);
+				sAgeOut = convertAgeUnits( iAgeNum, sAgeUnits );
+			} catch ( NumberFormatException nfe ) {
+				logger.error("Invalid age: " + sAgeIn);
+			}
+			System.out.println(sAgeOut);
+		}
+		return sAgeOut;
+	}
+	
+	private String convertAgeUnits( int iAgeNum, String sAgeUnits ) {
+		if( iAgeNum > 99 ) {
+			if( "d".equals(sAgeUnits) ) {
+				sAgeUnits = "mo";
+				iAgeNum = iAgeNum / 30;
+			}
+			else if( "wk".equals(sAgeUnits) ) {
+				sAgeUnits = "a";
+				iAgeNum = iAgeNum / 52;
+			}
+			// yikes!  old pig
+			else if( "mo".equals(sAgeUnits) ) {
+				sAgeUnits = "a";
+				iAgeNum = iAgeNum / 12;
+			}
+		}
+		return iAgeNum + sAgeUnits;
 	}
 
 	public java.util.Date getDate() {

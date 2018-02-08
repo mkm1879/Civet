@@ -55,8 +55,6 @@ public class EmailOnlyDialog extends JDialog {
 		private String viewerTitle = "Civet: Email Only: ";
 		private PdfDecoder pdfDecoder;
 		private EmailOnlyFileController controller;
-		private int iFile;
-		private int iFiles;
 		private float fScale;
 		private int iRotation;
 		JScrollPane display;
@@ -89,7 +87,6 @@ public class EmailOnlyDialog extends JDialog {
 		controller = new EmailOnlyFileController( this ); 
 		
 		initializeDisplay();
-//		initializeDBComponents();
 	}
 	
 	private void initializeDisplay() {
@@ -163,20 +160,10 @@ public class EmailOnlyDialog extends JDialog {
 			sFileName += ".pdf";
 			EmailOnlySaveFileThread saveThread = new EmailOnlySaveFileThread( this, fileBytes, sFileName );
 			saveThread.start();
-			cbState.requestFocus();
-		}
-		else {  // If no state is selected, just skip file and go to next. No need to wait for saveThread.
 			if( !controller.pageForward() ) {
 				setVisible(false);
 				doSend();
 			}
-		}
-	}
-	
-	public void saveComplete() {
-		if( !controller.pageForward() ) {
-			setVisible(false);
-			doSend();
 		}
 		cbState.requestFocus();
 	}
@@ -239,7 +226,7 @@ public class EmailOnlyDialog extends JDialog {
 	 * opens a chooser and allows user to select One or more pdf or jpg files and opens a pdf created from them.
 	 */
 	public void selectFiles() {
-		File fDir = new File( CivetConfig.getEmailOnlyDirPath() );
+		File fDir = new File( CivetConfig.getEmailOnlyPath() );
 		JFileChooser open = new JFileChooser( fDir );
 		open.setDialogTitle("Civet: Open multiple PDF and Image Files");
 		open.setFileSelectionMode(JFileChooser.FILES_ONLY);

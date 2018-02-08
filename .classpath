@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="Generated/src"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="lib/addons.jar"/>
 	<classpathentry kind="lib" path="lib/axiom-api-1.2.13.jar"/>
 	<classpathentry kind="lib" path="lib/axiom-dom-1.2.13.jar"/>
