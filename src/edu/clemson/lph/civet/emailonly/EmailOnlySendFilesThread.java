@@ -68,8 +68,10 @@ public class EmailOnlySendFilesThread extends Thread {
 				if( fNext != null && fNext.exists() && fNext.isFile() ) {
 					String sName = fNext.getName();
 					String sParts[] = sName.split("\\_");
-					if( sParts.length < 4 )
-						throw new Exception(sName + " is not configured as email only file.");
+					if( sParts.length < 4 ) {
+						MessageDialog.messageWait(parent, "Civet: Email only error", sName + " is not configured as email only file.");
+						continue;
+					}
 					String sToState = sParts[2];
 					ArrayList<File> aStatePdfs = mStateMap.get(sToState);
 					if( aStatePdfs == null ) {
