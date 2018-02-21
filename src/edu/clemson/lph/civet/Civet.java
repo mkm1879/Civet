@@ -1,6 +1,6 @@
 package edu.clemson.lph.civet;
 /*
-Copyright 2014 Michael K Martin
+Copyright 2014-2018 Michael K Martin
 
 This file is part of Civet.
 
@@ -16,7 +16,16 @@ GNU General Public License for more details.
 
 You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
+
+Civet is a tool that we in the South Carolina State Veterinarian's office have found useful.  
+We make it freely available to any other animal health authority in hopes that it will promote 
+greater data interoperability, especially around animal disease traceability.  The only thing 
+we ask in return is that you keep us informed of your use so that we can properly plan any 
+enhancements and bug-fixes.  At least semi-annually please send your Java and Civet version 
+numbers, the number of instances of Civet you are running in test and production, and any 
+unusually details of your application to mmarti5@clemson.edu.
 */
+
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
