@@ -95,7 +95,7 @@ public class EmailOnlySendFilesThread extends Thread {
 			// Now state by state process them.
 			for( String sState : mStateMap.keySet() ) {
 				stateVet = new StateVetLookup( sState );
-				String sCurrentEmail = stateVet.getCVIErrorEmail(); 
+				String sCurrentEmail = stateVet.getCVIEmail(); 
 				ArrayList<File> aCVIsIn = mStateMap.get(sState);
 				ArrayList<File> aCVIFilesOut = new ArrayList<File>();
 				long lAttachmentsSize = 0;

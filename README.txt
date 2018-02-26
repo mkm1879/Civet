@@ -11,10 +11,8 @@ jpedal_LGPL.jar	http://sourceforge.net/projects/jpedal/  (No CO/KS eCVI support,
 		   Included in distribution
 or 
 jpedalXFA.jar  	http://www.idrsolutions.com/jpedal-pricing/  
-		   You will need the JPedalXFA Edition, Site License XFA 
+		   You will need the JPedalXFA Edition or newer full version, 
                    (or buy me a OEM license and everyone flies free!)
-		In either case, copy the jar file to the Civet install directory 
-                   and rename to jpedalXFA.jar
 
 log4j		http://logging.apache.org/log4j/1.2/download.html
 
