@@ -58,7 +58,6 @@ public class SendOutboundCVIEmailThread extends Thread {
 
 	public void run() {
 		String sEmailOutDir = CivetConfig.getEmailOutDirPath();
-		aSentCVIFiles = new ArrayList<File>();
 		int iFiles = 0;
 		int iUnsent = 0;
 		try {
@@ -98,6 +97,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 			}
 			// Now state by state process them.
 			for( String sState : mStateMap.keySet() ) {
+				aSentCVIFiles = new ArrayList<File>();
 				StateVetLookup stateVet = null;
 				String sCurrentEmail = null; 
 				String sCurrentFileType = null;
@@ -144,29 +144,22 @@ public class SendOutboundCVIEmailThread extends Thread {
 									MessageDialog.messageWait(prog.getWindowParent(), "Civet: Message Failed",
 											"EMail Failed to " + sState + " at " + sAddress + "\n" + sCurrentEmailError );
 									sCurrentEmailError = "";
-									// How to bail out gracefully on fatal error?
+									iUnsent += aCVIFilesOut.size();
 								}
 						}
+						aCVIFilesOut.clear();
 						aCVIsOut.clear();
 						lPDFSize = 0;
 					} // end if we need to send now
 				} // end for each PDF
-			} // end for each state
-			for( File f : aSentCVIFiles ) {
-				f.delete();
-			}
-			if( aSentCVIFiles.size() > 0 ) {
-				StringBuffer sb = new StringBuffer();
-				for( String sState : mStateMap.keySet() ) {
-					sb.append(sState);
-					sb.append(", ");
+				for( File f : aSentCVIFiles ) {
+					f.delete();
 				}
-				String sStateList = sb.toString();
-				sStateList = sStateList.substring(0, sStateList.length() -2 );
-				MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
-						"Successfully sent " + (aSentCVIFiles.size() - iUnsent) + " CVIs to\n"
-								+ sStateList );
-			}
+				if( aSentCVIFiles.size() > 0 ) {
+					MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
+							"Successfully sent " + (aSentCVIFiles.size() - iUnsent) + " CVIs to " + sState );
+				}
+			} // end for each state
 		} catch (AuthenticationFailedException e) {
 			logger.error(e.getMessage() + "\nEmail Authentication Error");
 			MailMan.setDefaultPassword(null);
