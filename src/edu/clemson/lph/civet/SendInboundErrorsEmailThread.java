@@ -66,6 +66,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 
 	public void run() {
 		String sEmailOutDir = CivetConfig.getEmailErrorsDirPath();
+		StringBuffer sbCVICounts = new StringBuffer();
 		int iFiles = 0;
 		int iUnsent = 0;
 		try {
@@ -104,7 +105,18 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 				return;
 			}
 			// Now state by state process them.
+			ArrayList<String> aStates = new ArrayList<String>();
 			for( String sState : mStateMap.keySet() ) {
+				aStates.add(sState);
+			}
+			aStates.sort(new java.util.Comparator<String>() {
+				@Override
+				public int compare(String o1, String o2) {
+					// TODO Auto-generated method stub
+					return o1.compareTo(o2);
+				}
+			});
+			for( String sState : aStates ) {
 				aSentCVIFiles = new ArrayList<File>();
 				sCurrentState = sState;
 				stateVet = new StateVetLookup( sState );
@@ -170,10 +182,11 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 					f.delete();
 				}
 				if( aSentCVIFiles.size() > 0 ) {
-					MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
-							"Successfully sent " + (aSentCVIFiles.size() - iUnsent) + " CVIs to " + sState );
+					sbCVICounts.append("\n     " + (aSentCVIFiles.size() - iUnsent) + " CVIs to " + sState);
 				}
 			} // end for each state
+			MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
+					"Successfully sent: " + sbCVICounts.toString() );
 		} catch (AuthenticationFailedException e) {
 			logger.error(e.getMessage() + "\nEmail Authentication Error");
 		} catch (javax.mail.MessagingException e) {
