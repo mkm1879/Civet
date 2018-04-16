@@ -66,7 +66,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 
 	public void run() {
 		String sEmailOutDir = CivetConfig.getEmailErrorsDirPath();
-		aSentCVIFiles = new ArrayList<File>();
+		StringBuffer sbCVICounts = new StringBuffer();
 		int iFiles = 0;
 		int iUnsent = 0;
 		try {
@@ -105,7 +105,19 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 				return;
 			}
 			// Now state by state process them.
+			ArrayList<String> aStates = new ArrayList<String>();
 			for( String sState : mStateMap.keySet() ) {
+				aStates.add(sState);
+			}
+			aStates.sort(new java.util.Comparator<String>() {
+				@Override
+				public int compare(String o1, String o2) {
+					// TODO Auto-generated method stub
+					return o1.compareTo(o2);
+				}
+			});
+			for( String sState : aStates ) {
+				aSentCVIFiles = new ArrayList<File>();
 				sCurrentState = sState;
 				stateVet = new StateVetLookup( sState );
 				String sCurrentEmail = stateVet.getCVIErrorEmail(); 
@@ -157,30 +169,24 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 									MessageDialog.messageWait(prog.getWindowParent(), "Civet: Message Failed",
 											"EMail Failed to " + sState + " at " + sAddress + "\n" + sCurrentEmailError);
 									sCurrentEmailError = "";
-									// How to bail out gracefully on fatal error?
+									iUnsent += aCVIFilesOut.size();
 								}
 						}
+						aCVIFilesOut.clear();
 						aCVIsOut.clear();
 						aLetterBytes.clear();
 						lAttachmentsSize = 0;
 					} // end if we need to send now
 				} // end for each PDF
-			} // end for each state
-			for( File f : aSentCVIFiles ) {
-				f.delete();
-			}
-			if( aSentCVIFiles.size() > 0 ) {
-				StringBuffer sb = new StringBuffer();
-				for( String sState : mStateMap.keySet() ) {
-					sb.append(sState);
-					sb.append(", ");
+				for( File f : aSentCVIFiles ) {
+					f.delete();
 				}
-				String sStateList = sb.toString();
-				sStateList = sStateList.substring(0, sStateList.length() -2 );
-				MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
-						"Successfully sent " + (aSentCVIFiles.size() - iUnsent) + " CVIs to\n"
-								+ sStateList );
-			}
+				if( aSentCVIFiles.size() > 0 ) {
+					sbCVICounts.append("\n     " + (aSentCVIFiles.size() - iUnsent) + " CVIs to " + sState);
+				}
+			} // end for each state
+			MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
+					"Successfully sent: " + sbCVICounts.toString() );
 		} catch (AuthenticationFailedException e) {
 			logger.error(e.getMessage() + "\nEmail Authentication Error");
 		} catch (javax.mail.MessagingException e) {
