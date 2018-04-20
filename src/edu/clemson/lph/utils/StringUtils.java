@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
 Copyright 2014 Michael K Martin
@@ -59,5 +61,14 @@ public class StringUtils {
 			}
 		}
 		return lRet;
+	}
+	
+	public static boolean wildCardMatches( String sInput, String sPattern ) {
+		boolean bRet = false;
+		String sRegex = sPattern.replace(".","\\.").replace("*", ".*").replace("?", ".");
+		Pattern p = Pattern.compile(sRegex);
+		Matcher matcher = p.matcher(sInput);
+        bRet = matcher.matches();
+		return bRet;
 	}
 }
