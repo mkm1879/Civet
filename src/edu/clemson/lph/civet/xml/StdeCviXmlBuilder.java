@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.StringTokenizer;
 
+import javax.swing.JDialog;
+import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,6 +39,8 @@ import org.w3c.dom.NodeList;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.controls.PhoneField;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.IDTypeGuesser;
 import edu.clemson.lph.utils.XMLUtility;
 
@@ -391,10 +395,17 @@ public class StdeCviXmlBuilder {
 		return origin;
 	}
 
+	private void checkPhoneLength( String sPhone ) {
+		int iLenPhoneDigits = PhoneField.formatDigitsOnly(sPhone).trim().length();
+		if( sPhone != null && sPhone.trim().length() > 0 && iLenPhoneDigits != 10 ) {
+				MessageDialog.messageLater(null, "Civet Error: Phone format", "CVI standard requires ten digit phone");
+		}
+	}
 	
 	public Element setDestination( String sPIN, String sPremName, String sName, String sPhone ) {
 		if( !isValidDoc() )
 			return null;
+		checkPhoneLength(sPhone);
 		Element destination = null;
 		destination = childElementByName(root,"Destination");
 		if( destination == null ) {
@@ -458,6 +469,7 @@ public class StdeCviXmlBuilder {
 	public Element setConsignor( String sPremName, String sName, String sPhone ) {
 		if( !isValidDoc() )
 			return null;
+		checkPhoneLength(sPhone);
 		Element consignor = null;
 		consignor = childElementByName(root,"Consignor");
 		if( consignor == null ) {
@@ -485,6 +497,7 @@ public class StdeCviXmlBuilder {
 	public Element setConsignee( String sPremName, String sName, String sPhone ) {
 		if( isValidDoc() )
 			return null;
+		checkPhoneLength(sPhone);
 		Element consignee = null;
 		consignee = childElementByName(root,"Consignee");
 		if( consignee == null ) {
