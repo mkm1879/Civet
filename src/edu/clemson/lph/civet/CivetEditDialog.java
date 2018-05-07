@@ -2663,7 +2663,7 @@ public final class CivetEditDialog extends JFrame {
 		String sMovementPurpose = cbPurpose.getSelectedValue();
 		Integer iIssuedByKey = cbIssuedBy.getSelectedKeyInt();
 		String sIssuedByName = jtfIssuedBy.getText();
-		if( iIssuedByKey == null && sIssuedByName == null ) {
+		if( (iIssuedByKey == null || iIssuedByKey == -1) && (sIssuedByName == null || sIssuedByName.trim().length() == 0) ) {
 			MessageDialog.showMessage(this, "Civet Error", "Issuing Veterinarian is required");
 			return false;
 		}
