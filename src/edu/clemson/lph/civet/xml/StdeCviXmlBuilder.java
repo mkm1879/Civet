@@ -396,8 +396,9 @@ public class StdeCviXmlBuilder {
 	}
 
 	private void checkPhoneLength( String sPhone ) {
+		if( sPhone == null ) return;
 		int iLenPhoneDigits = PhoneField.formatDigitsOnly(sPhone).trim().length();
-		if( sPhone != null && sPhone.trim().length() > 0 && iLenPhoneDigits != 10 ) {
+		if( sPhone.trim().length() > 0 && iLenPhoneDigits != 10 ) {
 				MessageDialog.messageLater(null, "Civet Error: Phone format", "CVI standard requires ten digit phone");
 		}
 	}

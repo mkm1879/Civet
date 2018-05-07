@@ -73,7 +73,9 @@ public class PhoneField extends JTextField{
 				if( sPhone.trim().length() > 0 ) {
 					if( bTenDigits && iLenPhoneDigits != 10 ) {
 						JDialog parent = (JDialog)SwingUtilities.getAncestorOfClass(JDialog.class, PhoneField.this);
-						MessageDialog.messageLater(parent, "Civet Error: Phone format", "CVI standard requires ten digit phone");
+						MessageDialog.showMessage(parent, "Civet Error: Phone format", "CVI standard requires ten digit phone");
+						PhoneField.this.requestFocus();
+						return;
 					}
 					setText(formatPhone(sPhone));
 				}
