@@ -987,7 +987,7 @@ public final class CivetEditDialog extends JFrame {
 		lThisPhone.setHorizontalAlignment(SwingConstants.RIGHT);
 		lThisPhone.setFont(new Font("Tahoma", Font.PLAIN, 11));
 
-		jtfPhone = new PhoneField();
+		jtfPhone = new PhoneField(true);
 		jtfPhone.addFocusListener(new java.awt.event.FocusAdapter() {
 			public void focusLost(FocusEvent e) {
 				jtfPhone_focusLost(e);
