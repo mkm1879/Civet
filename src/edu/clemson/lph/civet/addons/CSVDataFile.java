@@ -70,6 +70,9 @@ public class CSVDataFile {
 		else {
 			sCompany = "UN_";
 		}
+		if( sCompany.toUpperCase().startsWith("SE HEALTH") ) {
+			sCompany = "CACTUS";
+		}
 		FileReader fr = new FileReader( f );
 		CSVParserWrapper parser = new CSVParserWrapper(fr);
 		for( String sField : parser.getHeader() ) {
@@ -315,7 +318,6 @@ public class CSVDataFile {
 			} catch ( NumberFormatException nfe ) {
 				logger.error("Invalid age: " + sAgeIn);
 			}
-			System.out.println(sAgeOut);
 		}
 		return sAgeOut;
 	}

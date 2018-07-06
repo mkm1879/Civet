@@ -131,7 +131,7 @@ public class SubmitNineDashThreeThread extends Thread {
 				addToEggCVIs(sCVINo);
 			}
 			String sXML = buildXml();
-					System.out.println(sXML);
+//					System.out.println(sXML);
 			// Send it!
 			String sRet = null;
 			int iTries = 0;

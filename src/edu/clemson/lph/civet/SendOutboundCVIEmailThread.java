@@ -30,6 +30,7 @@ import org.apache.log4j.*;
 
 import edu.clemson.lph.mailman.*;
 import edu.clemson.lph.pdfgen.PDFOpener;
+import edu.clemson.lph.pdfgen.PDFUtils;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.civet.lookup.StateVetLookup;
 import edu.clemson.lph.civet.lookup.States;
@@ -217,7 +218,9 @@ public class SendOutboundCVIEmailThread extends Thread {
 				sEmail = sTestEmail;  
 			ArrayList<MIMEFile> aFiles = new ArrayList<MIMEFile>();
 			for( StdeCviXml thisCVI : aCVIs) {
-				if( "CVI".equalsIgnoreCase(sCurrentFileType)  ) {
+				byte pdfBytes[] = thisCVI.getOriginalCVI();
+				boolean bXFA = PDFUtils.isXFA(pdfBytes);
+				if( "CVI".equalsIgnoreCase(sCurrentFileType) && !bXFA ) {
 					// if the receiving state wants .CVI files we need to do some clean up
 					sFileName = thisCVI.getOriginState() + "_To_" + thisCVI.getDestinationState() + 
 							"_" + thisCVI.getCertificateNumber() + ".cvi";
@@ -225,14 +228,13 @@ public class SendOutboundCVIEmailThread extends Thread {
 					if( CivetConfig.hasBrokenLIDs() )
 						thisCVI.purgeLids();
 					String sThisCvi = thisCVI.getXMLString();
-					byte pdfBytes[] = sThisCvi.getBytes("UTF-8");
-					aFiles.add(new MIMEFile(sFileName,"text/xml",pdfBytes));
+					byte cviBytes[] = sThisCvi.getBytes("UTF-8");
+					aFiles.add(new MIMEFile(sFileName,"text/xml",cviBytes));
 				}
 				else {
 					// Otherwise, we extract the original PDF as attached to the .cvi file
 					sFileName = thisCVI.getOriginState() + "_To_" + thisCVI.getDestinationState() + 
 							"_" + thisCVI.getCertificateNumber() + ".pdf";
-					byte pdfBytes[] = thisCVI.getOriginalCVI();
 					String sCVIFilename = thisCVI.getOriginalCVIFileName();
 					MIMEFile mMCviDataFile = getMCviDataFile(sCVIFilename);
 					if( mMCviDataFile != null )

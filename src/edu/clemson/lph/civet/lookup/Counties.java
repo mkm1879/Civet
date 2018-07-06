@@ -154,7 +154,7 @@ public class Counties  {
 		} catch (IOException e) {
 			logger.error(e);
 		}
-		System.out.println(c.getHerdsCounty("FL", "MIAMI-DADE"));
+//		System.out.println(c.getHerdsCounty("FL", "MIAMI-DADE"));
 //		if( c != null ) {
 //			for( String sCounty : c.getCounties("SC") ) 
 //				System.out.println(sCounty);
