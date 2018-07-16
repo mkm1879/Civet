@@ -1485,6 +1485,7 @@ public final class CivetEditDialog extends JFrame {
 					AddAnimalsDialog dlg = new AddAnimalsDialog( hSpecies, idListModel );
 					dlg.setModal(true);
 					dlg.setVisible(true);
+					setActiveSpecies( dlg.getSelectedSpecies() );
 				}
 			}
 		});
@@ -1522,6 +1523,19 @@ public final class CivetEditDialog extends JFrame {
 //	public void setErrorNote( String sNote ) {
 //		this.sErrorNotes = sNote;
 //	}
+	
+	private void setActiveSpecies( String sSpecies ) {
+		bInClearForm = true;
+		updateSpeciesList(false);
+		cbSpecies.setSelectedItem(sSpecies);
+		String sSpeciesCode = cbSpecies.getSelectedCode();
+		for( SpeciesRecord r : aSpecies ) {
+			if( r.sSpeciesCode.equals(sSpeciesCode) ) {
+				jtfNumber.setText(Integer.toString(r.iNumber) );
+			}
+		}
+		bInClearForm = false;
+	}
 	
 	/**
 	 * This is used by setAllFocus to make each field select the entire text 
