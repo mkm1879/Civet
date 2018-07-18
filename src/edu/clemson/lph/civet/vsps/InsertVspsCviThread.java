@@ -144,13 +144,19 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 			String sSpecies = VspsCodeLookup.getSpCode(animal.getSpecies());
 			String sBreed = animal.getBreed();
 			String sGender = VspsCodeLookup.getGenderCode(animal.getGender());
-			String sId = animal.getFirstOfficialId();
-			String sType = animal.getFirstOfficialIdType(); 
 			Integer iCount = animal.getCount();
 			if( iCount == null )
 				iCount = 1;
-			if( sId != null ) {
-				xmlBuilder.addAnimal( sSpecies, cvi.getInspectionDate(), sBreed, null, sGender, sType, sId);
+			ArrayList<AnimalTag> aTags = animal.getTags();
+			if( aTags.size() > 0 && iCount == 1 ) {
+				String sId = animal.getFirstOfficialId();
+				String sType = animal.getFirstOfficialIdType(); 
+				Element eAnimal = xmlBuilder.addAnimal( sSpecies, cvi.getInspectionDate(), sBreed, null, sGender, sType, sId);
+				for( AnimalTag tag : aTags ) {
+					if( !tag.getNumber().equals(sId) ) {
+						xmlBuilder.addAnimalTag(eAnimal, tag.getType(), tag.getNumber());
+					}
+				}
 			}
 			else {
 				List<String> lKey = new ArrayList<String>();

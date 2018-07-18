@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -38,10 +39,76 @@ public class VspsCviAnimal {
 	private String sFirstOfficial = null;
 	private String sFirstOfficialType = null;
 	private boolean bCheckedIds = false;
+	private ArrayList<AnimalTag> aTags;
 	
 	VspsCviAnimal( List<String> aColsIn, LabeledCSVParser parserIn ) {
 		aCols = aColsIn;
 		parser = parserIn;
+		readIds();
+	}
+	
+	/**
+	 * Look for Id that fits a common official id pattern.
+	 * Store the ID in sFirstOfficial and type in sFirstOfficialType
+	 * @throws IOException
+	 */
+	private void readIds() {
+		aTags = new ArrayList<AnimalTag>();
+		for( int i = 1; i <= 5; i++ ) {
+			try {
+				String sIdType = getIdentifierType(i);
+				String sId = getIdentifier(i);
+				boolean bOfficial = false;
+				if( sId == null || sId.trim().length() == 0 )
+					continue;
+				if( sId.startsWith("840") && sId.trim().length() >= 14 && sId.trim().length() <= 16) {
+					sId = sId.trim();
+					sIdType = "N840RFID";
+					bOfficial = true;
+				}
+				else if( sId.startsWith("USA") && sId.trim().length() >= 14 && sId.trim().length() <= 16) {
+					sId = sId.trim();
+					sIdType = "AMID";
+					bOfficial = true;
+				}
+				else if( "USDA Metal Tag".equalsIgnoreCase(sIdType) ) {
+					if( sId.trim().length() == 9 ) 
+						sIdType = "NUES9";
+					else if( sId.trim().length() == 8 )
+						sIdType = "NUES8";
+					bOfficial = true;
+				}
+				else if( "Registered Name of Animal".equalsIgnoreCase(sIdType) ) {
+					sIdType = "NAME";
+					bOfficial = true;
+				}
+				else if( "Tattoo".equalsIgnoreCase(sIdType) ) {
+					sIdType = "TAT";
+					bOfficial = true;
+				}
+				else if( "Ear Tattoo".equalsIgnoreCase(sIdType) ) {
+					sIdType = "TAT";
+					bOfficial = true;
+				}
+				else if( "Call Name".equalsIgnoreCase(sIdType) ) {
+					sIdType = "OTH";
+					bOfficial = false;
+				}
+				else {
+					sIdType = IDTypeGuesser.getTagType(sId);
+					if( isStdOfficialIdType(sIdType) || isOfficialVSPSIdType( getIdentifierType(i)) )
+						bOfficial = true;
+				}
+				if( bOfficial && sFirstOfficial == null ) { 
+					sFirstOfficial = sId.trim();
+					sFirstOfficialType = sIdType;
+				}
+				AnimalTag tag = new AnimalTag( sIdType, sId, bOfficial );
+				aTags.add(tag);
+			} catch( IOException e ) {
+				logger.error("Could not read ID " + i, e);
+			}
+		}
 	}
 	
 	public String getSpecies() throws IOException {
@@ -153,40 +220,28 @@ public class VspsCviAnimal {
 			return  aCols.get(iCol);
 	}
 	
-	private boolean isOfficialId( String sId ) {
+	private boolean isStdOfficialIdType( String sIdType ) {
 		boolean bRet = false;
-		if( sId == null ) return bRet;
-		// 840 tag
-		if( sId.trim().length() == 15 && sId.trim().startsWith("840"))
+		if( sIdType == null || sIdType.trim().length() == 0 )
+			return false;
+		if( sIdType.trim().startsWith("N840RFID") )
 			return true;
-		// Manufacturer RFID tag
-		if( sId.trim().length() == 15 && sId.trim().startsWith("9"))
+		if( sIdType.trim().startsWith("AMID") )
 			return true;
-		// USA tag
-		if( sId.trim().startsWith("USA") ) {
-			for( int i = 3; i < sId.trim().length(); i++ ) {
-				if( !Character.isDigit(sId.trim().charAt(i)) ) {
-					return false;
-				}
-			}
+		if( sIdType.trim().startsWith("NUES9") )
 			return true;
-		}
-		// NUES tag numeric prefix
-		if( sId.trim().length() == 9 && Character.isDigit(sId.charAt(0)) && Character.isDigit(sId.charAt(1))
-				&& Character.isLetter(sId.charAt(2)) && Character.isLetter(sId.charAt(4)) && Character.isLetter(sId.charAt(4))  
-				&& Character.isDigit(sId.charAt(5)) && Character.isDigit(sId.charAt(6)) 
-				&& Character.isDigit(sId.charAt(7))  && Character.isDigit(sId.charAt(8)) )
+		if( sIdType.trim().startsWith("NUES8") )
 			return true;
-		// NUES tag alpha prefix
-		if( sId.trim().length() == 9 && Character.isLetter(sId.charAt(0)) && Character.isLetter(sId.charAt(1))
-				&& Character.isLetter(sId.charAt(2)) && Character.isLetter(sId.charAt(4)) && Character.isLetter(sId.charAt(4))  
-				&& Character.isDigit(sId.charAt(5)) && Character.isDigit(sId.charAt(6)) 
-				&& Character.isDigit(sId.charAt(7))  && Character.isDigit(sId.charAt(8)) )
+		if( sIdType.trim().startsWith("NPIN") )
+			return true;
+		if( sIdType.trim().startsWith("SGFLID") )
+			return true;
+		if( sIdType.trim().startsWith("TAT") )
 			return true;
 		return bRet;
 	}
 	
-	private boolean isOfficialIdType( String sIdType ) {
+	private boolean isOfficialVSPSIdType( String sIdType ) {
 		boolean bRet = false;
 		if( sIdType == null || sIdType.trim().length() == 0 )
 			return false;
@@ -202,6 +257,10 @@ public class VspsCviAnimal {
 			return true;
 		return bRet;
 	}
+
+	public ArrayList<AnimalTag> getTags() {
+		return aTags;
+	}
 	
 	/**
 	 * Look for Id that fits a common official id pattern.
@@ -209,7 +268,6 @@ public class VspsCviAnimal {
 	 * @throws IOException
 	 */
 	public String getFirstOfficialId() throws IOException {
-		checkIds();
 		return sFirstOfficial;
 	}
 	
@@ -219,7 +277,6 @@ public class VspsCviAnimal {
 	 * @throws IOException
 	 */
 	public String getFirstOfficialIdType() throws IOException {
-		checkIds();
 		return sFirstOfficialType;
 	}
 	
@@ -228,35 +285,35 @@ public class VspsCviAnimal {
 	 * Store the ID in sFirstOfficial and type in sFirstOfficialType
 	 * @throws IOException
 	 */
-	private void checkIds()  throws IOException {
-		if( !bCheckedIds ) {
-			for( int i = 1; i <= 5; i++ ) {
-				String sIdType = getIdentifierType(i);
-				String sId = getIdentifier(i);
-				if( ( sIdType != null && isOfficialIdType(sIdType) ) || ( sId != null && isOfficialId( sId ) ) ) { 
-					sFirstOfficial = sId.trim();
-					if( "USDA Metal Tag".equalsIgnoreCase(sIdType) ) {
-						if( sId.trim().length() == 9 ) 
-							sIdType = "NUES9";
-						else if( sId.trim().length() == 8 )
-							sIdType = "NUES8";
-					}
-					else if( "Registered Name of Animal".equalsIgnoreCase(sIdType) ) {
-						sIdType = "NAME";
-					}
-					else if( "Tattoo".equalsIgnoreCase(sIdType) ) {
-						sIdType = "TAT";
-					}
-					else if( "Call Name".equalsIgnoreCase(sIdType) ) {
-						sIdType = "OTH";
-					}
-					sFirstOfficialType = IDTypeGuesser.getTagType(sId);
-					break;
-				}
-			}
-			bCheckedIds = true;
-		}
-	}
+//	private void checkIds()  throws IOException {
+//		if( !bCheckedIds ) {
+//			for( int i = 1; i <= 5; i++ ) {
+//				String sIdType = getIdentifierType(i);
+//				String sId = getIdentifier(i);
+//				if( ( sIdType != null && isOfficialIdType(sIdType) ) || ( sId != null && isOfficialId( sId ) ) ) { 
+//					sFirstOfficial = sId.trim();
+//					if( "USDA Metal Tag".equalsIgnoreCase(sIdType) ) {
+//						if( sId.trim().length() == 9 ) 
+//							sIdType = "NUES9";
+//						else if( sId.trim().length() == 8 )
+//							sIdType = "NUES8";
+//					}
+//					else if( "Registered Name of Animal".equalsIgnoreCase(sIdType) ) {
+//						sIdType = "NAME";
+//					}
+//					else if( "Tattoo".equalsIgnoreCase(sIdType) ) {
+//						sIdType = "TAT";
+//					}
+//					else if( "Call Name".equalsIgnoreCase(sIdType) ) {
+//						sIdType = "OTH";
+//					}
+//					sFirstOfficialType = IDTypeGuesser.getTagType(sId);
+//					break;
+//				}
+//			}
+//			bCheckedIds = true;
+//		}
+//	}
 
 	
 	/**

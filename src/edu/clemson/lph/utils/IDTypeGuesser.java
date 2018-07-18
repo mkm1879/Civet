@@ -27,8 +27,8 @@ public class IDTypeGuesser {
 	private static HashMap<String, String> mTypeMap = new HashMap<String, String>();
 	
 	static {
-		mTypeMap.put("^840\\d{12}$", "N840RFID");
-		mTypeMap.put("^(USA|usa)\\d{12}$", "AMID");
+		mTypeMap.put("^840\\d{11,13}$", "N840RFID"); // Make fuzzy on length
+		mTypeMap.put("^(USA|usa)\\d{11,13}$", "AMID"); // Make fuzzy on length
 		mTypeMap.put("^\\d{2}[a-zA-Z]{3}\\d{4}$", "NUES9");
 //		mTypeMap.put("^\\d{2}[a-zA-Z]{2}\\d{4}$", "NUES8");
 		mTypeMap.put("^\\d{2}[a-zA-Z]{2}\\d{4}$", "BT");
