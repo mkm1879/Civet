@@ -148,6 +148,7 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 			if( iCount == null )
 				iCount = 1;
 			ArrayList<AnimalTag> aTags = animal.getTags();
+			ArrayList<AnimalTag> aBadTags = animal.getBadTags();
 			if( aTags.size() > 0 && iCount == 1 ) {
 				Element eAnimal = null;
 				AnimalTag tag1 = animal.getFirstOfficialId();
@@ -157,7 +158,10 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 							sGender, tag1.getType(), tag1.getNumber() );
 				for( AnimalTag tag : aTags ) {
 					if( tag != tag1 ) {
-						xmlBuilder.addAnimalTag(eAnimal, tag.getType(), tag.getNumber());
+						String sType = tag.getType();
+						if( aBadTags.contains(tag) )
+							sType = "UN";
+						xmlBuilder.addAnimalTag(eAnimal, sType, tag.getNumber());
 					}
 				}
 			}
@@ -174,10 +178,9 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 					hGroups.put(lKey, iCount);
 				}
 			}
-			ArrayList<AnimalTag> badTags = animal.getBadTags();
-			if( badTags.size() > 0 ) {
-				for( AnimalTag tag : badTags ) {
-					FileUtils.writeTextFile(cvi.getCVINumber() + ": " + tag.getNumber() + " type " + tag.getType(), 
+			if( aBadTags.size() > 0 ) {
+				for( AnimalTag tag : aBadTags ) {
+					FileUtils.writeTextFile(cvi.getCVINumber() + ": " + tag.getNumber() + " type " + tag.getType() + "\r\n", 
 							"BadTags.txt", true);
 				}
 			}

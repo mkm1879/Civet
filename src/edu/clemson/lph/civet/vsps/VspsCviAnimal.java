@@ -54,6 +54,7 @@ public class VspsCviAnimal {
 		aTags = new ArrayList<AnimalTag>();
 		aBadTags = new ArrayList<AnimalTag>();
 		for( int i = 1; i <= 5; i++ ) {
+			boolean bBad = false;
 			try {
 				String sIdType = getIdentifierType(i);
 				String sId = getIdentifier(i);
@@ -64,24 +65,26 @@ public class VspsCviAnimal {
 					sId = sId.trim();
 					sIdType = "N840RFID";
 					bOfficial = true;
-					if( sId.trim().length() == 14 || sId.trim().length() == 16 ) 
-						aBadTags.add( new AnimalTag(sIdType, sId, bOfficial) );
+					if( sId.trim().length() == 14 || sId.trim().length() == 16 )
+						bBad = true;
 				}
 				else if( sId.startsWith("USA") && sId.trim().length() >= 14 && sId.trim().length() <= 16) {
 					sId = sId.trim();
 					sIdType = "AMID";
 					bOfficial = true;
-					if( sId.trim().length() == 14 || sId.trim().length() == 16 ) 
-						aBadTags.add( new AnimalTag(sIdType, sId, bOfficial) );
+					if( sId.trim().length() == 14 || sId.trim().length() == 16 )
+						bBad = true;
 				}
 				else if( "USDA Metal Tag".equalsIgnoreCase(sIdType) ) {
 					if( sId.trim().length() == 9 ) 
 						sIdType = "NUES9";
 					else if( sId.trim().length() == 8 )
 						sIdType = "NUES8";
+					else
+						sIdType = "UN";
 					bOfficial = true;
 					if( sId.trim().length() < 8 || sId.trim().length() > 9 ) 
-						aBadTags.add( new AnimalTag(sIdType, sId, bOfficial) );
+						bBad = true;
 				}
 				else if( "Registered Name of Animal".equalsIgnoreCase(sIdType) ) {
 					sIdType = "NAME";
@@ -106,6 +109,8 @@ public class VspsCviAnimal {
 				}
 				AnimalTag tag = new AnimalTag( sIdType, sId, bOfficial );
 				aTags.add(tag);
+				if( bBad )
+					aBadTags.add(tag);
 			} catch( IOException e ) {
 				logger.error("Could not read ID " + i, e);
 			}
