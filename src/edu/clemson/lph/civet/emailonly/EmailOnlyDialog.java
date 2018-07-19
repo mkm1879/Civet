@@ -55,7 +55,7 @@ public class EmailOnlyDialog extends JDialog {
 		private String viewerTitle = "Civet: Email Only: ";
 		private PdfDecoder pdfDecoder;
 		private EmailOnlyFileController controller;
-		private float fScale;
+		private float fScale = 1.0f;
 		private int iRotation;
 		JScrollPane display;
 		JPanel altDisplay;
@@ -92,7 +92,7 @@ public class EmailOnlyDialog extends JDialog {
 	private void initializeDisplay() {
 		setBounds(100, 100, 800, 600);
 		make80Percent();
-		setTitle(getViewerTitle());
+		setTitle("Civet: Email Only ");
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setLayout(new FlowLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -115,6 +115,33 @@ public class EmailOnlyDialog extends JDialog {
 					repaint();
 				}
 			});
+			
+			JButton btnZoomOut = new JButton("-");
+			btnZoomOut.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					fScale = fScale / 1.1f;
+					pdfDecoder.setPageParameters(fScale,controller.getCurrentPageNo(),iRotation);
+					pdfDecoder.invalidate();
+					display.setViewportView(pdfDecoder);
+					repaint();
+				}
+			});
+			buttonPane.add(btnZoomOut);
+			
+			JButton btnZoomIn = new JButton("+");
+			btnZoomIn.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					fScale = fScale * 1.1f;
+					pdfDecoder.setPageParameters(fScale,controller.getCurrentPageNo(),iRotation);
+					pdfDecoder.invalidate();
+					display.setViewportView(pdfDecoder);
+					repaint();
+				}
+			});
+			buttonPane.add(btnZoomIn);
+			
 			buttonPane.add(bRotate);
 			
 			cbState = new DBComboBox();
