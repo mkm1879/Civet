@@ -36,10 +36,8 @@ public class VspsCviAnimal {
 	private LabeledCSVParser parser;
 	private DateFormat df = new SimpleDateFormat( "dd-MMM-yy");
 	private DateFormat df2 = new SimpleDateFormat( "d-MMM-yy");
-	private String sFirstOfficial = null;
-	private String sFirstOfficialType = null;
-	private boolean bCheckedIds = false;
 	private ArrayList<AnimalTag> aTags;
+	private ArrayList<AnimalTag> aBadTags;
 	
 	VspsCviAnimal( List<String> aColsIn, LabeledCSVParser parserIn ) {
 		aCols = aColsIn;
@@ -54,6 +52,7 @@ public class VspsCviAnimal {
 	 */
 	private void readIds() {
 		aTags = new ArrayList<AnimalTag>();
+		aBadTags = new ArrayList<AnimalTag>();
 		for( int i = 1; i <= 5; i++ ) {
 			try {
 				String sIdType = getIdentifierType(i);
@@ -65,11 +64,15 @@ public class VspsCviAnimal {
 					sId = sId.trim();
 					sIdType = "N840RFID";
 					bOfficial = true;
+					if( sId.trim().length() == 14 || sId.trim().length() == 16 ) 
+						aBadTags.add( new AnimalTag(sIdType, sId, bOfficial) );
 				}
 				else if( sId.startsWith("USA") && sId.trim().length() >= 14 && sId.trim().length() <= 16) {
 					sId = sId.trim();
 					sIdType = "AMID";
 					bOfficial = true;
+					if( sId.trim().length() == 14 || sId.trim().length() == 16 ) 
+						aBadTags.add( new AnimalTag(sIdType, sId, bOfficial) );
 				}
 				else if( "USDA Metal Tag".equalsIgnoreCase(sIdType) ) {
 					if( sId.trim().length() == 9 ) 
@@ -77,6 +80,8 @@ public class VspsCviAnimal {
 					else if( sId.trim().length() == 8 )
 						sIdType = "NUES8";
 					bOfficial = true;
+					if( sId.trim().length() < 8 || sId.trim().length() > 9 ) 
+						aBadTags.add( new AnimalTag(sIdType, sId, bOfficial) );
 				}
 				else if( "Registered Name of Animal".equalsIgnoreCase(sIdType) ) {
 					sIdType = "NAME";
@@ -98,10 +103,6 @@ public class VspsCviAnimal {
 					sIdType = IDTypeGuesser.getTagType(sId);
 					if( isStdOfficialIdType(sIdType) || isOfficialVSPSIdType( getIdentifierType(i)) )
 						bOfficial = true;
-				}
-				if( bOfficial && sFirstOfficial == null ) { 
-					sFirstOfficial = sId.trim();
-					sFirstOfficialType = sIdType;
 				}
 				AnimalTag tag = new AnimalTag( sIdType, sId, bOfficial );
 				aTags.add(tag);
@@ -219,7 +220,7 @@ public class VspsCviAnimal {
 		else
 			return  aCols.get(iCol);
 	}
-	
+
 	private boolean isStdOfficialIdType( String sIdType ) {
 		boolean bRet = false;
 		if( sIdType == null || sIdType.trim().length() == 0 )
@@ -262,22 +263,24 @@ public class VspsCviAnimal {
 		return aTags;
 	}
 	
-	/**
-	 * Look for Id that fits a common official id pattern.
-	 * @return one Id string or null if nothing "looks" like an official id
-	 * @throws IOException
-	 */
-	public String getFirstOfficialId() throws IOException {
-		return sFirstOfficial;
+	public ArrayList<AnimalTag> getBadTags() {
+		return aBadTags;
 	}
 	
 	/**
-	 * Look for Id that fits a common official id pattern.
+	 * Used to be sure we put official IDs first.
 	 * @return one Id string or null if nothing "looks" like an official id
 	 * @throws IOException
 	 */
-	public String getFirstOfficialIdType() throws IOException {
-		return sFirstOfficialType;
+	public AnimalTag getFirstOfficialId() throws IOException {
+		AnimalTag tRet = null;
+		for( AnimalTag tag : aTags ) {
+			if( tag.isOfficial() ) {
+				tRet = tag;
+				break;
+			}
+		}
+		return tRet;
 	}
 	
 	/**
@@ -315,26 +318,7 @@ public class VspsCviAnimal {
 //		}
 //	}
 
-	
-	/**
-	 * Look for Id that fits a common official id pattern.
-	 * @return one Id string or null if nothing "looks" like an official id
-	 * @throws IOException
-	 */
-	public String getFirstOtherId() throws IOException {
-		String sRet = null;
-		String sFirstOfficial = getFirstOfficialId();
-		for( int i = 1; i <= 5; i++ ) {
-			String sId = getIdentifier(i);
-			if( sId != null && sId.trim().length() > 0 && (sFirstOfficial == null || !sFirstOfficial.equals(sId)) ) {
-				sRet = sId.trim();
-				break;
-			}
-		}
-		return sRet;
-	}
 
-	
 	public String getIdentifierType( int iIdNum) throws IOException {
 		if( iIdNum < 1 || iIdNum > 5)
 			return null;
