@@ -35,7 +35,7 @@ public class TestAddOn implements AddOn {
 
 	@Override
 	public void execute(Window parent) {
-		System.out.println("Add On Run over window " + parent.getClass().getName() );
+//		System.out.println("Add On Run over window " + parent.getClass().getName() );
 
 	}
 

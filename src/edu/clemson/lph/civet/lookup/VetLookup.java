@@ -34,6 +34,7 @@ import edu.clemson.lph.civet.webservice.WebServiceException;
 import edu.clemson.lph.db.DBComboBoxModel;
 import edu.clemson.lph.db.DBTableSource;
 import edu.clemson.lph.utils.LabeledCSVParser;
+import edu.clemson.lph.utils.StringUtils;
 
 @SuppressWarnings("serial")
 public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.swing.table.TableModel  {
@@ -120,7 +121,7 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 			String sAddress, String sCity, String sStateCode, String sZipCode, 
 			String sPhone, String sNan, String sLicNbr ) {
 		boolean bRet = true;
-		if( sNan != null ) 
+		if( sNan != null && sNan.indexOf('*') < 0 && sNan.indexOf('?') < 0 ) 
 			sNan = lPadZeros( sNan, 6 );
 		// Exact match on NAN or Lic should trump other search logic. Always include these
 		if( v.sNAN != null && sNan != null && v.sNAN.equals(sNan) ) 
@@ -133,24 +134,66 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 		if( sAddress != null ) sAddress = sAddress.toLowerCase();
 		if( sCity != null ) sCity = sCity.toLowerCase();
 		if( sStateCode != null ) sStateCode = sStateCode.toUpperCase();
-		if( v.sLastName != null && sLastName != null && !v.sLastName.toLowerCase().contains(sLastName) ) 
+//		if( v.sLastName != null && sLastName != null && !v.sLastName.toLowerCase().contains(sLastName) ) 
+//			return false;
+//		if( v.sFirstName != null && sFirstName != null && !v.sFirstName.toLowerCase().contains(sFirstName) ) 
+//			return false;
+//		if( v.sAddress != null && sAddress != null && !v.sAddress.toLowerCase().contains(sAddress) ) 
+//			return false;
+//		if( v.sCity != null && sCity != null && !v.sCity.toLowerCase().contains(sCity) ) 
+//			return false;
+//		if( v.sState != null && sStateCode != null && !v.sState.toUpperCase().contains(sStateCode) ) 
+//			return false;
+//		if( v.sZipCode != null && sZipCode != null && !StringUtils.wildCardMatches(v.sZipCode,sZipCode) ) 
+//			return false;
+//		if( !phoneMatch( v.sPhone, sPhone) ) 
+//			return false;
+//		if( v.sNAN != null && sNan != null && !StringUtils.wildCardMatches(v.sNAN, sNan) ) 
+//			return false;
+//		if( v.sLic != null && sLicNbr != null && !StringUtils.wildCardMatches(v.sLic, sLicNbr) ) 
+//			return false;
+		if( bNonMatch(v.sLastName.toLowerCase(), sLastName) ) 
 			return false;
-		if( v.sFirstName != null && sFirstName != null && !v.sFirstName.toLowerCase().contains(sFirstName) ) 
+		if( bNonMatch(v.sFirstName.toLowerCase(), sFirstName) ) 
 			return false;
-		if( v.sAddress != null && sAddress != null && !v.sAddress.toLowerCase().contains(sAddress) ) 
+		if( bNonMatch(v.sAddress.toLowerCase(), sAddress) ) 
 			return false;
-		if( v.sCity != null && sCity != null && !v.sCity.toLowerCase().contains(sCity) ) 
+		if( bNonMatch(v.sCity.toLowerCase(), sCity) ) 
 			return false;
-		if( v.sState != null && sStateCode != null && !v.sState.toUpperCase().contains(sStateCode) ) 
+		if( bNonMatch(v.sState.toUpperCase(), sStateCode) ) 
 			return false;
-		if( v.sZipCode != null && sZipCode != null && !v.sZipCode.equals(sZipCode) ) 
+		if( bNonMatch(v.sZipCode,sZipCode) ) 
 			return false;
-		if( !phoneMatch( v.sPhone, sPhone) ) 
+		// Do both part string, wildcard and truncated search
+		if( !phoneMatch( v.sPhone, sPhone) && bNonMatch( v.sPhone, sPhone)  ) 
 			return false;
-		if( v.sNAN != null && sNan != null && !v.sNAN.equals(sNan) ) 
+		if( bNonMatch(v.sNAN, sNan) ) 
 			return false;
-		if( v.sLic != null && sLicNbr != null && !v.sLic.equals(sLicNbr) ) 
+		if( bNonMatch(v.sLic, sLicNbr) ) 
 			return false;
+		return bRet;
+	}
+	
+	/**
+	 * Only actual comparisons that do NOT match result in a true.  True means "do not include this record".
+	 * @param sInput
+	 * @param sPattern
+	 * @return
+	 */
+	private boolean bNonMatch( String sInput, String sPattern ) {
+		boolean bRet = false;
+		if( sPattern == null || sPattern.trim().length() == 0 ) 
+			return false;
+		if( sInput == null || sInput.trim().length() == 0 )
+			return true;
+		if( sPattern.contains("*") || sPattern.contains("?") ) {
+			if( !StringUtils.wildCardMatches(sInput, sPattern) )
+				bRet = true;
+		}
+		else {
+			if( !sInput.contains(sPattern) )
+				bRet = true;
+		}
 		return bRet;
 	}
 	
@@ -164,7 +207,9 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 	}
 	
 	private boolean phoneMatch(String sPhone1, String sPhone2) {
-		if( sPhone1 == null || sPhone2 == null ) return true;
+		if( (sPhone1 == null || sPhone1.trim().length() == 0) && (sPhone2 == null || sPhone2.trim().length() == 0) ) return true;
+		if( (sPhone1 == null || sPhone1.trim().length() == 0) && (sPhone2 != null && sPhone2.trim().length() > 0) ) return false;
+		if( (sPhone1 != null && sPhone1.trim().length() > 0) && (sPhone2 == null || sPhone2.trim().length() == 0) ) return false;
 		return digitsOnly( sPhone1 ).contains(digitsOnly( sPhone2 ));
 	}
 	

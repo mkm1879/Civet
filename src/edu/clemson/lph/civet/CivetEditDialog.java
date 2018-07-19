@@ -987,7 +987,7 @@ public final class CivetEditDialog extends JFrame {
 		lThisPhone.setHorizontalAlignment(SwingConstants.RIGHT);
 		lThisPhone.setFont(new Font("Tahoma", Font.PLAIN, 11));
 
-		jtfPhone = new PhoneField();
+		jtfPhone = new PhoneField(true);
 		jtfPhone.addFocusListener(new java.awt.event.FocusAdapter() {
 			public void focusLost(FocusEvent e) {
 				jtfPhone_focusLost(e);
@@ -2663,7 +2663,7 @@ public final class CivetEditDialog extends JFrame {
 		String sMovementPurpose = cbPurpose.getSelectedValue();
 		Integer iIssuedByKey = cbIssuedBy.getSelectedKeyInt();
 		String sIssuedByName = jtfIssuedBy.getText();
-		if( iIssuedByKey == null && sIssuedByName == null ) {
+		if( !bInbound && (iIssuedByKey == null || iIssuedByKey == -1) ) {
 			MessageDialog.showMessage(this, "Civet Error", "Issuing Veterinarian is required");
 			return false;
 		}

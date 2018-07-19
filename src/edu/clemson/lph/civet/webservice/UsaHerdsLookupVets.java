@@ -31,6 +31,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.CSVWriter;
 import edu.clemson.lph.utils.LabeledCSVParser;
 import edu.clemson.lph.utils.XMLUtility;
@@ -79,12 +80,13 @@ public class UsaHerdsLookupVets {
 	 * @throws WebServiceException 
 	 */
 	public UsaHerdsLookupVets( boolean bAccredOnly ) throws WebServiceException {
+		String sVetFile = CivetConfig.getVetTableFile();
 		CivetWebServices service = CivetWebServiceFactory.getService();
 		Document doc = service.getCivetVets( null, null, null, null, bAccredOnly);
 		if( doc != null )
 			populateRows(doc);
 		else
-			populateRows("VetTable.csv");
+			populateRows(sVetFile);  //"VetTable.csv");
 		iCurrentRow = -1;
 	}
 	

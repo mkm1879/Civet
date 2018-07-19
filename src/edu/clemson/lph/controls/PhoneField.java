@@ -1,4 +1,5 @@
 package edu.clemson.lph.controls;
+import javax.swing.JDialog;
 /*
 Copyright 2014 Michael K Martin
 
@@ -18,14 +19,24 @@ You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.text.Document;
+
+import edu.clemson.lph.dialogs.MessageDialog;
 
 import java.awt.event.FocusEvent;
 
 public class PhoneField extends JTextField{
 	private static final long serialVersionUID = 1L;
+	private boolean bTenDigits = false;
 
 	public PhoneField() {
+		init();
+	}
+	
+	public PhoneField( boolean bTenDigits ) {
+		super();
+		this.bTenDigits = bTenDigits;
 		init();
 	}
 
@@ -58,7 +69,14 @@ public class PhoneField extends JTextField{
 		addFocusListener(new java.awt.event.FocusAdapter() {
 			public void focusLost(FocusEvent e) {
 				String sPhone = getText();
+				int iLenPhoneDigits = formatDigitsOnly(sPhone).trim().length();
 				if( sPhone.trim().length() > 0 ) {
+					if( bTenDigits && iLenPhoneDigits != 10 ) {
+						JDialog parent = (JDialog)SwingUtilities.getAncestorOfClass(JDialog.class, PhoneField.this);
+						MessageDialog.showMessage(parent, "Civet Error: Phone format", "CVI standard requires ten digit phone");
+						PhoneField.this.requestFocus();
+						return;
+					}
 					setText(formatPhone(sPhone));
 				}
 			}
@@ -96,7 +114,8 @@ public class PhoneField extends JTextField{
 		if( sPhone.indexOf("@") > -1 ) return sPhone;
 		String sPhoneDigits = formatDigitsOnly( sPhone );
 		StringBuffer sbPhone = new StringBuffer();
-		for( int i = 0; i < sPhoneDigits.trim().length(); i++ ) {
+		int iLenPhoneDigits = sPhoneDigits.trim().length();
+		for( int i = 0; i < iLenPhoneDigits; i++ ) {
 			char cNext = sPhoneDigits.charAt(i);
 			if( i == 0 && sPhoneDigits.length() > 7 )
 				sbPhone.append( "(" + cNext );
