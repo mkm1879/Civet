@@ -243,6 +243,11 @@ public class AddAnimalsDialog extends JDialog {
 		return null;
 	}
 	
+	public String getSelectedSpecies() {
+		String sSpecies = (String)cbSpecies.getSelectedItem();
+		return sSpecies;
+	}
+	
 	public static String padTag( String sPrefix, String sSuffix, int iChars ) {
 		if( sPrefix == null || sSuffix == null ) return null;
 		StringBuffer sb = new StringBuffer();

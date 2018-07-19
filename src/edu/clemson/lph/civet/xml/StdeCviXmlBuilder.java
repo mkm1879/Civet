@@ -596,6 +596,13 @@ public class StdeCviXmlBuilder {
 				eAnimal.setAttribute("SpeciesCode", sNewSpecies);
 			}
 		}
+		ArrayList<Element> eGroups = XMLUtility.listChildElementsByName(root, "GroupLot");
+		for( Element eGroup : eGroups) {
+			String sExistingCode = eGroup.getAttribute("SpeciesCode");
+			if( sExistingCode != null && sExistingCode.equals(sPreviousSpecies) ) {
+				eGroup.setAttribute("SpeciesCode", sNewSpecies);
+			}
+		}
 		return;
 	}
 
