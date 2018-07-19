@@ -93,6 +93,7 @@ import edu.clemson.lph.civet.webservice.WebServiceException;
 import edu.clemson.lph.civet.xml.CoKsXML;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.controls.ComboBoxSelectionListener;
 import edu.clemson.lph.controls.DBComboBox;
 import edu.clemson.lph.controls.DBNumericField;
 import edu.clemson.lph.controls.DBSearchComboBox;
@@ -350,16 +351,18 @@ public final class CivetEditDialog extends JFrame {
 						});
 						
 					}
+				});
+				cbSpecies.addItemListener( new ItemListener() {
 					@Override
-					public void focusLost(FocusEvent e) {
+					public void itemStateChanged(ItemEvent arg0) {
 						if(bInClearForm)
 							return;
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
-								doCheckSpeciesChange2();
+								if( !bInClearForm )
+									doCheckSpeciesChange2();
 							}
 						});
-						
 					}
 				});
 				cbSpecies.setBlankDefault(true);
@@ -404,6 +407,7 @@ public final class CivetEditDialog extends JFrame {
 	
 	private void doCheckSpeciesChange2() {
 		{
+			bInClearForm = true;
 			String sNewSpecies = cbSpecies.getSelectedValue();
 			if( bSppEntered ) {
 			if( sPreviousSpecies != null && sPreviousSpecies.trim().length() > 0 &&
@@ -430,12 +434,11 @@ public final class CivetEditDialog extends JFrame {
 					}
 				}
 				else {
-					bInClearForm = true;
 					cbSpecies.setSelectedItem(sPreviousSpecies);
-					bInClearForm = false;
 				}
 			}
 			}
+			bInClearForm = false;
 			bSppEntered = true;
 			sPreviousSpecies = null;
 		}
@@ -1482,6 +1485,7 @@ public final class CivetEditDialog extends JFrame {
 					AddAnimalsDialog dlg = new AddAnimalsDialog( hSpecies, idListModel );
 					dlg.setModal(true);
 					dlg.setVisible(true);
+					setActiveSpecies( dlg.getSelectedSpecies() );
 				}
 			}
 		});
@@ -1519,6 +1523,19 @@ public final class CivetEditDialog extends JFrame {
 //	public void setErrorNote( String sNote ) {
 //		this.sErrorNotes = sNote;
 //	}
+	
+	private void setActiveSpecies( String sSpecies ) {
+		bInClearForm = true;
+		updateSpeciesList(false);
+		cbSpecies.setSelectedItem(sSpecies);
+		String sSpeciesCode = cbSpecies.getSelectedCode();
+		for( SpeciesRecord r : aSpecies ) {
+			if( r.sSpeciesCode.equals(sSpeciesCode) ) {
+				jtfNumber.setText(Integer.toString(r.iNumber) );
+			}
+		}
+		bInClearForm = false;
+	}
 	
 	/**
 	 * This is used by setAllFocus to make each field select the entire text 
@@ -2402,7 +2419,7 @@ public final class CivetEditDialog extends JFrame {
 				if( c != null)
 					c.requestFocus();
 			}
-			bInClearForm = true;
+			bInClearForm = false;
 		}
 	}
 	

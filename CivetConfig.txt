@@ -38,7 +38,7 @@ ToBeFiledDirPath=E:\\Documents\\CivetTest\\CivetToBeFiled\\
 EmailOutDirPath=E:\\Documents\\CivetTest\\CivetToBeMailedOut\\
 EmailErrorsDirPath=E:\\Documents\\CivetTest\\CivetToBeMailedErrors\\
 OutputDirPath=E:\\Documents\\CivetTest\\CivetOutbox\\
-vspsDirPath=
+vspsDirPath=E:\\Documents\\CivetTest\\VSPSData\\
 EmailOnlyInputPath=
 EmailOnlySendPath=
 
