@@ -202,6 +202,7 @@ public class CoKsXML {
 				transformer.transform(new StreamSource(sourceReader),
 						new StreamResult(baosDest));
 				sRet = new String( baosDest.toByteArray(), "UTF-8" );
+	System.out.println(sRet);
 			} catch ( TransformerException e) {
 				logger.error("Failed to transform XML with XSLT: " + sXSLT, e);
 			} catch (UnsupportedEncodingException e) {
