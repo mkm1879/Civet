@@ -67,7 +67,13 @@ public class StdeCviXml {
 				sLine = reader.readLine();
 			}
 			reader.close();
-			buildStdeCviXml( sb.toString() );
+			String sXML = sb.toString();
+			// Check to see if this is a version 2 schema file
+			int iV2Loc = sXML.indexOf("http://www.usaha.org/xmlns/ecvi2");
+			int iVersion = 1;
+			if( iV2Loc > 0 && iV2Loc < 200 )
+				iVersion = 2;
+			buildStdeCviXml( sXML, iVersion );
 		
 		} catch (FileNotFoundException e) {
 			logger.error(e);
@@ -76,8 +82,12 @@ public class StdeCviXml {
 		}
 	}
 
+	public StdeCviXml( String sStdXML, int iVersion ) {
+		buildStdeCviXml( sStdXML, iVersion );
+	}
+
 	public StdeCviXml( String sStdXML ) {
-		buildStdeCviXml( sStdXML );
+		buildStdeCviXml( sStdXML, 1 );
 	}
 	
 	public Document getDocument() {
@@ -96,7 +106,10 @@ public class StdeCviXml {
 		return helper;
 	}
 	
-	private void buildStdeCviXml( String sStdXML ) {
+	private void buildStdeCviXml( String sStdXML, int iVersion ) {
+		if( iVersion == 2 ) {
+			sStdXML = V2Transform.convertToV1( sStdXML );
+		}
 		try {
 			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			InputSource is = new InputSource();
