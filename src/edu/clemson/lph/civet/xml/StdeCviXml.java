@@ -98,7 +98,7 @@ public class StdeCviXml {
 	
 	private void buildStdeCviXml( String sStdXML ) {
 		try {
-			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			InputSource is = new InputSource();
 			is.setCharacterStream(new StringReader(sStdXML));
 			Document doc = db.parse(is);
@@ -108,8 +108,8 @@ public class StdeCviXml {
 			logger.error("Could not parse stdXML", e);;
 		} catch (IOException e) {
 			logger.error("Could not read stdXML", e);;
-		} catch (ParserConfigurationException e) {
-			logger.error("Could not set up parser for stdXML", e);;
+//		} catch (ParserConfigurationException e) {
+//			logger.error("Could not set up parser for stdXML", e);;
 		}
 	}
 	

@@ -46,6 +46,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.xml.SafeDocBuilder;
 
 public class XMLUtility {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
@@ -53,8 +54,8 @@ public class XMLUtility {
 
 	public static Document stringToDom( String sXML ) throws ParserConfigurationException, SAXException, IOException	{
 		if( sXML == null || sXML.trim().length() == 0 ) return null;
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
+//		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = SafeDocBuilder.getSafeDocBuilder(); //factory.newDocumentBuilder();
 		StringReader reader =  new StringReader( sXML );
 		InputSource source = new InputSource( reader );
 		return builder.parse( source );
