@@ -3,6 +3,7 @@ package edu.clemson.lph.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -61,6 +62,13 @@ public class StringUtils {
 			}
 		}
 		return lRet;
+	}
+	
+	public static String toValidUTF8( String sInput ) {
+		String sRet = null;
+		Charset charset = Charset.forName("UTF-8");
+		sRet = charset.decode(charset.encode(sInput)).toString();
+		return sRet;
 	}
 	
 	public static boolean wildCardMatches( String sInput, String sPattern ) {
