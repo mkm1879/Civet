@@ -89,7 +89,7 @@ public class CoKsXML {
 		Node nEcvi = null;
 		if( xmlString != null && xmlNode == null) {
 			try {
-				DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder();  //DocumentBuilderFactory.newInstance().newDocumentBuilder();
 				InputSource is = new InputSource();
 				// Move namespace definition to each of the header nodes because we are losing the XFA document node later.
 				String sStrip = xmlString.replaceAll(" xfa:dataNode=\"dataGroup\"", " xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\"\nxfa:dataNode=\"dataGroup\"");
@@ -107,8 +107,8 @@ public class CoKsXML {
 				logger.error("Failed to parse XML\n" + xmlString, e);
 			} catch (IOException e) {
 				logger.error("Failed to read XML\n" + xmlString, e);
-			} catch (ParserConfigurationException e) {
-				logger.error("Failed to configure XML parser", e);
+//			} catch (ParserConfigurationException e) {
+//				logger.error("Failed to configure XML parser", e);
 			}
 		}
 		else {
@@ -151,7 +151,7 @@ public class CoKsXML {
 		if( xmlString == null )
 			return null;
 		try {
-			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			InputSource is = new InputSource();
 			// Move namespace definition to each of the header nodes because we are losing the XFA document node later.
 			String sStrip = xmlString.replaceAll(" xfa:dataNode=\"dataGroup\"", " xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\"\nxfa:dataNode=\"dataGroup\"");
@@ -162,8 +162,8 @@ public class CoKsXML {
 			logger.error("Failed to parse XML\n" + xmlString, e);
 		} catch (IOException e) {
 			logger.error("Failed to read XML\n" + xmlString, e);
-		} catch (ParserConfigurationException e) {
-			logger.error("Failed to configure XML parser", e);
+//		} catch (ParserConfigurationException e) {
+//			logger.error("Failed to configure XML parser", e);
 		}
 		NodeList nl = doc.getElementsByTagName("eCVI");
 		if( nl.getLength() == 1 ) {
@@ -218,7 +218,7 @@ public class CoKsXML {
 		String sStdXML = toStdXMLString();
 		if( sStdXML != null ) {
 			try {
-				DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
 				InputSource is = new InputSource();
 				is.setCharacterStream(new StringReader(sStdXML));
 				Document doc = db.parse(is);
@@ -228,8 +228,8 @@ public class CoKsXML {
 				logger.error("Failed to parse XML\n" + sStdXML, e);
 			} catch (IOException e) {
 				logger.error("Failed to read XML\n" + sStdXML, e);
-			} catch (ParserConfigurationException e) {
-				logger.error("Failed to setup XML parser", e);;
+//			} catch (ParserConfigurationException e) {
+//				logger.error("Failed to setup XML parser", e);;
 			}
 		}
 		return nRet;
@@ -239,7 +239,7 @@ public class CoKsXML {
 		Document doc = null;
 		if( sStdXML != null ) {
 			try {
-				DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder();  //DocumentBuilderFactory.newInstance().newDocumentBuilder();
 				InputSource is = new InputSource();
 				is.setCharacterStream(new StringReader(sStdXML));
 				doc = db.parse(is);
@@ -250,9 +250,9 @@ public class CoKsXML {
 			} catch (IOException e) {
 				logger.error("Failed to read XML\n" + sStdXML, e);
 				return null;
-			} catch (ParserConfigurationException e) {
-				logger.error("Failed to setup XML parser", e);
-				return null;
+//			} catch (ParserConfigurationException e) {
+//				logger.error("Failed to setup XML parser", e);
+//				return null;
 			}
 		}
 		return postProcessStdXML( doc );

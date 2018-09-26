@@ -47,16 +47,18 @@ public class CviMetaDataXml {
 	private Document doc = null;
 	
 	public CviMetaDataXml() {
-		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+//		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder;
 		try {
-			docBuilder = docFactory.newDocumentBuilder();
+			docBuilder = SafeDocBuilder.getSafeDocBuilder(); //docFactory.newDocumentBuilder();
 			doc = docBuilder.newDocument();
 			doc.setXmlStandalone(true);
 			Element rootElement = doc.createElement("cviMetaData");
 			doc.appendChild(rootElement);
-		} catch (ParserConfigurationException e) {
+		} catch (Exception e ) {
 			logger.error(e);
+//		} catch (ParserConfigurationException e) {
+//			logger.error(e);
 		}
 	}
 	
@@ -66,14 +68,14 @@ public class CviMetaDataXml {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder;
 		try {
-			docBuilder = docFactory.newDocumentBuilder();
+			docBuilder = SafeDocBuilder.getSafeDocBuilder(); //docFactory.newDocumentBuilder();
 			String sXML = new String(bytes, "UTF-8");
 			InputSource is = new InputSource();
 			is.setCharacterStream(new StringReader(sXML));
 			doc = docBuilder.parse(is);
 			doc.setXmlStandalone(true);
-		} catch (ParserConfigurationException e) {
-			logger.error(e);
+//		} catch (ParserConfigurationException e) {
+//			logger.error(e);
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e);
 		} catch (SAXException e) {

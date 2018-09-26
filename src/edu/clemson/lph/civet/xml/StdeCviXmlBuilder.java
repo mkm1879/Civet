@@ -53,14 +53,16 @@ public class StdeCviXmlBuilder {
 
 	public StdeCviXmlBuilder() {
 		try {
-			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			doc = db.newDocument();
 			doc.setXmlStandalone(true);
 			root = doc.createElementNS("http://www.usaha.org/xmlns/ecvi", "eCVI");
 			doc.appendChild(root);
 			helper = new XMLDocHelper( doc );
-		} catch (ParserConfigurationException e) {
-			logger.error("Could not set up parser for stdXML", e);
+		} catch (Exception e ) {
+			logger.error(e);
+//		} catch (ParserConfigurationException e) {
+//			logger.error("Could not set up parser for stdXML", e);
 		}
 	}
 
@@ -73,15 +75,17 @@ public class StdeCviXmlBuilder {
 				root = cviIn.getRoot();
 			}
 			if( doc == null ) {
-				DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
 				doc = db.newDocument();
 				doc.setXmlStandalone(true);
 				root = doc.createElementNS("http://www.usaha.org/xmlns/ecvi", "eCVI");
 				doc.appendChild(root);
 				helper = new XMLDocHelper( doc );
 			}
-		} catch (ParserConfigurationException e) {
-			logger.error("Could not set up parser for stdXML", e);
+		} catch (Exception e ) {
+			logger.error(e);
+//		} catch (ParserConfigurationException e) {
+//			logger.error("Could not set up parser for stdXML", e);
 		}
 	}
 
