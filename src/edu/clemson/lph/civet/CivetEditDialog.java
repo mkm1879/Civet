@@ -2273,153 +2273,157 @@ public final class CivetEditDialog extends JFrame {
 			return;
 		}
 		else {
-			bSppEntered = true;
-			bInClearForm = true;
-			String sOriginState = xStd.getOriginState();
-			if( sOriginState != null ) {
-				sOriginState = States.getState(sOriginState);
-				if( sOriginState.equalsIgnoreCase(CivetConfig.getHomeState()) ) {
-					setImport(false);
-					rbExport.setSelected(true);
-					String sOtherState = States.getState(xStd.getDestinationState());
-					cbOtherState.setSelectedValue(sOtherState);
-					refreshOtherCounties();
-//					jtfOtherPIN.setText("");
-					// For display purposes only!  Display person name if no prem name.
-					String sOtherName = xStd.getDestinationPremName();
-					if( sOtherName == null || sOtherName.trim().length() == 0 )
-						sOtherName = xStd.getDestinationPersonName();
-//					jtfOtherPIN.setText(xStd.getDestinationPremId());
-					jtfOtherName.setText(sOtherName);
-					jtfOtherAddress.setText(xStd.getDestinationStreet());
-					jtfOtherCity.setText(xStd.getDestinationCity());
-					String sOtherStateCode = cbOtherState.getSelectedCode();
-					String sOtherCountyIn = xStd.getDestinationCounty();
-					String sOtherZip = xStd.getDestinationZip();
-					String sOtherHerdsCounty = getCounty( sOtherStateCode, sOtherCountyIn, sOtherZip );
-					cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
-					jtfOtherZip.setText(xStd.getDestinationZip());
-					jtfThisPIN.setText("");
-					String sThisName = xStd.getOriginPremName();
-					if( sThisName == null || sThisName.trim().length() == 0 )
-						sThisName = xStd.getOriginPersonName();
-					jtfThisPIN.setText(xStd.getOriginPremId());
-					jtfThisName.setText(sThisName);
-					jtfPhone.setText(xStd.getOriginPhone());
-					jtfAddress.setText(xStd.getOriginStreet());
-					jtfThisCity.setText(xStd.getOriginCity());
-					String sThisStateCode = CivetConfig.getHomeStateAbbr();
-					String sThisCountyIn = xStd.getOriginCounty();
-					String sThisZip = xStd.getOriginZip();
-					String sThisHerdsCounty = getCounty( sThisStateCode, sThisCountyIn, sThisZip );
-					cbThisCounty.setSelectedItem(sThisHerdsCounty);
-					jtfZip.setText(xStd.getOriginZip());
-					String sNAN = xStd.getVetNAN();
-					if( sNAN != null && sNAN.trim().length() > 0 ) {
-						VetLookup vet = new VetLookup( sNAN );
-						cbIssuedBy.setSelectedKey(vet.getKey());
-					}
-					else {
-						// May not be accredited.
-						doShowAllVets( true );
-						String sVetName = xStd.getVetName();
-						StringTokenizer tok = new StringTokenizer(sVetName, ", ");
-						String sVetLastName = null;
-						String sVetFirstName = null;
-						if(tok.hasMoreTokens())
-							sVetLastName = tok.nextToken();
-						if(tok.hasMoreTokens())
-							sVetFirstName = tok.nextToken();
-						VetLookup vet = new VetLookup( sVetLastName, sVetFirstName );
-						if( vet.isUniqueMatch() )
+			try {
+				bSppEntered = true;
+				bInClearForm = true;
+				String sOriginState = xStd.getOriginState();
+				if( sOriginState != null ) {
+					sOriginState = States.getState(sOriginState);
+					if( sOriginState != null && sOriginState.equalsIgnoreCase(CivetConfig.getHomeState()) ) {
+						setImport(false);
+						rbExport.setSelected(true);
+						String sOtherState = States.getState(xStd.getDestinationState());
+						cbOtherState.setSelectedValue(sOtherState);
+						refreshOtherCounties();
+						//					jtfOtherPIN.setText("");
+						// For display purposes only!  Display person name if no prem name.
+						String sOtherName = xStd.getDestinationPremName();
+						if( sOtherName == null || sOtherName.trim().length() == 0 )
+							sOtherName = xStd.getDestinationPersonName();
+						//					jtfOtherPIN.setText(xStd.getDestinationPremId());
+						jtfOtherName.setText(sOtherName);
+						jtfOtherAddress.setText(xStd.getDestinationStreet());
+						jtfOtherCity.setText(xStd.getDestinationCity());
+						String sOtherStateCode = cbOtherState.getSelectedCode();
+						String sOtherCountyIn = xStd.getDestinationCounty();
+						String sOtherZip = xStd.getDestinationZip();
+						String sOtherHerdsCounty = getCounty( sOtherStateCode, sOtherCountyIn, sOtherZip );
+						cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
+						jtfOtherZip.setText(xStd.getDestinationZip());
+						jtfThisPIN.setText("");
+						String sThisName = xStd.getOriginPremName();
+						if( sThisName == null || sThisName.trim().length() == 0 )
+							sThisName = xStd.getOriginPersonName();
+						jtfThisPIN.setText(xStd.getOriginPremId());
+						jtfThisName.setText(sThisName);
+						jtfPhone.setText(xStd.getOriginPhone());
+						jtfAddress.setText(xStd.getOriginStreet());
+						jtfThisCity.setText(xStd.getOriginCity());
+						String sThisStateCode = CivetConfig.getHomeStateAbbr();
+						String sThisCountyIn = xStd.getOriginCounty();
+						String sThisZip = xStd.getOriginZip();
+						String sThisHerdsCounty = getCounty( sThisStateCode, sThisCountyIn, sThisZip );
+						cbThisCounty.setSelectedItem(sThisHerdsCounty);
+						jtfZip.setText(xStd.getOriginZip());
+						String sNAN = xStd.getVetNAN();
+						if( sNAN != null && sNAN.trim().length() > 0 ) {
+							VetLookup vet = new VetLookup( sNAN );
 							cbIssuedBy.setSelectedKey(vet.getKey());
-					}
-				}
-				else {
-					setImport(true);
-					rbImport.setSelected(true);
-					String sOtherState = States.getState(xStd.getOriginState());
-					cbOtherState.setSelectedValue(sOtherState);
-//					jtfOtherPIN.setText("");
-					// For display purposes only!  Display person name if no prem name.
-					String sOtherName = xStd.getOriginPremName();
-					if( sOtherName == null || sOtherName.trim().length() == 0 )
-						sOtherName = xStd.getOriginPersonName();
-//					cbOtherCounty.setText(xStd.getOriginPremId());
-					jtfOtherName.setText(sOtherName);
-					jtfOtherAddress.setText(xStd.getOriginStreet());
-					jtfOtherCity.setText(xStd.getOriginCity());
-					refreshOtherCounties();
-					String sOtherStateCode = cbOtherState.getSelectedCode();
-					String sOtherCountyIn = xStd.getOriginCounty();
-					String sOtherZip = xStd.getOriginZip();
-					String sOtherHerdsCounty = getCounty( sOtherStateCode, sOtherCountyIn, sOtherZip );
-					jtfOtherZip.setText(sOtherZip);
-					cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
-					jtfThisPIN.setText("");
-					String sThisName = xStd.getDestinationPremName();
-					if( sThisName == null || sThisName.trim().length() == 0 )
-						sThisName = xStd.getDestinationPersonName();
-					jtfThisPIN.setText(xStd.getDestinationPremId());
-					jtfThisName.setText(sThisName);
-					jtfPhone.setText(xStd.getDestinationPhone());
-					jtfAddress.setText(xStd.getDestinationStreet());
-					jtfThisCity.setText(xStd.getDestinationCity());
-					String sThisState = CivetConfig.getHomeStateAbbr();
-					String sThisCountyIn = xStd.getDestinationCounty();
-					String sThisZip = xStd.getDestinationZip();
-					String sThisHerdsCounty = getCounty( sThisState, sThisCountyIn, sThisZip);
-					cbThisCounty.setSelectedItem(sThisHerdsCounty);
-					jtfZip.setText(xStd.getDestinationZip());
-					String sVetName = xStd.getVetName();
-					jtfIssuedBy.setText(sVetName);
-
-				}
-				java.util.Date dIssueDate = xStd.getIssueDate();
-				jtfDateInspected.setDate(dIssueDate);
-				jtfCVINo.setText(xStd.getCertificateNumber());
-				// Species multiples are an issue
-				loadSpeciesFromStdXml(xStd);
-				// Overly simplistic.  Only works if spelling matches
-				String sPurposeCode = xStd.getMovementPurpose();
-				cbPurpose.setSelectedKey(sPurposeCode);
-				// Load data from included XmlMetaData "file"
-				CviMetaDataXml meta = xStd.getMetaData();
-//			System.out.println( meta.getXmlString() );
-				if( meta != null ) {
-					// Make no assumption about received date.
-					java.util.Date dReceived = meta.getBureauReceiptDate();
-					jtfDateReceived.setDate(dReceived);
-					ArrayList<String> aErrors = meta.listErrors();
-					if( aErrors == null ) {
-						aErrorKeys = new ArrayList<String>();
-						lError.setVisible(false);
+						}
+						else {
+							// May not be accredited.
+							doShowAllVets( true );
+							String sVetName = xStd.getVetName();
+							StringTokenizer tok = new StringTokenizer(sVetName, ", ");
+							String sVetLastName = null;
+							String sVetFirstName = null;
+							if(tok.hasMoreTokens())
+								sVetLastName = tok.nextToken();
+							if(tok.hasMoreTokens())
+								sVetFirstName = tok.nextToken();
+							VetLookup vet = new VetLookup( sVetLastName, sVetFirstName );
+							if( vet.isUniqueMatch() )
+								cbIssuedBy.setSelectedKey(vet.getKey());
+						}
 					}
 					else {
-						aErrorKeys = aErrors;
-						if( aErrorKeys.size() > 0 )
-							lError.setVisible(true);
-						else
+						setImport(true);
+						rbImport.setSelected(true);
+						String sOtherState = States.getState(xStd.getOriginState());
+						cbOtherState.setSelectedValue(sOtherState);
+						//					jtfOtherPIN.setText("");
+						// For display purposes only!  Display person name if no prem name.
+						String sOtherName = xStd.getOriginPremName();
+						if( sOtherName == null || sOtherName.trim().length() == 0 )
+							sOtherName = xStd.getOriginPersonName();
+						//					cbOtherCounty.setText(xStd.getOriginPremId());
+						jtfOtherName.setText(sOtherName);
+						jtfOtherAddress.setText(xStd.getOriginStreet());
+						jtfOtherCity.setText(xStd.getOriginCity());
+						refreshOtherCounties();
+						String sOtherStateCode = cbOtherState.getSelectedCode();
+						String sOtherCountyIn = xStd.getOriginCounty();
+						String sOtherZip = xStd.getOriginZip();
+						String sOtherHerdsCounty = getCounty( sOtherStateCode, sOtherCountyIn, sOtherZip );
+						jtfOtherZip.setText(sOtherZip);
+						cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
+						jtfThisPIN.setText("");
+						String sThisName = xStd.getDestinationPremName();
+						if( sThisName == null || sThisName.trim().length() == 0 )
+							sThisName = xStd.getDestinationPersonName();
+						jtfThisPIN.setText(xStd.getDestinationPremId());
+						jtfThisName.setText(sThisName);
+						jtfPhone.setText(xStd.getDestinationPhone());
+						jtfAddress.setText(xStd.getDestinationStreet());
+						jtfThisCity.setText(xStd.getDestinationCity());
+						String sThisState = CivetConfig.getHomeStateAbbr();
+						String sThisCountyIn = xStd.getDestinationCounty();
+						String sThisZip = xStd.getDestinationZip();
+						String sThisHerdsCounty = getCounty( sThisState, sThisCountyIn, sThisZip);
+						cbThisCounty.setSelectedItem(sThisHerdsCounty);
+						jtfZip.setText(xStd.getDestinationZip());
+						String sVetName = xStd.getVetName();
+						jtfIssuedBy.setText(sVetName);
+
+					}
+					java.util.Date dIssueDate = xStd.getIssueDate();
+					jtfDateInspected.setDate(dIssueDate);
+					jtfCVINo.setText(xStd.getCertificateNumber());
+					// Species multiples are an issue
+					loadSpeciesFromStdXml(xStd);
+					// Overly simplistic.  Only works if spelling matches
+					String sPurposeCode = xStd.getMovementPurpose();
+					cbPurpose.setSelectedKey(sPurposeCode);
+					// Load data from included XmlMetaData "file"
+					CviMetaDataXml meta = xStd.getMetaData();
+					//			System.out.println( meta.getXmlString() );
+					if( meta != null ) {
+						// Make no assumption about received date.
+						java.util.Date dReceived = meta.getBureauReceiptDate();
+						jtfDateReceived.setDate(dReceived);
+						ArrayList<String> aErrors = meta.listErrors();
+						if( aErrors == null ) {
+							aErrorKeys = new ArrayList<String>();
 							lError.setVisible(false);
+						}
+						else {
+							aErrorKeys = aErrors;
+							if( aErrorKeys.size() > 0 )
+								lError.setVisible(true);
+							else
+								lError.setVisible(false);
+						}
+						sErrorNotes = meta.getErrorNote();
+
 					}
-					sErrorNotes = meta.getErrorNote();
-					
-				}
-				else {
-					if( jtfDateReceived.getDate() == null ) {
-						if( CivetConfig.isDefaultReceivedDate() ) 
-							jtfDateReceived.setDate(new java.util.Date());
-						else
-							jtfDateReceived.setText("");
+					else {
+						if( jtfDateReceived.getDate() == null ) {
+							if( CivetConfig.isDefaultReceivedDate() ) 
+								jtfDateReceived.setDate(new java.util.Date());
+							else
+								jtfDateReceived.setText("");
+						}
+						aErrorKeys = new ArrayList<String>();
+						lError.setVisible(false);					
 					}
-					aErrorKeys = new ArrayList<String>();
-					lError.setVisible(false);					
+					Component c = traversal.getComponentByName(traversal.getProperty("pPDFLoaded"));
+					if( c != null)
+						c.requestFocus();
 				}
-				Component c = traversal.getComponentByName(traversal.getProperty("pPDFLoaded"));
-				if( c != null)
-					c.requestFocus();
+				bInClearForm = false;
+			} catch( Exception e ) {
+				logger.error("Unexpected error loading from XML standard document", e);
 			}
-			bInClearForm = false;
 		}
 	}
 	
@@ -2454,16 +2458,18 @@ public final class CivetEditDialog extends JFrame {
 				sAnimalID = "CO/KS No ID";  // This will flag as individual animal record in XML
 			boolean bSet = false;
 			SpeciesLookup sppLookup = null;
-			if( !aBadSpecies.contains(sSpeciesCode) )
+			if( aBadSpecies == null || !aBadSpecies.contains(sSpeciesCode) )
 				sppLookup = new SpeciesLookup( sSpeciesCode );
 			if( sppLookup == null || sppLookup.getSpeciesName() == null ) {
 				aBadSpecies.add(sSpeciesCode);
-				sSpeciesCode = null;
-				sSpeciesName = null;
-				continue;  // Without a valid code, we cannot create a valid animal.
+				sSpeciesCode = "OTH";
+				sSpeciesName = "Other";
+				//continue;  // Without a valid code, we cannot create a valid animal.
 				// TODO: Replace giving up with a dialog to select species?
 			}
-			sSpeciesName = sppLookup.getSpeciesName();
+			else {
+				sSpeciesName = sppLookup.getSpeciesName();
+			}
 			if( sSpeciesCode != null && sAnimalID != null && sAnimalID.trim().length() > 0 ) {
 				idListModel.addRow(sSpeciesCode, sSpeciesName, sAnimalID);
 			}
@@ -2486,6 +2492,19 @@ public final class CivetEditDialog extends JFrame {
 			sSpeciesCode = std.getSpeciesCode(groups.item(i));
 			int iQuantity = std.getQuantity(groups.item(i));
 			boolean bSet = false;
+			SpeciesLookup sppLookup = null;
+			if( aBadSpecies == null || !aBadSpecies.contains(sSpeciesCode) )
+				sppLookup = new SpeciesLookup( sSpeciesCode );
+			if( sppLookup == null || sppLookup.getSpeciesName() == null ) {
+				aBadSpecies.add(sSpeciesCode);
+				sSpeciesCode = "OTH";
+				sSpeciesName = "Other";
+				//continue;  // Without a valid code, we cannot create a valid animal.
+				// TODO: Replace giving up with a dialog to select species?
+			}
+			else {
+				sSpeciesName = sppLookup.getSpeciesName();
+			}
 			if( aSpecies.size() > 0 ) {
 				for( SpeciesRecord r : aSpecies ) {
 					if( r.sSpeciesCode.equals(sSpeciesCode) ) {
@@ -2533,8 +2552,16 @@ public final class CivetEditDialog extends JFrame {
 		File fDataFile = new File( sDataFile );
 		try {
 			String sDataXml = FileUtils.readTextFile(fDataFile);
-			CoKsXML coks = new CoKsXML( sDataXml );
-			populateFromCoKs(coks);
+			// Check to see if this is a version 2 schema file
+			int iV2Loc = sDataXml.indexOf("http://www.usaha.org/xmlns/ecvi2");
+			if( iV2Loc > 0 && iV2Loc < 200 ) {
+				StdeCviXml stde = new StdeCviXml(sDataXml, 2);
+				populateFromStdXml(stde);
+			}
+			else {
+				CoKsXML coks = new CoKsXML( sDataXml );
+				populateFromCoKs(coks);
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error(e);
