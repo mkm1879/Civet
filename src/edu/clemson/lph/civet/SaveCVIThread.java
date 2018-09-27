@@ -323,6 +323,7 @@ public class SaveCVIThread extends Thread {
 			stdXml.validateHerdsDestinationCounty();
 		}
 		StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder(stdXml);
+	System.out.println(xmlBuilder.getXMLString());
 		for( String sPreviousCode : mSpeciesChanges.keySet() ) {
 			String sNewCode = mSpeciesChanges.get(sPreviousCode);
 			xmlBuilder.updateSpecies(sPreviousCode, sNewCode);
@@ -330,7 +331,7 @@ public class SaveCVIThread extends Thread {
 		VetLookup vet = new VetLookup( iIssuedByKey );
 		xmlBuilder.setCviNumber(sCVINo);
 		xmlBuilder.setIssueDate(dDateIssued);
-		if( !bXFA ) {  // Don't override vet that signed XFA document
+		if( !bXFA && stdXml.getVetName() == null ) {  // Don't override vet that signed XFA or mCVI or V2 document
 			Element eVet = null;
 			if( bImport ) {
 				xmlBuilder.setVet(sIssuedByName);

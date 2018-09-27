@@ -2557,6 +2557,7 @@ public final class CivetEditDialog extends JFrame {
 			if( iV2Loc > 0 && iV2Loc < 200 ) {
 				StdeCviXml stde = new StdeCviXml(sDataXml, 2);
 				populateFromStdXml(stde);
+				controller.setStdXml(stde);
 			}
 			else {
 				CoKsXML coks = new CoKsXML( sDataXml );

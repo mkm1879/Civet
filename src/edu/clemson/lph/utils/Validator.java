@@ -63,7 +63,7 @@ public class Validator extends org.xml.sax.helpers.DefaultHandler {
 	  
 	  public static void main( String[] args ) {
 		  Validator v = new Validator("ecviDraftRelaxed.xsd");
-		  if( v.isValidXMLFile("TestErrors.cvi") )
+		  if( v.isValidXMLFile("TestFile.cvi") )
 			  System.out.println("Valid");
 		  else {
 			  System.out.println( v.getLastError() );

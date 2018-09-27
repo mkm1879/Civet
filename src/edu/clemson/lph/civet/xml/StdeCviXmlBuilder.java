@@ -182,13 +182,22 @@ public class StdeCviXmlBuilder {
 		if( sName == null || sName.trim().length() == 0 )
 			sName = "Not Entered";
 		if( isValidDoc() && sName != null && sName.trim().length() > 0 ) {
-			eVet = doc.createElement("Veterinarian");
-			Node after = childNodeByNames(root,"MovementPurpose,Origin,Destination,Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");
-			root.insertBefore(eVet, after);
-			Element person = doc.createElement("Person");
-			eVet.appendChild(person);
-			Element name = doc.createElement("Name");
-			person.appendChild(name);
+			eVet = childElementByName(root,"Veterinarian");
+			if( eVet == null ) {
+				eVet = doc.createElement("Veterinarian");
+				Node after = childNodeByNames(root,"MovementPurposes,Origin,Destination,Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");
+				root.insertBefore(eVet, after);
+			}
+			Element person = childElementByName(eVet,"Person");
+			if( person == null ) {
+				person = doc.createElement("Person");
+				eVet.appendChild(person);
+			}
+			Element name = childElementByName(eVet,"Person");
+			if( name == null ) {
+				doc.createElement("Name");
+				person.appendChild(name);
+			}
 			name.setTextContent(sName);
 		}
 		return eVet;

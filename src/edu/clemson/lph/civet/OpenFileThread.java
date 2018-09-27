@@ -160,6 +160,7 @@ public class OpenFileThread extends Thread {
 				dlg.getController().setCurrentPdfBytes( rawPdfBytes );
 				dlg.getController().setupFile();
 				if( stdXml != null ) {
+					dlg.getController().setStdXml(stdXml);
 					dlg.populateFromStdXml(stdXml);
 					if( bViewOnly )
 						dlg.setMode(CivetEditDialog.VIEW_MODE);
