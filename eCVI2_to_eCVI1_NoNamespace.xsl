@@ -146,7 +146,44 @@
 
 
     <xsl:template match="v2:AddressBlock">
-        <xsl:variable name="block" select="."/>
+        
+        <xsl:element  name="Address">
+            <xsl:choose>
+                <xsl:when test="/v2:eCVI/@CviNumberIssuedBy='AGV'">
+                    <xsl:call-template name="agViewAddressBlock">
+                        <xsl:with-param name="block" select="."/>
+                    </xsl:call-template>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:call-template name="otherAddressBlock">
+                        <xsl:with-param name="block" select="."/>
+                    </xsl:call-template>
+                </xsl:otherwise>
+            </xsl:choose>
+
+        </xsl:element>
+     </xsl:template>
+    
+    <xsl:template name="agViewAddressBlock">
+        <xsl:param name="block"/>
+        <xsl:variable name="line1" select="substring-before($block, ', ')"/>
+        <xsl:variable name="rest1" select="substring-after($block, ', ')"/>
+        <xsl:variable name="town" select="substring-before($rest1, ', ')"/>
+        <xsl:variable name="rest2" select="substring-after($rest1, ', ')"/>
+        <xsl:variable name="state" select="substring-before($rest2, ', ')"/>
+        <xsl:variable name="rest3" select="substring-after($rest2, ', ')"/>
+        <xsl:variable name="rest4" select="substring-after($rest3, ', ')"/>
+        <xsl:variable name="zip" select="$rest4"/>
+        
+        <xsl:element name="Line1"><xsl:value-of select="$line1"/></xsl:element>
+        <xsl:element name="Town"><xsl:value-of select="$town"/></xsl:element>
+        <xsl:element name="State"><xsl:value-of select="$state"/></xsl:element>
+        <xsl:element name="Zip"><xsl:value-of select="$zip"/></xsl:element>
+        
+    </xsl:template>
+
+    <xsl:template name="otherAddressBlock">
+        <xsl:param name="block"/>
         <xsl:variable name="line1" select="substring-before($block, '&#xa;')"/>
         <xsl:variable name="line2" select="substring-after($block, '&#xa;')"/>
         <xsl:variable name="aline1" select="substring-before($block, ', ')"/>
@@ -160,104 +197,46 @@
         <xsl:variable name="astate" select="substring($arest, 1, 2)"/>
         <xsl:variable name="azip" select="substring(substring-after($arest, ' '), 1, 5)"/>
         
-        <xsl:element  name="Address">
-            <xsl:element  name="Line1">
-                <xsl:choose>
-                    <xsl:when test="contains($block, '&#xa;')">
-                        <xsl:value-of select="substring(normalize-space($line1),1,50)"/>
-                    </xsl:when>
-                    <xsl:when test="contains($block, ',')">
-                        <xsl:value-of select="substring(normalize-space($aline1),1,50)"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:value-of select="substring(normalize-space($block),1,50)"/>                        
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:element>
-            <xsl:element  name="Line2">
-                <xsl:choose>
-                    <xsl:when test="contains($block, '&#xa;')">
-                        <xsl:value-of select="substring(normalize-space($line2),1,50)"/>
-                    </xsl:when>
-                    <xsl:when test="contains($block, ', ')">
-                        <xsl:value-of select="substring(normalize-space($aline2),1,50)"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:value-of select="substring(normalize-space($block),50,50)"/>                        
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:element>
-            <xsl:element  name="Town">
-            </xsl:element>
-            <xsl:element  name="State">AA</xsl:element>
-            <xsl:element  name="ZIP">
-                 <xsl:choose>
-                    <xsl:when test="string(number(substring($zip,7,5))) = substring($zip,7,5)
-                        and not(contains($zip,'-'))">
-                        <xsl:value-of select="substring($zip,7,5)"/>
-                    </xsl:when>
-                     <xsl:otherwise>00000</xsl:otherwise>
-                </xsl:choose>
-             </xsl:element>
+        <xsl:element  name="Line1">
+            <xsl:choose>
+                <xsl:when test="contains($block, '&#xa;')">
+                    <xsl:value-of select="substring(normalize-space($line1),1,50)"/>
+                </xsl:when>
+                <xsl:when test="contains($block, ',')">
+                    <xsl:value-of select="substring(normalize-space($aline1),1,50)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="substring(normalize-space($block),1,50)"/>                        
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:element>
-        <!-- Attempt to parse out the important parts of address 
-        <xsl:element  name="Address">
-            <xsl:element  name="Line1">
-                <xsl:choose>
-                    <xsl:when test="substring-after($line1, ',')">
-                        <xsl:value-of select="substring($aline1,1,50)"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:value-of select="substring($line1,1,50)"/>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:element>
-            <xsl:element  name="Line2">
-                <xsl:choose>
-                    <xsl:when test="substring-after($line1, ',')">
-                        <xsl:value-of select="substring(substring-before($aline2, ','),1,50)"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:value-of select="substring(substring-before($line2, ','),1,50)"/>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:element>
-            <xsl:element  name="Town">
-                <xsl:choose>
-                    <xsl:when test="substring-after($line1, ',')">
-                        <xsl:value-of select="substring($atown,1,50)"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:value-of select="substring($town,1,50)"/>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:element>
-            <xsl:element  name="State">
-                <xsl:choose>
-                    <xsl:when test="not($state or $astate)">AA</xsl:when>
-                    <xsl:when test="substring-after($line1, ',')">
-                        <xsl:value-of select="substring($astate,1,2)"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:value-of select="substring($state,1,2)"/>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:element>
-            <xsl:element  name="ZIP">
-                <xsl:choose>
-                    <xsl:when test="not(string(number($zip)) = $zip or string(number($azip)) = $azip)">00000</xsl:when>
-                    <xsl:when test="substring-after($line1, ',')">
-                        <xsl:value-of select="substring($azip,1,5)"/>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:value-of select="substring($zip,1,5)"/>
-                    </xsl:otherwise>
-                </xsl:choose>
-              </xsl:element>
+        <xsl:element  name="Line2">
+            <xsl:choose>
+                <xsl:when test="contains($block, '&#xa;')">
+                    <xsl:value-of select="substring(normalize-space($line2),1,50)"/>
+                </xsl:when>
+                <xsl:when test="contains($block, ', ')">
+                    <xsl:value-of select="substring(normalize-space($aline2),1,50)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="substring(normalize-space($block),50,50)"/>                        
+                </xsl:otherwise>
+            </xsl:choose>
         </xsl:element>
-              -->
+        <xsl:element  name="Town">
+        </xsl:element>
+        <xsl:element  name="State">AA</xsl:element>
+        <xsl:element  name="ZIP">
+            <xsl:choose>
+                <xsl:when test="string(number(substring($zip,7,5))) = substring($zip,7,5)
+                    and not(contains($zip,'-'))">
+                    <xsl:value-of select="substring($zip,7,5)"/>
+                </xsl:when>
+                <xsl:otherwise>00000</xsl:otherwise>
+            </xsl:choose>
+        </xsl:element>
+        
     </xsl:template>
-
     <xsl:template match="v2:MovementPurpose">
         <xsl:element  name="MovementPurpose">
             <xsl:call-template name="MovementPurpose">
