@@ -163,7 +163,7 @@
 
         </xsl:element>
      </xsl:template>
-    
+     
     <xsl:template name="agViewAddressBlock">
         <xsl:param name="block"/>
         <xsl:variable name="line1" select="substring-before($block, ', ')"/>
@@ -308,6 +308,7 @@
                     v2:AnimalTags/v2:AIN | v2:AnimalTags/v2:MfrRFID | v2:AnimalTags/v2:NUES9
                     | v2:AnimalTags/v2:NUES8 | v2:AnimalTags/v2:OtherOfficialID | v2:AnimalTags/v2:ManagementID">
                 <xsl:variable name="type" select="name(.)"/>
+                <xsl:variable name="number" select="./@Number"/>
                 <xsl:element  name="AnimalTag">
                     <xsl:attribute name="Type">
                         <xsl:call-template name="TagType">
@@ -315,7 +316,14 @@
                         </xsl:call-template>
                     </xsl:attribute>
                     <xsl:attribute name="Number">
-                        <xsl:value-of select="./@Number"/>
+                        <xsl:choose>
+                            <xsl:when test="$number = ''">
+                                <xsl:text>Not provided</xsl:text>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:value-of select="./@Number"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </xsl:attribute>
                 </xsl:element>
             </xsl:for-each>
@@ -449,7 +457,7 @@
 
     <xsl:template name="TagType">
         <xsl:param name="type"/>
-        <xsl:choose>
+         <xsl:choose>
             <xsl:when test="$type = 'AMID'">AMID</xsl:when>
             <xsl:when test="$type = 'BT'">BT</xsl:when>
             <xsl:when test="$type = 'IMP'">IMP</xsl:when>

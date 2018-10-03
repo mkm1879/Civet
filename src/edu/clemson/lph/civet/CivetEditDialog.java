@@ -2557,7 +2557,7 @@ public final class CivetEditDialog extends JFrame {
 			if( iV2Loc > 0 && iV2Loc < 200 ) {
 				StdeCviXml stde = new StdeCviXml(sDataXml, 2);
 				populateFromStdXml(stde);
-				controller.setStdXml(stde);
+//				controller.setStdXml(stde);
 			}
 			else {
 				CoKsXML coks = new CoKsXML( sDataXml );
@@ -2670,6 +2670,7 @@ public final class CivetEditDialog extends JFrame {
 		setImport(rbImport.isSelected());
 		boolean bInbound = rbImport.isSelected();
 		boolean bXFA = false;
+		boolean bAgView = false;
 		String sOtherState = cbOtherState.getSelectedValue();
 		String sOtherStateCode = States.getStateCode(sOtherState);
 		String sOtherName = jtfOtherName.getText();
@@ -2723,6 +2724,9 @@ public final class CivetEditDialog extends JFrame {
 			bXFA = true;  // this will prevent overwriting some values
 				// Should really disable those controls.  But some want to override!
 		}
+		if( controller.isAgViewDocument() ) {
+			bAgView = true;
+		}
 		if( sOtherState == null || sOtherState.trim().length() == 0 || aSpecies.size() == 0 
 				|| dDateIssued == null || dDateReceived == null ) {
 			String sFields = "";
@@ -2770,7 +2774,7 @@ public final class CivetEditDialog extends JFrame {
 		}
 		String sOpenedAsFileName = controller.getCurrentFileName();
 		SaveCVIThread thread = new SaveCVIThread(this, stdXml, sOpenedAsFileName, bAttachmentBytes,
-				sAttachmentFileName, fAttachmentFile, bInbound, bXFA, sOtherStateCode,
+				sAttachmentFileName, fAttachmentFile, bInbound, bXFA, bAgView, sOtherStateCode,
 				sOtherName, sOtherAddress, sOtherCity, sOtherCounty, sOtherZipcode, sOtherPIN,
 				sThisPremisesId, sThisName, sPhone,
 				sStreetAddress, sCity, sThisCounty, sZipcode,

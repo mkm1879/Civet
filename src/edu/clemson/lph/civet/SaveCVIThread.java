@@ -48,7 +48,7 @@ import edu.clemson.lph.utils.IDTypeGuesser;
 
 public class SaveCVIThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private static final long MAX_SANE_SIZE = 10000000;
+	private static final long MAX_SANE_SIZE = 5000000;
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_CIVET;
 	private CivetEditDialog dlg;
 	private ProgressDialog prog;
@@ -92,9 +92,11 @@ public class SaveCVIThread extends Thread {
 	private boolean bNoEmail;
 	private boolean bCancel = false;
 	private boolean bXFA = false;
+	private boolean bAgView = false;
 
 	public SaveCVIThread(CivetEditDialog dlg, StdeCviXml stdXmlIn, String sOpenedAsFileName,
-			byte[] bAttachmentBytesIn, String sOriginalFileName, File fOriginalFileIn, boolean bImport, boolean bXFAIn,
+			byte[] bAttachmentBytesIn, String sOriginalFileName, File fOriginalFileIn, 
+			boolean bImport, boolean bXFAIn, boolean bAgViewIn,
 			String sOtherStateCode, String sOtherName, String sOtherAddress, String sOtherCity, 
 			String sOtherCounty, String sOtherZipcode, String sOtherPIN,
 			String sThisPIN, String sThisName, String sPhone,
@@ -178,6 +180,7 @@ public class SaveCVIThread extends Thread {
 			for( AnimalIDRecord rID : aAnimalIDs )
 				this.aAnimalIDs.add( rID );
 		this.bXFA = bXFAIn;
+		this.bAgView = bAgViewIn;
 	}
 
 
@@ -323,7 +326,6 @@ public class SaveCVIThread extends Thread {
 			stdXml.validateHerdsDestinationCounty();
 		}
 		StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder(stdXml);
-	System.out.println(xmlBuilder.getXMLString());
 		for( String sPreviousCode : mSpeciesChanges.keySet() ) {
 			String sNewCode = mSpeciesChanges.get(sPreviousCode);
 			xmlBuilder.updateSpecies(sPreviousCode, sNewCode);
@@ -331,7 +333,7 @@ public class SaveCVIThread extends Thread {
 		VetLookup vet = new VetLookup( iIssuedByKey );
 		xmlBuilder.setCviNumber(sCVINo);
 		xmlBuilder.setIssueDate(dDateIssued);
-		if( !bXFA && stdXml.getVetName() == null ) {  // Don't override vet that signed XFA or mCVI or V2 document
+		if( !bXFA && (stdXml == null || stdXml.getVetName() == null) ) {  // Don't override vet that signed XFA or mCVI or V2 document
 			Element eVet = null;
 			if( bImport ) {
 				xmlBuilder.setVet(sIssuedByName);
@@ -352,6 +354,7 @@ public class SaveCVIThread extends Thread {
 		xmlBuilder.setAddress(eDestination, sDestinationAddress, sDestinationCity, sDestinationCounty, sDestinationStateCode, sDestinationZipCode);
 		// Add animals and groups.  This logic is tortured!
 		// This could be greatly improved to better coordinate with CO/KS list of animals and the standard's group concept.
+		xmlBuilder.clearGroups();
 		for( SpeciesRecord sr : aSpecies ) {
 			// Only add group lot if not officially IDd so count ids and subtract
 			String sSpeciesCode = sr.sSpeciesCode;
@@ -368,9 +371,10 @@ public class SaveCVIThread extends Thread {
 					xmlBuilder.addGroup(sr.iNumber - iCountIds, "Group Lot", sSpeciesCode, null, null );
 			}
 		}
+		xmlBuilder.clearAnimals();
 		if( aAnimalIDs != null ) {
 			for( AnimalIDRecord ar : aAnimalIDs ) {
-				if( "CO/KS No ID".equals(ar.sTag) ) {
+				if( "CO/KS No ID".equals(ar.sTag) || "Not provided".equals(ar.sTag) ) {
 					xmlBuilder.addAnimal( ar.sSpeciesCode, dDateIssued,null,null,null,"UN","");
 				}
 				else {
@@ -379,7 +383,7 @@ public class SaveCVIThread extends Thread {
 				}
 			}
 		}
-		if( !bXFA ) { 
+		if( !bXFA && !bAgView ) { 
 			// Don't check size on XFA PDFs because we don't control those.
 			if( bAttachmentFileBytes != null ) {
 				if( bAttachmentFileBytes.length > MAX_SANE_SIZE ) {

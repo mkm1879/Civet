@@ -180,8 +180,13 @@ public class Counties  {
 			}
 			return other.sState.equals(this.sState) && other.sAlias.equals(this.sAlias);
 		}
+		/**
+		 * Note:  This would be implemented as Objects.getHash() but that was only added in Java 1.7
+		 * This variant should be a Java 6 safe alternative.
+		 */
 		public int hashCode() {
-			return Objects.hash(sState, sAlias);
+			String sStateAlias = sState + sAlias;
+			return sStateAlias.hashCode();
 		}
 	}
 }

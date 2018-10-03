@@ -193,9 +193,9 @@ public class StdeCviXmlBuilder {
 				person = doc.createElement("Person");
 				eVet.appendChild(person);
 			}
-			Element name = childElementByName(eVet,"Person");
+			Element name = childElementByName(person,"Name");
 			if( name == null ) {
-				doc.createElement("Name");
+				name = doc.createElement("Name");
 				person.appendChild(name);
 			}
 			name.setTextContent(sName);
@@ -560,6 +560,13 @@ public class StdeCviXmlBuilder {
 		return null;
 	}
 	
+	public void clearAnimals() {
+		ArrayList<Element> eAnimals = XMLUtility.listChildElementsByName(root, "Animal");
+		for( Element eAnimal : eAnimals) {
+			root.removeChild(eAnimal);
+		}
+	}
+	
 	public Element addAnimal( String sSpecies, java.util.Date dInspectionDate, String sBreed, String sAge, String sSex, 
 								String sTagType, String sTagNumber ) {
 		if( !isValidDoc() ) 
@@ -619,6 +626,12 @@ public class StdeCviXmlBuilder {
 		return;
 	}
 
+	public void clearGroups() {
+		ArrayList<Element> eGroups = XMLUtility.listChildElementsByName(root, "Group");
+		for( Element eGroup : eGroups) {
+			root.removeChild(eGroup);
+		}
+	}
 	
 	public Element addGroup( int iNum, String sDescription, String sSpecies, String sAge, String sSex ) {
 		Element group = null;
@@ -686,7 +699,7 @@ public class StdeCviXmlBuilder {
 	}
 	
 	public void addPDFAttachement( byte[] pdfBytes, String sFileName ) {
-		if( isValidDoc() && pdfBytes != null && pdfBytes.length > 0 ) {
+		if( isValidDoc() && pdfBytes != null && pdfBytes.length > 0 && !attachmentExists(sFileName)) {
 			String sPDF64 = new String(Base64.encodeBase64(pdfBytes));
 			try {
 				Element attach = doc.createElement("Attachment");
@@ -701,6 +714,23 @@ public class StdeCviXmlBuilder {
 				logger.error("Should not see this error for unsupported encoding", e);
 			}
 		}
+	}
+	
+	private boolean attachmentExists( String sFileName ) {
+		boolean bRet = false;
+		NodeList attachments = root.getElementsByTagName("Attachment");
+		for( int i = 0; i < attachments.getLength(); i++ ) {
+			Node nNext = attachments.item(i);
+			if( nNext instanceof Element ) {
+				Element attachment = (Element)nNext;
+				String sExistingFileName = attachment.getAttribute("Filename");
+				if( sExistingFileName != null && sExistingFileName.equals(sFileName) ) {
+					bRet = true;
+					break;
+				}
+			}
+		}
+		return bRet;
 	}
 	
 	public void addMetadataAttachement( CviMetaDataXml metaData ) {

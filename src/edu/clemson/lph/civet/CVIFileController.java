@@ -555,7 +555,32 @@ public class CVIFileController {
 		sRet = sCVIPath.substring(0,iLastDot) + ".XML";
 		return sRet;
 	}
+	/**
+	 * @return if this is an mCVI PDF and we can read it with its XML file.
+	 */
+	public boolean isAgViewDocument() {
+		boolean bRet = false;
+		if( currentFileName.toLowerCase().endsWith(".pdf") ) {
+			try {
+				String sDataFile = getAgViewDataFilename( getCurrentFile() );
+				File fDataFile = new File( sDataFile );
+				if( fDataFile.exists() ) 
+					bRet = true;
+			} catch( Exception e ) {
+				bRet = false;
+			}
+		}
+		return bRet;
+	}
 	
+	public static String getAgViewDataFilename( File fCVI ) {
+		String sRet = null;
+		String sCVIPath = fCVI.getAbsolutePath();
+		int iLastDot = sCVIPath.lastIndexOf('.');
+		sRet = sCVIPath.substring(0,iLastDot) + ".xml";
+		return sRet;
+	}
+
 	/**
 	 * Get the appropriate byte array to include in standard XML.  This will be read from file for Images or XFAPDF files
 	 * and extracted pages from other PDF files.
@@ -660,8 +685,13 @@ public class CVIFileController {
 			aPagesInCurrent.clear();
 			if( isMCviDocument() ) {
 				dlg.populateFromMCvi(getMCviDataFilename(getCurrentFile()));
+				dlg.setRotation(0);
 			}
-			if( isXFADocument() ) {
+			else if( isAgViewDocument() ) {
+				dlg.populateFromMCvi(getAgViewDataFilename(getCurrentFile()));
+				dlg.setRotation(0);
+			}
+			else if( isXFADocument() ) {
 				if( !CivetConfig.isJPedalXFA() && CivetConfig.isAutoOpenPdf() ) {
 					PDFOpener opener = new PDFOpener(dlg);
 					opener.openPDFContentInAcrobat(getCurrentPdfBytes());
