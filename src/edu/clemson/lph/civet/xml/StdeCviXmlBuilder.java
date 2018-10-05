@@ -571,21 +571,18 @@ public class StdeCviXmlBuilder {
 								String sTagType, String sTagNumber ) {
 		if( !isValidDoc() ) 
 			return null;
-		Element animal = getAnimalByTag( sTagNumber );
-		if(animal == null ) {
-			animal = doc.createElement("Animal");
-			Node after = childNodeByNames(root,"GroupLot,Attachment");
-			root.insertBefore(animal,after);
-			animal.setAttribute("SpeciesCode", sSpecies);
-			String sInspectionDate = dateFormat.format(dInspectionDate);
-			animal.setAttribute("InspectionDate", sInspectionDate);
-			if( sAge != null && sAge.trim().length() > 0 )
-				animal.setAttribute("Age", sAge);
-			if( sSex != null && sSex.trim().length() > 0 )
-				animal.setAttribute("Sex", sSex);
-			if( sTagNumber != null && sTagNumber.trim().length() > 0 )
-				addAnimalTag( animal, sTagType, sTagNumber );
-		}
+		Element animal = doc.createElement("Animal");
+		Node after = childNodeByNames(root,"GroupLot,Attachment");
+		root.insertBefore(animal,after);
+		animal.setAttribute("SpeciesCode", sSpecies);
+		String sInspectionDate = dateFormat.format(dInspectionDate);
+		animal.setAttribute("InspectionDate", sInspectionDate);
+		if( sAge != null && sAge.trim().length() > 0 )
+			animal.setAttribute("Age", sAge);
+		if( sSex != null && sSex.trim().length() > 0 )
+			animal.setAttribute("Sex", sSex);
+		if( sTagNumber != null && sTagNumber.trim().length() > 0 )
+			addAnimalTag( animal, sTagType, sTagNumber );
 		return animal;
 	}
 	

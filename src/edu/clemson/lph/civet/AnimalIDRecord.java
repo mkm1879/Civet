@@ -49,6 +49,7 @@ public class AnimalIDRecord {
 
 	@Override
 	public int hashCode() {
-		return sSpeciesCode.hashCode();
+		String sAll = sSpeciesCode + sTag;
+		return sAll.hashCode();
 	}
 }

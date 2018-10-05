@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns="http://www.usaha.org/xmlns/ecvi" xmlns:ecvi="http://www.usaha.org/xmlns/ecvi"
-    xmlns:my="http://www.clemson.edu/public/lph/StdECVI" xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" xmlns="http://www.usaha.org/xmlns/ecvi"
+    xmlns:ecvi="http://www.usaha.org/xmlns/ecvi" xmlns:my="http://www.clemson.edu/public/lph/StdECVI"
+    xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/">
     <xsl:output indent="yes" method="xml"/>
     <xsl:strip-space elements="*"/>
     <!-- Get the terrible lookup code stuff out into its own file.  -->
@@ -78,7 +79,7 @@
                     <xsl:element name="Phone">
                         <xsl:attribute name="Type">Unknown</xsl:attribute>
                         <xsl:attribute name="Number">
-                            <xsl:value-of select="translate(phoneNum,' ()-','')"/>
+                            <xsl:value-of select="translate(phoneNum, ' ()-', '')"/>
                         </xsl:attribute>
                     </xsl:element>
                 </xsl:if>
@@ -186,7 +187,7 @@
                 <xsl:element name="Phone">
                     <xsl:attribute name="Type">Unknown</xsl:attribute>
                     <xsl:attribute name="Number">
-                         <xsl:value-of select="translate($data/phoneNum,' ()-','')"/>
+                        <xsl:value-of select="translate($data/phoneNum, ' ()-', '')"/>
                     </xsl:attribute>
                 </xsl:element>
             </xsl:if>
@@ -354,7 +355,15 @@
 
                     <xsl:element name="AnimalTag">
                         <xsl:attribute name="Number">
-                            <xsl:value-of select="rabiesTag"/>
+                            <xsl:choose>
+                                <xsl:when test="rabiesTag and not(rabiesTag = '')">
+                                    <xsl:value-of select="rabiesTag"/>
+                                </xsl:when>
+                                <xsl:when test="description and not(description = '')">
+                                    <xsl:value-of select="description"/>
+                                </xsl:when>
+                                <xsl:otherwise>CO/KS No ID</xsl:otherwise>
+                            </xsl:choose>
                         </xsl:attribute>
                     </xsl:element>
                 </xsl:element>
@@ -503,63 +512,101 @@
     <xsl:template name="PurposeMap">
         <xsl:param name="purpose"/>
         <xsl:choose>
-            <xsl:when test="
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Backgrounding', $smallcase, $uppercase)">other</xsl:when>
-            <xsl:when test="
+                    translate('Backgrounding', $smallcase, $uppercase)"
+                >other</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Breeding', $smallcase, $uppercase)">breeding</xsl:when>
-            <xsl:when test="
+                    translate('Breeding', $smallcase, $uppercase)"
+                >breeding</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Feeding', $smallcase, $uppercase)">feeding</xsl:when>
-            <xsl:when test="
+                    translate('Feeding', $smallcase, $uppercase)"
+                >feeding</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Grazing', $smallcase, $uppercase)">grazing</xsl:when>
-            <xsl:when test="
+                    translate('Grazing', $smallcase, $uppercase)"
+                >grazing</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Medical Treatment', $smallcase, $uppercase)">medicalTreatment</xsl:when>
-            <xsl:when test="
+                    translate('Medical Treatment', $smallcase, $uppercase)"
+                >medicalTreatment</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Other (specify)', $smallcase, $uppercase)">other</xsl:when>
-            <xsl:when test="
+                    translate('Other (specify)', $smallcase, $uppercase)"
+                >other</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Pet', $smallcase, $uppercase)">pet</xsl:when>
-            <xsl:when test="
+                    translate('Pet', $smallcase, $uppercase)"
+                >pet</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Pet Movement', $smallcase, $uppercase)">pet</xsl:when>
-            <xsl:when test="
+                    translate('Pet Movement', $smallcase, $uppercase)"
+                >pet</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Production', $smallcase, $uppercase)">other</xsl:when>
-            <xsl:when test="
+                    translate('Production', $smallcase, $uppercase)"
+                >other</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Race', $smallcase, $uppercase)">race</xsl:when>
-            <xsl:when test="
+                    translate('Race', $smallcase, $uppercase)"
+                >race</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Recreational', $smallcase, $uppercase)">other</xsl:when>
-            <xsl:when test="
+                    translate('Recreational', $smallcase, $uppercase)"
+                >other</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Rodeo', $smallcase, $uppercase)">rodeo</xsl:when>
-            <xsl:when test="
+                    translate('Rodeo', $smallcase, $uppercase)"
+                >rodeo</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Sale', $smallcase, $uppercase)">sale</xsl:when>
-            <xsl:when test="
+                    translate('Sale', $smallcase, $uppercase)"
+                >sale</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Show/Exhibition', $smallcase, $uppercase)">show</xsl:when>
-            <xsl:when test="
+                    translate('Show/Exhibition', $smallcase, $uppercase)"
+                >show</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Show', $smallcase, $uppercase)">show</xsl:when>
-            <xsl:when test="
+                    translate('Show', $smallcase, $uppercase)"
+                >show</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Show/Sale', $smallcase, $uppercase)">show</xsl:when>
-            <xsl:when test="
+                    translate('Show/Sale', $smallcase, $uppercase)"
+                >show</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Slaughter', $smallcase, $uppercase)">slaughter</xsl:when>
-            <xsl:when test="
+                    translate('Slaughter', $smallcase, $uppercase)"
+                >slaughter</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Training', $smallcase, $uppercase)">training</xsl:when>
-            <xsl:when test="
+                    translate('Training', $smallcase, $uppercase)"
+                >training</xsl:when>
+            <xsl:when
+                test="
                     translate($purpose, $smallcase, $uppercase) =
-                    translate('Transit', $smallcase, $uppercase)">other</xsl:when>
+                    translate('Transit', $smallcase, $uppercase)"
+                >other</xsl:when>
             <xsl:otherwise>other</xsl:otherwise>
         </xsl:choose>
     </xsl:template>

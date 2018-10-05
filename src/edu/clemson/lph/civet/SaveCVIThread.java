@@ -375,7 +375,7 @@ public class SaveCVIThread extends Thread {
 		if( aAnimalIDs != null ) {
 			for( AnimalIDRecord ar : aAnimalIDs ) {
 				if( "CO/KS No ID".equals(ar.sTag) || "Not provided".equals(ar.sTag) ) {
-					xmlBuilder.addAnimal( ar.sSpeciesCode, dDateIssued,null,null,null,"UN","");
+					xmlBuilder.addAnimal( ar.sSpeciesCode, dDateIssued,null,null,null,"UN",ar.sTag);
 				}
 				else {
 					String sType = IDTypeGuesser.getTagType(ar.sTag);

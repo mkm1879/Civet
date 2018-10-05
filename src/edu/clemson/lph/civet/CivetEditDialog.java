@@ -2455,7 +2455,7 @@ public final class CivetEditDialog extends JFrame {
 			sSpeciesCode = std.getSpeciesCode(animals.item(i));
 			String sAnimalID = std.getAnimalID(animals.item(i));
 			if( sAnimalID == null || sAnimalID.trim().length() == 0 ) 
-				sAnimalID = "CO/KS No ID";  // This will flag as individual animal record in XML
+				sAnimalID = "Not provided";  // This will flag as individual animal record in XML
 			boolean bSet = false;
 			SpeciesLookup sppLookup = null;
 			if( aBadSpecies == null || !aBadSpecies.contains(sSpeciesCode) )
@@ -2591,7 +2591,7 @@ public final class CivetEditDialog extends JFrame {
 		bInClearForm = true;
 		StdeCviXml std = coks.getStdeCviXml();
 		if( std == null ) {
-			MessageDialog.messageWait(this, "Civet Error:", "Could not convert PDF content to USAHA Standard XML using XSLT\n" +
+			MessageDialog.showMessage(this, "Civet Error:", "Could not convert PDF content to USAHA Standard XML using XSLT\n" +
 					CivetConfig.getCoKsXSLTFile());
 		}
 		else {
@@ -2601,7 +2601,7 @@ public final class CivetEditDialog extends JFrame {
 				String sPurpose =  coks.getPurposeCode();
 					sMsg = sMsg + sPurpose;
 				sMsg = sMsg.substring(0,sMsg.length());
-				MessageDialog.messageLater(null, "Civet Warning: Other Purpose", sMsg );					
+				MessageDialog.showMessage(null, "Civet Warning: Other Purpose", sMsg );					
 			}
 			String sSppCodes = std.getSpeciesCodes();
 			if( sSppCodes != null && sSppCodes.contains("OTH") ) {
@@ -2609,7 +2609,7 @@ public final class CivetEditDialog extends JFrame {
 				for( String sSpp : coks.listSpeciesCodes() )
 					sMsg = sMsg + sSpp + ", ";
 				sMsg = sMsg.substring(0,sMsg.length()-2);
-				MessageDialog.messageLater(null, "Civet Warning: Other Species", sMsg );
+				MessageDialog.showMessage(null, "Civet Warning: Other Species", sMsg );
 			}
 			populateFromStdXml( std );
 			if( jtfDateReceived.getDate() == null && CivetConfig.isDefaultReceivedDate() ) {

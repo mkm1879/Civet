@@ -76,8 +76,7 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 	}
 	
 	public void addRow( String sSpeciesCode, String sSpecies, String sTag ) {
-		rows.add( new AnimalIDRecord( sSpeciesCode, sSpecies, sTag ) );
-		fireTableDataChanged();
+		addRow( new AnimalIDRecord( sSpeciesCode, sSpecies, sTag ) );
 	}
 	
 	public void deleteRow( int iRowID ) {
