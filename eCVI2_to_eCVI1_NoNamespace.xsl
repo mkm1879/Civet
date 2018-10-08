@@ -305,7 +305,7 @@
             </xsl:attribute>
             <xsl:for-each
                 select="
-                    v2:AnimalTags/v2:AIN | v2:AnimalTags/v2:MfrRFID | v2:AnimalTags/v2:NUES9
+                    v2:AnimalTags/v2:AIN | v2:AnimalTags/v2:MfrRFID | v2:AnimalTags/v2:NUES9 
                     | v2:AnimalTags/v2:NUES8 | v2:AnimalTags/v2:OtherOfficialID | v2:AnimalTags/v2:ManagementID">
                 <xsl:variable name="type" select="name(.)"/>
                 <xsl:variable name="number" select="./@Number"/>
@@ -326,6 +326,24 @@
                         </xsl:choose>
                     </xsl:attribute>
                 </xsl:element>
+            </xsl:for-each>
+            <xsl:for-each select="v2:AnimalTags/v2:EquineDescription">
+                <xsl:if test="./@Description">
+                    <xsl:element  name="AnimalTag">
+                        <xsl:attribute name="Type">OTH</xsl:attribute>
+                        <xsl:attribute name="Number">
+                            <xsl:value-of select="./@Description"/>
+                        </xsl:attribute>
+                    </xsl:element>
+                </xsl:if>
+                <xsl:if test="./@Name">
+                    <xsl:element  name="AnimalTag">
+                        <xsl:attribute name="Type">NAME</xsl:attribute>
+                        <xsl:attribute name="Number">
+                            <xsl:value-of select="./@Name"/>
+                        </xsl:attribute>
+                    </xsl:element>
+                </xsl:if>
             </xsl:for-each>
             <xsl:for-each select="v2:AnimalTags/v2:BrandImage">
                 <xsl:element  name="AnimalTag">

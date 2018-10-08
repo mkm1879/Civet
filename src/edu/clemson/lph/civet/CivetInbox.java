@@ -1,6 +1,6 @@
 package edu.clemson.lph.civet;
 /*
-Copyright 2014-2017 Michael K Martin
+Copyright 2014-2018 Michael K Martin
 
 This file is part of Civet.
 
