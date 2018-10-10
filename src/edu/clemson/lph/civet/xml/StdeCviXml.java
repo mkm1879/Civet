@@ -201,7 +201,7 @@ public class StdeCviXml {
 	
 	public String getMovementPurpose() {
 		String sRet = null;
-		String sPath = "//MovementPurpose";
+		String sPath = "//MovementPurposes/MovementPurpose";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}

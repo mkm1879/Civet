@@ -45,10 +45,7 @@ public class V2Transform {
 		    ByteArrayOutputStream baosDest = new ByteArrayOutputStream();
 				transformer.transform(new StreamSource(sourceReader),
 						new StreamResult(baosDest));
-				// Java Transform does weird things with namespace prefixes.
-				// Use transform with no namespace out put and add to document element manually
 				sRet = new String( baosDest.toByteArray(), "UTF-8" );
-			sRet = sRet.replace("<eCVI ", "<eCVI xmlns=\"http://www.usaha.org/xmlns/ecvi\" " );
 			} catch ( TransformerException e) {
 				logger.error("Failed to transform XML with XSLT: " + getTransformFile(), e);
 			} catch (UnsupportedEncodingException e) {
@@ -58,7 +55,7 @@ public class V2Transform {
 	}
 	
 	private static File getTransformFile() {
-		File fTransform = new File( "./eCVI2_to_eCVI1_NoNamespace.xsl");
+		File fTransform = new File( "./eCVI2_to_eCVI1.xsl");
 		return fTransform;
 	}
 	
