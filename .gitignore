@@ -26,6 +26,24 @@ antbin
 *.ppt
 *.lnk
 .properties
+*.jar
+!Civet.jar
+*.txt
+!CivetConfig.txt
+!CertNbrs.txt
+!CivetTabOrderMap.txt
+!Civet*Email*.txt
+!Civet*Template.txt
+!LGPL.txt
+!licence.txt
+!README.txt
+*.zip
+!Civet.zip
+!CivetLib.zip
+*.xml
+Complete/
+References/
+countyFail/
 Publish/*
 CertNbrs.txt
 CivetConfig - Copy.txt
