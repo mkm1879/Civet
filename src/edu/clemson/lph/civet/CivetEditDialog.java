@@ -225,6 +225,7 @@ public final class CivetEditDialog extends JFrame {
 	JMenuItem mntmClose;
 	JMenuItem mntmMinimizeAll;
 	JMenuItem mntmRefresh;
+	CivetEditDialogController controller;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -242,8 +243,20 @@ public final class CivetEditDialog extends JFrame {
 		initializeDisplay();
 	}
 	
-	CivetEditDialog getDialogParent() {
+	public CivetEditDialog getDialogParent() {
 		return dialogParent;
+	}
+	
+	public void setController( CivetEditDialogController c ) {
+		this.controller = c;
+	}
+	
+	public CivetEditDialogController getDialogController() {
+		return controller;
+	}
+	
+	public CVIFileController getController() {
+		return controller.getFileController();
 	}
 
 	/**
@@ -1005,6 +1018,128 @@ public final class CivetEditDialog extends JFrame {
 	void setFiles( int iFiles ) {
 		pCounters.setFiles(iFiles);
 	}
+	
+	/**
+	 * Set the type of file and view-only nature of this dialog.
+	 * @param iMode one of three constants
+	 * 	PDF_MODE - Image PDF whether loaded as a PDF file or generated from some other image type.
+	 *  XML_MODE - Read from a saved Civet "binary" file with attached image PDF.  This will be the mode
+	 *  	for received Civet files when we get that far as well as when we reopen files saved
+	 *  	but not yet submitted to HERDS
+	 *  VIEW_MODE - Civet "binary" file being opened read-only (to view email, etc.)
+	 */
+	public void setMode( int iMode ) {
+		this.iMode = iMode;
+		switch(iMode) {
+		case PDF_MODE:
+			bMode.setIcon( iconPDF );
+			ckSticky.setVisible(true);
+			setFormEditable(true);
+			bSave.setVisible(true);
+			bAddSpecies.setEnabled(true);
+			ckAllVets.setEnabled(true);
+			break;
+		case XML_MODE:
+			bMode.setIcon( iconXML );
+			ckSticky.setVisible(false);
+			setFormEditable(true);
+			bSave.setVisible(true);
+			bAddSpecies.setEnabled(true);
+			ckAllVets.setEnabled(true);
+			break;
+		case VIEW_MODE:
+			bMode.setIcon( iconMAIL );
+			ckSticky.setVisible(false);
+			setFormEditable(false);
+			bSave.setVisible(false);
+			bAddSpecies.setEnabled(false);
+			ckAllVets.setEnabled(false);
+			break;
+		default:
+			logger.error("Unkown mode " + iMode );
+		}
+	}
+	/**
+	 * Enable or disable editing.
+	 * @param bEditable
+	 */
+	void setFormEditable( boolean bEditable ) {
+		rbImport.setEnabled(bEditable);
+		rbExport.setEnabled(bEditable);
+		rbInState.setEnabled(bEditable);
+		cbOtherState.setEnabled(bEditable);
+		jtfOtherName.setEnabled(bEditable);
+		jtfOtherAddress.setEnabled(bEditable);
+		jtfOtherCity.setEnabled(bEditable);
+		jtfOtherZip.setEnabled(bEditable);
+		cbOtherCounty.setEditable(false);
+		cbOtherCounty.setEnabled(bEditable);
+		jtfThisPIN.setEnabled(bEditable);
+		jtfPhone.setEnabled(bEditable);
+		jtfAddress.setEnabled(bEditable);
+		jtfThisCity.setEnabled(bEditable);
+		jtfZip.setEnabled(bEditable);
+		jtfCVINo.setEnabled(bEditable);
+		cbSpecies.setEnabled(bEditable);
+		jtfNumber.setEnabled(bEditable);
+		jtfThisState.setFocusable(false);
+		jtfThisState.setEnabled(bEditable);
+		jtfThisPIN.setEditable(bEditable);
+		jtfThisName.setEnabled(bEditable);
+		jtfPhone.setEditable(bEditable);
+		jtfAddress.setEditable(bEditable);
+		jtfThisCity.setEditable(bEditable);
+		cbThisCounty.setEditable(false);
+		cbThisCounty.setEnabled(bEditable);
+		jtfZip.setEditable(bEditable);
+		jtfDateInspected.setEnabled(bEditable);
+		jtfDateInspected.setEditable(bEditable);
+		jtfDateInspected.setBackground(Color.white);
+		jtfDateReceived.setEnabled(bEditable);
+		jtfDateReceived.setEditable(bEditable);
+		jtfDateReceived.setBackground(Color.white);
+		jtfCVINo.setEditable(bEditable);
+		jtfNumber.setEditable(bEditable);
+		jtfNumber.setBackground(jtfCVINo.getBackground());
+		jtfDateInspected.setEnabled(bEditable);
+		jtfDateInspected.setBackground(jtfCVINo.getBackground());
+		jtfDateReceived.setEnabled(bEditable);
+		jtfDateReceived.setBackground(jtfCVINo.getBackground());
+		jtfIssuedBy.setEnabled(bEditable);
+		jtfIssuedBy.setBackground(jtfCVINo.getBackground());
+		cbPurpose.setEnabled(bEditable);
+		cbIssuedBy.setEnabled(bEditable);
+		bError.setEnabled(bEditable);
+		bAddIDs.setEnabled(bEditable);
+		bBigger.setEnabled(bEditable);
+		bSmaller.setEnabled(bEditable);
+	}
 
+	/**
+	 * Set direction of movement
+	 * @param bImport
+	 */
+	void setImport(boolean bInbound) {
+		bImport = bInbound;
+		if( bInbound ) {
+			tbOtherState.setTitle("From:");
+			tbThisState.setTitle("To:");
+			lIssuedBy.setFont(new Font("Tahoma", Font.PLAIN, 11));
+			cbIssuedBy.setVisible(false);
+			jtfIssuedBy.setVisible(true);
+			ckAllVets.setVisible(false);
+		}
+		else {
+			tbOtherState.setTitle("To:");
+			tbThisState.setTitle("From:");
+			lIssuedBy.setVisible(true);
+			lIssuedBy.setFont(new Font("Tahoma", Font.BOLD, 11));
+			cbIssuedBy.setVisible(true);
+			jtfIssuedBy.setVisible(false);
+			ckAllVets.setVisible(true);
+		}
+		pThisState.repaint();
+		pOtherState.repaint();
+	}
 
 }// End Class CVIPdfEdit

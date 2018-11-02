@@ -457,16 +457,17 @@ public class CivetInbox extends JFrame {
 //	}
 
 	private void doOpenFiles() {
-		CivetEditDialog dlg = new CivetEditDialog( CivetInbox.this );
+		CivetEditDialogController controller = new CivetEditDialogController(this);
+		CivetEditDialog dlg = controller.getDialog();
 		File selectedFiles[] = {};
 		FilesTableModel model = (FilesTableModel)tblInBox.getModel();
 		boolean bView = ( model instanceof EmailFilesTableModel );
 		List<File> files = model.getSelectedFiles(tblInBox);
 			selectedFiles = files.toArray(selectedFiles);
 		if( selectedFiles != null && selectedFiles.length > 0 )
-			dlg.openFiles(selectedFiles, bView);
+			controller.openFiles(selectedFiles, bView);
 		else
-			dlg.selectFiles();
+			controller.selectFiles();
 	}
 	
 	private void doEditPrefs() {
@@ -480,14 +481,15 @@ public class CivetInbox extends JFrame {
 	}
 
 	private void doOpenAll() {
-		CivetEditDialog dlg = new CivetEditDialog( CivetInbox.this );
+		CivetEditDialogController controller = new CivetEditDialogController(this);
+		CivetEditDialog dlg = controller.getDialog();
 		File allFiles[] = {};
 		FilesTableModel model = (FilesTableModel)tblInBox.getModel();
 		boolean bView = (model instanceof EmailFilesTableModel );
 		List<File> files = model.getAllFiles();
 			allFiles = files.toArray(allFiles);
 		if( allFiles != null && allFiles.length > 0 )
-			dlg.openFiles(allFiles, bView);
+			controller.openFiles(allFiles, bView);
 	}
 	
 	private void doSubmitAll() {

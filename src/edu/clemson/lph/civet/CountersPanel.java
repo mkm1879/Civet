@@ -33,15 +33,15 @@ import java.awt.FlowLayout;
 @SuppressWarnings("serial")
 public class CountersPanel extends JPanel {
 	private CivetEditDialog parent;
-	private JPanel pCounters;
-	private JLabel fileCounter1;
-	private JLabel fileCounter2;
-	private JLabel pageCounter1;
-	private JLabel pageCounter2;
-	private JButton bFileBack;
-	private JButton bFileForward;
-	private JButton bPageBack;
-	private JButton bPageForward;
+	 JPanel pCounters;
+	 JLabel fileCounter1;
+	 JLabel fileCounter2;
+	 JLabel pageCounter1;
+	 JLabel pageCounter2;
+	 JButton bFileBack;
+	 JButton bFileForward;
+	 JButton bPageBack;
+	 JButton bPageForward;
 
 	/**
 	 * Create the panel.
@@ -49,12 +49,6 @@ public class CountersPanel extends JPanel {
 	public CountersPanel(CivetEditDialog parent) {
 		this.parent = parent;
 		setLayout( new FlowLayout() );
-		
-		this.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				CountersPanel.this.parent.doPickPage(e);
-			}
-		});
 		
 		/** file back icon */
 		bFileBack = new JButton();
@@ -65,11 +59,6 @@ public class CountersPanel extends JPanel {
 		bFileBack.setIcon(new ImageIcon(getClass().getResource("/edu/clemson/lph/civet/res/back.gif")));
 		bFileBack.setToolTipText("Rewind one file");
 		add(bFileBack);
-		bFileBack.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				CountersPanel.this.parent.getController().fileBackward();
-			}
-		});
 		
 		/**page back icon*/
 		bPageBack = new JButton();
@@ -80,11 +69,6 @@ public class CountersPanel extends JPanel {
 		bPageBack.setIcon(new ImageIcon(getClass().getResource("/edu/clemson/lph/civet/res/pageBack.gif")));
 		bPageBack.setToolTipText("Rewind one page");
 		add(bPageBack);
-		bPageBack.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				CountersPanel.this.parent.getController().pageBack();
-			}
-		});
 
 		pCounters = new JPanel();
 		pCounters.setLayout(new GridLayout(2, 0, 0, 0));
@@ -96,19 +80,9 @@ public class CountersPanel extends JPanel {
 		
 		/** File Counters */
 		fileCounter1=new JLabel("File 1");
-		fileCounter1.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				CountersPanel.this.parent.doPickPage(e);
-			}
-		});
 		pFileCounter.add(fileCounter1);
 		
 		fileCounter2=new JLabel(" of 1");//000 used to set prefered size
-		fileCounter2.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				CountersPanel.this.parent.doPickPage(e);
-			}
-		});
 		pFileCounter.add(fileCounter2);
 		pCounters.add(pFileCounter);
 		this.add(pCounters);
@@ -120,19 +94,9 @@ public class CountersPanel extends JPanel {
 		flowLayout_1.setVgap(0);
 		flowLayout_1.setHgap(0);
 		pageCounter1=new JLabel("Page 1");
-		pageCounter1.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				CountersPanel.this.parent.doPickPage(e);
-			}
-		});
 		pPageCounter.add(pageCounter1);
 		
 		pageCounter2=new JLabel(" of 1");//000 used to set prefered size
-		pageCounter2.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				CountersPanel.this.parent.doPickPage(e);
-			}
-		});
 		pPageCounter.add(pageCounter2);
 		pCounters.add(pPageCounter);
 		
@@ -147,11 +111,6 @@ public class CountersPanel extends JPanel {
 		bPageForward.setIcon(new ImageIcon(getClass().getResource("/edu/clemson/lph/civet/res/pageForward.gif")));
 		bPageForward.setToolTipText("Forward one page");
 		add(bPageForward);
-		bPageForward.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				CountersPanel.this.parent.getController().pageForward();
-			}
-		});
 
 		/**file forward icon*/
 		bFileForward = new JButton();
@@ -163,11 +122,6 @@ public class CountersPanel extends JPanel {
 		bFileForward.setIcon(new ImageIcon(getClass().getResource("/edu/clemson/lph/civet/res/forward.gif")));
 		bFileForward.setToolTipText("Forward one file");
 		add(bFileForward);
-		bFileForward.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				CountersPanel.this.parent.getController().fileForward();
-			}
-		});
 		
 	}
 	

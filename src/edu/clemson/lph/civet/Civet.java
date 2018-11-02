@@ -198,7 +198,7 @@ public class Civet {
 			}
 		}
 		File selectedFiles[] = {fFile};
-		dlg.openFiles(selectedFiles, true);
+//		dlg.openFiles(selectedFiles, true);
 		dlg.setVisible(true);
 		MessageDialog.showMessage(dlg, "Civet: Preview", "File\n" + sFile + "\n\tmoved to Civet InBox\nOpening in Preview");
 	}

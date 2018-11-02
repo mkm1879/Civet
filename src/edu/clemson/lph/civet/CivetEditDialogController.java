@@ -165,15 +165,24 @@ public final class CivetEditDialogController {
 	public CivetEditDialogController( Window parent ){
 		this.parent = parent;
 		dlg = new CivetEditDialog( parent );
-		controller = new CVIFileController( dlg ); 
+		dlg.setController(this);
+		controller = new CVIFileController( this ); 
 		initializeDBComponents();
 		initializeActionHandlers();
 		setAllFocus();
 		setTraversal();
 	}
 	
-	CivetEditDialog getDialogParent() {
+	public CivetEditDialog getDialog() {
+		return dlg;
+	}
+	
+	public CivetEditDialog getDialogParent() {
 		return dlg.getDialogParent();
+	}
+	
+	public CVIFileController getFileController() {
+		return controller;
 	}
 	
 	/**
@@ -187,11 +196,11 @@ public final class CivetEditDialogController {
 				String sDirection = CivetConfig.getDefaultDirection();
 				if( "Import".equalsIgnoreCase(sDirection) ) {
 					dlg.rbImport.setSelected(true);
-					setImport(true);
+					dlg.setImport(true);
 				}
 				else {
 					dlg.rbExport.setSelected(true);
-					setImport(false);
+					dlg.setImport(false);
 				}
 
 				dlg.cbOtherState.setModel( new States() );
@@ -216,7 +225,6 @@ public final class CivetEditDialogController {
 			    
 				dlg.cbPurpose.setModel( new PurposeLookup() );
 				dlg.cbPurpose.refresh();
-//			    cbPurpose.setSelectedItem("Interstate");
 				sDefaultPurpose = CivetConfig.getDefaultPurpose();
 				if( sDefaultPurpose != null )
 					dlg.cbPurpose.setSelectedItem(sDefaultPurpose);
@@ -244,7 +252,7 @@ public final class CivetEditDialogController {
 		dlg.addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				if( dlg.iMode == dlg.VIEW_MODE || YesNoDialog.ask(dlg, "Civet: Close", "Close without saving?") ) {
+				if( dlg.iMode == CivetEditDialog.VIEW_MODE || YesNoDialog.ask(dlg, "Civet: Close", "Close without saving?") ) {
 					doCleanup();
 					dlg.setVisible(false);
 					dlg.dispose();
@@ -304,6 +312,56 @@ public final class CivetEditDialogController {
 				doGotoPage();
 			}
 		});
+		/*
+		 * The page navigation panel has lots of click events.
+		 */
+		{
+			dlg.pCounters.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					doPickPage(e);
+				}
+			});
+			dlg.pCounters.bFileBack.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					controller.fileBackward();
+				}
+			});
+			dlg.pCounters.bPageBack.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					controller.pageBack();
+				}
+			});
+			dlg.pCounters.fileCounter1.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					doPickPage(e);
+				}
+			});
+			dlg.pCounters.fileCounter2.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					doPickPage(e);
+				}
+			});
+			dlg.pCounters.pageCounter1.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					doPickPage(e);
+				}
+			});
+			dlg.pCounters.pageCounter2.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent e) {
+					doPickPage(e);
+				}
+			});
+			dlg.pCounters.bPageForward.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					controller.pageForward();
+				}
+			});
+			dlg.pCounters.bFileForward.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					controller.fileForward();
+				}
+			});
+		}
 		dlg.bEditLast.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -644,92 +702,33 @@ public final class CivetEditDialogController {
 		setPages(iPagesInFile);
 		setFile(iFileNo);
 		setFiles(iFiles);
-		setFormEditable(!bPageComplete && dlg.iMode != dlg.VIEW_MODE);
+		dlg.setFormEditable(!bPageComplete && dlg.iMode != CivetEditDialog.VIEW_MODE);
 		updateCounterPanel();
 		setupSaveButtons();	
 	}
 
-	/**
-	 * Enable or disable editing.
-	 * @param bEditable
-	 */
-	void setFormEditable( boolean bEditable ) {
-		dlg.rbImport.setEnabled(bEditable);
-		dlg.rbExport.setEnabled(bEditable);
-		dlg.rbInState.setEnabled(bEditable);
-		dlg.cbOtherState.setEnabled(bEditable);
-		dlg.jtfOtherName.setEnabled(bEditable);
-		dlg.jtfOtherAddress.setEnabled(bEditable);
-		dlg.jtfOtherCity.setEnabled(bEditable);
-		dlg.jtfOtherZip.setEnabled(bEditable);
-		dlg.cbOtherCounty.setEditable(false);
-		dlg.cbOtherCounty.setEnabled(bEditable);
-		dlg.jtfThisPIN.setEnabled(bEditable);
-		dlg.jtfPhone.setEnabled(bEditable);
-		dlg.jtfAddress.setEnabled(bEditable);
-		dlg.jtfThisCity.setEnabled(bEditable);
-		dlg.jtfZip.setEnabled(bEditable);
-		dlg.jtfCVINo.setEnabled(bEditable);
-		dlg.cbSpecies.setEnabled(bEditable);
-		dlg.jtfNumber.setEnabled(bEditable);
-		dlg.jtfThisState.setFocusable(false);
-		dlg.jtfThisState.setEnabled(bEditable);
-		dlg.jtfThisPIN.setEditable(bEditable);
-		dlg.jtfThisName.setEnabled(bEditable);
-		dlg.jtfPhone.setEditable(bEditable);
-		dlg.jtfAddress.setEditable(bEditable);
-		dlg.jtfThisCity.setEditable(bEditable);
-		dlg.cbThisCounty.setEditable(false);
-		dlg.cbThisCounty.setEnabled(bEditable);
-		dlg.jtfZip.setEditable(bEditable);
-		dlg.jtfDateInspected.setEnabled(bEditable);
-		dlg.jtfDateInspected.setEditable(bEditable);
-		dlg.jtfDateInspected.setBackground(Color.white);
-		dlg.jtfDateReceived.setEnabled(bEditable);
-		dlg.jtfDateReceived.setEditable(bEditable);
-		dlg.jtfDateReceived.setBackground(Color.white);
-		dlg.jtfCVINo.setEditable(bEditable);
-		dlg.jtfNumber.setEditable(bEditable);
-		dlg.jtfNumber.setBackground(dlg.jtfCVINo.getBackground());
-		dlg.jtfDateInspected.setEnabled(bEditable);
-		dlg.jtfDateInspected.setBackground(dlg.jtfCVINo.getBackground());
-		dlg.jtfDateReceived.setEnabled(bEditable);
-		dlg.jtfDateReceived.setBackground(dlg.jtfCVINo.getBackground());
-		dlg.jtfIssuedBy.setEnabled(bEditable);
-		dlg.jtfIssuedBy.setBackground(dlg.jtfCVINo.getBackground());
-		dlg.cbPurpose.setEnabled(bEditable);
-		dlg.cbIssuedBy.setEnabled(bEditable);
-		dlg.bError.setEnabled(bEditable);
-		dlg.bAddIDs.setEnabled(bEditable);
-		dlg.bBigger.setEnabled(bEditable);
-		dlg.bSmaller.setEnabled(bEditable);
-	}
-
-	/**
-	 * Set direction of movement
-	 * @param bImport
-	 */
-	void setImport(boolean bInbound) {
-		dlg.bImport = bInbound;
-		if( bInbound ) {
-			dlg.tbOtherState.setTitle("From:");
-			dlg.tbThisState.setTitle("To:");
-			dlg.lIssuedBy.setFont(new Font("Tahoma", Font.PLAIN, 11));
-			dlg.cbIssuedBy.setVisible(false);
-			dlg.jtfIssuedBy.setVisible(true);
-			dlg.ckAllVets.setVisible(false);
+	void setupSaveButtons() {
+		if( isReopened() ) {
+			dlg.bAddToLast.setVisible(false);			
+		}
+		else if( controller.isXFADocument() || controller.isLastSavedXFA()) {
+			dlg.bAddToLast.setVisible(false);			
+		}
+		else if( controller.getLastSavedFile() == null ){
+			dlg.bAddToLast.setVisible(false);
+		}
+		else if( dlg.iMode != CivetEditDialog.PDF_MODE ) {
+			dlg.bAddToLast.setVisible(false);
 		}
 		else {
-			dlg.tbOtherState.setTitle("To:");
-			dlg.tbThisState.setTitle("From:");
-			dlg.lIssuedBy.setVisible(true);
-			dlg.lIssuedBy.setFont(new Font("Tahoma", Font.BOLD, 11));
-			dlg.cbIssuedBy.setVisible(true);
-			dlg.jtfIssuedBy.setVisible(false);
-			dlg.ckAllVets.setVisible(true);
+			dlg.bAddToLast.setVisible(true);
 		}
-		dlg.pThisState.repaint();
-		dlg.pOtherState.repaint();
+		if( controller.hasLastSaved() ) {
+			dlg.bEditLast.setEnabled(true);
+		}
+		else {
+			dlg.bEditLast.setEnabled(false);
+		}
 	}
 	
 	public String getViewerTitle() { return viewerTitle; }
@@ -904,7 +903,7 @@ public final class CivetEditDialogController {
 	}
 
 	private void cancel() {
-		if( dlg.iMode != dlg.VIEW_MODE ) {
+		if( dlg.iMode != CivetEditDialog.VIEW_MODE ) {
 			if( YesNoDialog.ask(dlg, "Civet: Close", "Close without saving?") ) {
 				doCleanup();
 				dlg.setVisible(false);
@@ -1136,7 +1135,8 @@ public final class CivetEditDialogController {
 						}
 					}
 					else {
-						MessageDialog.showMessage(this, "Civet: Error Premises Not Found", "Found " + model.getRowCount() + " premises for " + jtfThisPIN.getText());
+						MessageDialog.showMessage(dlg, "Civet: Error Premises Not Found", 
+								"Found " + model.getRowCount() + " premises for " + dlg.jtfThisPIN.getText());
 					}
 				} catch (WebServiceException e1) {
 					MessageDialog.showMessage(dlg, "Civet: Error", "Web Service Failure\n" + e1.getMessage());
@@ -1148,68 +1148,69 @@ public final class CivetEditDialogController {
 	}
 
 	void jtfPhone_focusLost(FocusEvent e) {
-	String sPhone = jtfPhone.getText();
+	String sPhone = dlg.jtfPhone.getText();
 		if( sPhone == null || sPhone.trim().length() == 0 || sPhone.equals(sPriorPhone) ) return;
-		PremisesSearchDialog dlg = new PremisesSearchDialog();
+		PremisesSearchDialog dlgSearch = new PremisesSearchDialog();
 		try {
-			dlg.searchPhone(sPhone);
-			if( dlg.exitOK() ) {
-				jtfThisName.setText(dlg.getSelectedPremName());
-				jtfAddress.setText(dlg.getSelectedAddress());
-				jtfThisCity.setText(dlg.getSelectedCity());
-				cbThisCounty.setSelectedItem(Counties.getHerdsCounty(CivetConfig.getHomeStateAbbr(), dlg.getSelectedCounty()));
-				jtfZip.setText(dlg.getSelectedZipCode());
-				String sPin = dlg.getSelectedPremId();
+			dlgSearch.searchPhone(sPhone);
+			if( dlgSearch.exitOK() ) {
+				dlg.jtfThisName.setText(dlgSearch.getSelectedPremName());
+				dlg.jtfAddress.setText(dlgSearch.getSelectedAddress());
+				dlg.jtfThisCity.setText(dlgSearch.getSelectedCity());
+				dlg.cbThisCounty.setSelectedItem(Counties.getHerdsCounty(CivetConfig.getHomeStateAbbr(), dlgSearch.getSelectedCounty()));
+				dlg.jtfZip.setText(dlgSearch.getSelectedZipCode());
+				String sPin = dlgSearch.getSelectedPremId();
 				if( sPin != null && sPin.trim().length() != 7 ) {
 					String sThisState = CivetConfig.getHomeStateAbbr();
 					bLidFromHerds = isValidLid( sPin, sThisState);
 				}
-				jtfThisPIN.setText(sPin);
+				dlg.jtfThisPIN.setText(sPin);
 				Component c = traversal.getComponentByName(traversal.getProperty("pPremiseFound"));
 				if( c != null)
 					c.requestFocus();
 			}
 		} catch (WebServiceException e1) {
-			MessageDialog.showMessage(this, "Civet: Error", "Web Service Failure\n" + e1.getMessage());
+			MessageDialog.showMessage(dlg, "Civet: Error", "Web Service Failure\n" + e1.getMessage());
 			logger.error("Web Service Failure", e1);
 		}
 	}
 
 	void jtfAddrCity_focusLost(FocusEvent e) {
-		String sCity = jtfThisCity.getText();
-		String sAddress = jtfAddress.getText();
+		String sCity = dlg.jtfThisCity.getText();
+		String sAddress = dlg.jtfAddress.getText();
 		// don't bother if either address or city is blank or neither has changed.
 		if( sAddress == null || sAddress.trim().length() == 0 || sCity == null || sCity.trim().length() == 0 
 				|| (sCity.equals(sPriorCity) && sAddress.equals(sPriorAddress)) ) return;
 		if(bInSearch) return;
 		bInSearch = true;
-		if( ckSticky.isSelected() || (
-				(jtfThisPIN.getText() == null || jtfThisPIN.getText().trim().length() == 0) &&
-				(jtfPhone.getText() == null || jtfPhone.getText().trim().length() == 0) &&
-				(jtfZip.getText() == null || jtfZip.getText().trim().length() == 0)  ) ) {
-			PremisesSearchDialog dlg = new PremisesSearchDialog();
+		if( dlg.ckSticky.isSelected() || (
+				(dlg.jtfThisPIN.getText() == null || dlg.jtfThisPIN.getText().trim().length() == 0) &&
+				(dlg.jtfPhone.getText() == null || dlg.jtfPhone.getText().trim().length() == 0) &&
+				(dlg.jtfZip.getText() == null || dlg.jtfZip.getText().trim().length() == 0)  ) ) {
+			PremisesSearchDialog dlgSearch = new PremisesSearchDialog();
 			try {
-				dlg.searchAddress( sAddress, sCity, null, null );
-				if( dlg.exitOK() ) {
-					if( jtfPhone.getText() == null || jtfPhone.getText().trim().length() == 0 )
-						jtfPhone.setText(dlg.getSelectedPhone());
-					jtfThisName.setText(dlg.getSelectedPremName());
-					jtfAddress.setText(dlg.getSelectedAddress());
-					jtfThisCity.setText(dlg.getSelectedCity());
-					cbThisCounty.setSelectedItem(Counties.getHerdsCounty(CivetConfig.getHomeStateAbbr(), dlg.getSelectedCounty()));
-					jtfZip.setText(dlg.getSelectedZipCode());
-					String sPin = dlg.getSelectedPremId();
+				dlgSearch.searchAddress( sAddress, sCity, null, null );
+				if( dlgSearch.exitOK() ) {
+					if( dlg.jtfPhone.getText() == null || dlg.jtfPhone.getText().trim().length() == 0 )
+						dlg.jtfPhone.setText(dlgSearch.getSelectedPhone());
+					dlg.jtfThisName.setText(dlgSearch.getSelectedPremName());
+					dlg.jtfAddress.setText(dlgSearch.getSelectedAddress());
+					dlg.jtfThisCity.setText(dlgSearch.getSelectedCity());
+					dlg.cbThisCounty.setSelectedItem(Counties.getHerdsCounty(CivetConfig.getHomeStateAbbr(), 
+							dlgSearch.getSelectedCounty()));
+					dlg.jtfZip.setText(dlgSearch.getSelectedZipCode());
+					String sPin = dlgSearch.getSelectedPremId();
 					if( sPin != null && sPin.trim().length() != 7 ) {
 						String sThisState = CivetConfig.getHomeStateAbbr();
 						bLidFromHerds = isValidLid( sPin, sThisState);
 					}
-					jtfThisPIN.setText(sPin);
+					dlg.jtfThisPIN.setText(sPin);
 					Component c = traversal.getComponentByName(traversal.getProperty("pPremiseFound"));
 					if( c != null)
 						c.requestFocus();
 				}
 			} catch (WebServiceException e1) {
-				MessageDialog.showMessage(this, "Civet: Error", "Web Service Failure\n" + e1.getMessage());
+				MessageDialog.showMessage(dlg, "Civet: Error", "Web Service Failure\n" + e1.getMessage());
 				logger.error("Web Service Failure", e1);
 			}
 		}
@@ -1232,38 +1233,38 @@ public final class CivetEditDialogController {
 		bSppEntered = false;
 		bInClearForm = true;
 		// Always start with a blank search box.
-		jtfThisPIN.getSearchDialog().clear(); 
+		dlg.jtfThisPIN.getSearchDialog().clear(); 
 		// clear the form and select main map if the check box is not checked or we just did an XFA
-		if( !ckSticky.isSelected() || (controller.isLastSavedXFA() && getPageNo() == 1) ){
+		if( !dlg.ckSticky.isSelected() || (controller.isLastSavedXFA() && getPageNo() == 1) ){
 			traversal.selectMainMap();
-			cbOtherState.setSelectedKey(-1);
-//			jtfOtherPIN.setText("");
-			jtfOtherName.setText("");
-			jtfOtherAddress.setText("");
-			jtfOtherCity.setText("");
-			cbOtherCounty.setSelectedItem(null);
-			jtfOtherZip.setText("");
-			jtfThisPIN.setText("");
-			jtfThisName.setText("");
-			jtfPhone.setText("");
-			jtfAddress.setText("");
-			jtfThisCity.setText("");
-			cbThisCounty.setSelectedItem(null);
-			jtfZip.setText("");
-			jtfDateInspected.setText("");
-			jtfDateReceived.setText("");
-			jtfCVINo.setText("");
+			dlg.cbOtherState.setSelectedKey(-1);
+//			dlg.jtfOtherPIN.setText("");
+			dlg.jtfOtherName.setText("");
+			dlg.jtfOtherAddress.setText("");
+			dlg.jtfOtherCity.setText("");
+			dlg.cbOtherCounty.setSelectedItem(null);
+			dlg.jtfOtherZip.setText("");
+			dlg.jtfThisPIN.setText("");
+			dlg.jtfThisName.setText("");
+			dlg.jtfPhone.setText("");
+			dlg.jtfAddress.setText("");
+			dlg.jtfThisCity.setText("");
+			dlg.cbThisCounty.setSelectedItem(null);
+			dlg.jtfZip.setText("");
+			dlg.jtfDateInspected.setText("");
+			dlg.jtfDateReceived.setText("");
+			dlg.jtfCVINo.setText("");
 			String sSpDefault = CivetConfig.getDefaultSpecies();
 			if( sSpDefault != null )
-				cbSpecies.setSelectedValue(sSpDefault);
+				dlg.cbSpecies.setSelectedValue(sSpDefault);
 			else
-				cbSpecies.setSelectedKey(-1);
+				dlg.cbSpecies.setSelectedKey(-1);
 			mSpeciesChanges = new HashMap<String, String>();
-			jtfNumber.setText("");
-			cbIssuedBy.setSelectedKey(-1);
-			jtfIssuedBy.setText("");
+			dlg.jtfNumber.setText("");
+			dlg.cbIssuedBy.setSelectedKey(-1);
+			dlg.jtfIssuedBy.setText("");
 			if( sDefaultPurpose != null )
-				cbPurpose.setSelectedItem( sDefaultPurpose );
+				dlg.cbPurpose.setSelectedItem( sDefaultPurpose );
 		}
 		else {
 			// Note: we don't switch to the alternate map right away when the check box is selected
@@ -1271,36 +1272,36 @@ public final class CivetEditDialogController {
 			// sticky data included.
 			traversal.selectAltMap();
 		}
-		if(rbInState.isSelected()) {
-			setImport( false );
-			cbOtherState.setSelectedValue(CivetConfig.getHomeState());
+		if(dlg.rbInState.isSelected()) {
+			dlg.setImport( false );
+			dlg.cbOtherState.setSelectedValue(CivetConfig.getHomeState());
 			refreshOtherCounties();
-			cbOtherState.setEnabled(false);
-			lIssuedBy.setVisible(true);
-			lIssuedBy.setFont(new Font("Tahoma", Font.BOLD, 11));
-			cbIssuedBy.setVisible(true);
-			jtfIssuedBy.setVisible(false);
-			ckAllVets.setVisible(true);
+			dlg.cbOtherState.setEnabled(false);
+			dlg.lIssuedBy.setVisible(true);
+			dlg.lIssuedBy.setFont(new Font("Tahoma", Font.BOLD, 11));
+			dlg.cbIssuedBy.setVisible(true);
+			dlg.jtfIssuedBy.setVisible(false);
+			dlg.ckAllVets.setVisible(true);
 			Component c = traversal.getComponentByName(traversal.getProperty("pInstateFirst"));
 			if( c != null)
 				c.requestFocus();
 		}
-		if(rbExport.isSelected()) {
-			lIssuedBy.setVisible(true);
-			lIssuedBy.setFont(new Font("Tahoma", Font.BOLD, 11));
-			cbIssuedBy.setVisible(true);
-			jtfIssuedBy.setVisible(false);
-			ckAllVets.setVisible(true);
+		if(dlg.rbExport.isSelected()) {
+			dlg.lIssuedBy.setVisible(true);
+			dlg.lIssuedBy.setFont(new Font("Tahoma", Font.BOLD, 11));
+			dlg.cbIssuedBy.setVisible(true);
+			dlg.jtfIssuedBy.setVisible(false);
+			dlg.ckAllVets.setVisible(true);
 			Component c = traversal.getComponentByName(traversal.getProperty("pFirstControl"));
 			if( c != null)
 				c.requestFocus();
 		}
-		if(rbImport.isSelected()) {
-			lIssuedBy.setVisible(true);
-			lIssuedBy.setFont(new Font("Tahoma", Font.PLAIN, 11));
-			cbIssuedBy.setVisible(false);
-			jtfIssuedBy.setVisible(true);
-			ckAllVets.setVisible(false);
+		if(dlg.rbImport.isSelected()) {
+			dlg.lIssuedBy.setVisible(true);
+			dlg.lIssuedBy.setFont(new Font("Tahoma", Font.PLAIN, 11));
+			dlg.cbIssuedBy.setVisible(false);
+			dlg.jtfIssuedBy.setVisible(true);
+			dlg.ckAllVets.setVisible(false);
 			Component c = traversal.getComponentByName(traversal.getProperty("pFirstControl"));
 			if( c != null)
 				c.requestFocus();
@@ -1309,52 +1310,11 @@ public final class CivetEditDialogController {
 		aErrorKeys = new ArrayList<String>();
 		sErrorNotes = null;
 		aSpecies = new ArrayList<SpeciesRecord>();
-		lError.setVisible(false);
-		bMultiSpecies = false;
+		dlg.lError.setVisible(false);
+		dlg.bMultiSpecies = false;
 		bInClearForm = false;
 	}
-	
-	/**
-	 * Set the type of file and view-only nature of this dialog.
-	 * @param iMode one of three constants
-	 * 	PDF_MODE - Image PDF whether loaded as a PDF file or generated from some other image type.
-	 *  XML_MODE - Read from a saved Civet "binary" file with attached image PDF.  This will be the mode
-	 *  	for received Civet files when we get that far as well as when we reopen files saved
-	 *  	but not yet submitted to HERDS
-	 *  VIEW_MODE - Civet "binary" file being opened read-only (to view email, etc.)
-	 */
-	public void setMode( int iMode ) {
-		this.iMode = iMode;
-		switch(iMode) {
-		case PDF_MODE:
-			bMode.setIcon( iconPDF );
-			ckSticky.setVisible(true);
-			setFormEditable(true);
-			bSave.setVisible(true);
-			bAddSpecies.setEnabled(true);
-			ckAllVets.setEnabled(true);
-			break;
-		case XML_MODE:
-			bMode.setIcon( iconXML );
-			ckSticky.setVisible(false);
-			setFormEditable(true);
-			bSave.setVisible(true);
-			bAddSpecies.setEnabled(true);
-			ckAllVets.setEnabled(true);
-			break;
-		case VIEW_MODE:
-			bMode.setIcon( iconMAIL );
-			ckSticky.setVisible(false);
-			setFormEditable(false);
-			bSave.setVisible(false);
-			bAddSpecies.setEnabled(false);
-			ckAllVets.setEnabled(false);
-			break;
-		default:
-			logger.error("Unkown mode " + iMode );
 
-		}
-	}
 	
 	/**
 	 * This will leave things in a inconsistent state because the controller won't know
@@ -1365,8 +1325,8 @@ public final class CivetEditDialogController {
 	public void openStdXml( StdeCviXml xStd ) {
 		populateFromStdXml( xStd );
 		controller.setStdXml( xStd );
-		setMode(XML_MODE);
-		OpenFileThread thread = new OpenFileThread( this, xStd );
+		dlg.setMode(CivetEditDialog.XML_MODE);
+		OpenFileThread thread = new OpenFileThread( dlg, xStd );
 		thread.start();
 	}
 
@@ -1374,7 +1334,7 @@ public final class CivetEditDialogController {
 	 * Populate dialog form from standard eCVI XML
 	 * @param xStd StdeCviXml object representation of a CVI
 	 */
-	void populateFromStdXml( StdeCviXml xStd ) {
+	public void populateFromStdXml( StdeCviXml xStd ) {
 		if( xStd == null ) {
 			logger.error(new Exception("populateFromStdXml called with null StdeCviXml"));
 			return;
@@ -1387,10 +1347,10 @@ public final class CivetEditDialogController {
 				if( sOriginState != null ) {
 					sOriginState = States.getState(sOriginState);
 					if( sOriginState != null && sOriginState.equalsIgnoreCase(CivetConfig.getHomeState()) ) {
-						setImport(false);
-						rbExport.setSelected(true);
+						dlg.setImport(false);
+						dlg.rbExport.setSelected(true);
 						String sOtherState = States.getState(xStd.getDestinationState());
-						cbOtherState.setSelectedValue(sOtherState);
+						dlg.cbOtherState.setSelectedValue(sOtherState);
 						refreshOtherCounties();
 						//					jtfOtherPIN.setText("");
 						// For display purposes only!  Display person name if no prem name.
@@ -1398,34 +1358,34 @@ public final class CivetEditDialogController {
 						if( sOtherName == null || sOtherName.trim().length() == 0 )
 							sOtherName = xStd.getDestinationPersonName();
 						//					jtfOtherPIN.setText(xStd.getDestinationPremId());
-						jtfOtherName.setText(sOtherName);
-						jtfOtherAddress.setText(xStd.getDestinationStreet());
-						jtfOtherCity.setText(xStd.getDestinationCity());
-						String sOtherStateCode = cbOtherState.getSelectedCode();
+						dlg.jtfOtherName.setText(sOtherName);
+						dlg.jtfOtherAddress.setText(xStd.getDestinationStreet());
+						dlg.jtfOtherCity.setText(xStd.getDestinationCity());
+						String sOtherStateCode = dlg.cbOtherState.getSelectedCode();
 						String sOtherCountyIn = xStd.getDestinationCounty();
 						String sOtherZip = xStd.getDestinationZip();
-						String sOtherHerdsCounty = getCounty( sOtherStateCode, sOtherCountyIn, sOtherZip );
-						cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
-						jtfOtherZip.setText(xStd.getDestinationZip());
-						jtfThisPIN.setText("");
+						String sOtherHerdsCounty = getHerdsCounty( sOtherStateCode, sOtherCountyIn, sOtherZip );
+						dlg.cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
+						dlg.jtfOtherZip.setText(xStd.getDestinationZip());
+						dlg.jtfThisPIN.setText("");
 						String sThisName = xStd.getOriginPremName();
 						if( sThisName == null || sThisName.trim().length() == 0 )
 							sThisName = xStd.getOriginPersonName();
-						jtfThisPIN.setText(xStd.getOriginPremId());
-						jtfThisName.setText(sThisName);
-						jtfPhone.setText(xStd.getOriginPhone());
-						jtfAddress.setText(xStd.getOriginStreet());
-						jtfThisCity.setText(xStd.getOriginCity());
+						dlg.jtfThisPIN.setText(xStd.getOriginPremId());
+						dlg.jtfThisName.setText(sThisName);
+						dlg.jtfPhone.setText(xStd.getOriginPhone());
+						dlg.jtfAddress.setText(xStd.getOriginStreet());
+						dlg.jtfThisCity.setText(xStd.getOriginCity());
 						String sThisStateCode = CivetConfig.getHomeStateAbbr();
 						String sThisCountyIn = xStd.getOriginCounty();
 						String sThisZip = xStd.getOriginZip();
-						String sThisHerdsCounty = getCounty( sThisStateCode, sThisCountyIn, sThisZip );
-						cbThisCounty.setSelectedItem(sThisHerdsCounty);
-						jtfZip.setText(xStd.getOriginZip());
+						String sThisHerdsCounty = getHerdsCounty( sThisStateCode, sThisCountyIn, sThisZip );
+						dlg.cbThisCounty.setSelectedItem(sThisHerdsCounty);
+						dlg.jtfZip.setText(xStd.getOriginZip());
 						String sNAN = xStd.getVetNAN();
 						if( sNAN != null && sNAN.trim().length() > 0 ) {
 							VetLookup vet = new VetLookup( sNAN );
-							cbIssuedBy.setSelectedKey(vet.getKey());
+							dlg.cbIssuedBy.setSelectedKey(vet.getKey());
 						}
 						else {
 							// May not be accredited.
@@ -1440,88 +1400,88 @@ public final class CivetEditDialogController {
 								sVetFirstName = tok.nextToken();
 							VetLookup vet = new VetLookup( sVetLastName, sVetFirstName );
 							if( vet.isUniqueMatch() )
-								cbIssuedBy.setSelectedKey(vet.getKey());
+								dlg.cbIssuedBy.setSelectedKey(vet.getKey());
 						}
 					}
 					else {
-						setImport(true);
-						rbImport.setSelected(true);
+						dlg.setImport(true);
+						dlg.rbImport.setSelected(true);
 						String sOtherState = States.getState(xStd.getOriginState());
-						cbOtherState.setSelectedValue(sOtherState);
+						dlg.cbOtherState.setSelectedValue(sOtherState);
 						//					jtfOtherPIN.setText("");
 						// For display purposes only!  Display person name if no prem name.
 						String sOtherName = xStd.getOriginPremName();
 						if( sOtherName == null || sOtherName.trim().length() == 0 )
 							sOtherName = xStd.getOriginPersonName();
 						//					cbOtherCounty.setText(xStd.getOriginPremId());
-						jtfOtherName.setText(sOtherName);
-						jtfOtherAddress.setText(xStd.getOriginStreet());
-						jtfOtherCity.setText(xStd.getOriginCity());
+						dlg.jtfOtherName.setText(sOtherName);
+						dlg.jtfOtherAddress.setText(xStd.getOriginStreet());
+						dlg.jtfOtherCity.setText(xStd.getOriginCity());
 						refreshOtherCounties();
-						String sOtherStateCode = cbOtherState.getSelectedCode();
+						String sOtherStateCode = dlg.cbOtherState.getSelectedCode();
 						String sOtherCountyIn = xStd.getOriginCounty();
 						String sOtherZip = xStd.getOriginZip();
-						String sOtherHerdsCounty = getCounty( sOtherStateCode, sOtherCountyIn, sOtherZip );
-						jtfOtherZip.setText(sOtherZip);
-						cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
-						jtfThisPIN.setText("");
+						String sOtherHerdsCounty = getHerdsCounty( sOtherStateCode, sOtherCountyIn, sOtherZip );
+						dlg.jtfOtherZip.setText(sOtherZip);
+						dlg.cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
+						dlg.jtfThisPIN.setText("");
 						String sThisName = xStd.getDestinationPremName();
 						if( sThisName == null || sThisName.trim().length() == 0 )
 							sThisName = xStd.getDestinationPersonName();
-						jtfThisPIN.setText(xStd.getDestinationPremId());
-						jtfThisName.setText(sThisName);
-						jtfPhone.setText(xStd.getDestinationPhone());
-						jtfAddress.setText(xStd.getDestinationStreet());
-						jtfThisCity.setText(xStd.getDestinationCity());
+						dlg.jtfThisPIN.setText(xStd.getDestinationPremId());
+						dlg.jtfThisName.setText(sThisName);
+						dlg.jtfPhone.setText(xStd.getDestinationPhone());
+						dlg.jtfAddress.setText(xStd.getDestinationStreet());
+						dlg.jtfThisCity.setText(xStd.getDestinationCity());
 						String sThisState = CivetConfig.getHomeStateAbbr();
 						String sThisCountyIn = xStd.getDestinationCounty();
 						String sThisZip = xStd.getDestinationZip();
-						String sThisHerdsCounty = getCounty( sThisState, sThisCountyIn, sThisZip);
-						cbThisCounty.setSelectedItem(sThisHerdsCounty);
-						jtfZip.setText(xStd.getDestinationZip());
+						String sThisHerdsCounty = getHerdsCounty( sThisState, sThisCountyIn, sThisZip);
+						dlg.cbThisCounty.setSelectedItem(sThisHerdsCounty);
+						dlg.jtfZip.setText(xStd.getDestinationZip());
 						String sVetName = xStd.getVetName();
-						jtfIssuedBy.setText(sVetName);
+						dlg.jtfIssuedBy.setText(sVetName);
 
 					}
 					java.util.Date dIssueDate = xStd.getIssueDate();
-					jtfDateInspected.setDate(dIssueDate);
-					jtfCVINo.setText(xStd.getCertificateNumber());
+					dlg.jtfDateInspected.setDate(dIssueDate);
+					dlg.jtfCVINo.setText(xStd.getCertificateNumber());
 					// Species multiples are an issue
 					loadSpeciesFromStdXml(xStd);
 					// Overly simplistic.  Only works if spelling matches
 					String sPurposeCode = xStd.getMovementPurpose();
-					cbPurpose.setSelectedKey(sPurposeCode);
+					dlg.cbPurpose.setSelectedKey(sPurposeCode);
 					// Load data from included XmlMetaData "file"
 					CviMetaDataXml meta = xStd.getMetaData();
 					//			System.out.println( meta.getXmlString() );
 					if( meta != null ) {
 						// Make no assumption about received date.
 						java.util.Date dReceived = meta.getBureauReceiptDate();
-						jtfDateReceived.setDate(dReceived);
+						dlg.jtfDateReceived.setDate(dReceived);
 						ArrayList<String> aErrors = meta.listErrors();
 						if( aErrors == null ) {
 							aErrorKeys = new ArrayList<String>();
-							lError.setVisible(false);
+							dlg.lError.setVisible(false);
 						}
 						else {
 							aErrorKeys = aErrors;
 							if( aErrorKeys.size() > 0 )
-								lError.setVisible(true);
+								dlg.lError.setVisible(true);
 							else
-								lError.setVisible(false);
+								dlg.lError.setVisible(false);
 						}
 						sErrorNotes = meta.getErrorNote();
 
 					}
 					else {
-						if( jtfDateReceived.getDate() == null ) {
+						if( dlg.jtfDateReceived.getDate() == null ) {
 							if( CivetConfig.isDefaultReceivedDate() ) 
-								jtfDateReceived.setDate(new java.util.Date());
+								dlg.jtfDateReceived.setDate(new java.util.Date());
 							else
-								jtfDateReceived.setText("");
+								dlg.jtfDateReceived.setText("");
 						}
 						aErrorKeys = new ArrayList<String>();
-						lError.setVisible(false);					
+						dlg.lError.setVisible(false);					
 					}
 					Component c = traversal.getComponentByName(traversal.getProperty("pPDFLoaded"));
 					if( c != null)
@@ -1534,7 +1494,7 @@ public final class CivetEditDialogController {
 		}
 	}
 	
-	private String getCounty( String sStateCode, String sCounty, String sZip ) {
+	private String getHerdsCounty( String sStateCode, String sCounty, String sZip ) {
 		String sRet = Counties.getHerdsCounty(sStateCode, sCounty);
 		if( sRet == null && sZip.trim().length() >= 5 && !sZip.equals("00000") ) {
 				try {
@@ -1636,16 +1596,16 @@ public final class CivetEditDialogController {
 			}
 		}
 		if( sSpeciesCode != null ) {
-			cbSpecies.setSelectedCode(sSpeciesCode);
-			jtfNumber.setText(Integer.toString(iMax));
-			bMultiSpecies = (aSpecies.size() > 1);
-			lMultipleSpecies.setVisible( bMultiSpecies );
+			dlg.cbSpecies.setSelectedCode(sSpeciesCode);
+			dlg.jtfNumber.setText(Integer.toString(iMax));
+			dlg.bMultiSpecies = (aSpecies.size() > 1);
+			dlg.lMultipleSpecies.setVisible( dlg.bMultiSpecies );
 		}
 		else {
-			cbSpecies.setSelectedCode(null);
-			jtfNumber.setText("");
-			bMultiSpecies = false;
-			lMultipleSpecies.setVisible( bMultiSpecies );
+			dlg.cbSpecies.setSelectedCode(null);
+			dlg.jtfNumber.setText("");
+			dlg.bMultiSpecies = false;
+			dlg.lMultipleSpecies.setVisible( dlg.bMultiSpecies );
 		}
 
 	}
@@ -1685,7 +1645,7 @@ public final class CivetEditDialogController {
 			byte[] pdfBytes = controller.getCurrentPdfBytes();
 			Node xmlNode = PDFUtils.getXFADataNode(pdfBytes);
 			if( xmlNode == null ) {
-				MessageDialog.messageWait(this, "Civet Error:", "Could not extract CO/KS data node from XFA PDF");		
+				MessageDialog.messageWait(dlg, "Civet Error:", "Could not extract CO/KS data node from XFA PDF");		
 				return;
 			}
 			CoKsXML coks = new CoKsXML( xmlNode );
@@ -1694,11 +1654,11 @@ public final class CivetEditDialogController {
 		}
 	}
 
-	private void populateFromCoKs(CoKsXML coks) {
+	public void populateFromCoKs(CoKsXML coks) {
 		bInClearForm = true;
 		StdeCviXml std = coks.getStdeCviXml();
 		if( std == null ) {
-			MessageDialog.showMessage(this, "Civet Error:", "Could not convert PDF content to USAHA Standard XML using XSLT\n" +
+			MessageDialog.showMessage(dlg, "Civet Error:", "Could not convert PDF content to USAHA Standard XML using XSLT\n" +
 					CivetConfig.getCoKsXSLTFile());
 		}
 		else {
@@ -1719,53 +1679,30 @@ public final class CivetEditDialogController {
 				MessageDialog.showMessage(null, "Civet Warning: Other Species", sMsg );
 			}
 			populateFromStdXml( std );
-			if( jtfDateReceived.getDate() == null && CivetConfig.isDefaultReceivedDate() ) {
-				jtfDateReceived.setDate(new java.util.Date());
+			if( dlg.jtfDateReceived.getDate() == null && CivetConfig.isDefaultReceivedDate() ) {
+				dlg.jtfDateReceived.setDate(new java.util.Date());
 			}
 		}
 		bInClearForm = false;
 	}
 	
 
-	void setupSaveButtons() {
-		if( isReopened() ) {
-			bAddToLast.setVisible(false);			
-		}
-		else if( controller.isXFADocument() || controller.isLastSavedXFA()) {
-			bAddToLast.setVisible(false);			
-		}
-		else if( controller.getLastSavedFile() == null ){
-			bAddToLast.setVisible(false);
-		}
-		else if( iMode != PDF_MODE ) {
-			bAddToLast.setVisible(false);
-		}
-		else {
-			bAddToLast.setVisible(true);
-		}
-		if( controller.hasLastSaved() ) {
-			bEditLast.setEnabled(true);
-		}
-		else {
-			bEditLast.setEnabled(false);
-		}
-	}
 	
 	private void doSave() {
-		String sCVINo = jtfCVINo.getText();
+		String sCVINo = dlg.jtfCVINo.getText();
 		if( sCVINo.equalsIgnoreCase(sPrevCVINo) ) {
-			MessageDialog.showMessage(CivetEditDialog.this, "Civet Error", "Certificate number " + sCVINo + " hasn't changed since last save");
-			jtfCVINo.requestFocus();
+			MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " hasn't changed since last save");
+			dlg.jtfCVINo.requestFocus();
 			return;
 		}
-		if( CertificateNbrLookup.certficateNbrExists(jtfCVINo.getText()) ) {
-			MessageDialog.showMessage(CivetEditDialog.this, "Civet Error", "Certificate number " + sCVINo + " already exists");
-			jtfCVINo.requestFocus();
+		if( CertificateNbrLookup.certficateNbrExists(dlg.jtfCVINo.getText()) ) {
+			MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " already exists");
+			dlg.jtfCVINo.requestFocus();
 			return;
 		}
 		// If save() finds errors be sure form is editable so they can be corrected.
 		if( !save() )
-			setFormEditable( true );
+			dlg.setFormEditable( true );
 	}
 
 	/** 
@@ -1774,32 +1711,32 @@ public final class CivetEditDialogController {
 	boolean save() {
 		controller.addCurrentPage();
 		// Collect up all values needed
-		setImport(rbImport.isSelected());
-		boolean bInbound = rbImport.isSelected();
+		dlg.setImport(dlg.rbImport.isSelected());
+		boolean bInbound = dlg.rbImport.isSelected();
 		boolean bXFA = false;
 		boolean bAgView = false;
-		String sOtherState = cbOtherState.getSelectedValue();
+		String sOtherState = dlg.cbOtherState.getSelectedValue();
 		String sOtherStateCode = States.getStateCode(sOtherState);
-		String sOtherName = jtfOtherName.getText();
-		String sOtherAddress = jtfOtherAddress.getText();
-		String sOtherCity = jtfOtherCity.getText();
-		String sOtherCounty = (String)cbOtherCounty.getSelectedItem();
-		String sOtherZipcode = jtfOtherZip.getText();
-		String sOtherPIN = null; //jtfOtherPIN.getText();
+		String sOtherName = dlg.jtfOtherName.getText();
+		String sOtherAddress = dlg.jtfOtherAddress.getText();
+		String sOtherCity = dlg.jtfOtherCity.getText();
+		String sOtherCounty = (String)dlg.cbOtherCounty.getSelectedItem();
+		String sOtherZipcode = dlg.jtfOtherZip.getText();
+		String sOtherPIN = null; //dlg.jtfOtherPIN.getText();
 		// Only save actual PINs for other state and only save PINs or HERDS State PremIds (they aren't really LIDS!)
 		// if not 
 //		if( sOtherPIN != null && sOtherPIN.trim().length() != 7 && CivetConfig.hasBrokenLIDs() )
 //			sOtherPIN = null;
-		String sThisPremisesId = jtfThisPIN.getText();
+		String sThisPremisesId = dlg.jtfThisPIN.getText();
 		if( sThisPremisesId != null && sThisPremisesId.trim().length() != 7 && CivetConfig.hasBrokenLIDs() && !bLidFromHerds )
 			sOtherPIN = null;
-		String sPhone = jtfPhone.getText();
-		String sThisName = jtfThisName.getText();
-		String sStreetAddress = jtfAddress.getText();
-		String sCity = jtfThisCity.getText();
-		String sZipcode = jtfZip.getText();
-		String sThisState = jtfThisState.getText();
-		String sThisCounty = (String)cbThisCounty.getSelectedItem();
+		String sPhone = dlg.jtfPhone.getText();
+		String sThisName = dlg.jtfThisName.getText();
+		String sStreetAddress = dlg.jtfAddress.getText();
+		String sCity = dlg.jtfThisCity.getText();
+		String sZipcode = dlg.jtfZip.getText();
+		String sThisState = dlg.jtfThisState.getText();
+		String sThisCounty = (String)dlg.cbThisCounty.getSelectedItem();
 		if( sThisCounty == null || sThisCounty.trim().length() < 3 ) {
 			try {
 				String sThisHerdsCounty = CountyUtils.getCounty(sZipcode);
@@ -1810,17 +1747,17 @@ public final class CivetEditDialogController {
 				logger.error(e);
 			}
 		}
-		java.util.Date dDateIssued = jtfDateInspected.getDate();
-		java.util.Date dDateReceived = jtfDateReceived.getDate();
+		java.util.Date dDateIssued = dlg.jtfDateInspected.getDate();
+		java.util.Date dDateReceived = dlg.jtfDateReceived.getDate();
 		// need to incorporate.  Wait for XML upload?
-		String sMovementPurpose = cbPurpose.getSelectedValue();
-		Integer iIssuedByKey = cbIssuedBy.getSelectedKeyInt();
-		String sIssuedByName = jtfIssuedBy.getText();
+		String sMovementPurpose = dlg.cbPurpose.getSelectedValue();
+		Integer iIssuedByKey = dlg.cbIssuedBy.getSelectedKeyInt();
+		String sIssuedByName = dlg.jtfIssuedBy.getText();
 		if( !bInbound && (iIssuedByKey == null || iIssuedByKey == -1) ) {
-			MessageDialog.showMessage(this, "Civet Error", "Issuing Veterinarian is required");
+			MessageDialog.showMessage(dlg, "Civet Error", "Issuing Veterinarian is required");
 			return false;
 		}
-		String sCVINo = jtfCVINo.getText();
+		String sCVINo = dlg.jtfCVINo.getText();
 		updateSpeciesList(false);
 		StdeCviXml stdXml = controller.getStdXml();
 		if( controller.isXFADocument() ) {
@@ -1845,7 +1782,7 @@ public final class CivetEditDialogController {
 				sFields += " Date Issued,";
 			if( dDateReceived == null ) 
 				sFields += " Date Received,";
-			MessageDialog.showMessage(this, "Civet Error", "One or more required fields:" + sFields + " are empty");
+			MessageDialog.showMessage(dlg, "Civet Error", "One or more required fields:" + sFields + " are empty");
 			return false;
 		}
 
@@ -1880,7 +1817,7 @@ public final class CivetEditDialogController {
 			}
 		}
 		String sOpenedAsFileName = controller.getCurrentFileName();
-		SaveCVIThread thread = new SaveCVIThread(this, stdXml, sOpenedAsFileName, bAttachmentBytes,
+		SaveCVIThread thread = new SaveCVIThread(dlg, stdXml, sOpenedAsFileName, bAttachmentBytes,
 				sAttachmentFileName, fAttachmentFile, bInbound, bXFA, bAgView, sOtherStateCode,
 				sOtherName, sOtherAddress, sOtherCity, sOtherCounty, sOtherZipcode, sOtherPIN,
 				sThisPremisesId, sThisName, sPhone,
@@ -1913,7 +1850,7 @@ public final class CivetEditDialogController {
 		controller.setCurrentPagesComplete();
 		controller.clearCurrentPages();
 		clearForm();
-		if( iMode == XML_MODE ) {
+		if( dlg.iMode == CivetEditDialog.XML_MODE ) {
 			allFilesDone();
 			return;
 		}
@@ -1929,24 +1866,24 @@ public final class CivetEditDialogController {
 	}
 
 	private void minimizeAll() {
-		this.setExtendedState(Frame.ICONIFIED);
+		dlg.setExtendedState(Frame.ICONIFIED);
 		if( parent instanceof Frame )
 			((Frame)parent).setExtendedState(Frame.ICONIFIED);
 	}
 
 	void rbOutbound_actionPerformed(ActionEvent e) {
-		setImport( false );
-		cbOtherState.setSelectedIndex(0);
-		cbOtherState.setEnabled(true);
+		dlg.setImport( false );
+		dlg.cbOtherState.setSelectedIndex(0);
+		dlg.cbOtherState.setEnabled(true);
 		Component c = traversal.getComponentByName(traversal.getProperty("pFirstControl"));
 		if( c != null)
 			c.requestFocus();
 	}
 
 	void rbInbound_actionPerformed(ActionEvent e) {
-		setImport( true );
-		cbOtherState.setSelectedIndex(0);
-		cbOtherState.setEnabled(true);
+		dlg.setImport( true );
+		dlg.cbOtherState.setSelectedIndex(0);
+		dlg.cbOtherState.setEnabled(true);
 		Component c = traversal.getComponentByName(traversal.getProperty("pFirstControl"));
 		if( c != null)
 			c.requestFocus();
@@ -1954,19 +1891,19 @@ public final class CivetEditDialogController {
 	}
 
 	void rbInState_actionPerformed(ActionEvent e) {
-		setImport( false );
-		cbOtherState.setSelectedValue(CivetConfig.getHomeState());
-		cbOtherState.setEnabled(false);
-		lIssuedBy.setVisible(true);
-		cbIssuedBy.setVisible(true);
-		ckAllVets.setVisible(true);
+		dlg.setImport( false );
+		dlg.cbOtherState.setSelectedValue(CivetConfig.getHomeState());
+		dlg.cbOtherState.setEnabled(false);
+		dlg.lIssuedBy.setVisible(true);
+		dlg.cbIssuedBy.setVisible(true);
+		dlg.ckAllVets.setVisible(true);
 		Component c = traversal.getComponentByName(traversal.getProperty("pInstateFirst"));
 		if( c != null)
 			c.requestFocus();
 	}
 
 	void pdfView() {
-		PDFOpener opener = new PDFOpener(this);
+		PDFOpener opener = new PDFOpener(dlg);
 		// If the file is really a PDF, open it from disk so even things like CO/KS open natively.
 		if( controller.isPageable() & !controller.isXFADocument() ) {
 			opener.openPageContentInAcrobat(controller.getCurrentFilePath(), controller.getCurrentPageNo());
@@ -1979,19 +1916,19 @@ public final class CivetEditDialogController {
 	
 
 	void pdfView( byte pdfBytes[] ) {
-		PDFOpener opener = new PDFOpener(this);
+		PDFOpener opener = new PDFOpener(dlg);
 		opener.openPDFContentInAcrobat(pdfBytes);
 	}
 
 	
 	protected void pdfViewFile() {
-		PDFOpener opener = new PDFOpener(this);
+		PDFOpener opener = new PDFOpener(dlg);
 		opener.openPDFContentInAcrobat(controller.getCurrentPdfBytes());
 	}
 
 	private void updateSpeciesList( boolean bClear )  {
-		String sNum = jtfNumber.getText();
-		String sSpeciesCode = cbSpecies.getSelectedCode();
+		String sNum = dlg.jtfNumber.getText();
+		String sSpeciesCode = dlg.cbSpecies.getSelectedCode();
 		if( sSpeciesCode != null ) {
 			int iNum = -1;
 			try {
@@ -2013,14 +1950,14 @@ public final class CivetEditDialogController {
 				aSpecies.add(rSpecies);
 			}
 			if( bClear ) {
-				jtfNumber.setText("");
-				cbSpecies.setSelectedItem(null);
+				dlg.jtfNumber.setText("");
+				dlg.cbSpecies.setSelectedItem(null);
 			}
 		}
 		if (aSpecies.size() > 1 || (aSpecies.size() == 1 && bClear) )
-			lMultipleSpecies.setVisible(true);
+			dlg.lMultipleSpecies.setVisible(true);
 		else
-			lMultipleSpecies.setVisible(false);
+			dlg.lMultipleSpecies.setVisible(false);
 	}
 
 	/** This pair of handlers is a complicated way to detect if the selected species
@@ -2091,13 +2028,13 @@ public final class CivetEditDialogController {
 	 * @return the bImport
 	 */
 	public boolean isInbound() {
-		return bImport;
+		return dlg.bImport;
 	}
 
 	private void runErrorDialog() {
 		if( aErrorKeys == null )
 			aErrorKeys = new ArrayList<String>();
-		CVIErrorDialog dlgErrorDialog = new CVIErrorDialog( this, aErrorKeys, sErrorNotes );
+		CVIErrorDialog dlgErrorDialog = new CVIErrorDialog( dlg, aErrorKeys, sErrorNotes );
 		dlgErrorDialog.setVisible(true);
 		if( dlgErrorDialog.isExitOK() ) {
 			sErrorNotes = dlgErrorDialog.getNotes();
@@ -2107,10 +2044,10 @@ public final class CivetEditDialogController {
 //			}
 			// Process the error list and notes
 			if( aErrorKeys.size() > 0 ) {
-				lError.setVisible(true);
+				dlg.lError.setVisible(true);
 			}
 			else {
-				lError.setVisible(false);
+				dlg.lError.setVisible(false);
 			}
 		}
 	}

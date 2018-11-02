@@ -163,7 +163,7 @@ public class OpenFileThread extends Thread {
 				dlg.getController().setupFile();
 				if( stdXml != null ) {
 					dlg.getController().setStdXml(stdXml);
-					dlg.populateFromStdXml(stdXml);
+					dlg.getDialogController().populateFromStdXml(stdXml);
 					if( bViewOnly )
 						dlg.setMode(CivetEditDialog.VIEW_MODE);
 					else
@@ -175,9 +175,9 @@ public class OpenFileThread extends Thread {
 					else
 						dlg.setMode(CivetEditDialog.PDF_MODE);
 				}
-				if( dlg.bGotoLast ) {
-					dlg.gotoLastPage();
-				}
+//				if( dlg.bGotoLast ) {
+//					dlg.getController().gotoLastPage();
+//				}
 				prog.setVisible(false);
 				dlg.toFront();
 			}
