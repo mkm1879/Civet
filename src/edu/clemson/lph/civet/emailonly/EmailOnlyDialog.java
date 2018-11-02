@@ -32,9 +32,9 @@ import org.jpedal.objects.PdfPageData;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetInbox;
-import edu.clemson.lph.civet.SendOutboundCVIEmailThread;
 import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.threads.SendOutboundCVIEmailThread;
 import edu.clemson.lph.controls.DBComboBox;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.FileUtils;
