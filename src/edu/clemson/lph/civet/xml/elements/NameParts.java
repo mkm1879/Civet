@@ -26,11 +26,38 @@ public class NameParts {
 	public String lastName;
 	public String otherName;
 	
-	NameParts( String businessName, String firstName, String middleName, String lastName, String otherName ) {
+	public NameParts( String businessName, String firstName, String middleName, String lastName, String otherName ) {
 		this.businessName = businessName;
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
 		this.otherName = otherName;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		if( businessName != null && businessName.trim().length() > 0 ) {
+			sb.append( businessName );
+			sb.append(", ");
+		}
+		if( lastName != null && lastName.trim().length() > 0 ) {
+			sb.append( lastName );
+			sb.append(", ");
+		}
+		if( firstName != null && firstName.trim().length() > 0 ) {
+			sb.append( firstName );
+			sb.append(", ");
+		}
+		if( middleName != null && middleName.trim().length() > 0 ) {
+			sb.append( middleName );
+			sb.append(", ");
+		}
+		if( otherName != null && otherName.trim().length() > 0 ) {
+			sb.append( otherName );
+			sb.append(", ");
+		}
+		String sRet = sb.toString();
+		return sRet.substring(0, sRet.length() - 2);
 	}
 }

@@ -28,4 +28,14 @@ public class SpeciesCode {
 		this.code = code;
 		this.text = text;
 	}
+	
+	@Override
+	public String toString() {
+		String sRet = "";
+		if( code != null && code.trim().length() > 0 )
+			sRet = code;
+		if( text != null && text.trim().length() > 0 )
+			sRet = sRet + " " + text;
+		return sRet;
+	}
 }

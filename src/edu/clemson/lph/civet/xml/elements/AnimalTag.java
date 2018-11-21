@@ -33,37 +33,38 @@ public class AnimalTag {
 
 	public Types type;
 	public String otherType;
-	public String number;
+	public String value;
 	public EquineDescription description;
 	public EquinePhotographs photographs;
 	public BrandImage brand;
 	
 	public AnimalTag(Types type, String number) {
 		this.type = type;
-		this.number = number;
+		this.value = number;
 	}
 	
 	public AnimalTag(Types type, String otherType, String number) {
 		this.type = type;
 		this.otherType = otherType;
-		this.number = number;
+		this.value = number;
 	}
 	
 	public AnimalTag(EquineDescription description) {
 		this.type = Types.EquineDescription;
-		this.number = description.toString();
+		this.value = description.toString();
 		this.description = description;
+		value = description.description;
 	}
 	
 	public AnimalTag(EquinePhotographs photographs) {
 		this.type = Types.EquinePhotographs;
-		this.number = "See attached photos: " + photographs.toString();
+		this.value = "See attached photos: " + photographs.toString();
 		this.photographs = photographs;
 	}
 	
 	public AnimalTag(BrandImage brand)  {
 		this.type = Types.BrandImage;
-		this.number = "See attached image: " + brand.toString();
+		this.value = "See attached image: " + brand.toString();
 		this.brand = brand;
 	}
 	
@@ -98,13 +99,13 @@ public class AnimalTag {
 			sRet = "EquinePhotographs";
 			break; 
 		default:
-			sRet = null;
+			sRet = "ManagementID";  // Give up if I can't classify it
 		}
 		return sRet;
 	}
 	
 	@Override
 	public String toString() {
-		return number;
+		return value;
 	}
 }

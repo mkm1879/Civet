@@ -28,7 +28,7 @@ public class Veterinarian {
 	public String licenseNumber;
 	public String nationalAccreditationNumber;
 	
-	Veterinarian( String personName, String personPhone, String personEmail, String addressBlock, 
+	public Veterinarian( String personName, String personPhone, String personEmail, String addressBlock, 
 			      String licenseState, String licenseNumber, String nationalAccreditationNumber ) {
 		this.personName = personName;
 		this.personPhone = personPhone;
@@ -39,7 +39,7 @@ public class Veterinarian {
 		this.nationalAccreditationNumber = nationalAccreditationNumber;
 	}
 	
-	Veterinarian( NameParts personNameParts, String personPhone, String personEmail, String addressBlock, 
+	public Veterinarian( NameParts personNameParts, String personPhone, String personEmail, String addressBlock, 
 		      String licenseState, String licenseNumber, String nationalAccreditationNumber ) {
 		this.personNameParts = personNameParts;
 		this.personPhone = personPhone;

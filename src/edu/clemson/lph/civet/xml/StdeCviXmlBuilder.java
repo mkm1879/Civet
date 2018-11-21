@@ -39,78 +39,73 @@ import org.w3c.dom.NodeList;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.xml.elements.*;
+import edu.clemson.lph.civet.xml.elements.AnimalTag.Types;
 import edu.clemson.lph.controls.PhoneField;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.IDTypeGuesser;
 import edu.clemson.lph.utils.XMLUtility;
 
+// TODO Refactor rename to StdXmlDataModel
 public class StdeCviXmlBuilder {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private static final String allElements = "Veterinarian,MovementPurpose,Origin,Destination,Consignor,Consignee," +
+	                                   "Carrier,TransportMode,Accessions,Animal,GroupLot,Statements,Attachment," +
+			                           "MiscAttribute,Binary";
 	private XMLDocHelper helper;
-	private Document doc;
-	private Element root;
+	private StdeCviBinaries binaries;
 
 	public StdeCviXmlBuilder() {
 		try {
 			DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			doc = db.newDocument();
+			Document doc = db.newDocument();
 			doc.setXmlStandalone(true);
-			root = doc.createElementNS("http://www.usaha.org/xmlns/ecvi", "eCVI");
+			Element root = doc.createElementNS("http://www.usaha.org/xmlns/ecvi2", "eCVI");
 			doc.appendChild(root);
-			helper = new XMLDocHelper( doc );
+			helper = new XMLDocHelper( doc, root );
+			binaries = new StdeCviBinaries( helper );
 		} catch (Exception e ) {
 			logger.error(e);
-//		} catch (ParserConfigurationException e) {
-//			logger.error("Could not set up parser for stdXML", e);
 		}
 	}
 
 	public StdeCviXmlBuilder(StdeCviXml cviIn) {
 		try {
+			Document doc = null;
+			Element root = null;
 			if( cviIn != null ) {
 				doc = cviIn.getDocument();
 				doc.setXmlStandalone(true);
-				helper = cviIn.getHelper();
 				root = cviIn.getRoot();
 			}
 			if( doc == null ) {
 				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
 				doc = db.newDocument();
 				doc.setXmlStandalone(true);
-				root = doc.createElementNS("http://www.usaha.org/xmlns/ecvi", "eCVI");
+				root = doc.createElementNS("http://www.usaha.org/xmlns/ecvi2", "eCVI");
 				doc.appendChild(root);
-				helper = new XMLDocHelper( doc );
 			}
+			helper = new XMLDocHelper( doc, root );
+			binaries = new StdeCviBinaries( helper );
 		} catch (Exception e ) {
 			logger.error(e);
-//		} catch (ParserConfigurationException e) {
-//			logger.error("Could not set up parser for stdXML", e);
 		}
 	}
 
-	public StdeCviXmlBuilder( Document doc) {
-		this.doc = doc;
+	public StdeCviXmlBuilder( Document doc ) {
 		doc.setXmlStandalone(true);
-		root = doc.getDocumentElement();
-		helper = new XMLDocHelper( doc );
+		Element root = doc.getDocumentElement();
+		helper = new XMLDocHelper( doc, root );
+		binaries = new StdeCviBinaries( helper );
 	}
 
 	public void setCviNumber( String sCVINo ) {
-		root.setAttribute("CviNumber", sCVINo);
+		helper.setAttribute(null, "CviNumber", sCVINo);
 	}
 	
 	private boolean isValidDoc() {
-		boolean bRet = true;
-		if( doc == null ) {
-			logger.error("Call made against StdeCVIXmlBuilder with null Document");
-			bRet = false;
-		}
-		if( root == null ) {
-			logger.error("Call made against StdeCVIXmlBuilder with null root Element");
-			bRet = false;
-		}
-		return bRet;
+		return helper != null && helper.isInitialized();
 	}
 	
 	/**
@@ -124,120 +119,87 @@ public class StdeCviXmlBuilder {
 			String sDate = dateFormat.format(dIssued);
 			int iValidDays = CivetConfig.getCviValidDays();
 			if( sDate !=  null && iValidDays > 0 ) {
-				root.setAttribute("IssueDate", sDate);		
+				helper.setAttribute(null, "IssueDate", sDate);		
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(dIssued);
 				cal.add(Calendar.DATE, iValidDays);
 				String sExp = dateFormat.format(cal.getTime());
 				if( sExp != null && sExp.trim().length() > 0 )
-					root.setAttribute("ExpirationDate", sExp);
+					helper.setAttribute(null, "ExpirationDate", sExp);
 			}
 		}
 	}
 	
-	public Element setVet( String sName, String sLicNo, String sNAN, String sPhone ) {
+	static String getAfter(String sElement) {
+		String sRet = sElement;
+		int iIndex = allElements.indexOf(sRet);
+		if( iIndex > 0 ) 
+			sRet = allElements.substring(iIndex);
+		return sRet;
+	}
+	
+	public Element setVet( Veterinarian vet ) {
+		Element eVet = null;
 		if( !isValidDoc() )
 			return null;
-		Element eVet = null;
-		if( sName != null && sName.trim().length() > 0 ) {
-			eVet = childElementByName(root,"Veterinarian");
-			if( eVet == null ) {
-				eVet = doc.createElement("Veterinarian");
-				Element after = childElementByNames(root,"MovementPurpose,Origin,Destination,Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");
-				if( after != null )
-					root.insertBefore(eVet, after);
-				else
-					root.appendChild(eVet);
-			}
-			if( sLicNo != null && sLicNo.trim().length() > 0 )
-				eVet.setAttribute("LicenseNumber", sLicNo);
-			if( sNAN != null && sNAN.trim().length() > 0 )
-				eVet.setAttribute("NationalAccreditationNumber", sNAN);
-			Element person = childElementByName(eVet,"Person");
-			if( person == null ) {
-				person = doc.createElement("Person");
-				eVet.appendChild(person);
-			}
-			Element name = childElementByName(person, "Name");
-			if( name == null ) {
-				name = doc.createElement("Name");
-				person.appendChild(name);
-			}
-			name.setTextContent(sName);
-			if( sPhone != null && sPhone.trim().length() > 0 ) {
-				Element phone = childElementByName(person, "Phone");
-				if( phone == null ) {
-					phone = doc.createElement("Phone");
-					person.appendChild(phone);
-				}
+		if( vet.personName != null && vet.personName.trim().length() > 0 ) {
+			String sAfter = getAfter("MovementPurposes");
+			eVet = helper.getOrInsertElementBefore("Veterinarian", sAfter);
+			if( vet.licenseNumber != null && vet.licenseNumber.trim().length() > 0 )
+				eVet.setAttribute("LicenseNumber", vet.licenseNumber);
+			if( vet.nationalAccreditationNumber  != null && vet.nationalAccreditationNumber .trim().length() > 0 )
+				eVet.setAttribute("NationalAccreditationNumber", vet.nationalAccreditationNumber );
+			Element person = helper.getOrAppendChild(eVet,"Person");
+			Element name = helper.getOrAppendChild(person, "Name");
+			name.setTextContent(vet.personName);
+			if( vet.personPhone != null && vet.personPhone.trim().length() > 0 ) {
+				Element phone = helper.getOrAppendChild(person, "Phone");
 				phone.setAttribute("Type", "Unknown");
-				phone.setAttribute("Number", sPhone);
+				phone.setAttribute("Number", vet.personPhone);
 			}	
 		}
 		return eVet;
 	}
 	
-	public Element setVet( String sName ) {
-		Element eVet = null;
-		if( sName == null || sName.trim().length() == 0 )
-			sName = "Not Entered";
-		if( isValidDoc() && sName != null && sName.trim().length() > 0 ) {
-			eVet = childElementByName(root,"Veterinarian");
-			if( eVet == null ) {
-				eVet = doc.createElement("Veterinarian");
-				Node after = childNodeByNames(root,"MovementPurposes,Origin,Destination,Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");
-				root.insertBefore(eVet, after);
-			}
-			Element person = childElementByName(eVet,"Person");
-			if( person == null ) {
-				person = doc.createElement("Person");
-				eVet.appendChild(person);
-			}
-			Element name = childElementByName(person,"Name");
-			if( name == null ) {
-				name = doc.createElement("Name");
-				person.appendChild(name);
-			}
-			name.setTextContent(sName);
+	public Veterinarian getVet() {
+		Veterinarian vet = null;
+		Element eVet = helper.getElementByName("Veterinarian");
+		String sLicenseState = eVet.getAttribute("LicenseState");
+		String sLicenseNumber = eVet.getAttribute("LicenseNumber");
+		String sNationalAccreditationNumber = eVet.getAttribute("NationalAccreditationNumber");
+		Element eVetPerson = helper.getChildElementByName(eVet, "Person");
+		Element eVetPhone = helper.getChildElementByName(eVetPerson, "Phone");
+		String sPhone = eVetPhone.getAttribute("Number");
+		Element eVetEmail = helper.getChildElementByName(eVetPerson, "Email");
+		String sEmail = eVetEmail.getAttribute("Email");
+		Element eAddress = helper.getChildElementByName(eVet, "AddressBlock");
+		String sAddress = eAddress.getTextContent();
+		Element eVetName = helper.getChildElementByName(eVetPerson, "Name");
+		String sName = null;
+		if( eVetName != null ) {
+			sName = eVetName.getTextContent();
+			vet = new Veterinarian(sName, sPhone,  sEmail,  sAddress, 
+					sLicenseState,  sLicenseNumber,  sNationalAccreditationNumber);
 		}
-		return eVet;
-	}
-
-
-	private Element getAddress( Element e, String sStreetIn, String sCityIn, String sStateIn, String sZipIn ) {
-		if( e == null ) return null;
-		ArrayList<Element> eAddresses = XMLUtility.listChildElementsByName(e, "Address");
-		for( Element eAddress : eAddresses ) {
-			String sStreet = null;
-			String sCity = null;
-			String sState = null;
-			String sZip = null;
-			Element eStreet = childElementByName(eAddress, "Line1");
-			if( eStreet != null ) sStreet = eStreet.getTextContent();
-			Element eCity = childElementByName(eAddress, "Town");
-			if( eCity != null ) sCity = eCity.getTextContent();
-			Element eState = childElementByName(eAddress, "State");
-			if( eState != null ) sState = eState.getTextContent();
-			Element eZip = childElementByName(eAddress, "Zip");
-			if( eZip != null ) sZip = eZip.getTextContent();
-			if( ( sStreetIn != null || sCityIn != null || sZipIn != null )
-					&&
-				((sStreetIn == null && sStreet == null ) || (sStreetIn != null && sStreetIn.equals(sStreet))) 
-					&&
-				((sCityIn == null && sCity == null ) || (sCityIn != null && sCityIn.equals(sCity))) 
-					&&
-				((sStateIn == null && sState == null ) || (sStateIn != null && sStateIn.equals(sState))) 
-					&&
-				((sZipIn == null && sZip == null ) || (sZipIn != null && sZipIn.equals(sZip))) ) {
-				
-				return eAddress;
+		else {
+			Element eVetNameParts = helper.getChildElementByName(eVetPerson, "NameParts");
+			if( eVetNameParts != null ) {
+				String sBusinessName = eVetNameParts.getAttribute("BusinessName");
+				String sFirstName = eVetNameParts.getAttribute("FirstName");
+				String sMiddleName = eVetNameParts.getAttribute("MiddleName");
+				String sLastName = eVetNameParts.getAttribute("LastName");
+				String sOtherName = eVetNameParts.getAttribute("OtherName");
+				NameParts parts = new NameParts( sBusinessName, sFirstName, sMiddleName, sLastName, sOtherName );
+				vet = new Veterinarian( parts, sPhone, sEmail, sAddress, 
+					      sLicenseState, sLicenseNumber, sNationalAccreditationNumber);
 			}
 		}
-		return null;
+		return vet;
 	}
 
 	/**
 	 * Used to add address to Veterinarian, Origin and Destination
+	 * Removes child elements if value is not null by zero length
 	 * @param e
 	 * @param sStreet
 	 * @param sCity
@@ -245,364 +207,528 @@ public class StdeCviXmlBuilder {
 	 * @param sZip
 	 * @return
 	 */
-	public Element setAddress( Element e, String sStreet, String sCity, 
-			String sCounty, String sState, String sZip ) {
+	private Element setAddress( Element e, Address addr ) {
 		if( !isValidDoc() )
 			return null;
 		Element address = null;
 		if( e != null ) {
-			address = getAddress(e, sStreet, sCity, sState, sZip );
-			if( address != null ) 
-				return address;
-			address = childElementByName(e,"Address");
-			if( address == null ) {
-				String sElement = e.getTagName();
-				Node nPerson = null;
-				if( !"Veterinarian".equals(sElement) ) {
-					nPerson = childNodeByName( e, "Person");
-				}
-				address = doc.createElement("Address");
-				e.insertBefore(address, nPerson);
+			String sAfter = null;
+			address = helper.getOrAppendChild(e, "Adddress" );
+			if( addr.line1 != null && addr.line1.trim().length() > 0 ) {
+				sAfter = "Line2,Town,County,State,ZIP,Country,GeoPoint";
+				Element line1 = helper.getOrInsertElementBefore( address, "Line1", sAfter);
+				line1.setTextContent(addr.line1.trim());
+			} 
+			else if( addr.line1 != null && addr.line1.trim().length() == 0 ) {
+				helper.removeChild(address, "Line1");
 			}
-			Node line1 = childNodeByName( address, "Line1");
-			if( line1 == null ) {
-				line1 = doc.createElement("Line1");
-				address.appendChild(line1);
+			if( addr.town != null && addr.town.trim().length() > 0 ) {
+				sAfter = "County,State,ZIP,Country,GeoPoint";
+				Element town = helper.getOrInsertElementBefore( address, "Town", sAfter);
+				town.setTextContent(addr.town.trim());
 			}
-			if( sStreet != null ) {
-				line1.setTextContent(sStreet.trim());
+			else if( addr.town != null && addr.town.trim().length() == 0 ) {
+				helper.removeChild( address, "Town" );
 			}
-			else {
-				line1.setTextContent("");
-			}
-			Node town = childNodeByName( address, "Town");
-			if( town == null ) {
-				town = doc.createElement("Town");
-				address.appendChild(town);
-			}
-			if( sCity != null ) {
-				town.setTextContent(sCity.trim());
-			}
-			else {
-				town.setTextContent("Not Provided");
-			}
-			Node state = childNodeByName( address, "State");
-			if( state == null ) {
-				state = doc.createElement("State");
-				address.appendChild(state);
-			}
-			if( sState != null ) {
-				state.setTextContent(sState.trim());
+			sAfter = "ZIP,Country,GeoPoint";
+			Element state = helper.getOrInsertElementBefore( address, "State", sAfter);
+			if( addr.state != null ) {
+				state.setTextContent(addr.state.trim());
 			}
 			else {
 				logger.error("Attempt to add address with no state.", new Exception());
-				state.setTextContent("ERROR");				
+				state.setTextContent("");				
 			}
-			if( sCounty != null && sCounty.trim().length() >= 3 ) {
-				Node county = childNodeByName( address, "County");
-				if( county == null ) {
-					county = doc.createElement("County");
-					address.insertBefore(county,state);
-					county.setTextContent(sCounty.trim());
-				}
+			if( addr.county != null && addr.county.trim().length() >= 3 ) {
+				sAfter = "State,ZIP,Country,GeoPoint";
+				Element county = helper.getOrInsertElementBefore( address, "County", sAfter);
+				county.setTextContent(addr.county.trim());
 			}
-			Node zip = childNodeByName( address, "ZIP" );
-			if( zip == null ) {
-				zip = doc.createElement("ZIP");
+			else if( addr.county != null && addr.county.trim().length() == 0 ) {
+				helper.removeChild(address, "County");
+			}
+			if( addr.zip != null ) {
+				sAfter = "Country,GeoPoint";
+				Element zip = helper.getOrInsertElementBefore( address, "ZIP", sAfter);
 				address.appendChild(zip);
-			}
-			if( sZip != null && sZip.trim().length() > 0 ) {		
-				zip.setTextContent(sZip.trim());
+				zip.setTextContent(addr.zip);
 			}
 			else {
-				zip.setTextContent("00000");
+				helper.removeChild(address, "ZIP");
 			}
-			Node country = childNodeByName( address, "Country" );
-			if( country == null ) {
-				country = doc.createElement("Country");
-				address.appendChild(country);
-			}
-			country.setTextContent("USA");
 		}
 		return address;
 	}
 	
+	/**
+	 * Assume single purpose even though standard supports multiple.
+	 * @param sPurpose
+	 */
 	public void setPurpose( String sPurpose ) {
 		if( isValidDoc() && sPurpose != null && sPurpose.trim().length() > 0 ) {
-			Element purposes = childElementByName( root, "MovementPurposes" );
-			if( purposes == null) {
-				purposes = doc.createElement("MovementPurposes");
-				Node after = childNodeByNames(root,"Origin,Destination,Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");
-				root.insertBefore(purposes, after);
-			}
-			Element purpose = childElementByName(purposes, "MovementPurpose");
-			if( purpose == null ) {
-				purpose = doc.createElement("MovementPurpose");
-				purposes.appendChild(purpose);
-			}
+			String sAfter = getAfter("Origin");
+			Element purposes = helper.getOrInsertElementBefore( "MovementPurposes", sAfter );
+			Element purpose = helper.getOrAppendChild(purposes, "MovementPurpose");
 			purpose.setTextContent(sPurpose);
 		}
 	}
+	
+	/**
+	 * Get just the first movement purpose.
+	 * @return
+	 */
+	public String getPurpose() {
+		String sRet = null;
+		String sPath = "//MovementPurposes/MovementPurpose";
+		sRet = helper.getElementTextByPath(sPath);
+		return sRet;
+	}
 
-	public Element setOrigin( String sPIN, String sPremName, String sName, String sPhone ) {
+	private Element setPremises( Premises prem, String sElementName ) {
 		if( !isValidDoc() )
 			return null;
-		Element origin = null;
-		origin = childElementByName(root,"Origin");
-		if( origin == null ) {
-			origin = doc.createElement("Origin");
-			Node after = childNodeByNames(root,"Destination,Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");
-			root.insertBefore(origin,after);
-			if( sPIN != null && sPIN.trim().length() > 0 ) {
-				Element pin = doc.createElement("PremId");
-				origin.appendChild(pin);
-				pin.setTextContent(sPIN);
-			}
-			if( sPremName != null && sPremName.trim().length() > 0 ) {
-				Element premName = doc.createElement("PremName");
-				origin.appendChild(premName);
-				premName.setTextContent(sPremName);
-			}
-			Element person = doc.createElement("Person");
-			origin.appendChild(person);
-			Element name = doc.createElement("Name");
-			person.appendChild(name);
-			name.setTextContent(sName);
-			if( sPhone != null && sPhone.trim().length() > 0 ) {
-				Element phone = doc.createElement("Phone");
-				person.appendChild(phone);
-				phone.setAttribute("Type", "Unknown");
-				phone.setAttribute("Number", sPhone);
-			}	
+		String sAfter = ("Origin".equals(sElementName)?getAfter("Destination"):getAfter("Consignor") );
+		Element premises = helper.getOrInsertElementBefore(sElementName, sAfter);
+		if( prem.premid  != null && prem.premid.trim().length() > 0 ) {
+			sAfter = "PremName,Address,StateZoneOrAreaStatus,HerdOrFlockStatus,Person";
+			Element pin = helper.getOrInsertElementBefore(premises, "PremId", sAfter);
+			premises.appendChild(pin);
+			pin.setTextContent(prem.premid);
 		}
-		return origin;
+		if( prem.premName != null && prem.premName.trim().length() > 0 ) {
+			sAfter = "Address,StateZoneOrAreaStatus,HerdOrFlockStatus,Person";
+
+			Element premName = helper.getOrInsertElementBefore(premises,"PremName",sAfter);
+			premises.appendChild(premName);
+			premName.setTextContent(prem.premName);
+		}
+		setAddress( premises, prem.address );
+		Element person = helper.getOrAppendChild(premises,"PremName");
+		sAfter = "Phone,Email";
+		// Careful of choice between name and name parts
+		if( prem.personName != null && prem.personName.trim().length() > 0 ) {
+			helper.removeChild(person, "NameParts");
+			sAfter = "Phone,Email";
+			Element name = helper.getOrInsertElementBefore(person,"Name",sAfter);
+			name.setTextContent(prem.personName);
+		}
+		else if( prem.personNameParts != null ) {
+			helper.removeChild(person, "Name");  // If we have parts DO NOT include single name
+			sAfter = "Name,Phone,Email";
+			Element nameParts = helper.getOrInsertElementBefore(person,"NameParts",sAfter);
+			if( prem.personNameParts.businessName != null && prem.personNameParts.businessName.trim().length() > 0 ) {
+				sAfter = "FirstName,MiddleName,LastName,OtherName";
+				Element businessName = helper.getOrInsertElementBefore(nameParts,"BusinessName",sAfter);
+				businessName.setTextContent(prem.personNameParts.businessName);
+			}
+			if( prem.personNameParts.firstName != null && prem.personNameParts.firstName.trim().length() > 0 ) {
+				sAfter = "MiddleName,LastName,OtherName";
+				Element firstName = helper.getOrInsertElementBefore(nameParts,"FirstName",sAfter);
+				firstName.setTextContent(prem.personNameParts.firstName);
+			}
+			if( prem.personNameParts.middleName != null && prem.personNameParts.middleName.trim().length() > 0 ) {
+				sAfter = "LastName,OtherName";
+				Element middleName = helper.getOrInsertElementBefore(nameParts,"MiddleName",sAfter);
+				middleName.setTextContent(prem.personNameParts.middleName);
+			}
+			if( prem.personNameParts.lastName != null && prem.personNameParts.lastName.trim().length() > 0 ) {
+				sAfter = "OtherName";
+				Element lastName = helper.getOrInsertElementBefore(nameParts,"LastName",sAfter);
+				lastName.setTextContent(prem.personNameParts.lastName);
+			}
+		}			
+		if( prem.personPhone != null && checkPhoneLength(prem.personPhone) ) {
+			sAfter = "Email";
+			Element phone = helper.getOrInsertElementBefore(premises,"Phone",sAfter);
+			person.appendChild(phone);
+			phone.setAttribute("Type", "Unknown");
+			phone.setAttribute("Number", prem.personPhone);
+		}	
+		return premises;
 	}
 	
-
-	public Element setOrigin( String sPIN, String sPremName, String sState ) {
-		if( !isValidDoc() )
-			return null;
-		Element origin = null;
-		origin = childElementByName(root,"Origin");
-		if( origin == null ) {
-			origin = doc.createElement("Origin");
-			Node after = childNodeByNames(root,"Destination,Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");
-			root.insertBefore(origin,after);
-			if( sPIN != null && sPIN.trim().length() > 0 ) {
-				Element pin = doc.createElement("PremId");
-				origin.appendChild(pin);
-				pin.setTextContent(sPIN);
-			}
-			if( sPremName != null && sPremName.trim().length() > 0 ) {
-				Element premName = doc.createElement("PremName");
-				origin.appendChild(premName);
-				premName.setTextContent(sPremName);
-			}
-			Element person = doc.createElement("Person");
-			origin.appendChild(person);
-			Element name = doc.createElement("Name");
-			person.appendChild(name);
-			name.setTextContent("NI");
-			setAddress(origin, "NI", "NI", null, sState, "00000");
-		}
-		return origin;
-	}
-
-	private void checkPhoneLength( String sPhone ) {
-		if( sPhone == null ) return;
+	private boolean checkPhoneLength( String sPhone ) {
+		boolean bRet = true;
+		if( sPhone == null ) return false;
 		int iLenPhoneDigits = PhoneField.formatDigitsOnly(sPhone).trim().length();
 		if( sPhone.trim().length() > 0 && iLenPhoneDigits != 10 ) {
-				MessageDialog.messageLater(null, "Civet Error: Phone format", "CVI standard requires ten digit phone");
+			MessageDialog.messageLater(null, "Civet Error: Phone format", "CVI standard requires ten digit phone");
+			bRet = false;
 		}
+		return bRet;
 	}
 	
-	public Element setDestination( String sPIN, String sPremName, String sName, String sPhone ) {
-		if( !isValidDoc() )
-			return null;
-		checkPhoneLength(sPhone);
-		Element destination = null;
-		destination = childElementByName(root,"Destination");
-		if( destination == null ) {
-			destination = doc.createElement("Destination");
-			Node after = childNodeByNames(root,"Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");
-			root.insertBefore(destination, after);
-			if( sPIN != null && sPIN.trim().length() > 0 ) {
-				Element pin = doc.createElement("PremId");
-				destination.appendChild(pin);
-				pin.setTextContent(sPIN);
+	private Premises getPremises( String sElementName ) {
+		Premises prem = null;
+		Element ePremises = helper.getElementByName(sElementName);
+		Element ePIN = helper.getChildElementByName(ePremises, "PremId");
+		String premid = ePIN.getTextContent();
+		Element ePremName = helper.getChildElementByName(ePremises, "PremName");
+		String premName = ePremName.getTextContent();
+		Address address = getAddress(ePremises);
+		//TODO Implement Premises Person (Name and Email) if needed.
+		Element ePerson = helper.getChildElementByName(ePremises, "Person");
+		Element ePhone = helper.getChildElementByName(ePerson, "Phone");
+		String phone = ePhone.getAttribute("Number");
+		Element eEmail = helper.getChildElementByName(ePerson, "Email");
+		String email = eEmail.getAttribute("Address");
+		Element eNameParts = helper.getChildElementByName(ePerson, "NameParts");
+		if( eNameParts != null ) {
+			String businessName = eNameParts.getAttribute("BusinessName");
+			String firstName = eNameParts.getAttribute("FirstName");
+			String middleName = eNameParts.getAttribute("MiddleName");
+			String lastName = eNameParts.getAttribute("LastName");
+			String otherName = eNameParts.getAttribute("OtherName");
+			NameParts parts = new NameParts( businessName, firstName, middleName, lastName, otherName );
+			prem = new Premises(premid, premName, address, parts, phone, email);
+			
+		} else {
+			Element eName = helper.getChildElementByName(ePerson, "Name");
+			if( eName != null ) {
+				String name = eName.getTextContent();
+				prem = new Premises(premid, premName, address, name, phone, email);
 			}
-			if( sPremName != null && sPremName.trim().length() > 0 ) {
-				Element premName = doc.createElement("PremName");
-				destination.appendChild(premName);
-				premName.setTextContent(sPremName);
-			}
-			Element person = doc.createElement("Person");
-			destination.appendChild(person);
-			Element name = doc.createElement("Name");
-			person.appendChild(name);
-			name.setTextContent(sName);
-			if( sPhone != null && sPhone.trim().length() > 0 ) {
-				Element phone = doc.createElement("Phone");
-				person.appendChild(phone);
-				phone.setAttribute("Type", "Unknown");
-				phone.setAttribute("Number", sPhone);
-			}	
 		}
-		return destination;
+		return prem;
 	}
 	
-	public Element setDestination( String sPIN, String sPremName, String sState ) {
-		if( !isValidDoc() )
-			return null;
-		Element destination = null;
-		destination = childElementByName(root,"Destination");
-		if( destination == null ) {
-			destination = doc.createElement("Destination");
-			Node after = childNodeByNames(root,"Consignor,Consignee,Accessions,Animal,GroupLot,Attachment");
-			root.insertBefore(destination, after);
-			if( sPIN != null && sPIN.trim().length() > 0 ) {
-				Element pin = doc.createElement("PremId");
-				destination.appendChild(pin);
-				pin.setTextContent(sPIN);
-			}
-			if( sPremName != null && sPremName.trim().length() > 0 ) {
-				Element premName = doc.createElement("PremName");
-				destination.appendChild(premName);
-				premName.setTextContent(sPremName);
-			}
-			Element person = doc.createElement("Person");
-			destination.appendChild(person);
-			Element name = doc.createElement("Name");
-			person.appendChild(name);
-			name.setTextContent("NI");
-			setAddress(destination, "NI", "NI", null, sState, "00000");
-		}
-		return destination;
+	private Address getAddress( Element ePremises ) {
+		Element eLine1 = helper.getChildElementByName(ePremises, "Line1");
+		String line1 = eLine1.getTextContent();
+		Element eLine2 = helper.getChildElementByName(ePremises, "Line2");
+		String line2 = eLine2.getTextContent();
+		Element eTown = helper.getChildElementByName(ePremises, "Town");
+		String town = eTown.getTextContent();
+		Element eCounty = helper.getChildElementByName(ePremises, "County");
+		String county = eCounty.getTextContent();
+		Element eState = helper.getChildElementByName(ePremises, "State");
+		String state = eState.getTextContent();
+		Element eZIP = helper.getChildElementByName(ePremises, "ZIP");
+		String zip = eZIP.getTextContent();
+		Element eCountry = helper.getChildElementByName(ePremises, "Country");
+		String country = eCountry.getTextContent();
+		Element eGeoPoint = helper.getChildElementByName(ePremises, "GeoPoint");
+		String sLatitude = eGeoPoint.getAttribute("Latitude");
+		Double latitude = Double.parseDouble(sLatitude);
+		String sLongitude = eGeoPoint.getAttribute("Longitude");
+		Double longitude = Double.parseDouble(sLongitude);
+		
+		Address address = new Address(line1, line2, town, county, state, zip, country,
+				latitude, longitude);
+		return address;
+	}
+	
+
+	public Element setOrigin( Premises premises ) {
+		return setPremises( premises, "Origin");
+	}
+	
+	public Premises getOrigin() {
+		return getPremises("Origin");
 	}
 
-	public Element setConsignor( String sPremName, String sName, String sPhone ) {
+	public Element setDestination( Premises premises ) {
+		return setPremises( premises, "Destination");
+	}
+	
+	public Premises getDestination() {
+		return getPremises("Destination");
+	}
+	
+	private Element setContact( Contact cont, String sElementName ) {
 		if( !isValidDoc() )
 			return null;
-		checkPhoneLength(sPhone);
-		Element consignor = null;
-		consignor = childElementByName(root,"Consignor");
-		if( consignor == null ) {
-			consignor = doc.createElement("Consignor");
-			Node after = childNodeByNames(root,"Consignee,Accessions,Animal,GroupLot,Attachment");
-			root.insertBefore(consignor, after);
-			Element premName = doc.createElement("PremName");
-			consignor.appendChild(premName);
-			premName.setTextContent(sPremName);
-			Element person = doc.createElement("Person");
-			consignor.appendChild(person);
-			Element name = doc.createElement("Name");
-			person.appendChild(name);
-			name.setTextContent(sName);
-			if( sPhone != null && sPhone.trim().length() > 0 ) {
-				Element phone = doc.createElement("Phone");
-				person.appendChild(phone);
-				phone.setAttribute("Type", "Unknown");
-				phone.setAttribute("Number", sPhone);
-			}	
+		String sAfter = ("Consignee".equals(sElementName)?getAfter("Carrier"):getAfter("Consignee") );
+		Element contact = helper.getOrInsertElementBefore(sElementName, sAfter);
+		if( cont.addressBlock  != null && cont.addressBlock.trim().length() > 0 ) {
+			sAfter = "Person";
+			Element pin = helper.getOrInsertElementBefore(contact, "AddressBlock", sAfter);
+			contact.appendChild(pin);
+			pin.setTextContent(cont.addressBlock);
 		}
-		return consignor;
+		Element person = helper.getOrAppendChild(contact,"PremName");
+		sAfter = "Phone,Email";
+		// Careful of choice between name and name parts
+		if( cont.personName != null && cont.personName.trim().length() > 0 ) {
+			helper.removeChild(person, "NameParts");
+			sAfter = "Phone,Email";
+			Element name = helper.getOrInsertElementBefore(person,"Name",sAfter);
+			name.setTextContent(cont.personName);
+		}
+		else if( cont.personNameParts != null ) {
+			helper.removeChild(person, "Name");  // If we have parts DO NOT include single name
+			sAfter = "Name,Phone,Email";
+			Element nameParts = helper.getOrInsertElementBefore(person,"NameParts",sAfter);
+			if( cont.personNameParts.businessName != null && cont.personNameParts.businessName.trim().length() > 0 ) {
+				sAfter = "FirstName,MiddleName,LastName,OtherName";
+				Element businessName = helper.getOrInsertElementBefore(nameParts,"BusinessName",sAfter);
+				businessName.setTextContent(cont.personNameParts.businessName);
+			}
+			if( cont.personNameParts.firstName != null && cont.personNameParts.firstName.trim().length() > 0 ) {
+				sAfter = "MiddleName,LastName,OtherName";
+				Element firstName = helper.getOrInsertElementBefore(nameParts,"FirstName",sAfter);
+				firstName.setTextContent(cont.personNameParts.firstName);
+			}
+			if( cont.personNameParts.middleName != null && cont.personNameParts.middleName.trim().length() > 0 ) {
+				sAfter = "LastName,OtherName";
+				Element middleName = helper.getOrInsertElementBefore(nameParts,"MiddleName",sAfter);
+				middleName.setTextContent(cont.personNameParts.middleName);
+			}
+			if( cont.personNameParts.lastName != null && cont.personNameParts.lastName.trim().length() > 0 ) {
+				sAfter = "OtherName";
+				Element lastName = helper.getOrInsertElementBefore(nameParts,"LastName",sAfter);
+				lastName.setTextContent(cont.personNameParts.lastName);
+			}
+		}			
+		if( cont.personPhone != null && checkPhoneLength(cont.personPhone) ) {
+			sAfter = "Email";
+			Element phone = helper.getOrInsertElementBefore(contact,"Phone",sAfter);
+			person.appendChild(phone);
+			phone.setAttribute("Type", "Unknown");
+			phone.setAttribute("Number", cont.personPhone);
+		}	
+		return contact;
 	}
 	
-	public Element setConsignee( String sPremName, String sName, String sPhone ) {
-		if( isValidDoc() )
-			return null;
-		checkPhoneLength(sPhone);
-		Element consignee = null;
-		consignee = childElementByName(root,"Consignee");
-		if( consignee == null ) {
-			consignee = doc.createElement("Consignee");
-			Node after = childNodeByNames(root,"Accessions,Animal,GroupLot,Attachment");
-			root.insertBefore(consignee, after);
-			Element premName = doc.createElement("PremName");
-			consignee.appendChild(premName);
-			premName.setTextContent(sPremName);
-			Element person = doc.createElement("Person");
-			consignee.appendChild(person);
-			Element name = doc.createElement("Name");
-			person.appendChild(name);
-			name.setTextContent(sName);
-			if( sPhone != null && sPhone.trim().length() > 0 ) {
-				Element phone = doc.createElement("Phone");
-				person.appendChild(phone);
-				phone.setAttribute("Type", "Unknown");
-				phone.setAttribute("Number", sPhone);
-			}	
-		}
-		return consignee;
+	public Element setConsignor( Contact contact ) {
+		return setContact( contact, "Consignor");
 	}
 
-	private Element getAnimalByTag( String sNumber ) {
-		if( sNumber == null ) return null;
-		ArrayList<Element> eAnimals = XMLUtility.listChildElementsByName(root, "Animal");
-		for( Element eAnimal : eAnimals) {
-			Element eTag = getAnimalTagByNumber( eAnimal, sNumber );
-			if( eTag != null )
-				return eAnimal;
-		}
-		return null;
+	public Element setConsignee( Contact contact ) {
+		return setContact( contact, "Consignee");
 	}
-	
-	private Element getAnimalTagByNumber( Element eAnimal, String sNumber ) {
-		ArrayList<Element> eAnimalTags = XMLUtility.listChildElementsByName(eAnimal,"AnimalTag");
-		for( Element eAnimalTag : eAnimalTags ) {
-			if( eAnimalTag != null ) {
-				String sExistingNumber = eAnimalTag.getAttribute("Number");
-				if( sNumber.equals(sExistingNumber) ) {
-					return eAnimalTag;
-				}
-			}
-		}
-		return null;
-	}
-	
+
 	public void clearAnimals() {
-		ArrayList<Element> eAnimals = XMLUtility.listChildElementsByName(root, "Animal");
+		ArrayList<Element> eAnimals = helper.getElementsByName("Animal");
 		for( Element eAnimal : eAnimals) {
-			root.removeChild(eAnimal);
+			helper.removeElement(eAnimal);
 		}
 	}
-	
-	public Element addAnimal( String sSpecies, java.util.Date dInspectionDate, String sBreed, String sAge, String sSex, 
-								String sTagType, String sTagNumber ) {
+
+	public Element addAnimal( Animal animalData ) {
 		if( !isValidDoc() ) 
 			return null;
-		Element animal = doc.createElement("Animal");
-		Node after = childNodeByNames(root,"GroupLot,Attachment");
-		root.insertBefore(animal,after);
-		animal.setAttribute("SpeciesCode", sSpecies);
-		String sInspectionDate = dateFormat.format(dInspectionDate);
-		animal.setAttribute("InspectionDate", sInspectionDate);
+		String sAfter = getAfter("GroupLot");
+		Element animal = helper.insertElementBefore("Animal", sAfter);
+		if( animalData.speciesCode.isStandardCode ) {
+			Element speciesCode = helper.appendChild(animal, "SpeciesCode");
+			speciesCode.setAttribute("Code", animalData.speciesCode.code);
+		}
+		else {
+			Element speciesOther = helper.appendChild(animal, "SpeciesOther");
+			speciesOther.setAttribute("Code", animalData.speciesCode.code);
+			speciesOther.setAttribute("Text", animalData.speciesCode.text);
+		}
+		for( AnimalTag tag : animalData.animalTags ) {
+			switch( tag.type ) {
+			case AIN:
+			case MfrRFID:
+			case NUES9:
+			case NUES8:
+			case OtherOfficialID:
+			case ManagementID:
+				addIDNumber(animal, tag);
+				break; 
+			case BrandImage:
+				addBrandImage(animal, tag);
+				break; 
+			case EquineDescription:
+				addEquineDescription(animal, tag);
+				break; 
+			case EquinePhotographs:
+				addEquinePhotographs(animal, tag);
+				break; 
+			default:
+				logger.error("Unexpected tag " + tag.toString() );
+			}
+
+		}
+		String sAge = animalData.age;
 		if( sAge != null && sAge.trim().length() > 0 )
 			animal.setAttribute("Age", sAge);
+		String sBreed = animalData.breed;
+		if( sBreed != null && sBreed.trim().length() > 0 )
+			animal.setAttribute("Breed", sBreed);
+		String sSex = animalData.sex;
 		if( sSex != null && sSex.trim().length() > 0 )
 			animal.setAttribute("Sex", sSex);
-		if( sTagNumber != null && sTagNumber.trim().length() > 0 )
-			addAnimalTag( animal, sTagType, sTagNumber );
+		animal.setAttribute("InspectionDate", animalData.inspectionDate);
 		return animal;
 	}
 	
-	public void addAnimalTag( Element animal, String sType, String sNumber ) {
-		if( animal == null || sNumber == null ) return;
-		Element tag = getAnimalTagByNumber( animal, sNumber );
-		if( tag == null ) {
-			tag = doc.createElement("AnimalTag");
-			if( isValidDoc() && animal != null ) {
-				animal.appendChild(tag);
-				if( sType == null || sType.trim().length() == 0 ) {
-					sType = IDTypeGuesser.getTagType(sNumber);
-				}
-				tag.setAttribute("Type", sType);
-				tag.setAttribute("Number", sNumber);
-			}
+	public ArrayList<Animal> getAnimals() {
+		ArrayList<Animal> animals = new ArrayList<Animal>();
+		ArrayList<Element> aAnimals = helper.getElementsByName("Animal");
+		for( Element eAnimal : aAnimals ) {
+			SpeciesCode speciesCode = getSpeciesCode( eAnimal );
+			ArrayList<AnimalTag> animalTags = getAnimalTags( eAnimal );
+			String age = eAnimal.getAttribute( "Age");
+			String breed = eAnimal.getAttribute( "Breed");
+			String sex = eAnimal.getAttribute( "Sex");
+			String inspectionDate = eAnimal.getAttribute( "InspectionDate");
+			// populate above variables.
+			Animal animal = new Animal(speciesCode, animalTags, age, breed, sex, inspectionDate);
+			animals.add(animal);
 		}
+		return animals;
 	}
 	
+
+	public ArrayList<GroupLot> getGroups() {
+		ArrayList<GroupLot> groups = new ArrayList<GroupLot>();
+		ArrayList<Element> aGroups = helper.getElementsByName("GroupLot");
+		for( Element eGroup : aGroups ) {
+			SpeciesCode speciesCode = getSpeciesCode( eGroup );
+			String groupLotId = null;
+			Element eGroupLotId = helper.getChildElementByName(eGroup, "GroupLotID");
+			String sGroupLotId = eGroupLotId.getTextContent();
+			String sQuantity = eGroup.getAttribute("Quantity");
+			Double quantity = Double.parseDouble(sQuantity);
+			String unit = eGroup.getAttribute("Unit");
+			String age = eGroup.getAttribute( "Age");
+			String breed = eGroup.getAttribute( "Breed");
+			String sex = eGroup.getAttribute( "Sex");
+			String description = eGroup.getAttribute( "Description");
+			// populate above variables.
+			GroupLot group = new GroupLot( speciesCode, groupLotId, quantity, unit, age, breed, sex, description);
+			groups.add(group);
+		}
+		return groups;
+	}
+
 	
+	private SpeciesCode getSpeciesCode( Element eAnimal ) {
+		boolean bIsStandard = false;
+		String sCode = null;
+		String sText = null;
+		Element eCode = helper.getChildElementByName(eAnimal, "SpeciesCode");
+		if( eCode != null ) {
+			bIsStandard = true;
+			sCode = eCode.getAttribute("Code");
+			sText = eCode.getAttribute("Text");
+		}
+		else {
+			eCode = helper.getChildElementByName(eAnimal, "SpeciesOther");
+			if( eCode != null ) {
+				bIsStandard = false;
+				sCode = eCode.getAttribute("Code");
+				sText = eCode.getAttribute("Text");
+			}
+			
+		}
+		SpeciesCode code = new SpeciesCode(bIsStandard, sCode, sText);
+		return code;
+	}
+	
+	private ArrayList<AnimalTag> getAnimalTags( Element eAnimal ) {
+		ArrayList<AnimalTag> animalTags = new ArrayList<AnimalTag>();
+		Element eAnimalTags = helper.getChildElementByName(eAnimal, "AnimalTags");
+		ArrayList<Element> aAnimalTags = helper.getChildElements(eAnimalTags);
+		for( Element e : aAnimalTags ) {
+			AnimalTag tag;
+			String sType = e.getLocalName();
+			if( sType.equals("AIN") ) {
+				tag = new AnimalTag( AnimalTag.Types.AIN, e.getAttribute("Number") );
+			} else if( sType.equals("MfrRFID") ) {
+				tag = new AnimalTag( AnimalTag.Types.MfrRFID, e.getAttribute("Number") );				
+			} else if( sType.equals("NUES9") ) {
+				tag = new AnimalTag( AnimalTag.Types.NUES9, e.getAttribute("Number") );
+			} else if( sType.equals("NUES8") ) {
+				tag = new AnimalTag( AnimalTag.Types.NUES8, e.getAttribute("Number") );
+			} else if( sType.equals("OtherOfficialID") ) {
+				tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, e.getAttribute("Type"), e.getAttribute("Number") );
+			} else if( sType.equals("ManagementID") ) {
+				tag = new AnimalTag( AnimalTag.Types.ManagementID, e.getAttribute("Number") );
+			} else if( sType.equals("BrandImage") ) {
+				tag = makeBrandImage( e );
+			} else if( sType.equals("EquineDescription") ) {
+				tag = makeEquineDescription( e );
+			} else if( sType.equals("EquinePhotographs") ) {
+				tag = makeEquinePhotographs( e );
+			} else {
+				tag = new AnimalTag( AnimalTag.Types.ManagementID, e.getAttribute("Number") );
+			}	
+			animalTags.add(tag);
+		}
+		return animalTags;
+	}
+	
+	private AnimalTag makeBrandImage( Element e ) {
+		String ref = e.getAttribute("BrandImageRef"); 
+		String description = e.getAttribute("Description");
+		BrandImage image = new BrandImage( ref, description );
+		return new AnimalTag( image );
+	}
+
+	private AnimalTag makeEquineDescription( Element e ) {
+		String name = e.getAttribute("Name"); 
+		String description = e.getAttribute("Description");
+		EquineDescription desc = new EquineDescription( name, description );
+		return new AnimalTag( desc );
+	}
+
+	private AnimalTag makeEquinePhotographs( Element e ) {
+		String view1 = null;
+		String view2 = null;
+		String view3 = null;
+		ArrayList<Element> ePhotos = helper.getChildElements(e);
+		int i = 1;
+		for( Element ePhoto : ePhotos ) {
+			String sView = ePhoto.getAttribute("View");
+			if( i == 1 ) view1 = sView;
+			else if ( i == 2 ) view2 = sView;
+			else if ( i == 3 ) view3 = sView;
+			i++;
+		}
+		EquinePhotographs photos = new EquinePhotographs(view1, view2, view3 );
+		return new AnimalTag( photos );
+	}
+
+	
+	private void addIDNumber(Element animal, AnimalTag tag) {
+		String sElementName = tag.getElementName();
+		String sAfter = "Test,Vaccination";
+		Element eTag = helper.insertElementBefore(animal, sElementName, sAfter);
+		eTag.setAttribute("Number", tag.value);
+	}
+	
+	private void addBrandImage(Element animal, AnimalTag tag) {
+		String sAfter = "Test,Vaccination";
+		Element eTag = helper.insertElementBefore(animal, "BrandImage", sAfter);
+		eTag.setAttribute("BrandImageRef", findImageRef(tag));
+		eTag.setAttribute("Description", tag.value);
+	}
+	
+	private void addEquineDescription(Element animal, AnimalTag tag) {
+		String sAfter = "Test,Vaccination";
+		Element eTag = helper.insertElementBefore(animal, "EquineDescription", sAfter);
+		eTag.setAttribute("Name", tag.description.name);
+		eTag.setAttribute("Description", tag.description.description);
+	}
+	
+	private void addEquinePhotographs(Element animal, AnimalTag tag) {
+		String sAfter = "Test,Vaccination";
+		Element eTag = helper.insertElementBefore(animal, "EquinePhotographs", sAfter);
+		for( String sView : tag.photographs.views ) {
+			eTag.setAttribute("ImageRef", findImageRef(tag, sView));
+			eTag.setAttribute("View", sView);	
+		}
+	}
+
+	private String findImageRef(AnimalTag tag) {
+		String sRet = "REF1";
+		// TODO Implement for real.
+		return sRet;
+	}
+	
+	private String findImageRef(AnimalTag tag, String sView) {
+		String sRet = "REF2";
+		// TODO Implement for real.
+		return sRet;
+	}
+	
+	/*
+	 * TODO Deal with ANY changes to an existing Animal or Group.
 	public void updateSpecies( String sPreviousSpecies, String sNewSpecies ) {
 		if( !isValidDoc() ) 
 			return;
@@ -622,167 +748,104 @@ public class StdeCviXmlBuilder {
 		}
 		return;
 	}
-
-	public void clearGroups() {
-		ArrayList<Element> eGroups = XMLUtility.listChildElementsByName(root, "Group");
-		for( Element eGroup : eGroups) {
-			root.removeChild(eGroup);
+*/
+	public void clearGroupLots() {
+		ArrayList<Element> eAnimals = helper.getElementsByName("Animal");
+		for( Element eAnimal : eAnimals) {
+			helper.removeElement(eAnimal);
 		}
 	}
 	
-	public Element addGroup( int iNum, String sDescription, String sSpecies, String sAge, String sSex ) {
-		Element group = null;
-		if( isValidDoc() && iNum > 0 ) {
-			group = doc.createElement("GroupLot");
-			Node after = childNodeByName(root,"Attachment");
-			root.insertBefore(group,after);
-			group.setAttribute("Quantity", Integer.toString(iNum));
-			if( (sDescription == null || sDescription.trim().length() == 0) && sSpecies != null && sSpecies.trim().length() > 0 )
-				sDescription = sSpecies;
-			group.setAttribute("Description", sDescription);
-			if( sSpecies != null && sSpecies.trim().length() > 0 )
-				group.setAttribute("SpeciesCode", sSpecies);
-			if( sAge != null && sAge.trim().length() > 0 )
-				group.setAttribute("Age", sAge);
-			if( sSex != null && sSex.trim().length() > 0 )
-				group.setAttribute("Sex", sSex);
+	public Element addGroupLot( GroupLot group ) {
+		if( !isValidDoc() ) 
+			return null;
+		String sAfter = getAfter("Statements");
+		Element groupLot = helper.insertElementBefore("GroupLot", sAfter);
+		if( group.speciesCode.isStandardCode ) {
+			Element speciesCode = helper.appendChild(groupLot, "SpeciesCode");
+			speciesCode.setAttribute("Code", group.speciesCode.code);
 		}
-		return group;
+		else {
+			Element speciesOther = helper.appendChild(groupLot, "SpeciesOther");
+			speciesOther.setAttribute("Code", group.speciesCode.code);
+			speciesOther.setAttribute("Text", group.speciesCode.text);
+		}
+		sAfter = "Test, Vaccination";
+		// ID is an Element because it can repeat.  I only implement one.
+		String sId = group.groupLotId;
+		if( sId != null && sId.trim().length() > 0 ) {
+			Element groupId = helper.insertElementBefore(groupLot, "GroupLotID", sAfter);
+			groupId.setTextContent(sId);
+		}
+		Double quantity = group.quantity;
+		if( quantity != null )
+			groupLot.setAttribute("Quantity", quantity.toString());
+		String sUnit = group.unit;
+		if( sUnit != null && sUnit.trim().length() > 0 )
+			groupLot.setAttribute("Unit", sUnit);
+		String sAge = group.age;
+		if( sAge != null && sAge.trim().length() > 0 )
+			groupLot.setAttribute("Age", sAge);
+		String sBreed = group.breed;
+		if( sBreed != null && sBreed.trim().length() > 0 )
+			groupLot.setAttribute("Breed", sBreed);
+		String sSex = group.sex;
+		if( sSex != null && sSex.trim().length() > 0 )
+			groupLot.setAttribute("Sex", sSex);
+		String sDescription = group.description;
+		if( sDescription != null && sDescription.trim().length() > 0 )
+			groupLot.setAttribute("Description", sDescription);
+		return groupLot;
 	}
 	
 	public boolean hasGroup( String sSpecies ) {
 		boolean bRet = false;
 		if( isValidDoc() && sSpecies != null && sSpecies.trim().length() > 0 ) {
-			NodeList groups = root.getElementsByTagName("GroupLot");
-			for( int i = 0; i < groups.getLength(); i++ ) {
-				Node nNext = groups.item(i);
-				if( nNext instanceof Element ) {
-					Element group = (Element)nNext;
+			ArrayList<Element> groups = helper.getElementsByName("GroupLot");
+			for( Element group : groups ) {
 					String sSpeciesCode = group.getAttribute("SpeciesCode");
 					if( sSpecies.equalsIgnoreCase(sSpeciesCode) ) {
 						bRet = true;
 						break;
 					}
-				}
 			}
-			
 		}
 		return bRet;
-	}
-	
-	public void addToGroup( String sSpecies, int iNum ) {
-		if( isValidDoc() && sSpecies != null && sSpecies.trim().length() > 0 ) {
-			NodeList groups = root.getElementsByTagName("GroupLot");
-			for( int i = 0; i < groups.getLength(); i++ ) {
-				Node nNext = groups.item(i);
-				if( nNext instanceof Element ) {
-					Element group = (Element)nNext;
-					String sSpeciesCode = group.getAttribute("SpeciesCode");
-					if( sSpecies.equalsIgnoreCase(sSpeciesCode) ) {
-						String sNum = group.getAttribute("Quantity");
-						try {
-						int iNumPrev = Integer.parseInt(sNum);
-						iNum += iNumPrev;
-						} catch( NumberFormatException nfe ) {
-							logger.error("Could not parse group size " + sNum, nfe);
-						}
-						group.setAttribute("Quantity", Integer.toString(iNum));
-						break;
-					}
-				}
-			}
-			
-		}
 	}
 	
 	public void addPDFAttachement( byte[] pdfBytes, String sFileName ) {
 		if( isValidDoc() && pdfBytes != null && pdfBytes.length > 0 && !attachmentExists(sFileName)) {
-			String sPDF64 = new String(Base64.encodeBase64(pdfBytes));
-			try {
-				Element attach = doc.createElement("Attachment");
-				root.appendChild(attach);
-				attach.setAttribute("DocType", "PDF CVI");
-				attach.setAttribute("MimeType", "application/pdf");
-				attach.setAttribute("Filename", sFileName);
-				Element payload = doc.createElement("Payload");
-				attach.appendChild(payload);
-				payload.setTextContent(sPDF64);
-			} catch ( Exception e) {
-				logger.error("Should not see this error for unsupported encoding", e);
-			}
+			binaries.addPDFAttachment(pdfBytes, sFileName);
 		}
 	}
 	
+	/**
+	 * Just make this logic a little clearer
+	 * @param sFileName
+	 * @return
+	 */
 	private boolean attachmentExists( String sFileName ) {
 		boolean bRet = false;
-		NodeList attachments = root.getElementsByTagName("Attachment");
-		for( int i = 0; i < attachments.getLength(); i++ ) {
-			Node nNext = attachments.item(i);
-			if( nNext instanceof Element ) {
-				Element attachment = (Element)nNext;
-				String sExistingFileName = attachment.getAttribute("Filename");
-				if( sExistingFileName != null && sExistingFileName.equals(sFileName) ) {
-					bRet = true;
-					break;
-				}
-			}
-		}
+		Element eAttach = binaries.getAttachment(sFileName);
+		bRet = ( eAttach != null );
 		return bRet;
 	}
 	
 	public void addMetadataAttachement( CviMetaDataXml metaData ) {
-		Element attach = null;
-		Element payload = null;
-		// Find CviMetadata.xml attachment if it exists
-		NodeList attachments = root.getElementsByTagName("Attachment");
-		for( int i = 0; i < attachments.getLength(); i++ ) {
-			Node nNext = attachments.item(i);
-			if( nNext instanceof Element ) {
-				Element attachment = (Element)nNext;
-				String sFileName = attachment.getAttribute("Filename");
-				if( sFileName != null && "CviMetadata.xml".equals(sFileName) ) {
-					attach = attachment;
-					NodeList payloads = attach.getElementsByTagName("Payload");
-					for( int j = 0; j < payloads.getLength(); j++ ) {
-						Node nNextPayload = payloads.item(j);
-						if( nNextPayload instanceof Element ) {
-							payload = (Element)nNextPayload;
-							break;
-						}
-					}
-					break;
-				}
-			}
-		}
 		String sXML = metaData.getXmlString();
 		try {
 			byte[] xmlBytes = sXML.getBytes("UTF-8");
-			if( isValidDoc() && xmlBytes != null && xmlBytes.length > 0 ) {
-				String sMetadata64 = javax.xml.bind.DatatypeConverter.printBase64Binary(xmlBytes);
-				if( attach == null || payload == null ) {
-					if( attach == null ) {
-						attach = doc.createElement("Attachment");
-						root.appendChild(attach);
-						attach.setAttribute("DocType", "Other");
-						attach.setAttribute("MimeType", "text/xml");
-						attach.setAttribute("Filename", "CviMetadata.xml");
-					}
-					if( payload == null ) {
-						payload = doc.createElement("Payload");
-						attach.appendChild(payload);
-					}
-				}
-				payload.setTextContent(sMetadata64);
-			}
+			binaries.addOrUpdateMetadata(xmlBytes);
 		} catch (UnsupportedEncodingException e1) {
 			logger.error(e1);
-		} catch ( Exception e) {
-			logger.error("Should not see this error for unsupported encoding", e);
 		}
 	}
 	
-	private void checkExpiration() {
-		String sExp = root.getAttribute("ExpirationDate");
+	/**
+	 * Be sure to call from save().  Was done here in v4.
+	 */
+	public void checkExpiration() {
+		String sExp = helper.getAttributeByPath("/eCVI", "ExpirationDate");
 		java.util.Date dExp = null;
 		int iValidDays = CivetConfig.getCviValidDays();
 		Calendar cal = Calendar.getInstance();
@@ -792,10 +855,8 @@ public class StdeCviXmlBuilder {
 		} catch (ParseException e) {
 			dExp = null;
 		}
-		NodeList nl = root.getElementsByTagName("Animal");
-		for( int i = 0; i < nl.getLength(); i++ ) {
-			Element e = (Element)nl.item(i);
-			String sInsp = e.getAttribute("InspectionDate");
+		ArrayList<String> aInspDates = helper.listAttributesByPath( "/eCVI/Animal", "InspectionDate" );
+		for( String sInsp : aInspDates ) {
 			if( sInsp != null && sInsp.trim().length() > 0 ) {
 				java.util.Date dInsp = null;
 				try {
@@ -816,81 +877,90 @@ public class StdeCviXmlBuilder {
 		}
 		if( bSet ) {
 			String sNewExp = dateFormat.format(dExp);
-			root.setAttribute("ExpirationDate", sNewExp);
+			helper.setAttributeByPath("/eCVI", "ExpirationDate", sNewExp);
 		}
 	}
 	
+	/**
+	 * If we have included "Lids"--really USAHERDS local Identifiers--remove before sending to another state.
+	 * This will be a critical issue if we need to function with LID states and start getting them on paper
+	 * or in CO/KS eCvi or IIAD iCvi form.
+	 */
+	public void purgeLids() {
+		String sPin = null;
+		String sPath = null;
+		// Destination
+		sPath = "/eCVI/Destination/PremId";
+		sPin = helper.getElementTextByPath(sPath);
+		if( sPin != null && sPin.trim().length() != 7 ) {
+			helper.removeElementByPath(sPath);
+		}
+		// Origin	
+		sPath = "/eCVI/Origin/PremId";
+		sPin = helper.getElementTextByPath(sPath);
+		if( sPin != null && sPin.trim().length() != 7 ) {
+			helper.removeElementByPath(sPath);
+		}
+	}
+	
+	public String getCertificateNumber() {
+		String sRet = null;
+		String sPath = "/eCVI";
+		String sAttr = "CviNumber";
+		sRet = helper.getAttributeByPath(sPath,sAttr);
+		return sRet;
+	}
+	
+	public java.util.Date getIssueDate() {
+		java.util.Date dRet = null;
+		String sPath = "/eCVI";
+		String sAttr = "IssueDate";
+		String sDate = helper.getAttributeByPath(sPath,sAttr);
+		dRet = XMLUtility.xmlDateToDate(sDate);
+		return dRet;
+	}
+	
+	public CviMetaDataXml getMetaData() {
+		CviMetaDataXml mRet = binaries.getMetaData();
+		return mRet;
+	}
+	
+	// The following are convenience methods to pull elements from the metadata attachment.
+	public java.util.Date getBureauReceiptDate() {
+		java.util.Date dRet = null;
+		CviMetaDataXml meta = getMetaData();
+		if( meta != null )
+			return meta.getBureauReceiptDate();
+		return dRet;
+	}
+	
+	public boolean hasErrors() {
+		boolean bRet = false;
+		CviMetaDataXml meta = getMetaData();
+		if( meta != null )
+			return meta.hasErrors();
+		return bRet;
+	}
+	
+	public String getErrorsString() {
+		String sRet = null;
+		CviMetaDataXml meta = getMetaData();
+		if( meta != null )
+			return meta.getErrorsString();
+		return sRet;
+	}
+
+	public ArrayList<String> listErrors() {
+		CviMetaDataXml meta = getMetaData();
+		if( meta != null )
+			return meta.listErrors();
+		return null;
+	}
+
+	
 	public String getXMLString() {
-		checkExpiration();
 		return helper.getXMLString();
 	}
 	
-	private Node childNodeByName( Element n, String sName ) {
-		Node nChild = null;
-		if( n != null ) {
-			NodeList nl = n.getElementsByTagName(sName);
-			for( int i = 0; i < nl.getLength(); i++ ) {
-				Node nNext = nl.item(i);
-				if( nNext instanceof Element ) {
-					nChild = nNext;
-					break;
-				}
-			}
-		}
-		return nChild;
-	}
-	
-	private Node childNodeByNames( Element n, String sNames ) {
-		Node nChild = null;
-		if( n != null ) {
-			StringTokenizer tok = new StringTokenizer(sNames, ",");
-			while( nChild == null && tok.hasMoreTokens() ) {
-				String sName = tok.nextToken();
-				NodeList nl = n.getElementsByTagName(sName);
-				for( int i = 0; i < nl.getLength(); i++ ) {
-					Node nNext = nl.item(i);
-					if( nNext instanceof Element ) {
-						nChild = nNext;
-						break;
-					}
-				}
-			}
-		}
-		return nChild;
-	}
-	
-	private Element childElementByName( Element n, String sName ) {
-		Element dChild = null;
-		if( n != null ) {
-			NodeList nl = n.getElementsByTagName(sName);
-			for( int i = 0; i < nl.getLength(); i++ ) {
-				Node nNext = nl.item(i);
-				if( nNext instanceof Element ) {
-					dChild = (Element)nNext;
-					break;
-				}
-			}
-		}
-		return dChild;
-	}
-	
-	private Element childElementByNames( Element n, String sNames ) {
-		Element eChild = null;
-		if( n != null ) {
-			StringTokenizer tok = new StringTokenizer(sNames, ",");
-			while( eChild == null && tok.hasMoreTokens() ) {
-				String sName = tok.nextToken();
-				NodeList nl = n.getElementsByTagName(sName);
-				for( int i = 0; i < nl.getLength(); i++ ) {
-					Node nNext = nl.item(i);
-					if( nNext instanceof Element ) {
-						eChild = (Element)nNext;
-						break;
-					}
-				}
-			}
-		}
-		return eChild;
-	}
 
 }

@@ -41,6 +41,12 @@ public class GroupLot {
 		this.age = age;
 		this.breed = breed;
 		this.sex = sex;
-		this.description = description;
+		if( description != null && description.trim().length() > 0 )
+			this.description = description;
+		else {
+			String sSpecies = speciesCode.toString();
+			Long iQuant = (Long) Math.round(quantity); 
+			description = "Group of " + iQuant.toString() + " " + sSpecies;
+		}
 	}
 }

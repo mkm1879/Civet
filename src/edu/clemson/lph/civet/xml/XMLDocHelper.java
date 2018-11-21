@@ -18,6 +18,8 @@ You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -47,19 +49,123 @@ import edu.clemson.lph.civet.Civet;
 public class XMLDocHelper {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private Document doc;
+	private Element root;
+
 	private XPathFactory factory = null;
 
+	public XMLDocHelper( Document doc, Element root ) {
+		this.doc = doc;
+		this.root = root;
+		factory = XPathFactory.newInstance();
+	}
+	
 	public XMLDocHelper( Document doc ) {
 		this.doc = doc;
+		this.root = doc.getDocumentElement();
 		factory = XPathFactory.newInstance();
+	}
+	
+	public boolean isInitialized() {
+		boolean bRet = false;
+		if( doc != null && root != null )
+			bRet = true;
+		return bRet;	
+	}
+	
+	/**
+	 * Find an element with name sElementName.  If not found insert before the first element in the 
+	 * list (comma-delimited) in sAfter. 
+	 * @param sElementName
+	 * @param sAfter
+	 * @return
+	 */
+	public Element getOrInsertElementBefore( String sElementName, String sAfter ) {
+		Element e = getElementByName(sElementName);
+		if( e == null )
+			e = insertElementBefore( sElementName, sAfter );
+		return e;
+	}
+	
+	/**
+	 * Create an element with name sElementName and insert before the first element in the 
+	 * list (comma-delimited) in sAfter.
+	 * @param sElementName
+	 * @param sAfter
+	 * @return
+	 */
+	public Element insertElementBefore( String sElementName, String sAfter ) {
+		Element e = doc.createElement(sElementName);
+		Element after = getChildElementByNames(root,sAfter);
+		if( after != null )
+			root.insertBefore(e, after);
+		else
+			root.appendChild(e);
+		return e;
+	}
+	/**
+	 * Find an element with name sElementName.  If not found insert before the first element in the 
+	 * list (comma-delimited) in sAfter. 
+	 * @param eParent
+	 * @param sElementName
+	 * @param sAfter
+	 * @return
+	 */
+	public Element getOrInsertElementBefore( Element eParent, String sElementName, String sAfter ) {
+		Element e = getChildElementByName(eParent, sElementName);
+		if( e == null )
+			e = insertElementBefore( eParent, sElementName, sAfter );
+		return e;
+	}
+	
+	/**
+	 * Create an element with name sElementName and insert before the first element in the 
+	 * list (comma-delimited) in sAfter.
+	 * @param eParent
+	 * @param sElementName
+	 * @param sAfter
+	 * @return
+	 */
+	public Element insertElementBefore( Element eParent, String sElementName, String sAfter ) {
+		Element e = doc.createElement(sElementName);
+		Element after = getChildElementByNames(root,sAfter);
+		if( after != null )
+			eParent.insertBefore(e, after);
+		else
+			eParent.appendChild(e);
+		return e;
+	}
+	
+	public Element getOrAppendChild( Element eParent, String sElementName ) {
+		Element e = getChildElementByName(eParent, sElementName);
+		if( e == null ) 
+			e = appendChild( eParent, sElementName );
+		return e;
+	}
+	
+	public Element appendChild( Element eParent, String sElementName ) {
+		Element e = doc.createElement(sElementName);
+		eParent.appendChild(e);
+		return e;
+	}
+	
+	public Element appendElement( String sElementName ) {
+		Element e = doc.createElement(sElementName);
+		doc.getDocumentElement().appendChild(e);
+		return e;
 	}
 
 	public String getElementTextByPath( String sPath ) {
 		return getElementTextByPath(doc.getDocumentElement(), sPath );
 	}
 		
+	/**
+	 * Returns the FIRST text node contents from nNode by path sPath
+	 * @param nNode
+	 * @param sPath
+	 * @return
+	 */
 	public String getElementTextByPath( Node nNode,  String sPath ) {
-		String sRet = "";
+		String sRet = null;
 		try {
 			XPath xPath = factory.newXPath();
 			NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
@@ -67,11 +173,10 @@ public class XMLDocHelper {
 			for (int i = 0; i < nodes.getLength(); ++i) {
 				if( nodes.item(i).getNodeType() == Node.ELEMENT_NODE ) {
 					NodeList children = nodes.item(i).getChildNodes();
-					if( children == null || children.getLength() == 0 ) return "";
+					if( children == null || children.getLength() == 0 ) return null;
 					for (int j = 0; j < nodes.getLength(); ++j) {
 						if( children.item(j).getNodeType() == Node.TEXT_NODE ) {
 							sRet = children.item(j).getNodeValue();
-							if( sRet == null ) sRet = "";
 							return sRet;
 						}
 					}
@@ -89,6 +194,24 @@ public class XMLDocHelper {
 		if( e != null ) {
 			Node nParent = e.getParentNode();
 			nParent.removeChild(e);
+		}
+	}
+	
+	public void removeChild( Element eParent, String sElementName ) {
+		Node n = getChildNodeByName( eParent, sElementName );
+		if( n != null )
+			eParent.removeChild(n);
+	}
+	
+	public void removeElement( Element element ) {
+		if( element != null ) {
+			Node nParent = element.getParentNode();
+			if( nParent != null ) {
+				nParent.removeChild(element);
+			}
+			else {
+				logger.error("Attempt to remove root Element");
+			}
 		}
 	}
 
@@ -215,6 +338,19 @@ public class XMLDocHelper {
 	public Document getDocument() {
 		return doc;
 	}
+	
+	public void setAttribute( Element e, String sAttr, String sValue ) {
+		if( e == null ) 
+			e = root;
+		e.setAttribute(sAttr, sValue);
+	}
+	
+	public void setAttributeByPath( String sPath, String sAttr, String sValue ) {
+		Element e = getElementByPath( doc.getDocumentElement(), sPath );
+		if( e == null ) 
+			e = root;
+		e.setAttribute(sAttr, sValue);
+	}
 
 	public String getAttributeByPath( String sPath, String sAttr ) {
 		return getAttributeByPath( doc.getDocumentElement(), sPath, sAttr);
@@ -246,6 +382,39 @@ public class XMLDocHelper {
 		return sRet;
 	}
 	
+	public ArrayList<String> listAttributesByPath( String sPath, String sAttr ) {
+		return listAttributesByPath( doc.getDocumentElement(), sPath, sAttr );
+	}
+
+	public ArrayList<String> listAttributesByPath( Node nNode, String sPath, String sAttr ) {
+		ArrayList<String> aRet = new ArrayList<String>();
+		if( sPath == null || sPath.trim().length() == 0 || sPath.equals(".") ) {
+			Element e = (Element)nNode;
+			String sRet = e.getAttribute(sAttr);
+			if( sRet != null && sRet.trim().length() > 0 )
+				aRet.add(e.getAttribute(sAttr));
+		}
+		else {
+			try {
+				XPath xPath = factory.newXPath();
+				NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
+				if( nodes == null || nodes.getLength() == 0 ) return aRet;
+				for (int i = 0; i < nodes.getLength(); ++i) {
+					if( nodes.item(i).getNodeType() == Node.ELEMENT_NODE ) {
+						Element e = (Element)nodes.item(i);
+						String sRet = e.getAttribute(sAttr);
+						if( sRet != null && sRet.trim().length() > 0 )
+							aRet.add(e.getAttribute(sAttr));
+					}
+				}
+			} catch (XPathExpressionException e) {
+				logger.error("Error evaluating xpath " + sPath + "[" + sAttr + "]");;
+			}
+		}
+		return aRet;
+	}
+
+	
 	public NodeList getNodeListByPath( String sPath ) {
 		return getNodeListByPath( doc.getDocumentElement(), sPath );
 	}
@@ -259,6 +428,175 @@ public class XMLDocHelper {
 			logger.error("Error evaluating xpath " + sPath);;
 		}
 		return nRet;
+	}
+	
+	public ArrayList<Element> getElementsByName( String sName ) {
+		ArrayList<Element> aRet = new ArrayList<Element>();
+		NodeList nl = root.getElementsByTagName(sName);
+		for( int i = 0; i < nl.getLength(); i++ ) {
+			Node nNext = nl.item(i);
+			if( nNext instanceof Element ) {
+				aRet.add( (Element)nNext );
+			}
+		}		
+		return aRet;
+	}
+	
+	
+	public Node getNodeByName( String sName ) {
+		Node nChild = null;
+		if( root != null ) {
+			NodeList nl = root.getElementsByTagName(sName);
+			for( int i = 0; i < nl.getLength(); i++ ) {
+				Node nNext = nl.item(i);
+				if( nNext instanceof Element ) {
+					nChild = nNext;
+					break;
+				}
+			}
+		}
+		return nChild;
+	}
+	
+	public Node getNodeByNames( String sNames ) {
+		Node nChild = null;
+		if( root != null ) {
+			StringTokenizer tok = new StringTokenizer(sNames, ",");
+			outerloop:
+			while( nChild == null && tok.hasMoreTokens() ) {
+				String sName = tok.nextToken();
+				NodeList nl = root.getElementsByTagName(sName);
+				for( int i = 0; i < nl.getLength(); i++ ) {
+					Node nNext = nl.item(i);
+					if( nNext instanceof Element ) {
+						nChild = nNext;
+						break outerloop;
+					}
+				}
+			}
+		}
+		return nChild;
+	}
+	
+	public Element getElementByName( String sName ) {
+		Element dChild = null;
+		if( root != null ) {
+			NodeList nl = root.getElementsByTagName(sName);
+			for( int i = 0; i < nl.getLength(); i++ ) {
+				Node nNext = nl.item(i);
+				if( nNext instanceof Element ) {
+					dChild = (Element)nNext;
+					break;
+				}
+			}
+		}
+		return dChild;
+	}
+	
+	public Element getElementByNames( String sNames ) {
+		Element eChild = null;
+		if( root != null ) {
+			StringTokenizer tok = new StringTokenizer(sNames, ",");
+			outerloop:
+			while( eChild == null && tok.hasMoreTokens() ) {
+				String sName = tok.nextToken();
+				NodeList nl = root.getElementsByTagName(sName);
+				for( int i = 0; i < nl.getLength(); i++ ) {
+					Node nNext = nl.item(i);
+					if( nNext instanceof Element ) {
+						eChild = (Element)nNext;
+						break outerloop;
+					}
+				}
+			}
+		}
+		return eChild;
+	}
+	
+	public Node getChildNodeByName( Element n, String sName ) {
+		Node nChild = null;
+		if( n != null ) {
+			NodeList nl = n.getElementsByTagName(sName);
+			for( int i = 0; i < nl.getLength(); i++ ) {
+				Node nNext = nl.item(i);
+				if( nNext instanceof Element ) {
+					nChild = nNext;
+					break;
+				}
+			}
+		}
+		return nChild;
+	}
+	
+	public Node getChildNodeByNames( Element n, String sNames ) {
+		Node nChild = null;
+		if( n != null ) {
+			StringTokenizer tok = new StringTokenizer(sNames, ",");
+			outerloop:
+			while( nChild == null && tok.hasMoreTokens() ) {
+				String sName = tok.nextToken();
+				NodeList nl = n.getElementsByTagName(sName);
+				for( int i = 0; i < nl.getLength(); i++ ) {
+					Node nNext = nl.item(i);
+					if( nNext instanceof Element ) {
+						nChild = nNext;
+						break outerloop;
+					}
+				}
+			}
+		}
+		return nChild;
+	}
+	
+	public ArrayList<Element> getChildElements( Element n ) {
+		ArrayList<Element> children = new ArrayList<Element>();
+		Element dChild = null;
+		if( n != null ) {
+			NodeList nl = n.getChildNodes();
+			for( int i = 0; i < nl.getLength(); i++ ) {
+				Node nNext = nl.item(i);
+				if( nNext instanceof Element ) {
+					dChild = (Element)nNext;
+					children.add(dChild);
+				}
+			}
+		}
+		return children;
+	}
+	
+	public Element getChildElementByName( Element n, String sName ) {
+		Element dChild = null;
+		if( n != null ) {
+			NodeList nl = n.getElementsByTagName(sName);
+			for( int i = 0; i < nl.getLength(); i++ ) {
+				Node nNext = nl.item(i);
+				if( nNext instanceof Element ) {
+					dChild = (Element)nNext;
+					break;
+				}
+			}
+		}
+		return dChild;
+	}
+	
+	public Element getChildElementByNames( Element n, String sNames ) {
+		Element eChild = null;
+		if( n != null ) {
+			StringTokenizer tok = new StringTokenizer(sNames, ",");
+			outerloop:
+			while( eChild == null && tok.hasMoreTokens() ) {
+				String sName = tok.nextToken();
+				NodeList nl = n.getElementsByTagName(sName);
+				for( int i = 0; i < nl.getLength(); i++ ) {
+					Node nNext = nl.item(i);
+					if( nNext instanceof Element ) {
+						eChild = (Element)nNext;
+						break outerloop;
+					}
+				}
+			}
+		}
+		return eChild;
 	}
 	
 	public String getXMLString() {
