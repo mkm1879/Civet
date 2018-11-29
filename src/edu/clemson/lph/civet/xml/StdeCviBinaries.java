@@ -105,14 +105,16 @@ public class StdeCviBinaries {
 				}
 			}
 		}
-		String sId = attach.getAttribute("AttachmentRef");
-		if( sId != null && sId.trim().length() > 0 ) {
-			Element binary = getBinary( sId );
-			if( binary == null ) return pdfBytes;
-			Element payload = helper.getChildElementByName(binary, "Payload");
-			if( payload == null ) return pdfBytes;
-			String sBase64 = payload.getTextContent();
-			pdfBytes = Base64.decodeBase64(sBase64);
+		if( attach != null ) {  // MOST do not have a PDF attached.
+			String sId = attach.getAttribute("AttachmentRef");
+			if( sId != null && sId.trim().length() > 0 ) {
+				Element binary = getBinary( sId );
+				if( binary == null ) return pdfBytes;
+				Element payload = helper.getChildElementByName(binary, "Payload");
+				if( payload == null ) return pdfBytes;
+				String sBase64 = payload.getTextContent();
+				pdfBytes = Base64.decodeBase64(sBase64);
+			}
 		}
 		return pdfBytes;
 	}
@@ -129,76 +131,77 @@ public class StdeCviBinaries {
 				}
 			}
 		}
-		sRet = attach.getAttribute("Filename");
+		if( attach != null ) {  // MOST do not have a PDF attached.
+			sRet = attach.getAttribute("Filename");
+		}
 		return sRet;
 	}
 	
 	public void addPDFAttachment( byte[] pdfBytes, String sFileName ) {
-		String sPDF64 = new String(Base64.encodeBase64(pdfBytes));
-		String sID = getNextId("A");
 		try {
-			String sAfter = StdeCviXmlBuilder.getAfter("MiscAttribute");
-			Element attach = helper.insertElementBefore("Attachment", sAfter);
-			attach.setAttribute("DocType", "PDF CVI");
-			attach.setAttribute("AttachmentRef", sID);
-			attach.setAttribute("Filename", sFileName);
-			Element binaries = helper.getOrInsertElementBefore("Binaries", null);
-			Element binary = helper.appendChild(binaries, "Binary");
-			binary.setAttribute("MimeType", "application/pdf");
-			binary.setAttribute("ID", sID);
-			Element payload = helper.appendChild(binary, "Payload");
-			attach.appendChild(payload);
-			payload.setTextContent(sPDF64);
+			String sPDFBase64 = new String(Base64.encodeBase64(pdfBytes));
+			String sID = null;
+			Element eAttach = helper.getElementByPathAndAttribute("/Attachment", "DocType", "PDF CVI");
+			if( eAttach == null ) {
+				String sAfter = StdeCviXmlBuilder.getFollowingElementList("MiscAttribute");
+				sID = getNextId("A");
+				eAttach = helper.insertElementBefore("Attachment", sAfter);
+				eAttach.setAttribute("DocType", "PDF CVI");
+				eAttach.setAttribute("AttachmentRef", sID);
+				eAttach.setAttribute("Filename", sFileName);
+			} else {
+				sID = eAttach.getAttribute("AttachmentRef");
+			}
+			Element binary = helper.getElementByPathAndAttribute("/Binary", "ID", sID);
+			if( binary == null ) {
+				binary = helper.appendChild(helper.getRootElement(), "Binary");
+				binary.setAttribute("MimeType", "application/pdf");
+				binary.setAttribute("ID", sID);
+			}
+			Element payload = helper.getChildElementByName(binary, "Payload");
+			if( payload == null ) {
+				payload = helper.appendChild(binary, "Payload");
+				binary.appendChild(payload);
+			}
+			payload.setTextContent(sPDFBase64);
 		} catch ( Exception e) {
 			logger.error("Should not see this error for unsupported encoding", e);
 		}
 	}
 	
-	public void addOrUpdateMetadata( byte[] pdfBytes ) {
-		Element attach = getAttachment("CviMetadata.xml");
-		if( attach != null ) 
-			updateMetadataAttachment( pdfBytes );
-		else
-			addMetadataAttachment( pdfBytes );
-	}
-	
-	private void addMetadataAttachment( byte[] pdfBytes ) {
-		String sPDF64 = new String(Base64.encodeBase64(pdfBytes));
-		String sID = getNextId("A");
+	public void addOrUpdateMetadata( CviMetaDataXml metaData ) {
 		try {
-			String sAfter = StdeCviXmlBuilder.getAfter("MiscAttribute");
-			Element attach = helper.insertElementBefore("Attachment", sAfter);
-			attach.setAttribute("DocType", "Other");
-			attach.setAttribute("AttachmentRef", sID);
-			attach.setAttribute("Filename", "CviMetadata.xml");
-			Element binaries = helper.getOrInsertElementBefore("Binaries", null);
-			Element binary = helper.appendChild(binaries, "Binary");
-			binary.setAttribute("MimeType", "text/xml");
-			binary.setAttribute("ID", sID);
-			Element payload = helper.appendChild(binary, "Payload");
-			attach.appendChild(payload);
-			payload.setTextContent(sPDF64);
+			String sMetaBase64 = metaData.getBase64String();
+			String sID = null;
+			Element eAttach = helper.getElementByPathAndAttribute("/Attachment", "Filename", "CviMetadata.xml");
+			if( eAttach == null ) {
+				String sAfter = StdeCviXmlBuilder.getFollowingElementList("MiscAttribute");
+				sID = getNextId("A");
+				eAttach = helper.insertElementBefore("Attachment", sAfter);
+				eAttach.setAttribute("DocType", "Other");
+				eAttach.setAttribute("AttachmentRef", sID);
+				eAttach.setAttribute("Filename", "CviMetadata.xml");
+			} else {
+				sID = eAttach.getAttribute("AttachmentRef");
+			}
+			Element binary = helper.getElementByPathAndAttribute("/Binary", "ID", sID);
+			if( binary == null ) {
+				binary = helper.appendChild(helper.getRootElement(), "Binary");
+				binary.setAttribute("MimeType", "text/xml");
+				binary.setAttribute("ID", sID);
+			}
+			Element payload = helper.getChildElementByName(binary, "Payload");
+			if( payload == null ) {
+				payload = helper.appendChild(binary, "Payload");
+				binary.appendChild(payload);
+			}
+			payload.setTextContent(sMetaBase64);
 		} catch ( Exception e) {
+			e.printStackTrace();
 			logger.error("Should not see this error for unsupported encoding", e);
 		}
 	}
 	
-	private void updateMetadataAttachment( byte[] pdfBytes ) {
-		String sPDF64 = new String(Base64.encodeBase64(pdfBytes));
-		Element attach = getAttachment("CviMetadata.xml");
-		String sId = attach.getAttribute("AttachmentRef");
-		Element binary = getBinary( sId );
-		if( binary == null ) {
-			logger.error("updateMetadataAttachment called on nonexistent metadata");
-			return;
-		}
-		Element payload = helper.getChildElementByName(binary, "Payload");
-		if( payload == null ) {
-			payload = helper.appendChild(binary, "Payload");
-		}
-		payload.setTextContent(sPDF64);
-		
-	}
 	
 	public CviMetaDataXml getMetaData() {
 		if( mMetaData == null ) {

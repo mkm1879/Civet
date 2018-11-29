@@ -20,22 +20,16 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 package edu.clemson.lph.civet.xml.elements;
 public class Contact {
 	public String addressBlock;
-	public String personName;
-	public NameParts personNameParts;
-	public String personPhone;
-	public String personEmail;
+	public Person person;
 	
-	Contact( String addressBlock, String personName, String personPhone, String personEmail ) {
+	public Contact( String addressBlock, Person person ) {
 		this.addressBlock = addressBlock;
-		this.personName = personName;
-		this.personPhone = personPhone;
-		this.personEmail = personEmail;
+		this.person = person;
 	}
 	
-	Contact( String addressBlock, NameParts personNameParts, String personPhone, String personEmail ) {
+	public Contact( String addressBlock, String sName, String sPhone, String sEmail ) {
 		this.addressBlock = addressBlock;
-		this.personNameParts = personNameParts;
-		this.personPhone = personPhone;
-		this.personEmail = personEmail;
+		this.person = new Person( sName, sPhone, sEmail);
 	}
+	
 }

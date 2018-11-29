@@ -19,7 +19,10 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 
 package edu.clemson.lph.civet.xml.elements;
 
+import org.w3c.dom.Element;
+
 public class GroupLot {
+	public Element eGroupLot;
 	public SpeciesCode speciesCode;
 	public String groupLotId;
 	// Ignore Test unless received in source file
@@ -32,8 +35,9 @@ public class GroupLot {
 	// Ingnore SexDetail unless received in source file
 	public String description;
 	
-	public GroupLot(SpeciesCode speciesCode, String groupLotId, Double quantity, String unit, 
+	public GroupLot(Element eGroupLot, SpeciesCode speciesCode, String groupLotId, Double quantity, String unit, 
 				String age, String breed, String sex, String description ) {
+		this.eGroupLot = eGroupLot;
 		this.speciesCode = speciesCode;
 		this.groupLotId = groupLotId;
 		this.quantity = quantity;

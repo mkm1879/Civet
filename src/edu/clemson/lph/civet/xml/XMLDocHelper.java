@@ -72,6 +72,10 @@ public class XMLDocHelper {
 		return bRet;	
 	}
 	
+	public Element getRootElement() {
+		return root;
+	}
+	
 	/**
 	 * Find an element with name sElementName.  If not found insert before the first element in the 
 	 * list (comma-delimited) in sAfter. 
@@ -340,9 +344,10 @@ public class XMLDocHelper {
 	}
 	
 	public void setAttribute( Element e, String sAttr, String sValue ) {
-		if( e == null ) 
-			e = root;
-		e.setAttribute(sAttr, sValue);
+		if( e != null && sAttr != null && sValue != null ) 
+			e.setAttribute(sAttr, sValue);
+		else if( e != null && sAttr != null && sValue == null ) 
+			e.removeAttribute(sAttr);
 	}
 	
 	public void setAttributeByPath( String sPath, String sAttr, String sValue ) {

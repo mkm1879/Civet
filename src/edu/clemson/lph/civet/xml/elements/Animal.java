@@ -21,7 +21,10 @@ package edu.clemson.lph.civet.xml.elements;
 
 import java.util.ArrayList;
 
+import org.w3c.dom.Element;
+
 public class Animal {
+	public Element eAnimal;
 	public SpeciesCode speciesCode;
 	public ArrayList<AnimalTag> animalTags;
 	// Ignore Test unless received in source file
@@ -32,8 +35,9 @@ public class Animal {
 	// Ingnore SexDetail unless received in source file
 	public String inspectionDate;
 	
-	public Animal(SpeciesCode speciesCode, ArrayList<AnimalTag> animalTags,  String age, String breed,
+	public Animal(Element eAnimal, SpeciesCode speciesCode, ArrayList<AnimalTag> animalTags,  String age, String breed,
 			 	String sex, String inspectionDate ) {
+		this.eAnimal = eAnimal;
 		this.speciesCode = speciesCode;
 		if( animalTags != null )
 			this.animalTags = animalTags;

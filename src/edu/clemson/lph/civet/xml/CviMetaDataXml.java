@@ -26,6 +26,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -338,6 +339,13 @@ public class CviMetaDataXml {
 	public String getXmlString() {
 		if( doc == null ) return null;
 		return XMLUtility.domToString(doc);
+	}
+	
+	public String getBase64String() {
+		String sXml = getXmlString();
+		byte bytes[] = sXml.getBytes();
+		String sBase64 = new String(Base64.encodeBase64(bytes));
+		return sBase64;
 	}
 
 }
