@@ -22,7 +22,7 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
+import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
@@ -189,7 +189,7 @@ public class SubmitNineDashThreeThread extends Thread {
 	}
 	
 	private String buildXml() throws IOException {
-		StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder();
+		StdeCviXmlModel xmlBuilder = new StdeCviXmlModel();
 		try {
 			if( !PremCheckSum.isValid(sOriginPIN) ) {
 				sOriginPIN = null;

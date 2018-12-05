@@ -53,7 +53,7 @@ import edu.clemson.lph.utils.IDTypeGuesser;
 import edu.clemson.lph.utils.XMLUtility;
 
 // TODO Refactor rename to StdXmlDataModel
-public class StdeCviXmlBuilder {
+public class StdeCviXmlModel {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	private static final String allElements = "Veterinarian,MovementPurpose,Origin,Destination,Consignor,Consignee," +
@@ -83,27 +83,27 @@ public class StdeCviXmlBuilder {
 	     logger.setLevel(Level.INFO);
 		String sXML;
 		try {
-			sXML = FileUtils.readTextFile(new java.io.File( "./std2samples/sample2.xml") );
-			StdeCviXmlBuilder builder = new StdeCviXmlBuilder( sXML );
-			System.out.println(builder.getCertificateNumber());
-			System.out.println(builder.getIssueDate());
+			sXML = FileUtils.readTextFile(new java.io.File( "./std2samples/sample1.xml") );
+			StdeCviXmlModel model = new StdeCviXmlModel( sXML );
+			System.out.println(model.getCertificateNumber());
+			System.out.println(model.getIssueDate());
 			System.out.println("Vet");
-			Veterinarian vet = builder.getVet();
+			Veterinarian vet = model.getVet();
 			System.out.println(vet.nationalAccreditationNumber);
 			System.out.println(vet.person.name);
-			System.out.println(builder.getPurpose());
-			Premises origin = builder.getOrigin();
+			System.out.println(model.getPurpose());
+			Premises origin = model.getOrigin();
 			System.out.println("Origin");
 			System.out.println(origin.address.line1);
 			System.out.println(origin.address.line2);
 			System.out.println(origin.address.zip);
 			System.out.println(origin.address.county);
 			System.out.println("Consignor");
-			Contact consignor = builder.getConsignor();
+			Contact consignor = model.getConsignor();
 			System.out.println(consignor.addressBlock);
 			System.out.println(consignor.person.phone);
 			System.out.println("Animals: ");
-			ArrayList<Animal> aAnimals = builder.getAnimals();
+			ArrayList<Animal> aAnimals = model.getAnimals();
 			int i = 1;
 			for( Animal a : aAnimals ) {
 				System.out.println(a.speciesCode.code);
@@ -112,29 +112,31 @@ public class StdeCviXmlBuilder {
 					System.out.println(t.type.toString());
 					if( i++ == 3 ) {
 						a.speciesCode.text = "A Horse of Course";
-						builder.editAnimal(a);
+						model.editAnimal(a);
 					}
 				}
 			}
 			System.out.println("Groups: ");
-			ArrayList<GroupLot> aGroups = builder.getGroups();
+			ArrayList<GroupLot> aGroups = model.getGroups();
 			for( GroupLot g : aGroups ) {
 				System.out.println(g.description);
 				System.out.println(g.speciesCode.code);
 				System.out.println(g.age);
-				g.speciesCode.text = null;
-				builder.editGroupLot(g);
+				g.speciesCode.code = "DAI";
+				g.speciesCode.text = "Dairy Cattle";
+				g.quantity = 201d;
+				model.editGroupLot(g);
 			}
 			CviMetaDataXml meta = new CviMetaDataXml();
 			meta.addError("NID");
 			meta.setBureauReceiptDate(new java.util.Date());
 			meta.setErrorNote("This is quite an error");
-			builder.addOrUpdateMetadataAttachement(meta);
-			FileUtils.writeTextFile(builder.getXMLString(), "TestBuilder.xml");
+			model.addOrUpdateMetadataAttachement(meta);
+			FileUtils.writeTextFile(model.getXMLString(), "TestBuilder.xml");
 
-			byte pdfBytes[] = builder.getPDFAttachmentBytes();
+			byte pdfBytes[] = model.getPDFAttachmentBytes();
 			if( pdfBytes != null )
-				FileUtils.writeBinaryFile(pdfBytes, builder.getPDFAttachmentFilename());
+				FileUtils.writeBinaryFile(pdfBytes, model.getPDFAttachmentFilename());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -144,7 +146,7 @@ public class StdeCviXmlBuilder {
 	/**
 	 * Create an empty XML document.
 	 */
-	public StdeCviXmlBuilder() {
+	public StdeCviXmlModel() {
 		try {
 			DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			Document doc = db.newDocument();
@@ -162,7 +164,7 @@ public class StdeCviXmlBuilder {
 	 * Create an XML document from an existing wrapper.  Will this ever apply.
 	 * @param cviIn
 	 */
-	public StdeCviXmlBuilder(StdeCviXml cviIn) {
+	public StdeCviXmlModel(StdeCviXmlV1 cviIn) {
 		try {
 			Document doc = null;
 			Element root = null;
@@ -189,7 +191,7 @@ public class StdeCviXmlBuilder {
 	 * Create an XML document from the raw DOM object.  
 	 * @param doc
 	 */
-	public StdeCviXmlBuilder( Document doc ) {
+	public StdeCviXmlModel( Document doc ) {
 		doc.setXmlStandalone(true);
 		Element root = doc.getDocumentElement();
 		helper = new XMLDocHelper( doc, root );
@@ -200,7 +202,7 @@ public class StdeCviXmlBuilder {
 	 * Create an XML document from the raw XML string.  
 	 * @param doc
 	 */
-	public StdeCviXmlBuilder( String sXML ) {
+	public StdeCviXmlModel( String sXML ) {
 		try {
 			Document doc = null;
 			Element root = null;
@@ -1121,8 +1123,11 @@ public class StdeCviXmlBuilder {
 			groupId.setTextContent(sId);
 		}
 		Double quantity = group.quantity;
-		if( quantity != null )
-			helper.setAttribute(eGroupLot, "Quantity", quantity.toString());
+		if( quantity != null ) {
+			// Civet only deals with animals so no fraction part.  "200.0" would be confusing.
+			String sQuant = String.format("%1$,.0f", quantity); 
+			helper.setAttribute(eGroupLot, "Quantity", sQuant);
+		}
 		String sUnit = group.unit;
 		if( sUnit != null && sUnit.trim().length() > 0 )
 			helper.setAttribute(eGroupLot, "Unit", sUnit);

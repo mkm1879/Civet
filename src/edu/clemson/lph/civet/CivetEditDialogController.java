@@ -95,7 +95,7 @@ import edu.clemson.lph.civet.webservice.VetSearchDialog;
 import edu.clemson.lph.civet.webservice.WebServiceException;
 import edu.clemson.lph.civet.xml.CoKsXML;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 import edu.clemson.lph.controls.ComboBoxSelectionListener;
 import edu.clemson.lph.controls.DBComboBox;
 import edu.clemson.lph.controls.DBNumericField;
@@ -1322,7 +1322,7 @@ public final class CivetEditDialogController {
 	 * Never called currently.
 	 * @param xStd
 	 */
-	public void openStdXml( StdeCviXml xStd ) {
+	public void openStdXml( StdeCviXmlV1 xStd ) {
 		populateFromStdXml( xStd );
 		controller.setStdXml( xStd );
 		dlg.setMode(CivetEditDialog.XML_MODE);
@@ -1334,7 +1334,7 @@ public final class CivetEditDialogController {
 	 * Populate dialog form from standard eCVI XML
 	 * @param xStd StdeCviXml object representation of a CVI
 	 */
-	public void populateFromStdXml( StdeCviXml xStd ) {
+	public void populateFromStdXml( StdeCviXmlV1 xStd ) {
 		if( xStd == null ) {
 			logger.error(new Exception("populateFromStdXml called with null StdeCviXml"));
 			return;
@@ -1512,7 +1512,7 @@ public final class CivetEditDialogController {
 	 * Subroutine for above, just to keep the populateFromStdXml method somewhat sane
 	 * @param std StdeCviXml object being loaded.
 	 */
-	private void loadSpeciesFromStdXml(StdeCviXml std) {
+	private void loadSpeciesFromStdXml(StdeCviXmlV1 std) {
 		aSpecies = new ArrayList<SpeciesRecord>();
 		ArrayList<String> aBadSpecies = new ArrayList<String>();
 		NodeList animals = std.listAnimals();
@@ -1622,7 +1622,7 @@ public final class CivetEditDialogController {
 			// Check to see if this is a version 2 schema file
 			int iV2Loc = sDataXml.indexOf("http://www.usaha.org/xmlns/ecvi2");
 			if( iV2Loc > 0 && iV2Loc < 200 ) {
-				StdeCviXml stde = new StdeCviXml(sDataXml, 2);
+				StdeCviXmlV1 stde = new StdeCviXmlV1(sDataXml, 2);
 				populateFromStdXml(stde);
 //				controller.setStdXml(stde);
 			}
@@ -1656,7 +1656,7 @@ public final class CivetEditDialogController {
 
 	public void populateFromCoKs(CoKsXML coks) {
 		bInClearForm = true;
-		StdeCviXml std = coks.getStdeCviXml();
+		StdeCviXmlV1 std = coks.getStdeCviXml();
 		if( std == null ) {
 			MessageDialog.showMessage(dlg, "Civet Error:", "Could not convert PDF content to USAHA Standard XML using XSLT\n" +
 					CivetConfig.getCoKsXSLTFile());
@@ -1759,7 +1759,7 @@ public final class CivetEditDialogController {
 		}
 		String sCVINo = dlg.jtfCVINo.getText();
 		updateSpeciesList(false);
-		StdeCviXml stdXml = controller.getStdXml();
+		StdeCviXmlV1 stdXml = controller.getStdXml();
 		if( controller.isXFADocument() ) {
 			byte[] pdfBytes = controller.getCurrentPdfBytes();
 			Node xmlNode = PDFUtils.getXFADataNode(pdfBytes);

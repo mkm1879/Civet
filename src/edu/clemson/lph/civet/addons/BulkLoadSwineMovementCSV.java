@@ -26,7 +26,7 @@ import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
+import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.utils.PremCheckSum;
 
@@ -144,7 +144,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 	}// end inner class TWorkSave
 	
 	private String buildXml( CSVDataFile data ) throws IOException {
-		StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder();
+		StdeCviXmlModel xmlBuilder = new StdeCviXmlModel();
 		StringTokenizer tok = new StringTokenizer(data.getVet(), " ," );
 		String sFirst = tok.nextToken();
 		String sLast = tok.nextToken();

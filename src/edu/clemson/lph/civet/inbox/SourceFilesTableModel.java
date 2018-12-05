@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.files;
+package edu.clemson.lph.civet.inbox;
 /*
 Copyright 2014 Michael K Martin
 
@@ -19,7 +19,9 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
 
+import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
@@ -27,14 +29,20 @@ import org.apache.log4j.Logger;
 import edu.clemson.lph.civet.Civet;
 
 @SuppressWarnings("serial")
-public class EmailFilesTableModel extends FilesTableModel {
+public class SourceFilesTableModel extends FilesTableModel {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 
-	public EmailFilesTableModel(File fDirectory) {
+	public SourceFilesTableModel(File fDirectory) {
 		super(fDirectory, new FileFilter() {
 			@Override
 			public boolean accept(File arg0) {
 				String sName = arg0.getName();
+				if( sName.toLowerCase().endsWith("pdf") ) return true;
+				if( sName.toLowerCase().endsWith("jpg") ) return true;
+				if( sName.toLowerCase().endsWith("jpeg") ) return true;
+				if( sName.toLowerCase().endsWith("bmp") ) return true;
+				if( sName.toLowerCase().endsWith("gif") ) return true;
+				if( sName.toLowerCase().endsWith("png") ) return true;
 				if( sName.toLowerCase().endsWith("cvi") ) return true;
 				return false;
 			}
@@ -43,7 +51,20 @@ public class EmailFilesTableModel extends FilesTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return 5;
+		return 3;
+	}
+	
+	public ArrayList<File> getSelectedFiles(JTable tblParent) {
+		ArrayList<File> aRet = new ArrayList<File>();
+		int aSelected[] = tblParent.getSelectedRows();
+		for( int iSelectedRow : aSelected ) {
+			int iRow = tblParent.convertRowIndexToModel(iSelectedRow);
+			if( iRow >= 0 ) {
+				File fNext = allFiles.get(iRow);
+				aRet.add(fNext);
+			}
+		}
+		return aRet;
 	}
 
 	@Override
@@ -54,12 +75,10 @@ public class EmailFilesTableModel extends FilesTableModel {
 			File fThis = allFiles.get(iRow);
 			switch( iColumn ) {
 			case 0: return fThis.getName();
-			case 1: return getFromState(fThis);
-			case 2: return getToState(fThis);
-			case 3: long lLastSave = fThis.lastModified();
+			case 1: long lLastSave = fThis.lastModified();
 				java.util.Date dLastSave = new java.util.Date( lLastSave );
 				return dLastSave;
-			case 4: 
+			case 2: 
 				long lSize = fThis.length();
 				// This isn't totally pretty at this point but leave it to tweak later.
 				// Probably better to return as a double and let a cell renderer handle it.
@@ -71,51 +90,31 @@ public class EmailFilesTableModel extends FilesTableModel {
 			}
 		}
 	}
+	
+	@Override
+	public Class<?> getColumnClass(int iColumn) {
+		switch( iColumn ) {
+		case 1: return java.util.Date.class;
+		default: return String.class;
+		}
+	}
 
 	@Override
 	public String getColumnName(int iColumn) {
 		switch( iColumn ) {
 		case 0: return "File Name";
-		case 1: return "From State";
-		case 2: return "To State";
-		case 3: return "Last Saved";
-		case 4: return "File Size";
+		case 1: return "Last Saved";
+		case 2: return "File Size";
 		default: return "Error";
-		}
-	}
-	
-	@Override
-	public Class<?> getColumnClass(int iColumn) {
-		switch( iColumn ) {
-		case 3: return java.util.Date.class;
-		default: return String.class;
 		}
 	}
 	
 	@Override
 	public TableRowSorter<FilesTableModel> getSorter() {
 		TableRowSorter<FilesTableModel> sorter = new TableRowSorter<FilesTableModel>( this );
-		sorter.setComparator(3, new DateCellComparator());
+		sorter.setComparator(1, new DateCellComparator());
 		return sorter;
 	}
-	
-	private String getFromState(File fThis) {
-		String sRet = null;
-		String sName = fThis.getName();
-		String sParts[] = sName.split("\\_");
-		if( sParts.length >= 2 )
-			sRet = sParts[1];
-		return sRet;
-	}
-	
-	private String getToState(File fThis) {
-		String sRet = null;
-		String sName = fThis.getName();
-		String sParts[] = sName.split("\\_");
-		if( sParts.length >= 4 )
-			sRet = sParts[3];
-		return sRet;
-	}
-	
+
 
 }

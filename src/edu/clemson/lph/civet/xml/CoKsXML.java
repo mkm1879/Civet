@@ -276,10 +276,10 @@ public class CoKsXML {
 		return helper.getXMLString();
 	}
 	
-	public StdeCviXml getStdeCviXml() {
+	public StdeCviXmlV1 getStdeCviXml() {
 		Node nRoot = toStdXMLNode();
 		if( nRoot != null )
-			return new StdeCviXml( nRoot );
+			return new StdeCviXmlV1( nRoot );
 		else
 			return null;
 	}

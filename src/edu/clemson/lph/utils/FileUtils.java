@@ -40,9 +40,49 @@ public class FileUtils {
 	    try {
 	    	fsIn = new FileInputStream(fIn);
 	    	scanner =new Scanner(fsIn, "UTF-8"); 
-	      while (scanner.hasNextLine()){
-	        text.append(scanner.nextLine() + NL);
-	      }
+	    	while (scanner.hasNextLine()){
+	    		text.append(scanner.nextLine() + NL);
+	    	}
+	    }
+	    catch( Exception e ) {
+	    	logger.error( "Error reading file " + fIn.getAbsolutePath(), e );
+	    	throw e;
+	    }
+	    finally{
+	    	try {
+	    		if( scanner != null ) {
+	    			scanner.close();
+	    			scanner = null;
+	    		}
+	    	} catch( Exception e2 ) {
+				logger.error("Failure to close file " + fIn.getAbsolutePath(), e2);
+	    	}
+	    	try {
+	    		if( fsIn != null ) {
+	    			fsIn.close();
+	    			fsIn = null;
+	    		}
+	    	} catch( Exception e3 ) {
+				logger.error("Failure to close file " + fIn.getAbsolutePath(), e3);
+	    	}
+	    }
+	    return text.toString();
+	}
+	
+	public static String readTextFile( File fIn, int iLines ) throws Exception {
+	    StringBuilder text = new StringBuilder();
+	    String NL = System.getProperty("line.separator");
+	    FileInputStream fsIn = null;
+	    Scanner scanner = null;
+	    try {
+	    	fsIn = new FileInputStream(fIn);
+	    	scanner = new Scanner(fsIn, "UTF-8"); 
+	    	int iLine = 0;
+	    	while (scanner.hasNextLine()){
+	    		text.append(scanner.nextLine() + NL);
+	    		if( iLine > iLines )
+	    			break;
+	    	}
 	    }
 	    catch( Exception e ) {
 			logger.error( "Error reading file " + fIn.getAbsolutePath(), e );
@@ -68,6 +108,7 @@ public class FileUtils {
 	    }
 	    return text.toString();
 	}
+
 	
 	public static byte[] readBinaryFile( String sFilePath ) throws Exception {
 		File f = new File( sFilePath );

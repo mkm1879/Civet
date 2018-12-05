@@ -143,7 +143,7 @@ public class StdeCviBinaries {
 			String sID = null;
 			Element eAttach = helper.getElementByPathAndAttribute("/Attachment", "DocType", "PDF CVI");
 			if( eAttach == null ) {
-				String sAfter = StdeCviXmlBuilder.getFollowingElementList("MiscAttribute");
+				String sAfter = StdeCviXmlModel.getFollowingElementList("MiscAttribute");
 				sID = getNextId("A");
 				eAttach = helper.insertElementBefore("Attachment", sAfter);
 				eAttach.setAttribute("DocType", "PDF CVI");
@@ -175,7 +175,7 @@ public class StdeCviBinaries {
 			String sID = null;
 			Element eAttach = helper.getElementByPathAndAttribute("/Attachment", "Filename", "CviMetadata.xml");
 			if( eAttach == null ) {
-				String sAfter = StdeCviXmlBuilder.getFollowingElementList("MiscAttribute");
+				String sAfter = StdeCviXmlModel.getFollowingElementList("MiscAttribute");
 				sID = getNextId("A");
 				eAttach = helper.insertElementBefore("Attachment", sAfter);
 				eAttach.setAttribute("DocType", "Other");

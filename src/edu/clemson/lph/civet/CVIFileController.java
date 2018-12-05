@@ -34,7 +34,7 @@ import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.threads.OpenFileThread;
-import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.pdfgen.PDFOpener;
 import edu.clemson.lph.pdfgen.PDFUtils;
@@ -69,7 +69,7 @@ public class CVIFileController {
 	private File fLastSavedFile = null;
 	private boolean bLastXFA = false;
 
-	private StdeCviXml stdXml = null;
+	private StdeCviXmlV1 stdXml = null;
 
 	public CVIFileController(CivetEditDialogController dlgController) {
 		this.dlgController = dlgController;
@@ -755,7 +755,7 @@ public class CVIFileController {
 	 * Never called except by CivetEditDialog.openStdXml() which is never called.
 	 * @param xStd
 	 */
-	public void setStdXml(StdeCviXml xStd) {
+	public void setStdXml(StdeCviXmlV1 xStd) {
 		this.stdXml = xStd;
 	}
 	/**
@@ -763,7 +763,7 @@ public class CVIFileController {
 	 * This is a key method used by save to extract the original attachment for resaving.
 	 * @return
 	 */
-	public StdeCviXml getStdXml() {
+	public StdeCviXmlV1 getStdXml() {
 		return stdXml;
 	}
 

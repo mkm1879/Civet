@@ -43,7 +43,7 @@ import edu.clemson.lph.civet.lookup.StateVetLookup;
 import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 import edu.clemson.lph.dialogs.*;
 
 public 
@@ -125,14 +125,14 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 				String sCurrentEmail = stateVet.getCVIErrorEmail(); 
 				ArrayList<File> aCVIsIn = mStateMap.get(sState);
 				ArrayList<byte[]> aLetterBytes = new ArrayList<byte[]>();
-				ArrayList<StdeCviXml> aCVIsOut = new ArrayList<StdeCviXml>();
+				ArrayList<StdeCviXmlV1> aCVIsOut = new ArrayList<StdeCviXmlV1>();
 				ArrayList<File> aCVIFilesOut = new ArrayList<File>();
 				long lAttachmentsSize = 0;
 				int iPart = 1;
 				int iPdf = 1; // count to bail on last one.
 				for( File fNext : aCVIsIn ) {
 					String sXml = FileUtils.readTextFile(fNext);
-					StdeCviXml stdXml = new StdeCviXml( sXml );
+					StdeCviXmlV1 stdXml = new StdeCviXmlV1( sXml );
 					byte[] pdfBytes = stdXml.getOriginalCVI();
 					if( pdfBytes == null || pdfBytes.length < 1 )
 						throw new Exception("Missing CVI attachment in send errors");
@@ -205,7 +205,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 		});
 	}
 
-	private boolean sendInboundErrorPackage( String sEmail, String sState, ArrayList<StdeCviXml> aStdCvis, 
+	private boolean sendInboundErrorPackage( String sEmail, String sState, ArrayList<StdeCviXmlV1> aStdCvis, 
 			                                 ArrayList<byte[]> aLetterBytes, int iPart ) 
 			                                		 throws AuthenticationFailedException, Exception {
 		boolean bRet = false;
@@ -228,7 +228,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 				sEmail = sTestEmail;  
 			ArrayList<MIMEFile> aFiles = new ArrayList<MIMEFile>();
 			for( int i = 0; i < aStdCvis.size(); i++ ) {
-				StdeCviXml stdXml = aStdCvis.get(i);
+				StdeCviXmlV1 stdXml = aStdCvis.get(i);
 				byte letterBytes[] = aLetterBytes.get(i);
 				byte pdfBytes[] = stdXml.getOriginalCVI();
 				String sCVINo = stdXml.getCertificateNumber();

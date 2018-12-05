@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.files;
+package edu.clemson.lph.civet.inbox;
 
 import java.text.SimpleDateFormat;
 

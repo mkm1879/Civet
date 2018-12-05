@@ -37,8 +37,8 @@ import edu.clemson.lph.civet.CivetEditDialog;
 import edu.clemson.lph.civet.SpeciesRecord;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXml;
-import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
+import edu.clemson.lph.civet.xml.StdeCviXmlV1;
+import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.pdfgen.MergePDF;
@@ -51,7 +51,7 @@ public class AddPageToCviThread extends Thread {
 	private File currentFile;
 	private byte[] rawPdfBytes;
 	private byte[] pageBytes;
-	private StdeCviXml stdXml = null;
+	private StdeCviXmlV1 stdXml = null;
 	
 	private ArrayList<SpeciesRecord> aSpecies;
 	private AnimalIDListTableModel idListModel;
@@ -76,7 +76,7 @@ public class AddPageToCviThread extends Thread {
 		try {
 			fileBytes = FileUtils.readBinaryFile( currentFile.getAbsolutePath() );
 			String sXml = new String( fileBytes, "UTF-8" );
-			stdXml = new StdeCviXml( sXml );
+			stdXml = new StdeCviXmlV1( sXml );
 			addNewSppAndErrors( stdXml, aSpecies, idListModel, aErrorKeys, sErrorNotes );
 			rawPdfBytes = stdXml.getOriginalCVI();
 			String sFileName = stdXml.getOriginalCVIFileName();
@@ -112,10 +112,10 @@ public class AddPageToCviThread extends Thread {
 		});
 	}
 	
-	private void addNewSppAndErrors(StdeCviXml stdXml, ArrayList<SpeciesRecord> aSpecies, AnimalIDListTableModel idListModel,
+	private void addNewSppAndErrors(StdeCviXmlV1 stdXml, ArrayList<SpeciesRecord> aSpecies, AnimalIDListTableModel idListModel,
 			ArrayList<String> aErrorKeys, String sErrorNotes) {
 		try {
-		 StdeCviXmlBuilder builder = new StdeCviXmlBuilder( stdXml );
+		 StdeCviXmlModel builder = new StdeCviXmlModel( stdXml );
 		 java.util.Date dInsp = stdXml.getIssueDate();
 
 		 if( idListModel != null && idListModel.getRowCount() > 0 ) {
@@ -147,7 +147,7 @@ public class AddPageToCviThread extends Thread {
 			 meta.setErrorNote(sErrorNotes);
 		 }
 		 builder.addMetadataAttachement(meta);
-		 stdXml = new StdeCviXml(builder.getXMLString());
+		 stdXml = new StdeCviXmlV1(builder.getXMLString());
 		} catch( Exception e ) {
 			logger.error("Unexpected error in addNewSppAndErrors", e);
 		}

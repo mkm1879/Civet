@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.files;
+package edu.clemson.lph.civet.inbox;
 /*
 Copyright 2014 Michael K Martin
 
@@ -27,7 +27,7 @@ import javax.swing.table.TableRowSorter;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 
 @SuppressWarnings("serial")
 public class StdXMLFilesTableModel extends FilesTableModel {
@@ -53,7 +53,7 @@ public class StdXMLFilesTableModel extends FilesTableModel {
 	
 	private void buildDocuments() {
 		for( File f : allFiles ) {
-			StdeCviXml thisStd = new StdeCviXml( f );
+			StdeCviXmlV1 thisStd = new StdeCviXmlV1( f );
 			String aRow[] = new String[8];
 			aRow[0] = thisStd.getCertificateNumber();
 			aRow[1] = thisStd.getOriginState();

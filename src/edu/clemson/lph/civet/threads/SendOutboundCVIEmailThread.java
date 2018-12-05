@@ -38,7 +38,7 @@ import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.lookup.StateVetLookup;
 import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 import edu.clemson.lph.dialogs.*;
 
 public class SendOutboundCVIEmailThread extends Thread {
@@ -126,13 +126,13 @@ public class SendOutboundCVIEmailThread extends Thread {
 					logger.error("Error getting destination info for state: " + sState, e);
 				}
 				ArrayList<File> aCVIFilesOut = new ArrayList<File>();
-				ArrayList<StdeCviXml> aCVIsOut = new ArrayList<StdeCviXml>();
+				ArrayList<StdeCviXmlV1> aCVIsOut = new ArrayList<StdeCviXmlV1>();
 				long lPDFSize = 0;
 				int iPart = 1;
 				int iPdf = 0; // count to bail on last one.
 				for( File fNext : aCVIsIn ) {
 					String sXml = FileUtils.readTextFile(fNext);
-					StdeCviXml stdXml = new StdeCviXml( sXml );
+					StdeCviXmlV1 stdXml = new StdeCviXmlV1( sXml );
 					byte[] pdfBytes = stdXml.getOriginalCVI();
 					if( pdfBytes == null || pdfBytes.length < 1 )
 						throw new Exception("Missing CVI attachment in send email");
@@ -195,7 +195,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 	}
 
 	private boolean sendOutboundCVIPackage( String sEmail, String sState, 
-				ArrayList<StdeCviXml> aCVIs, String sCurrentFileType, int iPart ) throws AuthenticationFailedException {
+				ArrayList<StdeCviXmlV1> aCVIs, String sCurrentFileType, int iPart ) throws AuthenticationFailedException {
 		boolean bRet = false;
 		String sTemplateFile = null;
 		if( sOutBoundCVIMessage == null ) {
@@ -220,7 +220,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 			if ( sTestEmail != null && sTestEmail.trim().length() > 0 )
 				sEmail = sTestEmail;  
 			ArrayList<MIMEFile> aFiles = new ArrayList<MIMEFile>();
-			for( StdeCviXml thisCVI : aCVIs) {
+			for( StdeCviXmlV1 thisCVI : aCVIs) {
 				byte pdfBytes[] = thisCVI.getOriginalCVI();
 				boolean bXFA = PDFUtils.isXFA(pdfBytes);
 				if( "CVI".equalsIgnoreCase(sCurrentFileType) && !bXFA ) {

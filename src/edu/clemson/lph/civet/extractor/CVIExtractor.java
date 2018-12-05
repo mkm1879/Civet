@@ -3,7 +3,7 @@ package edu.clemson.lph.civet.extractor;
 import java.io.File;
 
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 import edu.clemson.lph.utils.FileUtils;
 
 public class CVIExtractor {
@@ -20,7 +20,7 @@ public class CVIExtractor {
 		String sPdfFile = sFile + ".pdf";
 		String sMetaFile = sFile + ".meta.txt";
 		File fIn = new File(sFile);
-		StdeCviXml stdXml = new StdeCviXml( fIn );
+		StdeCviXmlV1 stdXml = new StdeCviXmlV1( fIn );
 		byte pdfBytes[] = stdXml.getOriginalCVI();
 		FileUtils.writeBinaryFile(pdfBytes, sPdfFile);
 		CviMetaDataXml meta = stdXml.getMetaData();

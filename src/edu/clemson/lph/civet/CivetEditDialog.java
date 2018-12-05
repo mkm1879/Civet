@@ -95,7 +95,7 @@ import edu.clemson.lph.civet.webservice.VetSearchDialog;
 import edu.clemson.lph.civet.webservice.WebServiceException;
 import edu.clemson.lph.civet.xml.CoKsXML;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 import edu.clemson.lph.civet.xml.elements.AnimalTag;
 import edu.clemson.lph.controls.ComboBoxSelectionListener;
 import edu.clemson.lph.controls.DBComboBox;

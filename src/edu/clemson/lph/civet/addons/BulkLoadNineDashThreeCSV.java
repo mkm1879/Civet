@@ -25,7 +25,7 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
+import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.db.*;
 import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.utils.CountyUtils;
@@ -212,7 +212,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 		}
 		
 		private String buildXml( CSVNineDashThreeDataFile data ) throws IOException {
-			StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder();
+			StdeCviXmlModel xmlBuilder = new StdeCviXmlModel();
 			String sCVINumber = data.getCVINumber();
 			String sSpecies = data.getSpecies();
 			String sSpeciesCode = null;

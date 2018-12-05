@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.files;
+package edu.clemson.lph.civet.inbox;
 /*
 Copyright 2014 Michael K Martin
 

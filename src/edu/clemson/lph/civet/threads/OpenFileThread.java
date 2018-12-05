@@ -27,7 +27,7 @@ import org.jpedal.exception.PdfException;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetEditDialog;
-import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.dialogs.QuestionDialog;
@@ -44,7 +44,7 @@ public class OpenFileThread extends Thread {
 	private String sFilePath;
 	private byte[] rawPdfBytes;
 	private byte[] fileBytes;
-	private StdeCviXml stdXml = null;
+	private StdeCviXmlV1 stdXml = null;
 	private boolean bViewOnly = false;
 	
 	/**
@@ -84,7 +84,7 @@ public class OpenFileThread extends Thread {
 	 * @param dlg CivetEditDialog that owns this thread
 	 * @param xStd
 	 */
-	public OpenFileThread(CivetEditDialog dlg, StdeCviXml xStd ) {
+	public OpenFileThread(CivetEditDialog dlg, StdeCviXmlV1 xStd ) {
 		this.dlg = dlg;
 		this.fileBytes = xStd.getOriginalCVI();
 		this.sFilePath = xStd.getOriginalCVIFileName();
@@ -116,7 +116,7 @@ public class OpenFileThread extends Thread {
 			if( sFilePath.toLowerCase().endsWith(".xml") || sFilePath.toLowerCase().endsWith(".cvi")) {
 				String sXml = new String( fileBytes );
 				if( stdXml == null ) 
-					stdXml = new StdeCviXml( sXml );
+					stdXml = new StdeCviXmlV1( sXml );
 				rawPdfBytes = stdXml.getOriginalCVI();
 				pdfDecoder.openPdfArray(rawPdfBytes);
 			}

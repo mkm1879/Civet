@@ -43,8 +43,8 @@ import edu.clemson.lph.civet.lookup.PurposeLookup;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXml;
-import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
+import edu.clemson.lph.civet.xml.StdeCviXmlV1;
+import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.FileUtils;
@@ -56,7 +56,7 @@ public class SaveCVIThread extends Thread {
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_CIVET;
 	private CivetEditDialog dlg;
 	private ProgressDialog prog;
-	private StdeCviXml stdXml = null;
+	private StdeCviXmlV1 stdXml = null;
 	private byte bAttachmentBytes[] = null;
 	private String sAttachmentFileName; // Either original filename or same as email
 	private byte bAttachmentFileBytes[] = null;
@@ -98,7 +98,7 @@ public class SaveCVIThread extends Thread {
 	private boolean bXFA = false;
 	private boolean bAgView = false;
 
-	public SaveCVIThread(CivetEditDialog dlg, StdeCviXml stdXmlIn, String sOpenedAsFileName,
+	public SaveCVIThread(CivetEditDialog dlg, StdeCviXmlV1 stdXmlIn, String sOpenedAsFileName,
 			byte[] bAttachmentBytesIn, String sOriginalFileName, File fOriginalFileIn, 
 			boolean bImport, boolean bXFAIn, boolean bAgViewIn,
 			String sOtherStateCode, String sOtherName, String sOtherAddress, String sOtherCity, 
@@ -329,7 +329,7 @@ public class SaveCVIThread extends Thread {
 			stdXml.validateHerdsOriginCounty();
 			stdXml.validateHerdsDestinationCounty();
 		}
-		StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder(stdXml);
+		StdeCviXmlModel xmlBuilder = new StdeCviXmlModel(stdXml);
 		for( String sPreviousCode : mSpeciesChanges.keySet() ) {
 			String sNewCode = mSpeciesChanges.get(sPreviousCode);
 			xmlBuilder.updateSpecies(sPreviousCode, sNewCode);

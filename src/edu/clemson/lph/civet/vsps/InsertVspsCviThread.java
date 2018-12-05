@@ -36,7 +36,7 @@ import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
+import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.dialogs.ThreadCancelListener;
@@ -111,7 +111,7 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 	}
 	
 	private String buildXml( VspsCvi cvi ) throws IOException {
-		StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder();
+		StdeCviXmlModel xmlBuilder = new StdeCviXmlModel();
 		VetLookup vet = new VetLookup( cvi.getVetLastName(), cvi.getVetFirstName() );
 		xmlBuilder.setCviNumber(cvi.getCVINumber());
 		xmlBuilder.setIssueDate(cvi.getInspectionDate());

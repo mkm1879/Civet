@@ -46,18 +46,18 @@ import edu.clemson.lph.utils.XMLUtility;
  * @author mmarti5
  *
  */
-public class StdeCviXml {
+public class StdeCviXmlV1 {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private XMLDocHelper helper;
 
-	public StdeCviXml( Node rootNode ) {
+	public StdeCviXmlV1( Node rootNode ) {
 		if( rootNode != null ) {
 			Document doc = rootNode.getOwnerDocument();
 			helper = new XMLDocHelper( doc );
 		}
 	}
 	
-	public StdeCviXml( File fXML ) {
+	public StdeCviXmlV1( File fXML ) {
 		try {
 			BufferedReader reader = new BufferedReader( new FileReader( fXML ) );
 			StringBuffer sb = new StringBuffer();
@@ -82,11 +82,11 @@ public class StdeCviXml {
 		}
 	}
 
-	public StdeCviXml( String sStdXML, int iVersion ) {
+	public StdeCviXmlV1( String sStdXML, int iVersion ) {
 		buildStdeCviXml( sStdXML, iVersion );
 	}
 
-	public StdeCviXml( String sStdXML ) {
+	public StdeCviXmlV1( String sStdXML ) {
 		buildStdeCviXml( sStdXML, 1 );
 	}
 	

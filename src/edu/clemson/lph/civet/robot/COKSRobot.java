@@ -25,7 +25,7 @@ import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.civet.xml.CoKsXML;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXml;
+import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 import edu.clemson.lph.civet.xml.V2Transform;
 import edu.clemson.lph.pdfgen.PDFUtils;
 import edu.clemson.lph.utils.FileUtils;
@@ -120,7 +120,7 @@ public class COKSRobot extends Thread {
 				boolean bMCvi = isMCvi(file);
 				String sStdXML = null;
 				String sAdobeXML = null;
-				StdeCviXml stdXml = null;
+				StdeCviXmlV1 stdXml = null;
 				if( bXFA || bMCvi ) {
 					if( bXFA ) {
 						Node xmlNode = PDFUtils.getXFADataNode(pdfBytes);
@@ -140,7 +140,7 @@ public class COKSRobot extends Thread {
 						fDataFile =  new File(sDataFile);
 						String sV2XML = FileUtils.readTextFile(fDataFile);
 						sStdXML = V2Transform.convertToV1(sV2XML);
-						stdXml = new StdeCviXml( sStdXML );
+						stdXml = new StdeCviXmlV1( sStdXML );
 						stdXml.setOriginalCVI( pdfBytes, file.getName() );
 						CviMetaDataXml metaData = new CviMetaDataXml();
 						metaData.setBureauReceiptDate( now );

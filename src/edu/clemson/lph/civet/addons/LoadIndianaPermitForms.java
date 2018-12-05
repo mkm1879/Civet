@@ -32,8 +32,8 @@ import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXml;
-import edu.clemson.lph.civet.xml.StdeCviXmlBuilder;
+import edu.clemson.lph.civet.xml.StdeCviXmlV1;
+import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.db.ThreadListener;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
@@ -157,7 +157,7 @@ public class LoadIndianaPermitForms implements AddOn, ThreadListener {
 			} catch (FileNotFoundException e) {
 				logger.error("Could not find XSLT: " + sXSLT, e);
 			}
-			StdeCviXml xStd = new StdeCviXml( sRet );
+			StdeCviXmlV1 xStd = new StdeCviXmlV1( sRet );
 			CviMetaDataXml metaData = new CviMetaDataXml();
 			metaData.setCertificateNbr(xStd.getCertificateNumber());
 			metaData.setBureauReceiptDate(xStd.getBureauReceiptDate() );
@@ -168,7 +168,7 @@ public class LoadIndianaPermitForms implements AddOn, ThreadListener {
 			}
 			metaData.setErrorNote(sNote);
 			metaData.setCVINumberSource(sCVINbrSource);
-			StdeCviXmlBuilder xmlBuilder = new StdeCviXmlBuilder(xStd);
+			StdeCviXmlModel xmlBuilder = new StdeCviXmlModel(xStd);
 			xmlBuilder.addMetadataAttachement(metaData);
 			byte bytes[] = FileUtils.readBinaryFile(f);
 			xmlBuilder.addPDFAttachement(bytes, f.getName());
