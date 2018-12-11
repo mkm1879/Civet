@@ -144,6 +144,31 @@ public class MergePDF {
 	}
 
 
+	public static byte[] appendPDFtoPDF( byte destBytes[], byte addBytes[] ) throws IOException {
+		FileInputStream fsIn = null;
+		ByteArrayInputStream fisAdd = null;
+		ByteArrayOutputStream baosOut = null;
+		byte[] aOut = {};
+		try {
+			fisAdd = new ByteArrayInputStream( addBytes );
+			ArrayList<InputStream> lInputs = new ArrayList<InputStream>();
+			if( destBytes != null ) {
+				ByteArrayInputStream fisDest = new ByteArrayInputStream( destBytes );
+				lInputs.add(fisDest);
+			}
+			lInputs.add(fisAdd);
+			baosOut = new ByteArrayOutputStream();
+			concatPDFs( lInputs, baosOut, true);
+			aOut = baosOut.toByteArray();
+		} finally {
+			if( fsIn != null ) fsIn.close();
+			if( fisAdd != null ) fisAdd.close();
+			if( baosOut != null ) baosOut.close();
+		}
+		return aOut;
+	}
+
+
 	public static void appendJPGPagetoPDF( File fDestination, File fJPEGAdditional ) throws IOException {
 		FileInputStream fsDest = null;
 		FileInputStream fsIn = null;

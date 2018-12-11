@@ -49,19 +49,19 @@ import edu.clemson.lph.utils.IDTypeGuesser;
  */
 public class MCviSourceFile extends SourceFile {
 	
-	public MCviSourceFile( String sPath ) throws SourceFileException  {
-		super(sPath);
+	public MCviSourceFile( File fFile ) throws SourceFileException  {
+		super(fFile);
 		type = Types.mCVI;
 		if( fSource == null || !fSource.exists() )
-			logger.error("File " + sPath + " does not exist");
-		sDataPath = getDataFilePath( sPath );
+			logger.error("File " + sFilePath + " does not exist");
+		sDataPath = getDataFilePath( sFilePath );
 		fData = new File( sDataPath );
 		
 	}
 
-	public static boolean isMCvi( String sPath ) {
+	public static boolean isMCvi( File fFile ) {
 		boolean bRet = false;
-		String sData = MCviSourceFile.getDataFilePath(sPath);
+		String sData = MCviSourceFile.getDataFilePath(fFile.getAbsolutePath());
 		if( sData != null ) {
 			try { 
 				File fData = new File( sData );
@@ -135,13 +135,14 @@ public class MCviSourceFile extends SourceFile {
             transformer.transform(new StreamSource(sourceReader),
             		new StreamResult(baosDest));
             sRet = new String( baosDest.toByteArray(), "UTF-8" );
+    		sRet = postProcessStdXML( sRet );
+            sRet = postProcessv2(sRet);
 		} catch ( TransformerException e) {
 			logger.error("Failed to transform XML with XSLT: " + sXSLT, e);
 		} catch (UnsupportedEncodingException e) {
 			logger.error("Should not see this unsupported encoding", e);
 
 		}
-		sRet = postProcessStdXML( sRet );
  		return sRet;
 	}
 
@@ -170,24 +171,24 @@ public class MCviSourceFile extends SourceFile {
 	private String postProcessStdXML( Document doc ) {
 		if( doc == null ) return null;
 		XMLDocHelper helper = new XMLDocHelper( doc );
-		NodeList nlAnimalTags = helper.getNodeListByPath("//AnimalTag");
-		if( nlAnimalTags != null ) {
-			for( int i = 0; i < nlAnimalTags.getLength(); i++ ) {
-				Element eTag = (Element)nlAnimalTags.item(i);
-				String sTag = eTag.getAttribute("Number");
-				String sType = eTag.getAttribute("Type");
-				if( sType == null || sType.trim().length() == 0 || sType.equalsIgnoreCase("UN") ) {
-					sType = IDTypeGuesser.getTagType(sTag);
-					eTag.setAttribute("Type", sType);
-				}
-			}
-		}
+//		NodeList nlAnimalTags = helper.getNodeListByPath("//AnimalTag");
+//		if( nlAnimalTags != null ) {
+//			for( int i = 0; i < nlAnimalTags.getLength(); i++ ) {
+//				Element eTag = (Element)nlAnimalTags.item(i);
+//				String sTag = eTag.getAttribute("Number");
+//				String sType = eTag.getAttribute("Type");
+//				if( sType == null || sType.trim().length() == 0 || sType.equalsIgnoreCase("UN") ) {
+//					sType = IDTypeGuesser.getTagType(sTag);
+//					eTag.setAttribute("Type", sType);
+//				}
+//			}
+//		}
 		return helper.getXMLString();
 	}
 
 	@Override
-	public int getPages() {
-		int iRet = 0;
+	public Integer getPageCount() {
+		Integer iRet = null;
 		if( pdfDecoder != null && pdfDecoder.isOpen() )
 			iRet = pdfDecoder.getPageCount();
 		return iRet;
@@ -209,6 +210,23 @@ public class MCviSourceFile extends SourceFile {
 	public boolean canSplit() {
 		// Never split XFA PDF
 		return false;
+	}
+	
+	/**
+	 * The Java transform labels every element with its own namespace declaration!
+	 * this removes that because the whole thing is in ecvi2
+	 * @param sV2  The output of the java transform.
+	 * @return
+	 */
+	private String postProcessv2( String sV2 ) {
+		String sRet = null;
+		String prePattern = "<ns[0-9]+:";
+		String prePattern2 = "</ns[0-9]+:";
+		String postPattern = "xmlns:ns[0-9]+=\"http://www.usaha.org/xmlns/ecvi2\"";
+		sRet = sV2.replaceAll(prePattern, "<");
+		sRet = sRet.replaceAll(prePattern2, "</");
+		sRet = sRet.replaceAll(postPattern, "");
+		return sRet;
 	}
 
 }

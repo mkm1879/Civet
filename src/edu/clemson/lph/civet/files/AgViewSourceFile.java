@@ -25,11 +25,11 @@ import edu.clemson.lph.utils.FileUtils;
  */
 public class AgViewSourceFile extends SourceFile {
 	
-	public AgViewSourceFile( String sPath ) throws SourceFileException {
-		super(sPath);
+	public AgViewSourceFile( File fFile ) throws SourceFileException {
+		super(fFile);
 		type = Types.AgView;
 		if( fSource == null || !fSource.exists() )
-			logger.error("File " + sPath + " does not exist");
+			logger.error("File " + sFilePath + " does not exist");
 		sDataPath  = AgViewSourceFile.getDataFilePath(sFilePath); 
 		fData = new File(sDataPath);
 		if( fData == null || !fData.exists() || !fData.isFile() ) {
@@ -50,12 +50,12 @@ public class AgViewSourceFile extends SourceFile {
 	 * @param sPath
 	 * @return
 	 */
-	public static boolean isAgView( String sPath ) {
+	public static boolean isAgView( File fFile ) {
 		boolean bRet = false;
-		String sData = AgViewSourceFile.getDataFilePath(sPath);
+		String sData = AgViewSourceFile.getDataFilePath(fFile.getAbsolutePath());
 		if( sData != null ) {
 			try { 
-				File fData = new File( sPath );
+				File fData = new File( sData );
 				if( fData != null && fData.exists() && fData.isFile() ) {
 					String sXML = FileUtils.readTextFile(fData);
 					int iV2 = sXML.indexOf("xmlns=\"http://www.usaha.org/xmlns/ecvi2\"");
@@ -113,8 +113,8 @@ public class AgViewSourceFile extends SourceFile {
 	}
 	
 	@Override
-	public int getPages() {
-		int iRet = 0;
+	public Integer getPageCount() {
+		Integer iRet = null;
 		if( pdfDecoder != null && pdfDecoder.isOpen() )
 			iRet = pdfDecoder.getPageCount();
 		return iRet;

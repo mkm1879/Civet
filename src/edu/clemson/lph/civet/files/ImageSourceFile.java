@@ -14,6 +14,8 @@
  */
 package edu.clemson.lph.civet.files;
 
+import java.io.File;
+
 import org.jpedal.PdfDecoder;
 
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
@@ -26,8 +28,8 @@ import edu.clemson.lph.utils.FileUtils;
  */
 public class ImageSourceFile extends SourceFile {
 	
-	public ImageSourceFile( String sPath ) throws SourceFileException {
-		super(sPath);
+	public ImageSourceFile( File fFile ) throws SourceFileException {
+		super(fFile);
 		type = Types.Image;
 		if( fSource != null && fSource.exists() && fSource.isFile() ) {
 			pdfDecoder = new PdfDecoder();
@@ -42,13 +44,14 @@ public class ImageSourceFile extends SourceFile {
 			model.addPDFAttachement(getPDFBytes(), fSource.getName() + ".pdf");			
 		}
 		else {
-			logger.error("File " + sPath + " does not exist");
+			logger.error("File " + sFilePath + " does not exist");
 		}
 	}
 
-	public static boolean isImage( String sPath ) {
+	public static boolean isImage( File fFile ) {
 		boolean bRet = false;
-		String sExt = FileUtils.getExt(sPath);
+		String sName = fFile.getName();
+		String sExt = FileUtils.getExt(sName);
 		if( sExt != null && sExt.trim().length() > 0 ) {
 			if( sExt.toLowerCase().equals(".png") ) bRet = true;
 			else if( sExt.toLowerCase().equals(".gif") ) bRet = true;
@@ -90,7 +93,7 @@ public class ImageSourceFile extends SourceFile {
 	}
 
 	@Override
-	public int getPages() {
+	public Integer getPageCount() {
 		return 1;
 	}
 

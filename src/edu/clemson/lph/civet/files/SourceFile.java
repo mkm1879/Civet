@@ -55,6 +55,10 @@ public abstract class SourceFile {
 	protected PdfDecoder pdfDecoder = null;
 	// model will hold the pdf as currently constructed.
 	protected StdeCviXmlModel model = null;
+	// Total number of pages reported by decoder
+	protected Integer iPages = null;
+	// Default for single page formats.
+	protected Integer iPage = 1;  
 
 
 	/**
@@ -65,58 +69,72 @@ public abstract class SourceFile {
 		PropertyConfigurator.configure("CivetConfig.txt");
 		CivetConfig.checkAllConfig();
 		try {
-		SourceFile source = SourceFile.readSourceFile("Test/AgViewTest.pdf");
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPages() + ": " + source.canSplit());
+		SourceFile source = SourceFile.readSourceFile(new File("Test/AgViewTest.pdf"));
+		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
 		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "AgView.pdf");
-		source = SourceFile.readSourceFile("Test/CivetTest.cvi");
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPages() + ": " + source.canSplit());
+		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "AgView.xml");
+		source = SourceFile.readSourceFile(new File("Test/CivetTest.cvi"));
+		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
 		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "Civet.pdf");
-		source = SourceFile.readSourceFile("Test/CO_KS_Test1.pdf");
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPages() + ": " + source.canSplit());
+		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "Civet.xml");
+		source = SourceFile.readSourceFile(new File("Test/CO_KS_Test1.pdf"));
+		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
 		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "CoKs.pdf");
-		source = SourceFile.readSourceFile("Test/ImageTest1.gif");
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPages() + ": " + source.canSplit());
+		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "CoKs.xml");
+		source = SourceFile.readSourceFile(new File("Test/ImageTest1.gif"));
+		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
 		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "Gif.pdf");
-		source = SourceFile.readSourceFile("Test/ImageTest2.jpg");
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPages() + ": " + source.canSplit());
+		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "Gif.xml");
+		source = SourceFile.readSourceFile(new File("Test/ImageTest2.jpg"));
+		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
 		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "Jpg.pdf");
-		source = SourceFile.readSourceFile("Test/ImageTest3.PNG");
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPages() + ": " + source.canSplit());
+		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "Jpg.xml");
+		source = SourceFile.readSourceFile(new File("Test/ImageTest3.PNG"));
+		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
 		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "Png.pdf");
-		source = SourceFile.readSourceFile("Test/mCVITest.pdf");
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPages() + ": " + source.canSplit());
+		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "Png.xml");
+		source = SourceFile.readSourceFile(new File("Test/mCVITest.pdf"));
+		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
 		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "mCVI.pdf");
-		source = SourceFile.readSourceFile("Test/PDFTest1.pdf");
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPages() + ": " + source.canSplit());
+		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "mCVI.xml");
+		source = SourceFile.readSourceFile(new File("Test/PDFTest1.pdf"));
+		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
 		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "Pdf1.pdf");
-		source = SourceFile.readSourceFile("Test/PDFTest3.pdf");
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPages() + ": " + source.canSplit());
+		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "Pdf1.xml");
+		source = SourceFile.readSourceFile(new File("Test/PDFTest3.pdf"));
+		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
 		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "Pdf3.pdf");
+		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "Pdf4.xml");
 		} catch( SourceFileException e ) {
 			logger.error("Bad Source File", e);
 		}
 		
 	}
 
-	
-	protected SourceFile( String sPath ) throws SourceFileException {
-		if( sPath != null && sPath.trim().length() > 0 ) {
-			sFilePath = sPath;
-			fSource = new File( sPath );
-			if( fSource == null || !fSource.exists() || ! fSource.isFile() ) {
-				logger.error("Cannot find file " + sPath);
-			}
+	protected SourceFile( File fFile ) throws SourceFileException {
+		if( fFile != null && fFile.exists() && fFile.isFile() ) {
+			sFilePath = fFile.getAbsolutePath();
+			fSource = fFile;
+			iPage = 1;
 		}
 		else {
-			logger.error("Attempt to construct source file with no path");
+			logger.error("Attempt to construct source file with no file");
 		}
 	}
 	
 	public Types getType() {
 		if( type == null ) {
-			type = SourceFile.getType(sFilePath);
+			type = SourceFile.getType(fSource);
 		}
 		return type;
+	}
+	
+	public File getSourceFile() {
+		return fSource;
+	}
+	
+	public File getDataFile() {
+		return fData;
 	}
 	
 	public PdfDecoder getPdfDecoder() {
@@ -141,39 +159,51 @@ public abstract class SourceFile {
 	
 	public abstract boolean isPageable();
 	public abstract boolean canSplit();
-	public abstract int getPages();
-
+	public StdeCviXmlModel split() throws SourceFileException {
+		throw new SourceFileException("Attempt to split unsplittable file.");
+	}
+	public abstract Integer getPageCount();
+	public Integer getCurrentPage() {
+		return iPage;
+	}
+	public void setCurrentPage( Integer iPage ) {
+		this.iPage = iPage;
+		// subclasses do any required management
+	}
+	public void addPageToCurrent( Integer iPage ) throws SourceFileException {
+		throw new SourceFileException("Attempt to add page to unsplittable file.");
+	}
 	/**
 	 * This is the factory method that constructs the appropriate subclass object.
 	 * @param sPath Full path to the source file being "opened".
 	 * @return
 	 */
-	public static SourceFile readSourceFile( String sPath ) throws SourceFileException {
+	public static SourceFile readSourceFile( File fFile ) throws SourceFileException {
 		SourceFile sourceFile = null;
-		SourceFile.Types type = SourceFile.getType(sPath);
+		SourceFile.Types type = SourceFile.getType(fFile);
 		switch( type ) {
 		case PDF:
-			sourceFile = new PdfSourceFile( sPath );
+			sourceFile = new PdfSourceFile( fFile );
 			break;
 		case Image:
-			sourceFile = new ImageSourceFile( sPath );
+			sourceFile = new ImageSourceFile( fFile );
 			break;			
 		case CO_KS_PDF:
-			sourceFile = new CoKsSourceFile( sPath );
+			sourceFile = new CoKsSourceFile( fFile );
 			break;
 		case mCVI:
-			sourceFile = new MCviSourceFile( sPath );
+			sourceFile = new MCviSourceFile( fFile );
 			break;
 		case AgView:
-			sourceFile = new AgViewSourceFile( sPath );
+			sourceFile = new AgViewSourceFile( fFile );
 			break;
 		case Civet:
-			sourceFile = new CivetSourceFile( sPath );
+			sourceFile = new CivetSourceFile( fFile );
 			break;
 		case Unknown:
-			logger.error("Unknown file type " + sPath);
+			logger.error("Unknown file type " + fFile);
 		default:
-			logger.error("Unknown file type " + sPath);
+			logger.error("Unknown file type " + fFile);
 		}
 		return sourceFile;
 	}
@@ -183,26 +213,26 @@ public abstract class SourceFile {
 	 * @param sFilePath
 	 * @return
 	 */
-	public static Types getType( String sFilePath ) {
+	public static Types getType( File fFile ) {
 		Types type = SourceFile.Types.Unknown;
-		if( PdfSourceFile.isPDF(sFilePath) ) {
-			if( CoKsSourceFile.isCoKs(sFilePath) ) {
+		if( PdfSourceFile.isPDF(fFile) ) {
+			if( CoKsSourceFile.isCoKs(fFile) ) {
 				type = Types.CO_KS_PDF;
 			}
-			else if( AgViewSourceFile.isAgView(sFilePath) ) {
+			else if( AgViewSourceFile.isAgView(fFile) ) {
 				type = Types.AgView;
 			}
-			else if( MCviSourceFile.isMCvi(sFilePath) ) {
+			else if( MCviSourceFile.isMCvi(fFile) ) {
 				type = Types.mCVI;
 			}
 			else {
 				type = Types.PDF;
 			}
 		}
-		else if( ImageSourceFile.isImage(sFilePath) ) {
+		else if( ImageSourceFile.isImage(fFile) ) {
 			type = Types.Image;
 		}
-		else if( CivetSourceFile.isCivet(sFilePath) ) {
+		else if( CivetSourceFile.isCivet(fFile) ) {
 			type = Types.Civet;
 		}
 		else {
@@ -210,4 +240,5 @@ public abstract class SourceFile {
 		}
 		return type;
 	}
+
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" 
-    xmlns="http://www.usaha.org/xmlns/ecvi2"
+    xmlns=""
     xmlns:ecvi="http://www.usaha.org/xmlns/ecvi" xmlns:my="http://www.clemson.edu/public/lph/StdECVI"
     xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/">
     <xsl:output indent="yes" method="xml"/>

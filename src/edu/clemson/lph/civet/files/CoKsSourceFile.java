@@ -62,11 +62,11 @@ public class CoKsSourceFile extends SourceFile {
 	     logger.setLevel(Level.INFO);
 	}
 	
-	public CoKsSourceFile( String sPath ) throws SourceFileException {
-		super(sPath);
+	public CoKsSourceFile( File fFile ) throws SourceFileException {
+		super(fFile);
 		type = Types.CO_KS_PDF;
 		if( fSource == null || !fSource.exists() )
-			logger.error("File " + sPath + " does not exist");
+			logger.error("File " + sFilePath + " does not exist");
 		pdfDecoder = new PdfDecoder();
 		try {
 			pdfBytes = FileUtils.readBinaryFile(fSource);
@@ -91,14 +91,14 @@ public class CoKsSourceFile extends SourceFile {
 	 * @param sPath
 	 * @return
 	 */
-	public static boolean isCoKs( String sPath ) {
+	public static boolean isCoKs( File fFile ) {
 		boolean bRet = false;
-		if( sPath.toLowerCase().endsWith(".pdf") ) {
-			File fSource = new File( sPath );
-			if( fSource != null && fSource.exists() && fSource.isFile() ) {
+		String sName = fFile.getName();
+		if( sName.toLowerCase().endsWith(".pdf") ) {
+			if( fFile != null && fFile.exists() && fFile.isFile() ) {
 				String sTop;
 				try {
-					sTop = FileUtils.readTextFile( fSource, 4 );
+					sTop = FileUtils.readTextFile( fFile, 4 );
 					int iLoc = sTop.indexOf("<</Filter/FlateDecode");
 					int iLoc2 = sTop.indexOf("PDF-1.7");
 					if( iLoc >= 0 && iLoc2 >= 0 )
@@ -147,8 +147,8 @@ public class CoKsSourceFile extends SourceFile {
 	}
 	
 	@Override
-	public int getPages() {
-		int iRet = 0;
+	public Integer getPageCount() {
+		Integer iRet = null;
 		if( pdfDecoder != null && pdfDecoder.isOpen() )
 			iRet = pdfDecoder.getPageCount();
 		return iRet;

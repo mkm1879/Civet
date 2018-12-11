@@ -15,6 +15,7 @@
 package edu.clemson.lph.civet.files;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -26,6 +27,7 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.pdfgen.MergePDF;
 import edu.clemson.lph.pdfgen.PDFUtils;
 import edu.clemson.lph.utils.FileUtils;
 
@@ -33,18 +35,14 @@ import edu.clemson.lph.utils.FileUtils;
  * 
  */
 public class PdfSourceFile extends SourceFile {
-	private int iPages = 0;
 	
-	public PdfSourceFile( String sPath ) throws SourceFileException {
-		super(sPath);
+	public PdfSourceFile( File fFile ) throws SourceFileException {
+		super(fFile);
 		type = Types.PDF;
-		if( fSource == null || !fSource.exists() )
-			logger.error("File " + sPath + " does not exist");
 		pdfDecoder = new PdfDecoder();
 		try {
 			pdfBytes = FileUtils.readBinaryFile(fSource);
-			byte pageBytes[] = getPDFBytes();
-			pdfDecoder.openPdfArray(pageBytes);
+			pdfDecoder.openPdfArray(pdfBytes);
 			if( PDFUtils.isXFA(pdfBytes) ) 
 				logger.error("File " + fSource.getName() + " looks like XFA but created as ordinary PDF");
 		} catch (Exception e) {
@@ -52,7 +50,7 @@ public class PdfSourceFile extends SourceFile {
 			logger.error("Could not open PDF file " + fSource.getName(), e);
 		}
 		model = new StdeCviXmlModel();
-		model.addPDFAttachement(getPDFBytes(1), fSource.getName());
+		model.addPDFAttachement(getPDFBytes(iPage), fSource.getName());
 	}
 	
 	/**
@@ -61,9 +59,10 @@ public class PdfSourceFile extends SourceFile {
 	 * @param sPath
 	 * @return
 	 */
-	public static boolean isPDF( String sPath ) {
+	public static boolean isPDF( File fFile ) {
 		boolean bRet = false;
-		if( sPath.toLowerCase().endsWith(".pdf") ) {
+		String sName = fFile.getName();
+		if( sName.toLowerCase().endsWith(".pdf") ) {
 			bRet = true;
 		}
 		return bRet;
@@ -76,7 +75,7 @@ public class PdfSourceFile extends SourceFile {
 	@Override
 	public boolean isPageable() {
 		boolean bRet = false;
-		if( pdfDecoder != null && getPages() > 1 )
+		if( pdfDecoder != null && getPageCount() > 1 )
 			bRet = true;
 		return bRet;
 	}
@@ -89,21 +88,50 @@ public class PdfSourceFile extends SourceFile {
 	@Override
 	public boolean canSplit() {
 		boolean bRet = false;
-		if( pdfDecoder != null && getPages() > 1 )
+		if( pdfDecoder != null && getPageCount() > 1 )
 			bRet = true;
 		return bRet;
 	}
+	
+	/**
+	 * Return model from previous page(s) to be saved.
+	 * Start new model with the page after the one we were on.
+	 */
+	@Override
+	public StdeCviXmlModel split() throws SourceFileException {
+		StdeCviXmlModel newModel = model;
+		model = new StdeCviXmlModel();
+		iPage++;
+		byte pdfPageBytes[] = getPDFBytes(iPage);
+		model.addPDFAttachement(pdfPageBytes, fSource.getName());
+		return newModel;
+	}
+	
+	@Override
+	public void addPageToCurrent( Integer iPage ) throws SourceFileException {
+		this.iPage = iPage;
+		byte pdfBytesCurrent[] = model.getPDFAttachmentBytes();
+		byte pdfPageBytes[] = getPDFBytes(iPage);  // extract pages from original full pdf
+		try {
+			byte pdfCombined[] = MergePDF.appendPDFtoPDF(pdfBytesCurrent, pdfPageBytes);
+			String sFileName = model.getPDFAttachmentFilename();
+			model.addPDFAttachement(pdfCombined, sFileName);
+		} catch (IOException e) {
+			logger.error(e);
+		}
+	}
+	
 
 	/**
 	 * The Data Model contains only the current CVI Pages.  The Decoder contains all.
 	 */
 	@Override
 	public StdeCviXmlModel getDataModel() {
-		StdeCviXmlModel model = new StdeCviXmlModel();
-		ArrayList<Integer> aPages = new ArrayList<Integer>();
-		aPages.add(1);
-		byte pageBytes[] = getPDFBytes(aPages);
-		model.addPDFAttachement(pageBytes, fSource.getName());
+		if( model == null ) {
+			model = new StdeCviXmlModel();
+			byte pageBytes[] = getPDFBytes(1);
+			model.addPDFAttachement(pageBytes, fSource.getName());
+		}
 		return model;
 	}
 
@@ -179,8 +207,8 @@ public class PdfSourceFile extends SourceFile {
 	}
 
 	@Override
-	public int getPages() {
-		if( pdfDecoder != null ) {
+	public Integer getPageCount() {
+		if( iPages == null && pdfDecoder != null ) {
 			iPages = pdfDecoder.getPageCount();
 		}
 		return iPages;

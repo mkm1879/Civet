@@ -15,6 +15,7 @@
 package edu.clemson.lph.civet.files;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -35,8 +36,8 @@ import edu.clemson.lph.utils.FileUtils;
  */
 public class CivetSourceFile extends SourceFile {
 	
-	public CivetSourceFile( String sPath ) throws SourceFileException  {
-		super(sPath);
+	public CivetSourceFile( File fFile ) throws SourceFileException  {
+		super(fFile);
 		type = Types.Civet;
 		if( fSource != null && fSource.exists() && fSource.isFile() ) {
 			pdfDecoder = new PdfDecoder();
@@ -59,7 +60,7 @@ public class CivetSourceFile extends SourceFile {
 			}
 		}
 		else {
-			logger.error("File " + sPath + " does not exist");
+			logger.error("File " + sFilePath + " does not exist");
 		}
 	}
 	
@@ -92,9 +93,10 @@ public class CivetSourceFile extends SourceFile {
 		return sRet;
 	}
 
-	public static boolean isCivet( String sPath ) {
+	public static boolean isCivet( File fFile ) {
 		boolean bRet = false;
-		if( sPath.toLowerCase().endsWith(".cvi") ) {
+		String sName = fFile.getName();
+		if( sName.toLowerCase().endsWith(".cvi") ) {
 			bRet = true;
 		}
 		return bRet;
@@ -126,8 +128,8 @@ public class CivetSourceFile extends SourceFile {
 	}
 	
 	@Override
-	public int getPages() {
-		int iRet = 0;
+	public Integer getPageCount() {
+		Integer iRet = null;
 		if( pdfDecoder != null && pdfDecoder.isOpen() )
 			iRet = pdfDecoder.getPageCount();
 		return iRet;
