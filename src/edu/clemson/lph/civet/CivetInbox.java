@@ -63,7 +63,7 @@ import edu.clemson.lph.civet.vsps.VspsCviFile;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static final String VERSION = "4.3";
+	public static final String VERSION = "4.3a Local";
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
@@ -404,6 +404,8 @@ public class CivetInbox extends JFrame {
 				}
 			} catch (AuthenticationFailedException e) {
 				MessageDialog.showMessage(this, "Civet Error:", "Email login failed");
+				MailMan.setDefaultUserID( null );
+				MailMan.setDefaultPassword( null );
 				logger.error(e);
 			} catch (MessagingException e) {
 				MessageDialog.showMessage(this, "Civet Error:", "Failed to send Civet.log.  Please email manually.");
