@@ -131,7 +131,9 @@ public class SubmitNineDashThreeThread extends Thread {
 				addToEggCVIs(sCVINo);
 			}
 			String sXML = buildXml();
-//					System.out.println(sXML);
+			// Save it just in case.
+			String sFileName = "./CivetOutbox/" + sCVINo + ".xml";
+			FileUtils.writeTextFile(sXML, sFileName);
 			// Send it!
 			String sRet = null;
 			int iTries = 0;
