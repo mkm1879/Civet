@@ -18,8 +18,11 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.utils.FileUtils;
 
 /**
  * 
@@ -29,6 +32,51 @@ public class OpenFileList {
 	private ArrayList<OpenFile> aOpenFiles = null;
 	private ArrayList<OpenFile> aFilesComplete = null;
 	private OpenFile oCurrent;
+
+	/**
+	 * Cheap little unit test
+	 * @param args
+	 */
+	public static void main(String args[] ) {
+		PropertyConfigurator.configure("CivetConfig.txt");
+		CivetConfig.checkAllConfig();
+		try {
+			ArrayList<File> files = new ArrayList<File>();
+		files.add(new File("Test/AgViewTest.pdf"));
+		files.add(new File("Test/CivetTest.cvi"));
+		files.add(new File("Test/CO_KS_Test1.pdf"));
+		files.add(new File("Test/ImageTest1.gif"));
+		files.add(new File("Test/ImageTest2.jpg"));
+		files.add(new File("Test/ImageTest3.PNG"));
+		files.add(new File("Test/mCVITest.pdf"));
+		files.add(new File("Test/PDFTest1.pdf"));
+		files.add(new File("Test/PDFTest3.pdf"));
+		OpenFileList list = new OpenFileList(files);
+		OpenFile thisFile = list.currentFile();
+		while( thisFile != null ) {
+			SourceFile source = thisFile.getSource();
+			System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
+			if( thisFile.getSource().canSplit() ) {
+				while( thisFile.morePagesForward() ) {
+					thisFile.saveNext();
+//					could also add page to prev
+				}
+				thisFile.saveNext();
+			}
+			list.markFileComplete(thisFile);
+			thisFile = list.nextFile();
+		}
+		for( OpenFile fileDone : list.aFilesComplete ) {
+			System.out.print(fileDone.getSource().sFilePath);
+			for( Integer i : fileDone.getPagesDone() )
+				System.out.print( ", " + i );
+			System.out.println();
+		}
+		} catch( SourceFileException e ) {
+			logger.error("Bad Source File", e);
+		}
+		
+	}
 
 	/**
 	 * @throws SourceFileException 
@@ -49,7 +97,7 @@ public class OpenFileList {
 		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
 		for( int i = iCurrent + 1; i < aOpenFiles.size(); i++ ) {
 			OpenFile oNext = aOpenFiles.get(i);
-			if( !aOpenFiles.contains(oNext) ) {
+			if( !aFilesComplete.contains(oNext) ) {
 				bRet = true;
 				break;
 			}
@@ -62,12 +110,20 @@ public class OpenFileList {
 		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
 		for( int i = iCurrent - 1; i >= 0; i-- ) {
 			OpenFile oNext = aOpenFiles.get(i);
-			if( !aOpenFiles.contains(oNext) ) {
+			if( !aFilesComplete.contains(oNext) ) {
 				bRet = true;
 				break;
 			}
 		}
 		return bRet;
+	}
+	
+	public OpenFile currentFile() {
+		OpenFile oRet = null;
+		oRet = oCurrent;
+		if( oRet == null )
+			oRet = nextFile();
+		return oRet;
 	}
 	
 	public OpenFile nextFile() {
@@ -83,7 +139,7 @@ public class OpenFileList {
 		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
 		for( int i = iCurrent + 1; i < aOpenFiles.size(); i++ ) {
 			OpenFile oNext = aOpenFiles.get(i);
-			if( !aOpenFiles.contains(oNext) ) {
+			if( !aFilesComplete.contains(oNext) ) {
 				oRet = oNext;
 				break;
 			}
@@ -97,13 +153,16 @@ public class OpenFileList {
 		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
 		for( int i = iCurrent - 1; i >= 0; i-- ) {
 			OpenFile oNext = aOpenFiles.get(i);
-			if( !aOpenFiles.contains(oNext) ) {
+			if( !aFilesComplete.contains(oNext) ) {
 				oRet = oNext;
 				break;
 			}
 		}
-		
 		return oRet;
+	}
+	
+	public void markFileComplete( OpenFile completeFile ) {
+		aFilesComplete.add(completeFile);
 	}
 
 }

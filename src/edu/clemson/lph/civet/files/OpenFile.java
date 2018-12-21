@@ -133,10 +133,10 @@ public class OpenFile {
 		if( source.canSplit() ) {
 			aPagesDone.addAll(aPagesInCurrent);
 			model = source.split();
-			Integer iPage = nextUnsavedPage();
-			source.setCurrentPage(iPage);
+//			Integer iPage = nextUnsavedPage();
+//			source.setCurrentPage(iPage);
 			aPagesInCurrent = new ArrayList<Integer>();
-			aPagesInCurrent.add(iPage);
+			aPagesInCurrent.add(getCurrentPage());
 		}
 		else {
 			throw new SourceFileException("addPageToCurrent called on non-splittable source");
@@ -196,6 +196,10 @@ public class OpenFile {
 	
 	public ArrayList<Integer> getPagesInCurrent() {
 		return aPagesInCurrent;
+	}
+	
+	public ArrayList<Integer> getPagesDone() {
+		return aPagesDone;
 	}
 	
 	public void setCurrentPagesDone() {
