@@ -354,7 +354,7 @@ public class CivetInbox extends JFrame {
 		// Only include add ons in local version
 		// This is a kluge until I figure out how to package add ons differently for local use
 		// in a better build cycle.
-		if( VERSION.toLowerCase().endsWith("local") ) {
+		if( VERSION.toLowerCase().trim().endsWith("local") ) {
 			menuAddOns = new JMenu( "Add Ons");
 			menuBar1.add(menuAddOns);
 			// Once we set it up right, the package edu.clemson.lph.civet.addons will
