@@ -29,8 +29,12 @@ unusually details of your application to mmarti5@clemson.edu.
 import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -41,6 +45,7 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.robot.COKSRobot;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
+import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.StdErrLog;
 
 import org.apache.log4j.Level;
@@ -63,14 +68,15 @@ public class Civet {
 	public static void main(String[] args) {
 		// BasicConfigurator replaced with PropertyConfigurator.
 		PropertyConfigurator.configure("CivetConfig.txt");
+		// Fail now so config file and required files can be fixed before work is done.
+		CivetConfig.checkAllConfig();
+		logger.setLevel(CivetConfig.getLogLevel());
+		CivetInbox.VERSION = readVersion();
+		logger.info("Civet running build: " + CivetInbox.VERSION);
 		if( CivetInbox.VERSION.endsWith("XFA") && !stillValid() ) {
 			logger.error("JPedalXFA trial has expired.  Use Civet.jar with JPedal.jar in ./lib" );
 			System.exit(1);
 		}
-		// Fail now so config file and required files can be fixed before work is done.
-		CivetConfig.checkAllConfig();
-		logger.setLevel(CivetConfig.getLogLevel());
-		logger.info("Civet running build: " + CivetInbox.VERSION);
 		if( args.length == 1  && !args[0].toLowerCase().equals("-robot") ) {
 			String sFile = args[0];
 			if( sFile != null && ( sFile.toLowerCase().endsWith(".cvi") || sFile.toLowerCase().endsWith(".pdf")) ) {
@@ -160,6 +166,21 @@ public class Civet {
 	     }
 	}
 	
+	private static String readVersion() {
+		String sRet = null;
+		try {
+			InputStream iVersion = Civet.class.getResourceAsStream("res/Version.txt");
+			Scanner s = new Scanner(iVersion).useDelimiter("\\A");
+			sRet = s.hasNext() ? s.next() : "";
+			s.close();
+			iVersion.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+		return sRet;
+	}
+
 	private static boolean stillValid() {
 		boolean bRet = false;
 		java.util.Date dNow = new java.util.Date();
