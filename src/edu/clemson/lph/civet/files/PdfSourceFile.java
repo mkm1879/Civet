@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.jpedal.PdfDecoder;
+import org.jpedal.exception.PdfException;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfCopy;
@@ -27,6 +28,7 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.dialogs.QuestionDialog;
 import edu.clemson.lph.pdfgen.MergePDF;
 import edu.clemson.lph.pdfgen.PDFUtils;
 import edu.clemson.lph.utils.FileUtils;
@@ -39,18 +41,14 @@ public class PdfSourceFile extends SourceFile {
 	public PdfSourceFile( File fFile ) throws SourceFileException {
 		super(fFile);
 		type = Types.PDF;
-		pdfDecoder = new PdfDecoder();
 		try {
 			pdfBytes = FileUtils.readBinaryFile(fSource);
-			pdfDecoder.openPdfArray(pdfBytes);
-			if( PDFUtils.isXFA(pdfBytes) ) 
-				logger.error("File " + fSource.getName() + " looks like XFA but created as ordinary PDF");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error("Could not open PDF file " + fSource.getName(), e);
 		}
 		model = new StdeCviXmlModel();
-		model.addPDFAttachement(getPDFBytes(iPage), fSource.getName());
+		model.setPDFAttachment(getPDFBytes(iPage), fSource.getName());
 	}
 	
 	/**
@@ -67,19 +65,7 @@ public class PdfSourceFile extends SourceFile {
 		}
 		return bRet;
 	}
-	
-	/** 
-	 * Being here we know we are a PDF and if more than one page, pageable.
-	 * @return
-	 */
-	@Override
-	public boolean isPageable() {
-		boolean bRet = false;
-		if( pdfDecoder != null && getPageCount() > 1 )
-			bRet = true;
-		return bRet;
-	}
-	
+
 	/** 
 	 * Being here we know we are a PDF and if more than one page, pageable.
 	 * Because XFA is a different class, we can split.
@@ -87,10 +73,7 @@ public class PdfSourceFile extends SourceFile {
 	 */
 	@Override
 	public boolean canSplit() {
-		boolean bRet = false;
-		if( pdfDecoder != null && getPageCount() > 1 )
-			bRet = true;
-		return bRet;
+		return true;
 	}
 	
 	/**
@@ -103,7 +86,7 @@ public class PdfSourceFile extends SourceFile {
 		model = new StdeCviXmlModel();
 		iPage++;
 		byte pdfPageBytes[] = getPDFBytes(iPage);
-		model.addPDFAttachement(pdfPageBytes, fSource.getName());
+		model.setPDFAttachment(pdfPageBytes, fSource.getName());
 		return newModel;
 	}
 	
@@ -115,10 +98,18 @@ public class PdfSourceFile extends SourceFile {
 		try {
 			byte pdfCombined[] = MergePDF.appendPDFtoPDF(pdfBytesCurrent, pdfPageBytes);
 			String sFileName = model.getPDFAttachmentFilename();
-			model.addPDFAttachement(pdfCombined, sFileName);
+			model.setPDFAttachment(pdfCombined, sFileName);
 		} catch (IOException e) {
 			logger.error(e);
 		}
+	}
+	
+	@Override
+	public void setCurrentPage( Integer iPage ) {
+		this.iPage = iPage;
+		model = new StdeCviXmlModel();
+		byte pdfPageBytes[] = getPDFBytes(iPage);
+		model.setPDFAttachment(pdfPageBytes, fSource.getName());
 	}
 	
 
@@ -130,7 +121,7 @@ public class PdfSourceFile extends SourceFile {
 		if( model == null ) {
 			model = new StdeCviXmlModel();
 			byte pageBytes[] = getPDFBytes(1);
-			model.addPDFAttachement(pageBytes, fSource.getName());
+			model.setPDFAttachment(pageBytes, fSource.getName());
 		}
 		return model;
 	}
@@ -151,28 +142,9 @@ public class PdfSourceFile extends SourceFile {
 	@Override
 	public byte[] getPDFBytes(int iPageNo) {
 		byte bOut[] = null;
-		if( pdfBytes != null ) {
-			ByteArrayOutputStream baOut = new ByteArrayOutputStream();
-			try {
-				PdfReader reader = new PdfReader(pdfBytes);
-				com.itextpdf.text.Document document = new com.itextpdf.text.Document();
-				PdfCopy writer = new PdfCopy(document, baOut);
-				document.open();
-				PdfImportedPage pip = writer.getImportedPage(reader, iPageNo);
-				writer.addPage(pip);
-				document.close();
-				bOut = baOut.toByteArray();
-				int iLen = bOut.length;
-				if( iLen ==  0 ) 
-					bOut = null;
-			} catch( IOException ioe ) {
-				logger.error(ioe.getMessage() + "\nIO error extracting pages to byte array\n");
-				bOut = null;
-			} catch( DocumentException de ) {
-				logger.error(de.getMessage() + "\nDocument error extracting pages to byte array");
-				bOut = null;
-			}
-		}
+		ArrayList<Integer> aPages = new ArrayList<Integer>();
+		aPages.add(iPageNo);
+		bOut = getPDFBytes(aPages);
 		return bOut;
 	}
 
@@ -205,14 +177,5 @@ public class PdfSourceFile extends SourceFile {
 		}
 		return bOut;
 	}
-
-	@Override
-	public Integer getPageCount() {
-		if( iPages == null && pdfDecoder != null ) {
-			iPages = pdfDecoder.getPageCount();
-		}
-		return iPages;
-	}
 	
-
 }

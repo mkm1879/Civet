@@ -1,6 +1,6 @@
 package edu.clemson.lph.civet;
 /*
-Copyright 2014 Michael K Martin
+Copyright 2014 - 2019 Michael K Martin
 
 This file is part of Civet.
 
@@ -19,31 +19,13 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
-import java.beans.Beans;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
@@ -51,7 +33,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -63,60 +44,25 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 import org.jpedal.PdfDecoder;
 import org.jpedal.objects.PdfPageData;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
-import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
-import edu.clemson.lph.civet.lookup.Counties;
-import edu.clemson.lph.civet.lookup.ErrorTypeLookup;
-import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
-import edu.clemson.lph.civet.lookup.PurposeLookup;
-import edu.clemson.lph.civet.lookup.SpeciesLookup;
-import edu.clemson.lph.civet.lookup.States;
-import edu.clemson.lph.civet.lookup.VetLookup;
+import edu.clemson.lph.civet.files.SourceFileException;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.threads.AddPageToCviThread;
-import edu.clemson.lph.civet.threads.OpenFileThread;
-import edu.clemson.lph.civet.threads.SaveCVIThread;
-import edu.clemson.lph.civet.webservice.PremisesSearchDialog;
-import edu.clemson.lph.civet.webservice.PremisesTableModel;
-import edu.clemson.lph.civet.webservice.UsaHerdsLookupPrems;
-import edu.clemson.lph.civet.webservice.VetSearchDialog;
-import edu.clemson.lph.civet.webservice.WebServiceException;
-import edu.clemson.lph.civet.xml.CoKsXML;
-import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXmlV1;
-import edu.clemson.lph.civet.xml.elements.AnimalTag;
-import edu.clemson.lph.controls.ComboBoxSelectionListener;
 import edu.clemson.lph.controls.DBComboBox;
 import edu.clemson.lph.controls.DBNumericField;
 import edu.clemson.lph.controls.DBSearchComboBox;
 import edu.clemson.lph.controls.DateField;
 import edu.clemson.lph.controls.PhoneField;
-import edu.clemson.lph.controls.PinField;
 import edu.clemson.lph.controls.SearchTextField;
-import edu.clemson.lph.dialogs.MessageDialog;
-import edu.clemson.lph.dialogs.OneLineQuestionDialog;
-import edu.clemson.lph.dialogs.YesNoDialog;
-import edu.clemson.lph.pdfgen.PDFOpener;
-import edu.clemson.lph.pdfgen.PDFUtils;
-import edu.clemson.lph.utils.CountyUtils;
-import edu.clemson.lph.utils.FileUtils;
-import edu.clemson.lph.utils.PremCheckSum;
+import edu.clemson.lph.pdfgen.PDFViewer;
 
 import javax.swing.border.TitledBorder;
 import javax.swing.border.EtchedBorder;
-
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -138,12 +84,9 @@ public final class CivetEditDialog extends JFrame {
 	public static final int XML_MODE = 1;
 	public static final int VIEW_MODE = 2;
 
-	/** Data behind the GUI **/
-	/**the actual JPanel/decoder object*/
-	PdfDecoder pdfDecoder;
-
-	float fScale = 1.0f;
-	int iRotation = 180;  // 0 appears to be upside down relative to Acrobat ?!
+	PDFViewer viewer;
+//	float fScale = 1.0f;
+//	int iRotation = 180;  // 0 appears to be upside down relative to Acrobat ?!
 	boolean bImport = true;
 	int iMode;
 	int iFileNo = 0;
@@ -230,9 +173,10 @@ public final class CivetEditDialog extends JFrame {
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
+	 * @throws SourceFileException 
 	 * @wbp.parser.constructor
 	 */
-	public CivetEditDialog( Window parent ){
+	public CivetEditDialog( Window parent, ArrayList<File> files ) throws SourceFileException{
 		if( parent instanceof CivetEditDialog ) {
 			this.dialogParent = (CivetEditDialog)parent;
 			this.parent = dialogParent.parent;
@@ -241,7 +185,10 @@ public final class CivetEditDialog extends JFrame {
 			this.parent = parent;
 			this.dialogParent = null;
 		}
+		viewer = new PDFViewer();
 		initializeDisplay();
+		controller = new CivetEditDialogController( this, files);
+		controller.openFiles();
 	}
 	
 	public CivetEditDialog getDialogParent() {
@@ -256,10 +203,6 @@ public final class CivetEditDialog extends JFrame {
 		return controller;
 	}
 	
-	public CVIFileController getController() {
-		return controller.getFileController();
-	}
-
 	/**
 	 * Called from constructor to isolate all the graphical layout verbosity
 	 */
@@ -362,7 +305,6 @@ public final class CivetEditDialog extends JFrame {
 	}
 
 	private void setupViewPanel() {	
-		pdfDecoder = new PdfDecoder();
 		//ensure non-embedded font map to sensible replacements
 		//    PdfDecoder.setFontReplacements(pdfDecoder);
 		pView = new JPanel();
@@ -373,7 +315,7 @@ public final class CivetEditDialog extends JFrame {
 		display.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		display.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		// This is the magic.  We simply put the pdfDecoder in the viewport of the scroll pane.
-		display.setViewportView(pdfDecoder);
+		display.setViewportView(viewer.getPdfDecoder());
 		pView.add(display, BorderLayout.CENTER);
 
 		altDisplay = new JPanel();
@@ -951,55 +893,21 @@ public final class CivetEditDialog extends JFrame {
 	    this.setSize(width,height);
 	    this.setLocation((screenSize.width - width) / 2, (screenSize.height - height) / 2);
 	}
-
-	/** 
-	 * The PDF and metadata are in the contained JPedal pdfDecoder object
-	 * @return
-	 */
-	public PdfDecoder getPdfDecoder() { return pdfDecoder; }
-
-	/**
-	 * Rotation of current page added to page rotation encoded in PDF
-	 * which may or may not indicate upright view depending on scanner.
-	 * @param iRelativeRotation
-	 */
-	public void setRotation( int iRelativeRotation ) { 
-		PdfPageData pd = pdfDecoder.getPdfPageData();
-		int iPageRotation = pd.getRotation(iPageNo);
-		this.iRotation = ( iPageRotation + iRelativeRotation ) % 360; 
-	}
 	
-	/**
-	 * Get the absolute rotation in degrees
-	 * @return
-	 */
-	public int getRotation() { 
-		return iRotation; 
+	public void make90PercentShift() {
+	    // Center the window (will take effect when normalized)
+	    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	    int height = (int)(screenSize.height * 0.90);
+	    int width = (int)(screenSize.width * 0.90);
+	    this.setSize(width,height);
+	    this.setLocation((int)((screenSize.width - width) / 1.5), (int)((screenSize.height - height) / 1.5));
 	}
 
-	/**
-	 * Latest instructions from JPedal on how to refresh the PDF display properly.
-	 */
-	public void updatePdfDisplay() {
-		pdfDecoder.setPageParameters(getScale(),getCurrentPageNo(), getRotation()); 
-		 //values scaling (1=100%). page number, rotation + 180
-		pdfDecoder.waitForDecodingToFinish();
-		pdfDecoder.invalidate();
-		pdfDecoder.updateUI();
-		pdfDecoder.validate();
-	}
-	
 	/**
 	 * Get current page number in current file.  1 indexed.
 	 * @return
 	 */
 	public int getCurrentPageNo() { return iPageNo; }
-	
-	/**
-	 * Get current scaling factor
-	 * @return
-	 */
-	public float getScale() { return fScale; }
 	
 	// Callbacks for Threads and Controller to set values in counter panel.
 	void setPage( int iPageNo ) {

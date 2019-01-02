@@ -51,8 +51,6 @@ public abstract class SourceFile {
 	// pdfBytes is the whole file read from disk or converted from image.
 	protected byte pdfBytes[] = null;
 	protected Types type = null;
-	// pdfDecoder with full source file included here for access to metadata.
-	protected PdfDecoder pdfDecoder = null;
 	// model will hold the pdf as currently constructed.
 	protected StdeCviXmlModel model = null;
 	// Total number of pages reported by decoder
@@ -61,55 +59,6 @@ public abstract class SourceFile {
 	protected Integer iPage = 1;  
 
 
-	/**
-	 * Cheap little unit test
-	 * @param args
-	 */
-	public static void main(String args[] ) {
-		PropertyConfigurator.configure("CivetConfig.txt");
-		CivetConfig.checkAllConfig();
-		try {
-		SourceFile source = SourceFile.readSourceFile(new File("Test/AgViewTest.pdf"));
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
-		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "AgView.pdf");
-		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "AgView.xml");
-		source = SourceFile.readSourceFile(new File("Test/CivetTest.cvi"));
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
-		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "Civet.pdf");
-		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "Civet.xml");
-		source = SourceFile.readSourceFile(new File("Test/CO_KS_Test1.pdf"));
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
-		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "CoKs.pdf");
-		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "CoKs.xml");
-		source = SourceFile.readSourceFile(new File("Test/ImageTest1.gif"));
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
-		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "Gif.pdf");
-		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "Gif.xml");
-		source = SourceFile.readSourceFile(new File("Test/ImageTest2.jpg"));
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
-		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "Jpg.pdf");
-		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "Jpg.xml");
-		source = SourceFile.readSourceFile(new File("Test/ImageTest3.PNG"));
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
-		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "Png.pdf");
-		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "Png.xml");
-		source = SourceFile.readSourceFile(new File("Test/mCVITest.pdf"));
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
-		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "mCVI.pdf");
-		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "mCVI.xml");
-		source = SourceFile.readSourceFile(new File("Test/PDFTest1.pdf"));
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
-		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "Pdf1.pdf");
-		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "Pdf1.xml");
-		source = SourceFile.readSourceFile(new File("Test/PDFTest3.pdf"));
-		System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
-		FileUtils.writeBinaryFile(source.getDataModel().getPDFAttachmentBytes(), "Pdf3.pdf");
-		FileUtils.writeTextFile(source.getDataModel().getXMLString(), "Pdf4.xml");
-		} catch( SourceFileException e ) {
-			logger.error("Bad Source File", e);
-		}
-		
-	}
 
 	protected SourceFile( File fFile ) throws SourceFileException {
 		if( fFile != null && fFile.exists() && fFile.isFile() ) {
@@ -137,10 +86,6 @@ public abstract class SourceFile {
 		return fData;
 	}
 	
-	public PdfDecoder getPdfDecoder() {
-		return pdfDecoder;
-	}
-	
 	public abstract StdeCviXmlModel getDataModel();
 	
 	public byte[] getPDFBytes() {
@@ -157,14 +102,26 @@ public abstract class SourceFile {
 		return getPDFBytes();  // just send it all
 	}
 	
-	public abstract boolean isPageable();
 	public abstract boolean canSplit();
 	public StdeCviXmlModel split() throws SourceFileException {
 		throw new SourceFileException("Attempt to split unsplittable file.");
 	}
-	public abstract Integer getPageCount();
 	public Integer getCurrentPage() {
 		return iPage;
+	}
+	public String getFileName() {
+		String sRet = null;
+		File f = getSourceFile();
+		if( f != null )
+			sRet = f.getName();
+		return sRet;
+	}
+	public String getFilePath() {
+		String sRet = null;
+		File f = getSourceFile();
+		if( f != null )
+			sRet = f.getAbsolutePath();
+		return sRet;
 	}
 	public void setCurrentPage( Integer iPage ) {
 		this.iPage = iPage;

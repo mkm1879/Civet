@@ -137,7 +137,7 @@ public class StdeCviBinaries {
 		return sRet;
 	}
 	
-	public void addPDFAttachment( byte[] pdfBytes, String sFileName ) {
+	public void setPDFAttachment( byte[] pdfBytes, String sFileName ) {
 		try {
 			String sPDFBase64 = new String(Base64.encodeBase64(pdfBytes));
 			String sID = null;
@@ -205,17 +205,19 @@ public class StdeCviBinaries {
 	
 	public CviMetaDataXml getMetaData() {
 		if( mMetaData == null ) {
-		Element attach = getAttachment("CviMetadata.xml");
-		String sId = attach.getAttribute("AttachmentRef");
-		if( sId != null && sId.trim().length() > 0 ) {
-			Element binary = getBinary( sId );
-			if( binary == null ) return null;
-			Element payload = helper.getChildElementByName(binary, "Payload");
-			if( payload == null ) return null;
-			String sBase64 = payload.getTextContent();
-			mMetaData = new CviMetaDataXml(sBase64);
-		}
-		}
+			Element attach = getAttachment("CviMetadata.xml");
+			if( attach != null ) {
+				String sId = attach.getAttribute("AttachmentRef");
+				if( sId != null && sId.trim().length() > 0 ) {
+					Element binary = getBinary( sId );
+					if( binary == null ) return null;
+					Element payload = helper.getChildElementByName(binary, "Payload");
+					if( payload == null ) return null;
+					String sBase64 = payload.getTextContent();
+					mMetaData = new CviMetaDataXml(sBase64);
+				}
+			} // Otherwise it just stays null
+		} 
 		return mMetaData;
 	}
 	

@@ -101,7 +101,7 @@ public abstract class FilesTableModel extends AbstractTableModel {
 			return allFiles.size();
 	}
 
-	public List<File> getAllFiles() {
+	public ArrayList<File> getAllFiles() {
 		return allFiles;
 	}
 
@@ -115,7 +115,7 @@ public abstract class FilesTableModel extends AbstractTableModel {
 		return fRet;
 	}
 
-	public List<File> getSelectedFiles(JTable tblParent ) {
+	public ArrayList<File> getSelectedFiles(JTable tblParent ) {
 		if( allFiles == null || tblParent == null )
 			return null;
 		ArrayList<File> afRet = new ArrayList<File>();

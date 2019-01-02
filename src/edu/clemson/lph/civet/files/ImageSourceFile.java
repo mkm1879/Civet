@@ -32,16 +32,8 @@ public class ImageSourceFile extends SourceFile {
 		super(fFile);
 		type = Types.Image;
 		if( fSource != null && fSource.exists() && fSource.isFile() ) {
-			pdfDecoder = new PdfDecoder();
-			try {
-				pdfBytes = makePdf();
-				pdfDecoder.openPdfArray(pdfBytes);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("Could not open PDF file " + fSource.getName(), e);
-			}
 			model = new StdeCviXmlModel();
-			model.addPDFAttachement(getPDFBytes(), fSource.getName() + ".pdf");			
+			model.setPDFAttachment(getPDFBytes(), fSource.getName() + ".pdf");			
 		}
 		else {
 			logger.error("File " + sFilePath + " does not exist");
@@ -66,7 +58,7 @@ public class ImageSourceFile extends SourceFile {
 	public StdeCviXmlModel getDataModel() {
 		if( model == null ) {
 			model = new StdeCviXmlModel();
-			model.addPDFAttachement(getPDFBytes(), fSource.getName() + ".pdf");			
+			model.setPDFAttachment(getPDFBytes(), fSource.getName() + ".pdf");			
 		}
 		return model;
 	}
@@ -83,18 +75,8 @@ public class ImageSourceFile extends SourceFile {
 	}
 
 	@Override
-	public boolean isPageable() {
-		return false;
-	}
-
-	@Override
 	public boolean canSplit() {
 		return false;
-	}
-
-	@Override
-	public Integer getPageCount() {
-		return 1;
 	}
 
 	private byte[] makePdf() {

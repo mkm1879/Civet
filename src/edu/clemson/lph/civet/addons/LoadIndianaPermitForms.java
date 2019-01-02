@@ -171,7 +171,7 @@ public class LoadIndianaPermitForms implements AddOn, ThreadListener {
 			StdeCviXmlModel xmlBuilder = new StdeCviXmlModel(xStd);
 			xmlBuilder.addMetadataAttachement(metaData);
 			byte bytes[] = FileUtils.readBinaryFile(f);
-			xmlBuilder.addPDFAttachement(bytes, f.getName());
+			xmlBuilder.setPDFAttachment(bytes, f.getName());
 			return xmlBuilder.getXMLString();
 		}
 		

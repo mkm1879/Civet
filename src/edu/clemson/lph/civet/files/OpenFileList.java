@@ -16,13 +16,9 @@ package edu.clemson.lph.civet.files;
 
 import java.io.File;
 import java.util.ArrayList;
-
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.utils.FileUtils;
+import edu.clemson.lph.civet.CivetEditDialogController;
 
 /**
  * 
@@ -33,50 +29,22 @@ public class OpenFileList {
 	private ArrayList<OpenFile> aFilesComplete = null;
 	private OpenFile oCurrent;
 
-	/**
-	 * Cheap little unit test
-	 * @param args
-	 */
-	public static void main(String args[] ) {
-		PropertyConfigurator.configure("CivetConfig.txt");
-		CivetConfig.checkAllConfig();
-		try {
-			ArrayList<File> files = new ArrayList<File>();
-		files.add(new File("Test/AgViewTest.pdf"));
-		files.add(new File("Test/CivetTest.cvi"));
-		files.add(new File("Test/CO_KS_Test1.pdf"));
-		files.add(new File("Test/ImageTest1.gif"));
-		files.add(new File("Test/ImageTest2.jpg"));
-		files.add(new File("Test/ImageTest3.PNG"));
-		files.add(new File("Test/mCVITest.pdf"));
-		files.add(new File("Test/PDFTest1.pdf"));
-		files.add(new File("Test/PDFTest3.pdf"));
-		OpenFileList list = new OpenFileList(files);
-		OpenFile thisFile = list.currentFile();
-		while( thisFile != null ) {
-			SourceFile source = thisFile.getSource();
-			System.out.println(source.getType() + ", " + source.isPageable() + ": " + source.getPageCount() + ": " + source.canSplit());
-			if( thisFile.getSource().canSplit() ) {
-				while( thisFile.morePagesForward() ) {
-					thisFile.saveNext();
-//					could also add page to prev
-				}
-				thisFile.saveNext();
-			}
-			list.markFileComplete(thisFile);
-			thisFile = list.nextFile();
-		}
-		for( OpenFile fileDone : list.aFilesComplete ) {
-			System.out.print(fileDone.getSource().sFilePath);
-			for( Integer i : fileDone.getPagesDone() )
-				System.out.print( ", " + i );
-			System.out.println();
-		}
-		} catch( SourceFileException e ) {
-			logger.error("Bad Source File", e);
-		}
-		
+
+	public OpenFileList() {
+		aOpenFiles = new ArrayList<OpenFile>();
+		aFilesComplete = new ArrayList<OpenFile>();		
 	}
+	
+	/**
+	 * @throws SourceFileException 
+	 * 
+	 */
+	public void openFile( File f ) throws SourceFileException {
+		OpenFile openFile = new OpenFile(f);
+		aOpenFiles.add(openFile);
+		oCurrent = aOpenFiles.get(0);		
+	}
+	
 
 	/**
 	 * @throws SourceFileException 
@@ -89,7 +57,6 @@ public class OpenFileList {
 			OpenFile openFile = new OpenFile(f);
 			aOpenFiles.add(openFile);
 		}
-		oCurrent = aOpenFiles.get(0);
 	}
 	
 	public boolean moreFilesForward() {
@@ -118,23 +85,33 @@ public class OpenFileList {
 		return bRet;
 	}
 	
-	public OpenFile currentFile() {
+	public OpenFile currentFile( CivetEditDialogController controller ) {
 		OpenFile oRet = null;
 		oRet = oCurrent;
 		if( oRet == null )
-			oRet = nextFile();
+			oRet = nextFile(controller);
 		return oRet;
 	}
 	
-	public OpenFile nextFile() {
+	public Integer currentFileNo() {
+		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
+		return iCurrent;
+	}
+	
+	public Integer getFileCount() {
+		Integer iCount = aOpenFiles.size();
+		return iCount;
+	}
+	
+	public OpenFile nextFile( CivetEditDialogController controller ) {
 		OpenFile oRet = null;
-		oRet = nextFileForward();
+		oRet = nextFileForward(controller);
 		if( oRet == null )
-			oRet = nextFileBack();
+			oRet = nextFileBack(controller);
 		return oRet;
 	}
 	
-	public OpenFile nextFileForward() {
+	public OpenFile nextFileForward( CivetEditDialogController controller ) {
 		OpenFile oRet = null;
 		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
 		for( int i = iCurrent + 1; i < aOpenFiles.size(); i++ ) {
@@ -147,8 +124,16 @@ public class OpenFileList {
 		
 		return oRet;
 	}
+
+	public void fileForward() {
+		oCurrent = nextFileForward( null );
+	}
+
+	public void fileBackward() {
+		oCurrent = nextFileBack( null );
+	}
 	
-	public OpenFile nextFileBack() {
+	public OpenFile nextFileBack( CivetEditDialogController controller ) {
 		OpenFile oRet = null;
 		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
 		for( int i = iCurrent - 1; i >= 0; i-- ) {
@@ -164,5 +149,8 @@ public class OpenFileList {
 	public void markFileComplete( OpenFile completeFile ) {
 		aFilesComplete.add(completeFile);
 	}
+	
+
+
 
 }

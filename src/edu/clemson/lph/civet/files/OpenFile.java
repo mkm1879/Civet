@@ -67,10 +67,21 @@ public class OpenFile {
 		}
 	}
 	
+	public boolean isPageComplete( Integer iPage ) {
+		boolean bRet = false;
+		if( aPagesDone.contains(iPage) ) 
+			bRet = true;
+		return bRet;
+	}
+	
 	public SourceFile getSource() {
 		return source;
 	}
 	
+	public byte[] getPDFBytes() {
+		return source.getPDFBytes();
+	}
+
 	public StdeCviXmlModel getModel() {
 		return model;
 	}
@@ -79,22 +90,16 @@ public class OpenFile {
 		return source.getCurrentPage();
 	}
 	
-	public Integer getPageCount() {
-		return source.getPageCount();
-	}
-	
 	/**
 	 * Only looking at incomplete pages
 	 * @return
 	 */
 	public boolean morePagesForward() {
 		boolean bRet = false;
-		if( source.isPageable() ) {
-			for( Integer i = source.getCurrentPage() + 1; i < source.getPageCount(); i++ ) {
-				if( !aPagesDone.contains(i) && !aPagesInCurrent.contains(i) ) {
-					bRet = true;
-					break;
-				}
+		for( Integer i = source.getCurrentPage() + 1; i < source.getPageCount(); i++ ) {
+			if( !aPagesDone.contains(i) && !aPagesInCurrent.contains(i) ) {
+				bRet = true;
+				break;
 			}
 		}
 		return bRet;
@@ -115,6 +120,36 @@ public class OpenFile {
 			}
 		}
 		return bRet;
+	}
+	
+	/**
+	 * Preconditions:  source.iPage points to page displayed
+	 * model does not contain critical data
+	 * Postcondition:  model retains any data entered MAY NOT MATCH DISPLAY
+	 * 
+	 * @return the model to save
+	 * @throws SourceFileException
+	 */
+	public void pageForward() throws SourceFileException {
+			Integer iPage = nextPageForward();
+			source.setCurrentPage(iPage);
+			aPagesInCurrent = new ArrayList<Integer>();
+			aPagesInCurrent.add(getCurrentPage());
+	}
+	
+	/**
+	 * Preconditions:  source.iPage points to page displayed
+	 * model does not contain critical data
+	 * Postcondition:  model retains any data entered MAY NOT MATCH DISPLAY
+	 * 
+	 * @return the model to save
+	 * @throws SourceFileException
+	 */
+	public void pageBackward() throws SourceFileException {
+			Integer iPage = nextPageBack();
+			source.setCurrentPage(iPage);
+			aPagesInCurrent = new ArrayList<Integer>();
+			aPagesInCurrent.add(getCurrentPage());
 	}
 	
 	/**
@@ -184,7 +219,8 @@ public class OpenFile {
 	 * @param iPage
 	 * @throws SourceFileException
 	 */
-	public void addPageToCurrent( Integer iPage ) throws SourceFileException {
+	public void addPageToCurrent() throws SourceFileException {
+		int iPage = getCurrentPage();
 		if( source.canSplit() ) {
 			source.addPageToCurrent(iPage);
 			aPagesInCurrent.add(iPage);

@@ -33,11 +33,7 @@ public class CivetWebServiceFactory {
 
 	public static CivetWebServices getService() {
 		CivetWebServices service = null;
-		String sHerdsUrl = CivetConfig.getHERDSWebServiceURL();
-		if( sHerdsUrl.toUpperCase().endsWith("EXTERNALMESSAGES.ASMX") )
-			service = new CivetWebServicesOld();
-		else
-			service = new CivetWebServicesNew();
+		service = new CivetWebServicesNew();
 		return service;
 	}
 }

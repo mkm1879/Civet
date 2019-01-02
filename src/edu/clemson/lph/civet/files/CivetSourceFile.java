@@ -40,7 +40,6 @@ public class CivetSourceFile extends SourceFile {
 		super(fFile);
 		type = Types.Civet;
 		if( fSource != null && fSource.exists() && fSource.isFile() ) {
-			pdfDecoder = new PdfDecoder();
 			try {
 				String sStdXml = FileUtils.readTextFile(fSource);
 				if( isV1(sStdXml) ) {
@@ -49,9 +48,7 @@ public class CivetSourceFile extends SourceFile {
 				FileUtils.writeTextFile(sStdXml, "convertedCivet.xml");
 				model = new StdeCviXmlModel(sStdXml);
 				pdfBytes = model.getPDFAttachmentBytes();
-				if( pdfBytes != null )
-					pdfDecoder.openPdfArray(pdfBytes);
-				else {
+				if( pdfBytes == null ) {
 					System.err.println("No PDF in CivetFile");
 				}
 			} catch (Exception e) {
@@ -125,26 +122,6 @@ public class CivetSourceFile extends SourceFile {
 			pdfBytes = model.getPDFAttachmentBytes();
 		}
 		return pdfBytes;
-	}
-	
-	@Override
-	public Integer getPageCount() {
-		Integer iRet = null;
-		if( pdfDecoder != null && pdfDecoder.isOpen() )
-			iRet = pdfDecoder.getPageCount();
-		return iRet;
-	}
-
-	@Override
-	public boolean isPageable() {
-		boolean bRet = false;
-		int iPages = 0;
-		if( pdfDecoder != null && pdfDecoder.isOpen() ) {
-			iPages = pdfDecoder.getPageCount();
-			if( iPages > 1 )
-				bRet = true;
-		}
-		return bRet;
 	}
 
 	@Override

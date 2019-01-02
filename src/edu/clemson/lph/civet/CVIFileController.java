@@ -33,7 +33,7 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.threads.OpenFileThread;
+import edu.clemson.lph.civet.threads.OpenFilesThread;
 import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.pdfgen.PDFOpener;
@@ -89,7 +89,7 @@ public class CVIFileController {
 			currentFile = currentFiles[0];
 			currentFilePath = currentFile.getAbsolutePath();
 			currentFileName = currentFile.getName();
-			OpenFileThread thread = new OpenFileThread( dlgController.getDialog(), currentFilePath );
+			OpenFilesThread thread = new OpenFilesThread( dlgController.getDialog(), currentFilePath );
 			thread.setReadOnly(bViewOnly);
 			thread.start();
 		}
@@ -156,25 +156,6 @@ public class CVIFileController {
 	}
 
 	/**
-	 * Move to specified page in currentFile
-	 * @param iPage Both page and file numbers are 1 based indexes they are converted to zero based
-	 * as needed inside each method.
-	 */
-	public void setPage( int iPage ) {
-		if (iPage > 0 && iPage <= iPages ) {
-			iPageNo = iPage;
-			try {
-				dlgController.getDialog().getPdfDecoder().decodePage(iPageNo);
-				dlgController.getDialog().updatePdfDisplay();
-				dlgController.setupForm(currentFileName, iPageNo, iPages, iFileNo, iFiles, isPageComplete(iPageNo));
-			}
-			catch (Exception e1) {
-				logger.error(e1.getMessage() + "\nError moving forward one page");
-			}
-		}
-	}
-
-	/**
 	 * Are there pages forward, complete or not
 	 * @return true of false
 	 */
@@ -230,10 +211,10 @@ public class CVIFileController {
 				currentFileName = currentFile.getName();
 				// Would have a race condition if we didn't perform this set BEFORE starting thread
 				iPageNo = iPages;
-				OpenFileThread thread = new OpenFileThread( dlgController.getDialog(), currentFilePath );
+				OpenFilesThread thread = new OpenFilesThread( dlgController.getDialog(), currentFilePath );
 				thread.start();	
 		}
-		dlgController.setupForm(currentFileName, iPageNo, iPages, iFileNo, iFiles, isPageComplete(iPageNo));
+		dlgController.setupPage(currentFileName, iPageNo, iPages, iFileNo, iFiles, isPageComplete(iPageNo));
 	}
 
 	/**
@@ -245,7 +226,7 @@ public class CVIFileController {
 			try {
 				dlgController.getDialog().getPdfDecoder().decodePage(iPageNo);
 				dlgController.getDialog().updatePdfDisplay();
-				dlgController.setupForm(currentFileName, iPageNo, iPages, iFileNo, iFiles, isPageComplete(iPageNo));
+				dlgController.setupPage(currentFileName, iPageNo, iPages, iFileNo, iFiles, isPageComplete(iPageNo));
 			}
 			catch (Exception e1) {
 				logger.error(e1.getMessage() + "\nError moving forward one page");
@@ -260,7 +241,7 @@ public class CVIFileController {
 				currentFileName = currentFile.getName();
 				// Would have a race condition if we didn't perform this set BEFORE starting thread
 				iPageNo = 1;
-				OpenFileThread thread = new OpenFileThread( dlgController.getDialog(), currentFile );
+				OpenFilesThread thread = new OpenFilesThread( dlgController.getDialog(), currentFile );
 				thread.start();	
 		}
 	}
@@ -275,7 +256,7 @@ public class CVIFileController {
 				currentFilePath = currentFile.getAbsolutePath();
 				currentFileName = currentFile.getName();
 				iPageNo = 1;
-				OpenFileThread thread = new OpenFileThread( dlgController.getDialog(), currentFile );
+				OpenFilesThread thread = new OpenFilesThread( dlgController.getDialog(), currentFile );
 				thread.start();	
 		}
 	}
@@ -290,7 +271,7 @@ public class CVIFileController {
 			currentFilePath = currentFile.getAbsolutePath();
 			currentFileName = currentFile.getName();
 			iPageNo = 1;
-			OpenFileThread thread = new OpenFileThread( dlgController.getDialog(), currentFilePath );
+			OpenFilesThread thread = new OpenFilesThread( dlgController.getDialog(), currentFilePath );
 			thread.start();	
 		}
 	}
@@ -380,7 +361,7 @@ public class CVIFileController {
 						currentFile = currentFiles[iFileNo-1];
 						currentFilePath = currentFile.getAbsolutePath();
 						currentFileName = currentFile.getName();
-						OpenFileThread thread = new OpenFileThread( dlgController.getDialog(), currentFile );
+						OpenFilesThread thread = new OpenFilesThread( dlgController.getDialog(), currentFile );
 						thread.start();	
 						// Successfully tried to open file
 						return;
@@ -389,7 +370,7 @@ public class CVIFileController {
 						try {
 							dlgController.getDialog().getPdfDecoder().decodePage(iPageNo);
 							dlgController.getDialog().updatePdfDisplay();
-							dlgController.setupForm(currentFileName, iPageNo, iPages, iFileNo, iFiles, isPageComplete(iPageNo));
+							dlgController.setupPage(currentFileName, iPageNo, iPages, iFileNo, iFiles, isPageComplete(iPageNo));
 							// Successfully read page
 							return;
 						}
@@ -433,7 +414,7 @@ public class CVIFileController {
 						currentFile = currentFiles[iFileNo-1];
 						currentFilePath = currentFile.getAbsolutePath();
 						currentFileName = currentFile.getName();
-						OpenFileThread thread = new OpenFileThread( dlgController.getDialog(), currentFile );
+						OpenFilesThread thread = new OpenFilesThread( dlgController.getDialog(), currentFile );
 						thread.start();	
 						// Successfully tried to open file
 						return;
@@ -442,7 +423,7 @@ public class CVIFileController {
 						try {
 							dlgController.getDialog().getPdfDecoder().decodePage(iPageNo);
 							dlgController.getDialog().updatePdfDisplay();
-							dlgController.setupForm(currentFileName, iPageNo, iPages, iFileNo, iFiles, isPageComplete(iPageNo));
+							dlgController.setupPage(currentFileName, iPageNo, iPages, iFileNo, iFiles, isPageComplete(iPageNo));
 							// Successfully read page
 							return;
 						}
@@ -669,49 +650,7 @@ public class CVIFileController {
 	/**
 	 * Callback from open file thread.
 	 */
-	public void setupFile() {
-		PdfDecoder pdfDecoder = dlgController.getDialog().getPdfDecoder();
-		try {
-			pdfDecoder.decodePage(iPageNo);
-			// TODO Move this logic
-			pdfDecoder.setPageParameters(dlgController.getDialog().getScale(),iPageNo,dlgController.getDialog().getRotation()); //values scaling (1=100%). page number
-			int iPagesInFile = pdfDecoder.getPageCount();
-			setNumberOfPages( iPagesInFile );
-			// Pages in this file
-			mFilePages.put(currentFilePath, iPagesInFile);
-			// None of them complete unless reopened. But every open file will have a valid array object
-			// in mPagesComplete keyed by its file path.
-			ArrayList<Integer> aPagesComplete = mPagesComplete.get(currentFilePath);
-			if( aPagesComplete == null )
-				mPagesComplete.put(currentFilePath, new ArrayList<Integer>());
-			aPagesInCurrent.clear();
-			if( isMCviDocument() ) {
-				dlgController.populateFromMCvi(getMCviDataFilename(getCurrentFile()));
-				dlgController.getDialog().setRotation(0);
-			}
-			else if( isAgViewDocument() ) {
-				dlgController.populateFromMCvi(getAgViewDataFilename(getCurrentFile()));
-				dlgController.getDialog().setRotation(0);
-			}
-			else if( isXFADocument() ) {
-				if( !CivetConfig.isJPedalXFA() && CivetConfig.isAutoOpenPdf() ) {
-					PDFOpener opener = new PDFOpener(dlgController.getDialog());
-					opener.openPDFContentInAcrobat(getCurrentPdfBytes());
-				}
-				dlgController.getDialog().setRotation(0);  // Always rotate 180 (actually 0) since we know they are right that way
-				dlgController.populateFromPDF();
-			}
-			else {
-				dlgController.getDialog().setRotation( CivetConfig.getRotation() );
-			}
-			dlgController.setupForm(currentFileName, iPageNo, iPagesInFile, iFileNo, iFiles, isPageComplete(iPageNo));
-			dlgController.getDialog().setVisible(true);
-			dlgController.getDialog().updatePdfDisplay();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
-		}
-	}
+
 
 	/**
 	 * One of a series of methods that allow us to revisit the last file saved 

@@ -35,6 +35,7 @@ import org.w3c.dom.Element;
 import edu.clemson.lph.civet.AnimalIDRecord;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetEditDialog;
+import edu.clemson.lph.civet.CivetEditDialogController;
 import edu.clemson.lph.civet.SpeciesRecord;
 import edu.clemson.lph.civet.lookup.ErrorTypeLookup;
 import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
@@ -54,9 +55,9 @@ public class SaveCVIThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private static final long MAX_SANE_SIZE = 5000000;
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_CIVET;
-	private CivetEditDialog dlg;
+	private CivetEditDialogController controller;
 	private ProgressDialog prog;
-	private StdeCviXmlV1 stdXml = null;
+	private StdeCviXmlModel model = null;
 	private byte bAttachmentBytes[] = null;
 	private String sAttachmentFileName; // Either original filename or same as email
 	private byte bAttachmentFileBytes[] = null;
@@ -88,39 +89,25 @@ public class SaveCVIThread extends Thread {
 	private Integer iIssuedByKey;
 	private String sIssuedByName;
 	private String sCVINo;
-	private ArrayList<SpeciesRecord> aSpecies;
-	private HashMap<String, String> mSpeciesChanges;
-	private ArrayList<String> aErrorKeys;
-	private ArrayList<AnimalIDRecord> aAnimalIDs;
-	private String sErrorNotes;
 	private boolean bNoEmail;
 	private boolean bCancel = false;
 	private boolean bXFA = false;
 	private boolean bAgView = false;
 
-	public SaveCVIThread(CivetEditDialog dlg, StdeCviXmlV1 stdXmlIn, String sOpenedAsFileName,
-			byte[] bAttachmentBytesIn, String sOriginalFileName, File fOriginalFileIn, 
+	public SaveCVIThread(CivetEditDialogController dlgController, StdeCviXmlModel model,  
 			boolean bImport, boolean bXFAIn, boolean bAgViewIn,
 			String sOtherStateCode, String sOtherName, String sOtherAddress, String sOtherCity, 
 			String sOtherCounty, String sOtherZipcode, String sOtherPIN,
 			String sThisPIN, String sThisName, String sPhone,
 			String sThisAddress, String sThisCity, String sThisCounty, String sZipcode,
 			java.util.Date dDateIssued, java.util.Date dDateReceived, Integer iIssuedByKey, String sIssuedByName, String sCVINo,
-			String sMovementPurpose,
-			ArrayList<SpeciesRecord> aSpeciesIn,
-			HashMap<String, String> mSpeciesChanges,
-			ArrayList<String> aErrorKeysIn, String sErrorNotes,
-			ArrayList<AnimalIDRecord> aAnimalIDs) {
+			String sMovementPurpose) {
 		this.bImport = bImport;
-		this.dlg = dlg;
-		prog = new ProgressDialog(dlg, "Civet", "Saving CVI");
+		this.controller = dlgController;
+		prog = new ProgressDialog(dlgController.getDialog(), "Civet", "Saving CVI");
 		prog.setAuto(true);
 		prog.setVisible(true);
-		this.stdXml = stdXmlIn;
-		this.bAttachmentBytes = bAttachmentBytesIn;
-		this.sOriginalFileName = sOriginalFileName;
-		this.fOriginalFile = fOriginalFileIn;
-		this.sOpenedAsFileName = sOpenedAsFileName;
+		this.model = model;
 		this.dDateIssued = dDateIssued;
 		this.dDateReceived = dDateReceived;
 		this.iIssuedByKey = iIssuedByKey;
@@ -166,23 +153,6 @@ public class SaveCVIThread extends Thread {
 			this.sDestinationZipCode = sOtherZipcode;
 			this.sDestinationPhone = null;
 		}
-		 // Deep copy aSpecies to avoid thread issues.  (do the same for update later)
-		this.aSpecies = new ArrayList<SpeciesRecord>();
-		if( aSpeciesIn != null ) // Should NEVER be null
-			for( Iterator<SpeciesRecord> iter = aSpeciesIn.iterator(); iter.hasNext(); )
-				this.aSpecies.add( iter.next() );
-		this.aErrorKeys = new ArrayList<String>();
-		if( aErrorKeysIn != null ) {
-			for( String sErrorKey : aErrorKeysIn )
-				this.aErrorKeys.add( sErrorKey );
-			aErrorKeysIn.clear();
-		}
-		this.mSpeciesChanges = mSpeciesChanges;
-		this.sErrorNotes = sErrorNotes;
-		this.aAnimalIDs = new ArrayList<AnimalIDRecord>();
-		if( aAnimalIDs != null )
-			for( AnimalIDRecord rID : aAnimalIDs )
-				this.aAnimalIDs.add( rID );
 		this.bXFA = bXFAIn;
 		this.bAgView = bAgViewIn;
 	}
@@ -212,7 +182,7 @@ public class SaveCVIThread extends Thread {
 	    }
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				dlg.saveComplete();
+				controller.saveComplete();
 				prog.setVisible(false);
 				prog.dispose();
 			}
@@ -255,7 +225,7 @@ public class SaveCVIThread extends Thread {
 			} catch (IOException e) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						MessageDialog.showMessage( dlg, "Civet: Error",
+						MessageDialog.showMessage( controller.getDialog(), "Civet: Error",
 								"Error Reading PDF File " + fOriginalFile.getAbsolutePath() )	;
 						prog.setVisible(false);
 						prog.dispose();
@@ -325,11 +295,11 @@ public class SaveCVIThread extends Thread {
 
 	private String buildXml() {
 		// NOTE: Starting with everything in original.
-		if( stdXml != null ) {
-			stdXml.validateHerdsOriginCounty();
-			stdXml.validateHerdsDestinationCounty();
+		if( model != null ) {
+			model.validateHerdsOriginCounty();
+			model.validateHerdsDestinationCounty();
 		}
-		StdeCviXmlModel xmlBuilder = new StdeCviXmlModel(stdXml);
+		StdeCviXmlModel xmlBuilder = new StdeCviXmlModel(model);
 		for( String sPreviousCode : mSpeciesChanges.keySet() ) {
 			String sNewCode = mSpeciesChanges.get(sPreviousCode);
 			xmlBuilder.updateSpecies(sPreviousCode, sNewCode);
@@ -337,7 +307,7 @@ public class SaveCVIThread extends Thread {
 		VetLookup vet = new VetLookup( iIssuedByKey );
 		xmlBuilder.setCviNumber(sCVINo);
 		xmlBuilder.setIssueDate(dDateIssued);
-		if( !bXFA && (stdXml == null || stdXml.getVetName() == null) ) {  // Don't override vet that signed XFA or mCVI or V2 document
+		if( !bXFA && (model == null || model.getVetName() == null) ) {  // Don't override vet that signed XFA or mCVI or V2 document
 			Element eVet = null;
 			if( bImport ) {
 				xmlBuilder.setVet(sIssuedByName);
@@ -391,7 +361,7 @@ public class SaveCVIThread extends Thread {
 			// Don't check size on XFA PDFs because we don't control those.
 			if( bAttachmentFileBytes != null ) {
 				if( bAttachmentFileBytes.length > MAX_SANE_SIZE ) {
-					MessageDialog.messageWait(dlg, "Civet Warning", "The PDF attachment is larger than normal.\nCheck your scanner settings");
+					MessageDialog.messageWait(controller, "Civet Warning", "The PDF attachment is larger than normal.\nCheck your scanner settings");
 				}
 			}
 		} // End if !bXFA
@@ -416,7 +386,7 @@ public class SaveCVIThread extends Thread {
 		metaData.setCVINumberSource(sCVINbrSource);
 //	System.out.println(metaData.getXmlString());
 		xmlBuilder.addMetadataAttachement(metaData);
-		xmlBuilder.addPDFAttachement(bAttachmentFileBytes, sAttachmentFileName);
+		xmlBuilder.setPDFAttachment(bAttachmentFileBytes, sAttachmentFileName);
 		return xmlBuilder.getXMLString();
 	}
 	
@@ -430,8 +400,8 @@ public class SaveCVIThread extends Thread {
 			pw.close();
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					dlg.getController().setLastSavedFile(fileOut);
-					CivetEditDialog dlgParent = dlg.getDialogParent();
+					controller.getController().setLastSavedFile(fileOut);
+					CivetEditDialog dlgParent = controller.getDialogParent();
 					if( dlgParent != null ) {
 						dlgParent.getController().setLastSavedFile(fileOut);
 					}
@@ -441,7 +411,7 @@ public class SaveCVIThread extends Thread {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					logger.error("Could not save " + sFilePath, e);
-					MessageDialog.showMessage(dlg, "Civet Error: File Save", "Could not save file\n " + sFilePath );
+					MessageDialog.showMessage(controller, "Civet Error: File Save", "Could not save file\n " + sFilePath );
 					prog.setVisible(false);
 					prog.dispose();
 				}
@@ -476,7 +446,7 @@ public class SaveCVIThread extends Thread {
 			pw.close();
 		} catch (IOException e) {
 			logger.error("Could not save " + sFilePath, e);
-			MessageDialog.messageLater(dlg, "Civet Error: File Save", "Could not save file\n " + sFilePath );
+			MessageDialog.messageLater(controller, "Civet Error: File Save", "Could not save file\n " + sFilePath );
 			return;
 		} 
 	}

@@ -38,7 +38,7 @@ public class AgViewSourceFile extends SourceFile {
 		try {
 			String sStdXML = FileUtils.readTextFile(fData);
 			model = new StdeCviXmlModel(sStdXML);
-			model.addPDFAttachement(getPDFBytes(), fSource.getName());
+			model.setPDFAttachment(getPDFBytes(), fSource.getName());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error("Failed to read file " + fData.getName(), e);
@@ -77,7 +77,7 @@ public class AgViewSourceFile extends SourceFile {
 					String sStdXml = FileUtils.readTextFile(fData);
 					model = new StdeCviXmlModel(sStdXml);
 					byte pdfBytes[] = getPDFBytes();
-					model.addPDFAttachement(pdfBytes, fSource.getName());
+					model.setPDFAttachment(pdfBytes, fSource.getName());
 				}
 				else {
 					logger.error("Cannot find data file " + sDataPath);
@@ -112,25 +112,6 @@ public class AgViewSourceFile extends SourceFile {
 		return sRet;
 	}
 	
-	@Override
-	public Integer getPageCount() {
-		Integer iRet = null;
-		if( pdfDecoder != null && pdfDecoder.isOpen() )
-			iRet = pdfDecoder.getPageCount();
-		return iRet;
-	}
-
-	@Override
-	public boolean isPageable() {
-		boolean bRet = false;
-		int iPages = 0;
-		if( pdfDecoder != null && pdfDecoder.isOpen() ) {
-			iPages = pdfDecoder.getPageCount();
-			if( iPages > 1 )
-				bRet = true;
-		}
-		return bRet;
-	}
 
 	@Override
 	public boolean canSplit() {

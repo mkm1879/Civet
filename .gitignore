@@ -44,6 +44,9 @@ antbin
 Complete/
 References/
 countyFail/
+Test/
+TestFile.cvi
+ecviDraftRelaxed2.xsd
 Publish/*
 CertNbrs.txt
 CivetConfig - Copy.txt

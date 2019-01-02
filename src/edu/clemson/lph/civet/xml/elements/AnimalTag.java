@@ -104,6 +104,23 @@ public class AnimalTag {
 		return sRet;
 	}
 	
+	
+	public boolean isOfficial() {
+		boolean bRet = false;
+		switch( type ) {
+		case AIN:
+		case MfrRFID:
+		case NUES9:
+		case NUES8:
+		case OtherOfficialID:
+			bRet = true;
+			break; 
+		default:
+			bRet = false;
+		}
+		return bRet;
+	}
+	
 	@Override
 	public String toString() {
 		return value;

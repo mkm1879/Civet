@@ -1146,9 +1146,9 @@ public class StdeCviXmlModel {
 		return;
 	}
 	
-	public void addPDFAttachement( byte[] pdfBytes, String sFileName ) {
+	public void setPDFAttachment( byte[] pdfBytes, String sFileName ) {
 		if( isValidDoc() && pdfBytes != null && pdfBytes.length > 0 && !attachmentExists(sFileName)) {
-			binaries.addPDFAttachment(pdfBytes, sFileName);
+			binaries.setPDFAttachment(pdfBytes, sFileName);
 		}
 	}
 	

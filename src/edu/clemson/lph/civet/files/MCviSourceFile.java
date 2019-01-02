@@ -87,7 +87,7 @@ public class MCviSourceFile extends SourceFile {
 					String sStdXml = toStdXMLString( sAcrobatXml );
 					model = new StdeCviXmlModel(sStdXml);
 					byte pdfBytes[] = getPDFBytes();
-					model.addPDFAttachement(pdfBytes, fSource.getName());
+					model.setPDFAttachment(pdfBytes, fSource.getName());
 				}
 				else {
 					logger.error("Cannot find data file " + sDataPath);
@@ -184,26 +184,6 @@ public class MCviSourceFile extends SourceFile {
 //			}
 //		}
 		return helper.getXMLString();
-	}
-
-	@Override
-	public Integer getPageCount() {
-		Integer iRet = null;
-		if( pdfDecoder != null && pdfDecoder.isOpen() )
-			iRet = pdfDecoder.getPageCount();
-		return iRet;
-	}
-
-	@Override
-	public boolean isPageable() {
-		boolean bRet = false;
-		int iPages = 0;
-		if( pdfDecoder != null && pdfDecoder.isOpen() ) {
-			iPages = pdfDecoder.getPageCount();
-			if( iPages > 1 )
-				bRet = true;
-		}
-		return bRet;
 	}
 
 	@Override

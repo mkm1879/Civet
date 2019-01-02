@@ -27,6 +27,7 @@ unusually details of your application to mmarti5@clemson.edu.
 */
 
 import java.awt.EventQueue;
+import java.awt.Window;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,12 +35,14 @@ import java.io.StringReader;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import edu.clemson.lph.civet.files.SourceFileException;
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.robot.COKSRobot;
@@ -202,26 +205,34 @@ public class Civet {
 	
 	private static void previewFile( String sFile ) {
 		if( sFile == null || sFile.trim().length() == 0 ) return;
-		CivetEditDialog dlg = new CivetEditDialog( null );
-		dlg.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		File fFile = new File(sFile);
-		if( !fFile.exists() ) return;
-		String sFileName = fFile.getName();
-		String sInbox = CivetConfig.getInputDirPath();
-		String sMoveTo = sInbox + sFileName;
-		if( !(sMoveTo.equalsIgnoreCase(sFile)) ){
-			File fMoveTo = new File( sMoveTo );
-			if( !fFile.renameTo(fMoveTo) ) {
-				MessageDialog.showMessage(dlg, "Civet: Preview Error", "Failed to move file\n" + sFile + "\n\t to Civet InBox\nOpening in Preview");
+		try {
+			File f = new File(sFile);
+			ArrayList<File> files = new ArrayList<File>(); files.add(f);
+			CivetEditDialog dlg;
+			dlg = new CivetEditDialog( (Window)null, files );
+			dlg.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			File fFile = new File(sFile);
+			if( !fFile.exists() ) return;
+			String sFileName = fFile.getName();
+			String sInbox = CivetConfig.getInputDirPath();
+			String sMoveTo = sInbox + sFileName;
+			if( !(sMoveTo.equalsIgnoreCase(sFile)) ){
+				File fMoveTo = new File( sMoveTo );
+				if( !fFile.renameTo(fMoveTo) ) {
+					MessageDialog.showMessage(dlg, "Civet: Preview Error", "Failed to move file\n" + sFile + "\n\t to Civet InBox\nOpening in Preview");
+				}
+				else {
+					fFile = fMoveTo;
+				}
 			}
-			else {
-				fFile = fMoveTo;
-			}
+			File selectedFiles[] = {fFile};
+			//		dlg.openFiles(selectedFiles, true);
+			dlg.setVisible(true);
+			MessageDialog.showMessage(dlg, "Civet: Preview", "File\n" + sFile + "\n\tmoved to Civet InBox\nOpening in Preview");
+		} catch (SourceFileException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
 		}
-		File selectedFiles[] = {fFile};
-//		dlg.openFiles(selectedFiles, true);
-		dlg.setVisible(true);
-		MessageDialog.showMessage(dlg, "Civet: Preview", "File\n" + sFile + "\n\tmoved to Civet InBox\nOpening in Preview");
 	}
 	
 	/**

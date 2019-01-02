@@ -67,20 +67,10 @@ public class CoKsSourceFile extends SourceFile {
 		type = Types.CO_KS_PDF;
 		if( fSource == null || !fSource.exists() )
 			logger.error("File " + sFilePath + " does not exist");
-		pdfDecoder = new PdfDecoder();
-		try {
-			pdfBytes = FileUtils.readBinaryFile(fSource);
-			pdfDecoder.openPdfArray(pdfBytes);
-			if( !PDFUtils.isXFA(pdfBytes) ) 
-				logger.error("File " + fSource.getName() + " doesn't look like XFA but created as CoKs");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("Could not open PDF file " + fSource.getName(), e);
-		}
 		String sAcrobatXML = toAcrobatXMLString();
 		String sStdXML = toStdXMLString( sAcrobatXML);
 		model = new StdeCviXmlModel(sStdXML);
-		model.addPDFAttachement(getPDFBytes(), fSource.getName());
+		model.setPDFAttachment(getPDFBytes(), fSource.getName());
 	}
 
 	/**
@@ -121,7 +111,7 @@ public class CoKsSourceFile extends SourceFile {
 					String sStdXml = toStdXMLString( sAcrobatXml );
 					model = new StdeCviXmlModel(sStdXml);
 					byte pdfBytes[] = getPDFBytes();
-					model.addPDFAttachement(pdfBytes, fSource.getName());
+					model.setPDFAttachment(pdfBytes, fSource.getName());
 				}
 				else {
 					logger.error("Cannot find data file " + sDataPath);
@@ -144,26 +134,6 @@ public class CoKsSourceFile extends SourceFile {
 			}
 		}
 		return pdfBytes;
-	}
-	
-	@Override
-	public Integer getPageCount() {
-		Integer iRet = null;
-		if( pdfDecoder != null && pdfDecoder.isOpen() )
-			iRet = pdfDecoder.getPageCount();
-		return iRet;
-	}
-
-	@Override
-	public boolean isPageable() {
-		boolean bRet = false;
-		int iPages = 0;
-		if( pdfDecoder != null && pdfDecoder.isOpen() ) {
-			iPages = pdfDecoder.getPageCount();
-			if( iPages > 1 )
-				bRet = true;
-		}
-		return bRet;
 	}
 
 	@Override
