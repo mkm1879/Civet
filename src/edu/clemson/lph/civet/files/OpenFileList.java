@@ -24,7 +24,8 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.pdfgen.PDFViewer;
 
 /**
- * 
+ * This class represents the collection of files that have been selected to open in
+ * the CivetDialog.  It handles the logic around navigating between files.
  */
 public class OpenFileList {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
@@ -39,18 +40,7 @@ public class OpenFileList {
 		aOpenFiles = new ArrayList<OpenFile>();
 		aFilesComplete = new ArrayList<OpenFile>();		
 	}
-	
-	/**
-	 * @throws SourceFileException 
-	 * @throws PdfException 
-	 * 
-	 */
-	public void openFile( File f ) throws SourceFileException, PdfException {
-		OpenFile openFile = new OpenFile(f, viewer);
-		aOpenFiles.add(openFile);
-		oCurrent = aOpenFiles.get(0);	
-	}
-	
+
 
 	/**
 	 * @throws SourceFileException 
@@ -64,6 +54,22 @@ public class OpenFileList {
 			OpenFile openFile = new OpenFile(f, viewer);
 			aOpenFiles.add(openFile);
 		}
+	}
+	
+	/**
+	 * This method is called from OpenFilesThread for each file in the list.  
+	 * During execution of that thread this entire object is not thread safe 
+	 * and must be guarded.
+	 * When chasing bugs, look here first 
+	 * @param f File to open
+	 * @throws SourceFileException 
+	 * @throws PdfException 
+	 * 
+	 */
+	public void openFile( File f ) throws SourceFileException, PdfException {
+		OpenFile openFile = new OpenFile(f, viewer);
+		aOpenFiles.add(openFile);
+		oCurrent = aOpenFiles.get(0);	
 	}
 	
 	/**
@@ -94,7 +100,7 @@ public class OpenFileList {
 	
 	/**
 	 * Use to navigate to the next available file forward or back
-	 * See navigation section below for details
+	 * See navigation section below for details and specific move functions.
 	 * @param bIncompleteOnly boolean true to skip files marked complete
 	 * @return Any not yet complete file
 	 */
@@ -106,6 +112,11 @@ public class OpenFileList {
 		return oRet;
 	}
 	
+	/**
+	 * We have to initialize somewhere.  This is used when the list is first created.
+	 * @return
+	 * @throws PdfException
+	 */
 	public OpenFile firstFile() throws PdfException {
 		oCurrent = aOpenFiles.get(0);
 		oCurrent.viewFile();

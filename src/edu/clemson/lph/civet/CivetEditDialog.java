@@ -200,6 +200,17 @@ public final class CivetEditDialog extends JFrame {
 		return dialogParent;
 	}
 	
+	public CivetInbox getInboxParent() {
+		CivetInbox ibRet = null;
+		if( parent instanceof CivetInbox ) {
+			ibRet = (CivetInbox)parent;
+		}
+		if( parent instanceof CivetEditDialog ) {
+			ibRet = (CivetInbox)((CivetEditDialog)parent).getInboxParent();
+		}
+		return ibRet;
+	}
+	
 	public void setController( CivetEditDialogController c ) {
 		this.controller = c;
 	}

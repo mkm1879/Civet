@@ -136,7 +136,9 @@ public final class CivetEditDialogController {
 	}
 	
 	/** 
-	 * Call from CivetEditDialog.show(true);
+	 * Call from CivetEditDialog once constructor has returned
+	 * but before the dialog is made visible.  Probably not truly thread-safe
+	 * but helps, I hope.
 	 */
 	public void openFiles() {
 		// Encapsulation breaks down here.  Viewer is too resource intensive to 
@@ -146,6 +148,9 @@ public final class CivetEditDialogController {
 		t.start();
 	}
 	
+	/**
+	 * Called on the event dispatch thread after the OpenFilesThread completes.
+	 */
 	public void openFilesComplete() {
 		try {
 			if( openFileList == null ) {
@@ -184,7 +189,7 @@ public final class CivetEditDialogController {
 		if( currentFile.getSource().isDataFile() )
 			populateFromStdXml(currentFile.getSource().getDataModel()) ;
 		dlg.make90Percent();
-		dlg.setVisible(true);
+		dlg.setVisible(true);  // Only now display
 		} catch( Exception e ) {
 			logger.error(e);
 			e.printStackTrace();

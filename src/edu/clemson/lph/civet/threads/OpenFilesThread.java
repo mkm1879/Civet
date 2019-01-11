@@ -55,7 +55,7 @@ public class OpenFilesThread extends Thread {
 		this.openFiles = openFiles;
 		if( this.filesToOpen != null && this.filesToOpen.size() > 0 ) {
 			this.currentFile = this.filesToOpen.get(0);
-			prog = new ProgressDialog(dlg, "Civet", "Opening CVI File " + this.currentFile.getName() );
+			prog = new ProgressDialog(dlg.getInboxParent(), "Civet", "Opening CVI File " + this.currentFile.getName() );
 			prog.setAuto(true);
 			prog.setVisible(true);
 		} 
@@ -71,7 +71,7 @@ public class OpenFilesThread extends Thread {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					logger.error("OpenFilesThread run with empty file list");
-					MessageDialog.showMessage(dlg, "Civet Error", "OpenFilesThread run with empty file list");
+					MessageDialog.showMessage(dlg.getInboxParent(), "Civet Error", "OpenFilesThread run with empty file list");
 					dlgController.openFilesComplete();
 					prog.setVisible(false);
 					prog.dispose();

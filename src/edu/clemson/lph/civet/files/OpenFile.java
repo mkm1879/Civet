@@ -21,11 +21,14 @@ import org.jpedal.exception.PdfException;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
-import edu.clemson.lph.pdfgen.PDFUtils;
 import edu.clemson.lph.pdfgen.PDFViewer;
 
 /**
- * 
+ *  This class encapsulates actions taking place in one selected file.
+ *  This is mainly movement through the pages of a multi-page PDF.
+ *  The magic is in the polymorphism of source.  The factory creates the 
+ *  appropriate subclass of SourceFile and we expose its methods to 
+ *  perform the type-appropriate behaviors while hiding the type details (mostly).
  */
 public class OpenFile {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
@@ -34,11 +37,10 @@ public class OpenFile {
 	private StdeCviXmlModel xmlModel = null;
 	private ArrayList<Integer> aPagesInCurrent = null;
 	private ArrayList<Integer> aPagesDone = null;
-	private boolean bXFA = false;
 
 	/**
+	 * Remove if we don't end up with a use
 	 * @throws SourceFileException 
-	 * @throws PdfException 
 	 * 
 	 */
 	public OpenFile( String sFilePath, PDFViewer viewer ) throws SourceFileException {
@@ -60,8 +62,9 @@ public class OpenFile {
 		}
 	}
 	/**
+	 * Called from OpenFileList to create each file in the list.
+	 * Constructor is executed inside OpenFilesThread so not safe.
 	 * @throws SourceFileException 
-	 * @throws PdfException 
 	 * 
 	 */
 	public OpenFile( File fFile, PDFViewer viewer ) throws SourceFileException {
@@ -104,6 +107,13 @@ public class OpenFile {
 		return source.type;
 	}
 	
+	/**
+	 * The one instance of PDFViewer is passed around by reference to 
+	 * everything from the dialog to controller to here to the source.
+	 * This is at risk of threading problems because it gets passed into
+	 * the Open and Save threads.
+	 * @return
+	 */
 	public PDFViewer getViewer() {
 		return viewer;
 	}
@@ -125,7 +135,7 @@ public class OpenFile {
 	}
 	
 	public boolean isXFA() {
-		return bXFA;
+		return source.isXFA();
 	}
 	
 	/**

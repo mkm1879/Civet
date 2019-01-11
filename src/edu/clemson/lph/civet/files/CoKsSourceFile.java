@@ -109,11 +109,6 @@ public class CoKsSourceFile extends SourceFile {
 		}
 		return bRet;
 	}
-	
-	@Override
-	public boolean isDataFile() {
-		return true;
-	}
 
 	@Override
 	public StdeCviXmlModel getDataModel() {
@@ -147,6 +142,16 @@ public class CoKsSourceFile extends SourceFile {
 			}
 		}
 		return pdfBytes;
+	}
+	
+	@Override
+	public boolean isXFA() {
+		return true;
+	}
+	
+	@Override
+	public boolean isDataFile() {
+		return true;
 	}
 
 	@Override

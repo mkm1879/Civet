@@ -135,6 +135,10 @@ public abstract class SourceFile {
 	}
 	
 	public abstract boolean canSplit();
+	
+	public boolean isXFA() {
+		return false;
+	}
 	public boolean isDataFile() {
 		return false;
 	}
