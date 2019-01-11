@@ -18,6 +18,9 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package edu.clemson.lph.civet.xml.elements;
+
+import edu.clemson.lph.utils.IDTypeGuesser;
+
 public class AnimalTag {
 	public static enum Types {
 		AIN, 
@@ -37,6 +40,11 @@ public class AnimalTag {
 	public EquineDescription description;
 	public EquinePhotographs photographs;
 	public BrandImage brand;
+	
+	public AnimalTag(String number) {
+		this.type = IDTypeGuesser.getTagType(number);
+		this.value = number;
+	}
 	
 	public AnimalTag(Types type, String number) {
 		this.type = type;
@@ -69,6 +77,42 @@ public class AnimalTag {
 	}
 	
 	public String getElementName() {
+		String sRet = null;
+		switch( type ) {
+		case AIN:
+			sRet = "AIN";
+			break;
+		case MfrRFID:
+			sRet = "MfrRFID";
+			break; 
+		case NUES9:
+			sRet = "NUES9";
+			break; 
+		case NUES8:
+			sRet = "NUES8";
+			break; 
+		case OtherOfficialID:
+			sRet = "OtherOfficialID";
+			break; 
+		case ManagementID:
+			sRet = "ManagementID";
+			break; 
+		case BrandImage:
+			sRet = "BrandImage";
+			break; 
+		case EquineDescription:
+			sRet = "EquineDescription";
+			break; 
+		case EquinePhotographs:
+			sRet = "EquinePhotographs";
+			break; 
+		default:
+			sRet = "ManagementID";  // Give up if I can't classify it
+		}
+		return sRet;
+	}
+	
+	public static String getElementName(Types type) {
 		String sRet = null;
 		switch( type ) {
 		case AIN:

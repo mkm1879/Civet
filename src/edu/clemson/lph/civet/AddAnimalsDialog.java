@@ -26,8 +26,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextField;
-import javax.swing.RowSorter;
-import javax.swing.SortOrder;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
@@ -40,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.clemson.lph.civet.xml.elements.Animal;
 import edu.clemson.lph.controls.DBNumericField;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.ClipboardUtils;
@@ -58,7 +57,7 @@ public class AddAnimalsDialog extends JDialog {
 	private JTextField jtfNewId;
 	private DBNumericField jtfAddNum;
 	private JTable tblIDs;
-	private AnimalIDListTableModel model;
+	private AnimalIDListTableModel tableModel;
 	HashMap<String, String> hSpecies;
 	private JComboBox<String> cbSpecies;
 	private JTextField jtfPrefix;
@@ -69,10 +68,10 @@ public class AddAnimalsDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public AddAnimalsDialog( HashMap<String, String> hSpecies, AnimalIDListTableModel model ) {
+	public AddAnimalsDialog( HashMap<String, String> hSpecies, AnimalIDListTableModel tableModel ) {
 		this.hSpecies = hSpecies;
-		this.model = model;
-		model.saveState();
+		this.tableModel = tableModel;
+		tableModel.saveState();
 		ImageIcon appIcon = new ImageIcon(getClass().getResource("/edu/clemson/lph/civet/res/civet32.png"));
 		this.setIconImage(appIcon.getImage());
 		setTitle("Civet: Add Animal IDs");
@@ -179,14 +178,14 @@ public class AddAnimalsDialog extends JDialog {
 			contentPanel.add(scrollPane, BorderLayout.CENTER);
 			{
 				tblIDs = new JTable();
-				tblIDs.setModel( model );
+				tblIDs.setModel( tableModel );
 				scrollPane.setViewportView(tblIDs);
 				tblIDs.addKeyListener( new KeyAdapter() {
 					@Override
 					public void keyPressed(KeyEvent e) {
 						if( e.getKeyCode() == KeyEvent.VK_DELETE ) {
 							int aRows[] = tblIDs.getSelectedRows();
-							AddAnimalsDialog.this.model.deleteRows( aRows );
+							AddAnimalsDialog.this.tableModel.deleteRows( aRows );
 						}
 					}
 				});
@@ -227,7 +226,7 @@ public class AddAnimalsDialog extends JDialog {
 				cancelButton.addActionListener( new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						AddAnimalsDialog.this.model.restoreState();
+						AddAnimalsDialog.this.tableModel.restoreState();
 						setVisible( false );
 					}
 				});
@@ -273,10 +272,11 @@ public class AddAnimalsDialog extends JDialog {
 		String sSpecies = (String)cbSpecies.getSelectedItem();
 		String sSpeciesCode = getCodeForSpecies( sSpecies );
 //		int iNextRow = model.getMaxRowID() + 1;
-		AnimalIDRecord r = new AnimalIDRecord( sSpeciesCode, sSpecies, sID );
+		Animal a = new Animal( sSpeciesCode, sID );
 		if( sID != null && sID.trim().length() > 0 ) {
-			model.addRow(r);
+			tableModel.addRow(a);
 		}
+
 		jtfNewId.setText("");
 		jtfNewId.requestFocus();
 	}
@@ -328,8 +328,8 @@ public class AddAnimalsDialog extends JDialog {
 					return;
 				}
 				for( String sNext : sIDs ) {
-					AnimalIDRecord r = new AnimalIDRecord( sSpeciesCode, sSpecies, sNext );
-					model.addRow(r);
+					Animal a = new Animal( sSpeciesCode, sNext );
+					tableModel.addRow(a);
 				}
 			} catch (Exception e) {
 				logger.error("Failed to Add Multiple Animals", e);
@@ -345,9 +345,9 @@ public class AddAnimalsDialog extends JDialog {
 		String sSpecies = (String)cbSpecies.getSelectedItem();
 		String sSpeciesCode = getCodeForSpecies( sSpecies );
 		for( String sID : sIDs ) {
-			AnimalIDRecord r = new AnimalIDRecord( sSpeciesCode, sSpecies, sID );
+			Animal a = new Animal( sSpeciesCode, sID );
 			if( sID != null && sID.trim().length() > 0 ) {
-				model.addRow(r);
+				tableModel.addRow(a);
 			}
 		}
 	}

@@ -17,8 +17,12 @@ package edu.clemson.lph.civet.files;
 import java.io.File;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
+import org.jpedal.exception.PdfException;
+
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.pdfgen.PDFUtils;
+import edu.clemson.lph.pdfgen.PDFViewer;
 
 /**
  * 
@@ -26,21 +30,29 @@ import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 public class OpenFile {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private SourceFile source = null;
-	private StdeCviXmlModel model = null;
+	private PDFViewer viewer = null;
+	private StdeCviXmlModel xmlModel = null;
 	private ArrayList<Integer> aPagesInCurrent = null;
 	private ArrayList<Integer> aPagesDone = null;
+	private boolean bXFA = false;
 
 	/**
 	 * @throws SourceFileException 
+	 * @throws PdfException 
 	 * 
 	 */
-	public OpenFile( String sFilePath ) throws SourceFileException {
+	public OpenFile( String sFilePath, PDFViewer viewer ) throws SourceFileException {
+		this.viewer = viewer;
 		File fFile = new File( sFilePath );
 		if( fFile != null && fFile.exists() && fFile.isFile() ) {
-			source = SourceFile.readSourceFile(fFile);
-			model = source.getDataModel();
+			// Factory method will populate with correct file type.
+			// All variation in handling should be encapsulated in a SourceFile subclass.
+			source = SourceFile.readSourceFile(fFile, viewer);
+			// xmlModel may be split in case of multi-CVI PDF files 
+			// so don't just call source.getDataModel() directly
+			xmlModel = source.getDataModel();
 			aPagesInCurrent = new ArrayList<Integer>();
-			aPagesInCurrent.add(source.getCurrentPage());
+			aPagesInCurrent.add(getCurrentPageNo());
 			aPagesDone = new ArrayList<Integer>();
 		}
 		else {
@@ -49,14 +61,20 @@ public class OpenFile {
 	}
 	/**
 	 * @throws SourceFileException 
+	 * @throws PdfException 
 	 * 
 	 */
-	public OpenFile( File fFile ) throws SourceFileException {
+	public OpenFile( File fFile, PDFViewer viewer ) throws SourceFileException {
+		this.viewer = viewer;
 		if( fFile != null && fFile.exists() && fFile.isFile() ) {
-			source = SourceFile.readSourceFile(fFile);
-			model = source.getDataModel();
+			// Factory method will populate with correct file type.
+			// All variation in handling should be encapsulated in a SourceFile subclass.
+			source = SourceFile.readSourceFile(fFile, viewer);
+			// xmlModel may be split in case of multi-CVI PDF files 
+			// so don't just call source.getDataModel() directly
+			xmlModel = source.getDataModel();
 			aPagesInCurrent = new ArrayList<Integer>();
-			aPagesInCurrent.add(source.getCurrentPage());
+			aPagesInCurrent.add(getCurrentPageNo());
 			aPagesDone = new ArrayList<Integer>();
 		}
 		else if( fFile != null ) {
@@ -74,8 +92,20 @@ public class OpenFile {
 		return bRet;
 	}
 	
+	public void viewFile() throws PdfException {
+		source.viewFile();;
+	}
+	
 	public SourceFile getSource() {
 		return source;
+	}
+	
+	public SourceFile.Types getType() {
+		return source.type;
+	}
+	
+	public PDFViewer getViewer() {
+		return viewer;
 	}
 	
 	public byte[] getPDFBytes() {
@@ -83,73 +113,19 @@ public class OpenFile {
 	}
 
 	public StdeCviXmlModel getModel() {
-		return model;
+		return xmlModel;
 	}
 	
-	public Integer getCurrentPage() {
-		return source.getCurrentPage();
+	public Integer getCurrentPageNo() {
+		return source.getCurrentPageNo();
 	}
 	
-	/**
-	 * Only looking at incomplete pages
-	 * @return
-	 */
-	public boolean morePagesForward() {
-		boolean bRet = false;
-		for( Integer i = source.getCurrentPage() + 1; i < source.getPageCount(); i++ ) {
-			if( !aPagesDone.contains(i) && !aPagesInCurrent.contains(i) ) {
-				bRet = true;
-				break;
-			}
-		}
-		return bRet;
+	public Integer getPageCount() {
+		return source.getPageCount();
 	}
 	
-	/**
-	 * Only looking at incomplete pages
-	 * @return
-	 */
-	public boolean morePagesBack() {
-		boolean bRet = false;
-		if( source.isPageable() ) {
-			for( Integer i = source.getCurrentPage() - 1; i > 0; i-- ) {
-				if( !aPagesDone.contains(i) && !aPagesInCurrent.contains(i) ) {
-					bRet = true;
-					break;
-				}
-			}
-		}
-		return bRet;
-	}
-	
-	/**
-	 * Preconditions:  source.iPage points to page displayed
-	 * model does not contain critical data
-	 * Postcondition:  model retains any data entered MAY NOT MATCH DISPLAY
-	 * 
-	 * @return the model to save
-	 * @throws SourceFileException
-	 */
-	public void pageForward() throws SourceFileException {
-			Integer iPage = nextPageForward();
-			source.setCurrentPage(iPage);
-			aPagesInCurrent = new ArrayList<Integer>();
-			aPagesInCurrent.add(getCurrentPage());
-	}
-	
-	/**
-	 * Preconditions:  source.iPage points to page displayed
-	 * model does not contain critical data
-	 * Postcondition:  model retains any data entered MAY NOT MATCH DISPLAY
-	 * 
-	 * @return the model to save
-	 * @throws SourceFileException
-	 */
-	public void pageBackward() throws SourceFileException {
-			Integer iPage = nextPageBack();
-			source.setCurrentPage(iPage);
-			aPagesInCurrent = new ArrayList<Integer>();
-			aPagesInCurrent.add(getCurrentPage());
+	public boolean isXFA() {
+		return bXFA;
 	}
 	
 	/**
@@ -167,11 +143,11 @@ public class OpenFile {
 		StdeCviXmlModel modelRet = null;
 		if( source.canSplit() ) {
 			aPagesDone.addAll(aPagesInCurrent);
-			model = source.split();
+			xmlModel = source.split();
 //			Integer iPage = nextUnsavedPage();
 //			source.setCurrentPage(iPage);
 			aPagesInCurrent = new ArrayList<Integer>();
-			aPagesInCurrent.add(getCurrentPage());
+			aPagesInCurrent.add(getCurrentPageNo());
 		}
 		else {
 			throw new SourceFileException("addPageToCurrent called on non-splittable source");
@@ -181,31 +157,9 @@ public class OpenFile {
 	
 	public Integer nextUnsavedPage() {
 		Integer iRet = null;
-		iRet = nextPageForward();
+		iRet = nextPageForward(true);
 		if( iRet == null ) 
-			iRet = nextPageBack();
-		return iRet;
-	}
-	
-	public Integer nextPageForward() {
-		Integer iRet = null;
-		for( Integer i = source.getCurrentPage() + 1; i < source.getPageCount(); i++ ) {
-			if( !aPagesDone.contains(i) && !aPagesInCurrent.contains(i) ) {
-				iRet = i;
-				break;
-			}
-		}
-		return iRet;
-	}
-	
-	public Integer nextPageBack() {
-		Integer iRet = null;
-		for( Integer i = source.getCurrentPage() - 1; i > 0; i-- ) {
-			if( !aPagesDone.contains(i) && !aPagesInCurrent.contains(i) ) {
-				iRet = i;
-				break;
-			}
-		}
+			iRet = nextPageBack(true);
 		return iRet;
 	}
 	
@@ -220,7 +174,7 @@ public class OpenFile {
 	 * @throws SourceFileException
 	 */
 	public void addPageToCurrent() throws SourceFileException {
-		int iPage = getCurrentPage();
+		int iPage = getCurrentPageNo();
 		if( source.canSplit() ) {
 			source.addPageToCurrent(iPage);
 			aPagesInCurrent.add(iPage);
@@ -241,5 +195,137 @@ public class OpenFile {
 	public void setCurrentPagesDone() {
 		aPagesDone.addAll(aPagesInCurrent);
 	}
+
+	
+	/*
+	 * Page navigation 
+	 */
+	
+	/**
+	 * !!!! Page numbers are based on 1 not 0
+	 * @param iPage Integer page number to move to.
+	 */
+	public void gotoPageNo(Integer iPage) throws SourceFileException {
+		if( iPage != null && iPage >= 1 && iPage <= getPageCount() ) {
+			source.gotoPageNo(iPage);
+		}
+		else throw new SourceFileException( "Page # " + iPage + " out of bounds 0 - " + getPageCount() );
+	}
+
+	/**
+	 * Look for additional pages forward in the current file
+	 * !!!! Page numbers are ONE based
+	 * Any reference to PageNo, PageNumber, FileNo or FileNumber must be ONE-based numbering!
+	 * @param bIncompleteOnly boolean true to skip pages marked complete
+	 * @return true if more pages beyond the current one
+	 */
+	public boolean morePagesForward(boolean bIncompleteOnly) {
+		boolean bRet = false;
+		for( Integer i = getCurrentPageNo() + 1; i <= getPageCount(); i++ ) {
+			if( !bIncompleteOnly || !aPagesDone.contains(i) ) { //&& !aPagesInCurrent.contains(i) ) {
+				bRet = true;
+				break;
+			}
+		}
+		return bRet;
+	}
+	
+	/**
+	 * Return the next page number forward in the current file
+	 * Do NOT change state
+	 * !!!! Page numbers are ONE based
+	 * Any reference to PageNo, PageNumber, FileNo or FileNumber must be ONE-based numbering!
+	 * @param bIncompleteOnly boolean true to skip pages marked complete
+	 * @return Integer page number (one based) 
+	 */
+	public Integer nextPageForward(boolean bIncompleteOnly) {
+		Integer iRet = null;
+		for( Integer i = getCurrentPageNo() + 1; i <= viewer.getPageCount(); i++ ) {
+			if( !bIncompleteOnly || !aPagesDone.contains(i) ) { //&& !aPagesInCurrent.contains(i) ) {
+				iRet = i;
+				break;
+			}
+		}
+		return iRet;
+	}
+	
+	/**
+	 * Return the next page number forward in the current file
+	 * while moving to that page.
+	 * This and nextPageForward mirror nextFileForward and fileForward from OpenFileList.
+	 * !!!! Page numbers are ONE based
+	 * Any reference to PageNo, PageNumber, FileNo or FileNumber must be ONE-based numbering!
+	 * @param bIncompleteOnly boolean true to skip pages marked complete
+	 * @return Integer page number (one based) 
+	 * @throws SourcFileException from attempt to move to page.
+	 */
+	public Integer pageForward(boolean bIncompleteOnly) throws SourceFileException {
+		Integer iPage = nextPageForward(bIncompleteOnly);
+		if( iPage != null )
+			gotoPageNo(iPage);
+		else {
+			java.awt.Toolkit.getDefaultToolkit().beep();
+			logger.error("Attempt to move past last page");
+		}
+		return iPage;
+	}
+	
+	/**
+	 * Look for additional pages backward in the current file
+	 * !!!! Page numbers are ONE based
+	 * Any reference to PageNo, PageNumber, FileNo or FileNumber must be ONE-based numbering!
+	 * @param bIncompleteOnly boolean true to skip pages marked complete
+	 * @return true if more pages before the current one
+	 */
+	public boolean morePagesBack(boolean bIncompleteOnly) {
+		boolean bRet = false;
+		for( Integer i = getCurrentPageNo() - 1; i >= 1; i-- ) {  // Subtract 1 to decrement
+			if( !bIncompleteOnly || !aPagesDone.contains(i) ) { //&& !aPagesInCurrent.contains(i) ) {
+				bRet = true;
+				break;
+			}
+		}
+		return bRet;
+	}
+	
+	/**
+	 * Return the next page number backward in the current file
+	 * Do NOT change state
+	 * !!!! Page numbers are ONE based
+	 * Any reference to PageNo, PageNumber, FileNo or FileNumber must be ONE-based numbering!
+	 * @param bIncompleteOnly boolean true to skip pages marked complete
+	 * @return Integer page number (one based) 
+	 */
+	public Integer nextPageBack(boolean bIncompleteOnly) {
+		Integer iRet = null;
+		for( Integer i = getCurrentPageNo() - 1; i >= 1; i-- ) { // Subtract 1 to get index
+			if( !bIncompleteOnly || !aPagesDone.contains(i) ) { //&& !aPagesInCurrent.contains(i) ) {
+				iRet = i;  // Convert back to 1 based page number
+				break;
+			}
+		}
+		return iRet;
+	}
+
+	/**
+	 * Return the next page number backward in the current file
+	 * while moving to that page.
+	 * This and nextPageForward mirror nextFileForward and fileForward from OpenFileList.
+	 * !!!! Page numbers are ONE based
+	 * Any reference to PageNo, PageNumber, FileNo or FileNumber must be ONE-based numbering!
+	 * @param bIncompleteOnly boolean true to skip pages marked complete
+	 * @return Integer page number (one based) 
+	 * @throws SourcFileException from attempt to move to page.
+	 */
+	public void pageBackward(boolean bIncompleteOnly) throws SourceFileException {
+		Integer iPage = nextPageBack(bIncompleteOnly);
+		if( iPage != null )
+			gotoPageNo(iPage);
+		else {
+			java.awt.Toolkit.getDefaultToolkit().beep();
+			logger.error("Attempt to move past last page");
+		}
+	}
+	
 
 }

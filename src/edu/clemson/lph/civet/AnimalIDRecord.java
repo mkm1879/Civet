@@ -1,4 +1,7 @@
 package edu.clemson.lph.civet;
+
+import edu.clemson.lph.civet.xml.elements.Animal;
+
 /*
 Copyright 2014 Michael K Martin
 
@@ -29,27 +32,33 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 public class AnimalIDRecord {
 	static int iMaxID = 0;
 	public int iRowID;
-	public String sSpeciesCode;
-	public String sSpecies;
-	public String sTag;
+	public Animal animal;
 	
 	public AnimalIDRecord( String sSpeciesCode, String sSpecies, String sTag ) {
 		this.iRowID = iMaxID++;
-		this.sSpeciesCode = sSpeciesCode; 
-		this.sSpecies = sSpecies;
-		this.sTag = sTag;
+		animal = new Animal( sSpeciesCode, sTag );
+	}
+
+	public AnimalIDRecord( Animal animal ) {
+		this.iRowID = iMaxID++;
+		this.animal = animal;
 	}
 
 	@Override
 	public boolean equals( Object o ) {
 		if( !( o instanceof AnimalIDRecord ) ) return false;
+		if( o == null ) return false;
 		AnimalIDRecord rOther = (AnimalIDRecord)o;
-		return ( rOther.sSpeciesCode == this.sSpeciesCode && rOther.sTag.equals(sTag) );
+		if( rOther.animal == this.animal )  // Test identity of animals =
+			return true;
+		// Or test equality of values.
+		return ( rOther.animal.speciesCode.code == this.animal.speciesCode.code && 
+				rOther.animal.getFirstOfficialID().equals(this.animal.getFirstOfficialID() ) );
 	}
 
 	@Override
 	public int hashCode() {
-		String sAll = sSpeciesCode + sTag;
+		String sAll = animal.speciesCode.code + animal.getFirstOfficialID();
 		return sAll.hashCode();
 	}
 }

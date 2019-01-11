@@ -18,6 +18,9 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package edu.clemson.lph.civet.xml.elements;
+
+import edu.clemson.lph.civet.lookup.SpeciesLookup;
+
 public class SpeciesCode {
 	public boolean isStandardCode;
 	public String code;
@@ -29,6 +32,20 @@ public class SpeciesCode {
 		this.text = text;
 	}
 	
+	public SpeciesCode(String code, String text) {
+		boolean bStd = SpeciesLookup.isCodeStandard( code );
+		this.isStandardCode = bStd;
+		this.code = code;
+		this.text = text;
+	}
+	
+	public SpeciesCode(String code) {
+		boolean bStd = SpeciesLookup.isCodeStandard( code );
+		this.isStandardCode = bStd;
+		this.code = code;
+		this.text = SpeciesLookup.getNameForCode(code);
+	}
+	
 	@Override
 	public String toString() {
 		String sRet = "";
@@ -38,4 +55,5 @@ public class SpeciesCode {
 			sRet = sRet + " " + text;
 		return sRet;
 	}
+	
 }

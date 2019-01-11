@@ -18,13 +18,12 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.jpedal.PdfDecoder;
+import org.jpedal.exception.PdfException;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetInbox;
-import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.pdfgen.PDFUtils;
+import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -43,6 +42,7 @@ public abstract class SourceFile {
 	}
 
 	protected String sFilePath = null;
+	protected String sFileName = null;
 	protected String sDataPath = null;
 	// fSource is the original PDF or image
 	protected File fSource = null;
@@ -53,17 +53,17 @@ public abstract class SourceFile {
 	protected Types type = null;
 	// model will hold the pdf as currently constructed.
 	protected StdeCviXmlModel model = null;
-	// Total number of pages reported by decoder
-	protected Integer iPages = null;
-	// Default for single page formats.
-	protected Integer iPage = 1;  
+	protected Integer iPage = null;
+	protected PDFViewer viewer = null;
 
 
 
-	protected SourceFile( File fFile ) throws SourceFileException {
+	protected SourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
 		if( fFile != null && fFile.exists() && fFile.isFile() ) {
+			sFileName = fFile.getName();
 			sFilePath = fFile.getAbsolutePath();
 			fSource = fFile;
+			this.viewer = viewer;
 			iPage = 1;
 		}
 		else {
@@ -88,6 +88,38 @@ public abstract class SourceFile {
 	
 	public abstract StdeCviXmlModel getDataModel();
 	
+	public Integer getCurrentPageNo() {
+		return iPage;
+	}
+	
+	public void viewFile() throws PdfException {
+		byte pdfBytes[] = getPDFBytes();
+		boolean bXFA = PDFUtils.isXFA(pdfBytes);
+		viewer.setPdfBytes(pdfBytes, bXFA);
+		viewer.viewPage(iPage);
+	}
+	
+	public void gotoPageNo( Integer iPageNo ) {
+		this.iPage = iPageNo;
+		if( viewer != null && iPageNo >= 1 && iPageNo <= getPageCount() ) {
+			viewer.viewPage(iPageNo);
+		}
+		else {
+			logger.error("Attempt to view page " + iPageNo + " of " + getPageCount() + " pages");
+		}
+	}
+	
+	public Integer getPageCount() {
+		Integer iRet = null;
+		if( viewer != null ) {
+			iRet = viewer.getPageCount();
+		}
+		else {
+			iRet = 1;
+		}
+		return iRet;
+	}
+	
 	public byte[] getPDFBytes() {
 		return pdfBytes;
 	}
@@ -103,29 +135,45 @@ public abstract class SourceFile {
 	}
 	
 	public abstract boolean canSplit();
+	public boolean isDataFile() {
+		return false;
+	}
 	public StdeCviXmlModel split() throws SourceFileException {
 		throw new SourceFileException("Attempt to split unsplittable file.");
 	}
-	public Integer getCurrentPage() {
-		return iPage;
-	}
 	public String getFileName() {
-		String sRet = null;
-		File f = getSourceFile();
-		if( f != null )
-			sRet = f.getName();
-		return sRet;
+		return sFileName;
+	}
+	public void setFileName( String sFileName) {
+		this.sFileName = sFileName;
 	}
 	public String getFilePath() {
-		String sRet = null;
-		File f = getSourceFile();
-		if( f != null )
-			sRet = f.getAbsolutePath();
-		return sRet;
+		return sFilePath;
 	}
-	public void setCurrentPage( Integer iPage ) {
-		this.iPage = iPage;
-		// subclasses do any required management
+	public void setFilePath( String sFilePath ) {
+		this.sFilePath = sFilePath;
+	}
+	
+	/**
+	 * Move source file and if subclass includes one, the data file to the specified directory.
+	 * @param fDir
+	 * @return true if moved successfully.
+	 */
+	public boolean moveToDirectory( File fDir ) {
+		boolean bRet = false;
+		File fNew = new File(fDir, getFileName());
+		if( fNew.exists() ) {
+			logger.error(fNew.getName() + " already exists in " + fDir.getAbsolutePath() + " .\n" +
+						"Check that it really is a duplicate and manually delete.");
+			String sOutPath = fNew.getAbsolutePath();
+			sOutPath = FileUtils.incrementFileName(sOutPath);
+			fNew = new File( sOutPath );
+		}
+		bRet = fSource.renameTo(fNew);
+		if (!bRet) {
+			logger.error("Could not move " + getFilePath() + " to " + fNew.getAbsolutePath() );
+		}
+		return bRet;
 	}
 	public void addPageToCurrent( Integer iPage ) throws SourceFileException {
 		throw new SourceFileException("Attempt to add page to unsplittable file.");
@@ -135,33 +183,35 @@ public abstract class SourceFile {
 	 * @param sPath Full path to the source file being "opened".
 	 * @return
 	 */
-	public static SourceFile readSourceFile( File fFile ) throws SourceFileException {
+	public static SourceFile readSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
 		SourceFile sourceFile = null;
 		SourceFile.Types type = SourceFile.getType(fFile);
 		switch( type ) {
 		case PDF:
-			sourceFile = new PdfSourceFile( fFile );
+			sourceFile = new PdfSourceFile( fFile, viewer );
 			break;
 		case Image:
-			sourceFile = new ImageSourceFile( fFile );
+			sourceFile = new ImageSourceFile( fFile, viewer );
 			break;			
 		case CO_KS_PDF:
-			sourceFile = new CoKsSourceFile( fFile );
+			sourceFile = new CoKsSourceFile( fFile, viewer );
 			break;
 		case mCVI:
-			sourceFile = new MCviSourceFile( fFile );
+			sourceFile = new MCviSourceFile( fFile, viewer );
 			break;
 		case AgView:
-			sourceFile = new AgViewSourceFile( fFile );
+			sourceFile = new AgViewSourceFile( fFile, viewer );
 			break;
 		case Civet:
-			sourceFile = new CivetSourceFile( fFile );
+			sourceFile = new CivetSourceFile( fFile, viewer );
 			break;
 		case Unknown:
 			logger.error("Unknown file type " + fFile);
 		default:
 			logger.error("Unknown file type " + fFile);
 		}
+		sourceFile.setFileName( fFile.getName() );
+		sourceFile.setFilePath( fFile.getAbsolutePath() );
 		return sourceFile;
 	}
 	

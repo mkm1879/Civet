@@ -48,8 +48,6 @@ public class CivetInboxController {
 		initializeActionHandlers();
 		viewNew();
 		inbox.setVisible( true );
-
-
 	}
 
 	/**
@@ -64,8 +62,8 @@ public class CivetInboxController {
 		CivetInbox.VERSION = "Test Inbox Controller";
 		logger.info("Civet running build: " + CivetInbox.VERSION);
 		// TODO Auto-generated method stub
-		CivetInboxController me = new CivetInboxController(new CivetInbox());
-		me.selectFiles();
+		CivetInbox me = new CivetInbox();
+//		me.selectFiles();
 	}
 	
 	/**
@@ -241,7 +239,6 @@ public class CivetInboxController {
 			for( int i = 0; i < selectedFiles.length; i++ )
 				files.add(selectedFiles[i]);
 			CivetEditDialog dlg = new CivetEditDialog( inbox, files);
-			dlg.setVisible(true);
 		} catch( SourceFileException e ) {
 			logger.error("Failed to open files", e);
 			MessageDialog.showMessage(inbox, "Civet Error:", e.getMessage());
@@ -254,7 +251,6 @@ public class CivetInboxController {
 			boolean bView = ( model instanceof EmailFilesTableModel );
 			ArrayList<File> files = model.getSelectedFiles(inbox.tblInBox);
 			CivetEditDialog dlg = new CivetEditDialog(inbox, files);
-			dlg.setVisible(true);
 		} catch( SourceFileException e ) {
 			logger.error("Failed to open files", e);
 			MessageDialog.showMessage(inbox, "Civet Error:", e.getMessage());
@@ -277,7 +273,6 @@ public class CivetInboxController {
 			boolean bView = (model instanceof EmailFilesTableModel );
 			ArrayList<File> files = model.getAllFiles();
 			CivetEditDialog dlg = new CivetEditDialog(inbox, files);
-			dlg.setVisible(true);
 		} catch( SourceFileException e ) {
 			logger.error("Failed to open files", e);
 			MessageDialog.showMessage(inbox, "Civet Error:", e.getMessage());

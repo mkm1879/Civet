@@ -24,94 +24,70 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.db.DBComboBoxModel;
 import edu.clemson.lph.db.DBTableSource;
-import edu.clemson.lph.dialogs.MessageDialog;
+import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
+/**
+ * This class serves two distinct functions both based on the same value-set of species codes and names
+ * First it is a data model for the custom DBComboBox that populates the Species choice
+ * Second it is a general purpose code to name and name to code lookup that can be accessed statically.
+ */
 @SuppressWarnings("serial")
 public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private HashMap<String, Spp> sppNameMap = null;
-	private HashMap<String, Spp> sppCodeMap = null;
+	private static ArrayList<String> stdCodes;
+	private static HashMap<String, String> code2text;
+	private static HashMap<String, String> text2code;
+	private static HashMap<String, Spp> sppCodeMap = null;
+	private static SpeciesLookup me = null;
 	// TODO: Once we dump the DB stuff entirely, get rid of temporary member variables and return from Spp directly.
-	private String sSpeciesCode = null;
-	private String sSpeciesName = null;
 	private ArrayList<String> lSearchColumns;
 	private ArrayList<ArrayList<Object>> lSearchRows;
-	private HashMap<String, String> hStdSpecies = null;
 
 	/**
 	 * Default constructor assumes existence of a SppTable in CivetConfig and will use that 
-	 * for all lookups from this object.  Including its function as a DBComboBoxModel based on iKey
+	 * for all lookups from this object. 
+	 * 
 	 */
 	public SpeciesLookup() {
-		if( sppCodeMap == null || sppNameMap == null )
+		if( sppCodeMap == null )
 			readSppTable();		
+		me = this;
 	}
 	
-	public SpeciesLookup( String sSppCode ) {
-		if( sppCodeMap == null || sppNameMap == null )
-			readSppTable();
-		Spp spp = sppCodeMap.get(sSppCode);
-		if( spp == null ) {
-			MessageDialog.messageLater(null, "Civet Error: Missing Species Code", "Species code " + sSppCode + " not found in lookup table.");
-			spp = new Spp("Invalid Species Code",null);
-//			return;
+	public static void main( String sArgs[] ) {
+		PropertyConfigurator.configure("CivetConfig.txt");
+		// Fail now so config file and required files can be fixed before work is done.
+		CivetConfig.checkAllConfig();
+		logger.setLevel(CivetConfig.getLogLevel());
+		CivetInbox.VERSION = "Test Inbox Controller";
+		logger.info("Civet running build: " + CivetInbox.VERSION);
+//		SpeciesLookup lu = new SpeciesLookup();
+		me = new SpeciesLookup();
+		Set<String> keys = text2code.keySet();
+		for( String s : keys ) {
+			String code = text2code.get(s);
+			Spp spp = sppCodeMap.get(code);
+			System.out.println( s + " : " + spp.sSppCode + " : " + spp.sSppName + " : " + spp.bStd ); //SpeciesLookup.isCodeStandard(spp.sSppCode) );
 		}
-		this.sSpeciesName = spp.sSppName;
-		this.sSpeciesCode = spp.sSppCode;
 	}
 	
-	// Force an overload of another string constructor
-	public SpeciesLookup( String sSpeciesValue, boolean bByName ) {
-		if( sppCodeMap == null || sppNameMap == null )
-			readSppTable();
-		Spp spp = sppNameMap.get(sSpeciesValue);
-		if( spp == null ) {
-			MessageDialog.messageLater(null, "Civet Error: Missing Species Value", "Species name " + sSpeciesValue + " not found in lookup table.");
-			this.sSpeciesName = "Missing Species Name";
-			this.sSpeciesCode = "ERROR";
-			return;
-		}
-		this.sSpeciesName = sSpeciesValue;
-		this.sSpeciesCode = spp.sSppCode;
-	}
 	
-	public static String getSpeciesName( String sSpeciesCode ) {
-		SpeciesLookup me = new SpeciesLookup( sSpeciesCode );
-		return me.getSpeciesName();
-	}
-	
-	public static String getSpeciesCode( String sSpecies ) {
-		SpeciesLookup me = new SpeciesLookup( sSpecies, true );
-		return me.getSpeciesCode();
-	}
-	
-	public Integer getKey() {
-		return -1;
-	}
-
-	public String getSpeciesName() {
-		return sSpeciesName;
-	}
-	
-	public String getSpeciesCode() {
-		return sSpeciesCode;
-	}
-		
 	private void readSppTable() {
+		sppCodeMap = new HashMap<String, Spp>();
 		String sSppFile = CivetConfig.getSppTableFile();
-		populateStdMap();
 		try {
+			populateStdCodes();
 			LabeledCSVParser parser = new LabeledCSVParser(sSppFile);
 //			parser.sort( parser.getLabelIdx("USDACode") );
 			parser.sort( parser.getLabelIdx("Description") );
-			sppNameMap = new HashMap<String, Spp>();
-			sppCodeMap = new HashMap<String, Spp>();
 			lSearchRows = new ArrayList<ArrayList<Object>>();
 			// Clear the keys from parent even though ignored here.
 			hValuesKeys.clear();
@@ -125,42 +101,94 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 				hKeysValues.put(-1, "");
 			}
 			List<String> line = parser.getNext();
-			Set<String> sStdSpp = hStdSpecies.keySet();
+			// Walk through the file we got from HERDS and check each to see if it is official
 			while( line != null ) {
+				boolean bStd = false;
 				 String sSppCode = line.get( parser.getLabelIdx( "USDACode" ) );
-				 if( sSppCode == null || sSppCode.trim().length() == 0 || !sStdSpp.contains(sSppCode) ) {
-					 line = parser.getNext();
-					 continue;
+				 if( sSppCode == null || sSppCode.trim().length() == 0 ) {  // No code, 
+					 sSppCode = "OTH";
+				 }
+				 if( sSppCode.trim().length() > 0 && stdCodes.contains(sSppCode) ) {
+					 bStd = true;
 				 }
 				 String sSppName = line.get( parser.getLabelIdx( "Description" ) );
-				 Spp spp = new Spp(sSppCode, sSppName);
-				 if( sppNameMap.get(sSppName) == null ) {
-					 sppNameMap.put(sSppName, spp);
-					 sppCodeMap.put(sSppCode, spp);
-					 super.addElement(sSppName);
-					 hValuesCodes.put(sSppName, sSppCode);
-					 hCodesValues.put(sSppCode, sSppName);
-					 ArrayList<Object> aRow = new ArrayList<Object>();
-					 aRow.add(sSppCode);
-					 aRow.add(sSppName);
-					 String sSppUSDAName = line.get( parser.getLabelIdx( "USDADescription" ) );
-					 aRow.add(sSppUSDAName);
-					 lSearchRows.add(aRow);
+				 // Add code/name pairs from HERDS
+				 if( code2text.get(sSppCode) == null ) {
+					 text2code.put(sSppName, sSppCode);
+					 code2text.put(sSppCode, sSppName);
 				 }
+				 // Map all the entries with no code to OTH but OTH will return OTHER when run the other way.
+				 else if( text2code.get(sSppName) == null && sSppCode.equalsIgnoreCase("OTH") ) {
+					 text2code.put(sSppName, sSppCode);					 
+				 }
+				 else {
+					 // Use the standard name if it exists
+					 sSppName = code2text.get(sSppCode);
+				 }
+				 // NOW construct an Spp record for the map that includes standard code or other code flag.
+				 Spp spp = new Spp(sSppCode, sSppName, bStd);
+				 sppCodeMap.put(sSppCode, spp);
+				 super.addElement(sSppName);
+				 // These two Hashmaps are used by GUI components.
+				 hValuesCodes.put(sSppName, sSppCode);
+				 hCodesValues.put(sSppCode, sSppName);
+				 // These rows allow searching on either HERDS description or standard name.
+				 addSearchRow(sSppCode, sSppName, line.get( parser.getLabelIdx( "USDADescription" ) ) );
 				 line = parser.getNext();
+			}
+			// Now add the codes that ARE in the standard but aren't in HERDS
+			StringBuffer sbBadSpp = new StringBuffer();
+			for( String sCode : stdCodes ) {
+				Spp spp = sppCodeMap.get(sCode);
+				if( spp == null) {
+					spp = new Spp(sCode, getNameForCode(sCode), true);
+					sppCodeMap.put(sCode, spp);
+					addSearchRow(sCode, getNameForCode(sCode), getNameForCode(sCode) );
+					sbBadSpp.append(sCode);
+					sbBadSpp.append('\n');
+				}
+				FileUtils.writeTextFile(sbBadSpp.toString(), "BadSpp.txt", false);
 			}
 		} catch (IOException e) {
 			logger.error("Failed to read Species Table", e);
 		}
 	}
 	
+	private void addSearchRow( String code, String name, String usda ) {
+		 ArrayList<Object> aRow = new ArrayList<Object>();
+		 aRow.add(code);
+		 aRow.add(name);
+		 aRow.add(usda);
+		 lSearchRows.add(aRow);
+	}
+	
+	public static String getNameForCode( String sSppCode ) {
+		if( me == null ) me = new SpeciesLookup();
+		return code2text.get(sSppCode);
+	}
+	
+	public static String getCodeForName( String sSppName ) {
+		if( me == null ) me = new SpeciesLookup();
+		return text2code.get(sSppName);
+	}
+	
+	public static boolean isCodeStandard( String sSppCode ) {
+		boolean bRet = false;
+		if( me == null ) me = new SpeciesLookup();
+		Spp spp = sppCodeMap.get(sSppCode);
+		if( spp != null ) bRet = spp.bStd;
+		return bRet;
+	}
+	
 	private static class Spp {
 		public String sSppCode;
 		public String sSppName;
+		public boolean bStd;
 		
-		public Spp( String sSppCode, String sSppName ) {
+		public Spp( String sSppCode, String sSppName, boolean bStd ) {
 			this.sSppCode = sSppCode;
 			this.sSppName = sSppName;
+			this.bStd = bStd;
 		}
 	}
 	
@@ -173,7 +201,6 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 	public ArrayList<String> getColumnNames() {
 		if( lSearchColumns == null ) {
 			lSearchColumns = new ArrayList<String>();
-			lSearchColumns.add("AnimalClassHierarchyKey");
 			lSearchColumns.add("SpeciesCode");
 			lSearchColumns.add("SpeciesName");
 			lSearchColumns.add("SpeciesUSDAName");
@@ -186,47 +213,58 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 		return lSearchRows;
 	}
 	
-	private void populateStdMap() {
-		if( hStdSpecies == null ) {
-			hStdSpecies = new HashMap<String, String>();
-			hStdSpecies.put("AQU", "Aquaculture");
-			hStdSpecies.put("AVI", "Avian");
-			hStdSpecies.put("BEF", "Beef");
-			hStdSpecies.put("BIS", "Bison");
-			hStdSpecies.put("BOV", "Bovine (Bison and Cattle)");
-			hStdSpecies.put("CAM", "Camelid (Alpacas, Llamas, etc.)");
-			hStdSpecies.put("CAN", "Canine");
-			hStdSpecies.put("CAP", "Caprine (Goats)");
-			hStdSpecies.put("CER", "Cervids");
-			hStdSpecies.put("CHI", "Chickens");
-			hStdSpecies.put("CLM", "Clams");
-			hStdSpecies.put("CRA", "Crawfish");
-			hStdSpecies.put("CTF", "Catfish");
-			hStdSpecies.put("DAI", "Dairy");
-			hStdSpecies.put("DEE", "Deer");
-			hStdSpecies.put("DUC", "Ducks");
-			hStdSpecies.put("ELK", "Elk");
-			hStdSpecies.put("EQU", "Equine (Horses, Mules, Donkeys, Burros)");
-			hStdSpecies.put("FEL", "Feline");
-			hStdSpecies.put("GEE", "Geese");
-			hStdSpecies.put("GUI", "Guineas");
-			hStdSpecies.put("MSL", "Mussels");
-			hStdSpecies.put("OTH", "Other");
-			hStdSpecies.put("OVI", "Ovine (Sheep)");
-			hStdSpecies.put("OYS", "Oysters");
-			hStdSpecies.put("PGN", "Pigeon");
-			hStdSpecies.put("POR", "Porcine (Swine)");
-			hStdSpecies.put("POU", "Poultry");
-			hStdSpecies.put("QUA", "Quail");
-			hStdSpecies.put("RTT", "Ratites (Emus, Ostriches, etc.)");
-			hStdSpecies.put("SAL", "Salmon");
-			hStdSpecies.put("SBA", "Striped Bass");
-			hStdSpecies.put("SHR", "Shrimp");
-			hStdSpecies.put("SLP", "Scallops");
-			hStdSpecies.put("TIL", "Tilapia");
-			hStdSpecies.put("TRO", "Trout");
-			hStdSpecies.put("TUR", "Turkeys");
-		}
+	private static void populateStdCodes() {
+		text2code = new HashMap<String, String>();
+		code2text = new HashMap<String, String>();
+		stdCodes = new ArrayList<String>();
+		
+        stdCodes.add( "AQU" );
+        stdCodes.add( "BEF" );
+        stdCodes.add( "BIS" );
+        stdCodes.add( "BOV" );
+        stdCodes.add( "CAM" );
+        stdCodes.add( "CAN" );
+        stdCodes.add( "CAP" );
+        stdCodes.add( "CER" );
+        stdCodes.add( "CHI" );
+        stdCodes.add( "DAI" );
+        stdCodes.add( "EQU" );
+        stdCodes.add( "FEL" );
+        stdCodes.add( "OVI" );
+        stdCodes.add( "POR" );
+        stdCodes.add( "TUR" );
+
+        text2code.put( "Aquaculture", "AQU" );
+        text2code.put( "Beef", "BEF" );
+        text2code.put( "Bison", "BIS" );
+        text2code.put( "Bovine (Bison and Cattle) DEPRECATED", "BOV" );
+        text2code.put( "Camelid (Alpacas, Llamas, etc.)", "CAM" );
+        text2code.put( "Canine", "CAN" );
+        text2code.put( "Caprine (Goats)", "CAP" );
+        text2code.put( "Cervids", "CER" );
+        text2code.put( "Chickens", "CHI" );
+        text2code.put( "Dairy", "DAI" );
+        text2code.put( "Equine (Horses, Mules, Donkeys, Burros)", "EQU" );
+        text2code.put( "Feline", "FEL" );
+        text2code.put( "Ovine (Sheep)", "OVI" );
+        text2code.put( "Porcine (Swine)", "POR" );
+        text2code.put( "Turkeys", "TUR" );
+
+        code2text.put( "AQU", "Aquaculture" );
+        code2text.put( "BEF", "Beef" );
+        code2text.put( "BIS", "Bison" );
+        code2text.put( "BOV", "Bovine (Bison and Cattle) DEPRECATED" );
+        code2text.put( "CAM", "Camelid (Alpacas, Llamas, etc.)" );
+        code2text.put( "CAN", "Canine" );
+        code2text.put( "CAP", "Caprine (Goats)" );
+        code2text.put( "CER", "Cervids" );
+        code2text.put( "CHI", "Chickens" );
+        code2text.put( "DAI", "Dairy" );
+        code2text.put( "EQU", "Equine (Horses, Mules, Donkeys, Burros)" );
+        code2text.put( "FEL", "Feline" );
+        code2text.put( "OVI", "Ovine (Sheep)" );
+        code2text.put( "POR", "Porcine (Swine)" );
+        code2text.put( "TUR", "Turkeys" );
 	}
 
 }

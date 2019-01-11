@@ -709,6 +709,32 @@ public class StdeCviXmlModel {
 			}
 		}
 	}
+	
+	/**
+	 * Remove an animal that already exists in XML as element eAnimal.
+	 * @param animalData
+	 */
+	public void removeAnimal( Animal animalData ) {
+		Element eAnimal = animalData.eAnimal;
+		if( eAnimal != null )
+			helper.removeElement(eAnimal);
+	}
+	
+	public Animal findOrAddAnimal( String sSpeciesCode, String sTag ) {
+		Animal animal = null;
+		for( Animal aIn : getAnimals() ) {
+			if( aIn.speciesCode.code.equals(sSpeciesCode) ) {
+				animal = aIn;
+				break;
+			}
+		}
+		if( animal == null ) {
+			animal = new Animal(sSpeciesCode, sTag );
+			Element eAnimal = addAnimal( animal );
+			animal.eAnimal = eAnimal;
+		}
+		return animal;
+	}
 
 	public Element addAnimal( Animal animalData ) {
 		if( !isValidDoc() ) 

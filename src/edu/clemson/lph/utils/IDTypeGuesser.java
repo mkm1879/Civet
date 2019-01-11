@@ -21,54 +21,41 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-import edu.clemson.lph.civet.lookup.States;
+import edu.clemson.lph.civet.xml.elements.AnimalTag;
 
 public class IDTypeGuesser {
-	private static HashMap<String, String> mTypeMap = new HashMap<String, String>();
-	
+	private static HashMap<String, AnimalTag.Types> mTypeMap = new HashMap<String, AnimalTag.Types>();
+
 	static {
-		mTypeMap.put("^840\\d{11,13}$", "N840RFID"); // Make fuzzy on length
-		mTypeMap.put("^(USA|usa)\\d{11,13}$", "AMID"); // Make fuzzy on length
-		mTypeMap.put("^\\d{2}[a-zA-Z]{3}\\d{4}$", "NUES9");
-//		mTypeMap.put("^\\d{2}[a-zA-Z]{2}\\d{4}$", "NUES8");
-		mTypeMap.put("^\\d{2}[a-zA-Z]{2}\\d{4}$", "BT");
-		mTypeMap.put("^[a-zA-Z0-9]{7}$", "NPIN");
-		mTypeMap.put("^[a-zA-Z ',]+$", "NAME");
-		mTypeMap.put("^SC\\d{8}$", "SGFLID");
-		mTypeMap.put("^SCA\\d+$", "SGFLID");
-		mTypeMap.put("^[a-zA-Z]{2}[a-zA-Z0-9]{2,3} *[a-zA-Z][0-9oO]{2,3}$", "TAT");
+		mTypeMap.put("^840\\d{11,13}$", AnimalTag.Types.AIN); // Make fuzzy on length
+		mTypeMap.put("^\\d{2}[a-zA-Z]{3}\\d{4}$",  AnimalTag.Types.NUES9);
+		mTypeMap.put("^\\d{2}[a-zA-Z]{2}\\d{4}$", AnimalTag.Types.NUES8);
+		mTypeMap.put("((9[0-8]\\d)|(9\\d[0-8])|(124)|(484))\\d{12}", AnimalTag.Types.MfrRFID);
+		mTypeMap.put("^SC\\d{8}$", AnimalTag.Types.OtherOfficialID);
+		mTypeMap.put("^SCA\\d+$", AnimalTag.Types.OtherOfficialID);
 	}
 
 	private IDTypeGuesser() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public static String getTagType( String sTag ) {
-		String sRet = "UN";
+	public static AnimalTag.Types getTagType( String sTag ) {
+		return getTagType( sTag, false);
+	}
+	
+	public static AnimalTag.Types getTagType( String sTag, boolean bDefaultOfficial ) {
+		AnimalTag.Types type = AnimalTag.Types.ManagementID;
+		if( bDefaultOfficial) type = AnimalTag.Types.OtherOfficialID;
 		if( sTag != null && sTag.trim().length() > 0 ) {
 			for( String sRegex : mTypeMap.keySet() ) {
 				Pattern pattern = Pattern.compile(sRegex);
 				Matcher matcher = pattern.matcher(sTag.trim());
 				if( matcher.find() ) {
-					String sType = mTypeMap.get(sRegex);
-					try {
-						if( sType.equals("NPIN") && !PremCheckSum.isValid(sTag.toUpperCase()) ) {
-							sRet = "UN";
-							break;
-						}
-						else if( sType.equals("TAT") && States.getState( sTag.substring(0,2) ) == null ) {
-							sRet = "UN";
-							break;
-						}
-						sRet = sType;
-					} catch (Exception e) {
-						sRet = "UN";
-					}
+					type = mTypeMap.get(sRegex);
 				}	
-
 			}
 		}
-		return sRet;
+		return type;
 	}
 
 

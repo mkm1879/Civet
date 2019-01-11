@@ -48,7 +48,9 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.SafeDocBuilder;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.civet.xml.XMLDocHelper;
+import edu.clemson.lph.civet.xml.elements.AnimalTag;
 import edu.clemson.lph.pdfgen.PDFUtils;
+import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.IDTypeGuesser;
 
@@ -62,15 +64,21 @@ public class CoKsSourceFile extends SourceFile {
 	     logger.setLevel(Level.INFO);
 	}
 	
-	public CoKsSourceFile( File fFile ) throws SourceFileException {
-		super(fFile);
+	public CoKsSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
+		super(fFile, viewer);
 		type = Types.CO_KS_PDF;
-		if( fSource == null || !fSource.exists() )
-			logger.error("File " + sFilePath + " does not exist");
+		if( fSource == null || !fSource.exists() ) {
+			throw new SourceFileException("File " + sFilePath + " does not exist");
+		}
+		try {
+			pdfBytes = FileUtils.readBinaryFile(fFile);
+		} catch (Exception e) {
+			throw new SourceFileException(e);
+		}
 		String sAcrobatXML = toAcrobatXMLString();
 		String sStdXML = toStdXMLString( sAcrobatXML);
 		model = new StdeCviXmlModel(sStdXML);
-		model.setPDFAttachment(getPDFBytes(), fSource.getName());
+		model.setPDFAttachment(pdfBytes, fSource.getName());
 	}
 
 	/**
@@ -100,6 +108,11 @@ public class CoKsSourceFile extends SourceFile {
 			}
 		}
 		return bRet;
+	}
+	
+	@Override
+	public boolean isDataFile() {
+		return true;
 	}
 
 	@Override
@@ -217,46 +230,45 @@ public class CoKsSourceFile extends SourceFile {
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Should not see this unsupported encoding", e);
 			}
-		sRet = postProcessStdXML( sRet );
  		return sRet;
 	}
 	
-	private String postProcessStdXML( String sStdXML ) {
-		Document doc = null;
-		if( sStdXML != null ) {
-			try {
-				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); 
-				InputSource is = new InputSource();
-				is.setCharacterStream(new StringReader(sStdXML));
-				doc = db.parse(is);
-				doc.setXmlStandalone(true);
-			} catch (SAXException e) {
-				logger.error("Failed to parse XML\n" + sStdXML, e);
-				return null;
-			} catch (IOException e) {
-				logger.error("Failed to read XML\n" + sStdXML, e);
-				return null;
-			}
-		}
-		return postProcessStdXML( doc );
-	}
-	
-	private String postProcessStdXML( Document doc ) {
-		if( doc == null ) return null;
-		XMLDocHelper helper = new XMLDocHelper( doc );
-		NodeList nlAnimalTags = helper.getNodeListByPath("//AnimalTag");
-		if( nlAnimalTags != null ) {
-			for( int i = 0; i < nlAnimalTags.getLength(); i++ ) {
-				Element eTag = (Element)nlAnimalTags.item(i);
-				String sTag = eTag.getAttribute("Number");
-				String sType = eTag.getAttribute("Type");
-				if( sType == null || sType.trim().length() == 0 || sType.equalsIgnoreCase("UN") ) {
-					sType = IDTypeGuesser.getTagType(sTag);
-					eTag.setAttribute("Type", sType);
-				}
-			}
-		}
-		return helper.getXMLString();
-	}
+//	private String postProcessStdXML( String sStdXML ) {
+//		Document doc = null;
+//		if( sStdXML != null ) {
+//			try {
+//				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); 
+//				InputSource is = new InputSource();
+//				is.setCharacterStream(new StringReader(sStdXML));
+//				doc = db.parse(is);
+//				doc.setXmlStandalone(true);
+//			} catch (SAXException e) {
+//				logger.error("Failed to parse XML\n" + sStdXML, e);
+//				return null;
+//			} catch (IOException e) {
+//				logger.error("Failed to read XML\n" + sStdXML, e);
+//				return null;
+//			}
+//		}
+//		return postProcessStdXML( doc );
+//	}
+//	
+//	private String postProcessStdXML( Document doc ) {
+//		if( doc == null ) return null;
+//		XMLDocHelper helper = new XMLDocHelper( doc );
+//		NodeList nlAnimalTags = helper.getNodeListByPath("//AnimalTags");
+//		if( nlAnimalTags != null ) {
+//			for( int i = 0; i < nlAnimalTags.getLength(); i++ ) {
+//				Element eTag = (Element)nlAnimalTags.item(i);
+//				String sTag = eTag.getAttribute("Number");
+//				String sType = eTag.getAttribute("Type");
+//				if( sType == null || sType.trim().length() == 0 || sType.equalsIgnoreCase("UN") ) {
+//					sType = AnimalTag.getElementName(IDTypeGuesser.getTagType(sTag,true));
+//					eTag.setAttribute("Type", sType);
+//				}
+//			}
+//		}
+//		return helper.getXMLString();
+//	}
 
 }

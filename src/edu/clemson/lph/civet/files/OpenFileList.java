@@ -17,8 +17,11 @@ package edu.clemson.lph.civet.files;
 import java.io.File;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
+import org.jpedal.exception.PdfException;
+
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetEditDialogController;
+import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.pdfgen.PDFViewer;
 
 /**
  * 
@@ -28,129 +31,215 @@ public class OpenFileList {
 	private ArrayList<OpenFile> aOpenFiles = null;
 	private ArrayList<OpenFile> aFilesComplete = null;
 	private OpenFile oCurrent;
+	private PDFViewer viewer;
 
 
-	public OpenFileList() {
+	public OpenFileList(PDFViewer viewer) {
+		this.viewer = viewer;
 		aOpenFiles = new ArrayList<OpenFile>();
 		aFilesComplete = new ArrayList<OpenFile>();		
 	}
 	
 	/**
 	 * @throws SourceFileException 
+	 * @throws PdfException 
 	 * 
 	 */
-	public void openFile( File f ) throws SourceFileException {
-		OpenFile openFile = new OpenFile(f);
+	public void openFile( File f ) throws SourceFileException, PdfException {
+		OpenFile openFile = new OpenFile(f, viewer);
 		aOpenFiles.add(openFile);
-		oCurrent = aOpenFiles.get(0);		
+		oCurrent = aOpenFiles.get(0);	
 	}
 	
 
 	/**
 	 * @throws SourceFileException 
+	 * @throws PdfException 
 	 * 
 	 */
-	public OpenFileList( ArrayList<File> aFiles ) throws SourceFileException {
+	public OpenFileList( ArrayList<File> aFiles ) throws SourceFileException, PdfException {
 		aOpenFiles = new ArrayList<OpenFile>();
 		aFilesComplete = new ArrayList<OpenFile>();
 		for( File f : aFiles ) {
-			OpenFile openFile = new OpenFile(f);
+			OpenFile openFile = new OpenFile(f, viewer);
 			aOpenFiles.add(openFile);
 		}
 	}
 	
-	public boolean moreFilesForward() {
-		boolean bRet = false;
-		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
-		for( int i = iCurrent + 1; i < aOpenFiles.size(); i++ ) {
-			OpenFile oNext = aOpenFiles.get(i);
-			if( !aFilesComplete.contains(oNext) ) {
-				bRet = true;
-				break;
-			}
-		}
-		return bRet;
-	}
-
-	public boolean moreFilesBack() {
-		boolean bRet = false;
-		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
-		for( int i = iCurrent - 1; i >= 0; i-- ) {
-			OpenFile oNext = aOpenFiles.get(i);
-			if( !aFilesComplete.contains(oNext) ) {
-				bRet = true;
-				break;
-			}
-		}
-		return bRet;
+	/**
+	 * Get the current OpenFile
+	 * @return
+	 */
+	public OpenFile getCurrentFile() {
+		return oCurrent;
 	}
 	
-	public OpenFile currentFile( CivetEditDialogController controller ) {
-		OpenFile oRet = null;
-		oRet = oCurrent;
-		if( oRet == null )
-			oRet = nextFile(controller);
-		return oRet;
-	}
-	
-	public Integer currentFileNo() {
-		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
+	/**
+	 * Convert the index of the currently open file to 1 based index
+	 * @return current file 1-based index
+	 */
+	public Integer getCurrentFileNo() {
+		Integer iCurrent = aOpenFiles.indexOf(oCurrent) + 1; // Count from 1 index from 0
 		return iCurrent;
 	}
 	
+	/**
+	 * Number of files is already 1 based
+	 * @return number of files
+	 */
 	public Integer getFileCount() {
 		Integer iCount = aOpenFiles.size();
 		return iCount;
 	}
 	
-	public OpenFile nextFile( CivetEditDialogController controller ) {
+	/**
+	 * Use to navigate to the next available file forward or back
+	 * See navigation section below for details
+	 * @param bIncompleteOnly boolean true to skip files marked complete
+	 * @return Any not yet complete file
+	 */
+	public OpenFile nextFile(boolean bIncompleteOnly) {
 		OpenFile oRet = null;
-		oRet = nextFileForward(controller);
+		oRet = nextFileForward(bIncompleteOnly);
 		if( oRet == null )
-			oRet = nextFileBack(controller);
+			oRet = nextFileBack(bIncompleteOnly);
 		return oRet;
 	}
 	
-	public OpenFile nextFileForward( CivetEditDialogController controller ) {
-		OpenFile oRet = null;
-		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
-		for( int i = iCurrent + 1; i < aOpenFiles.size(); i++ ) {
-			OpenFile oNext = aOpenFiles.get(i);
-			if( !aFilesComplete.contains(oNext) ) {
-				oRet = oNext;
-				break;
-			}
-		}
-		
-		return oRet;
-	}
-
-	public void fileForward() {
-		oCurrent = nextFileForward( null );
-	}
-
-	public void fileBackward() {
-		oCurrent = nextFileBack( null );
+	public OpenFile firstFile() throws PdfException {
+		oCurrent = aOpenFiles.get(0);
+		oCurrent.viewFile();
+		return oCurrent;
 	}
 	
-	public OpenFile nextFileBack( CivetEditDialogController controller ) {
-		OpenFile oRet = null;
-		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
-		for( int i = iCurrent - 1; i >= 0; i-- ) {
-			OpenFile oNext = aOpenFiles.get(i);
-			if( !aFilesComplete.contains(oNext) ) {
-				oRet = oNext;
-				break;
-			}
-		}
-		return oRet;
+	public int moveCompleteFiles() {
+		int iRet = 0;
+    	// Destination for files 
+		File dirIn =  new File(CivetConfig.getInputDirPath());
+		String sDirIn = dirIn.getAbsolutePath();
+    	File dirOut = new File(CivetConfig.getOutputDirPath());
+    	int iFiles = 0;
+    	for( OpenFile fCurrent : aFilesComplete ) {
+    		if( fCurrent.getSource().moveToDirectory(dirOut) )
+    			iRet++;
+    	}
+    	return iRet;
 	}
 	
 	public void markFileComplete( OpenFile completeFile ) {
 		aFilesComplete.add(completeFile);
 	}
+
 	
+	
+	/*
+	 * File navigation.  File numbers are ONE based
+	 */
+	
+	/**
+	 * Look for the next file forward.
+	 * Do not yet change state.
+	 * @param bIncompleteOnly boolean true to skip files marked complete
+	 * @return boolean true if more file(s) available forward 
+	 */
+	public boolean moreFilesForward(boolean bIncompleteOnly) {
+		boolean bRet = false;
+		Integer iCurrent = aOpenFiles.indexOf(oCurrent); // 0 indexed
+		for( int i = iCurrent + 1; i < aOpenFiles.size(); i++ ) {
+			OpenFile oNext = aOpenFiles.get(i); // 0 indexed
+			if(  !bIncompleteOnly || !aFilesComplete.contains(oNext) ) {
+				bRet = true;
+				break;
+			}
+		}
+		return bRet;
+	}
+	
+	/**
+	 * Return the next file forward.
+	 * Do not yet change state.
+	 * @param bIncompleteOnly boolean true to skip files marked complete
+	 * @return OpenFile object 
+	 */
+	private OpenFile nextFileForward(boolean bIncompleteOnly) {
+		OpenFile oRet = null;
+		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
+		for( int i = iCurrent + 1; i <= aOpenFiles.size(); i++ ) { // 0 indexed
+			OpenFile oNext = aOpenFiles.get(i); // 0 indexed
+			if( !bIncompleteOnly || !aFilesComplete.contains(oNext) ) {
+				oRet = oNext;
+				break;
+			}
+		}
+		if( oRet == null ) {
+			System.err.println( iCurrent + " of " + aOpenFiles.size() + " files returned null in next");
+		}
+		return oRet;
+	}
 
+	/**
+	 * Move oCurrent pointer to the next file back
+	 * @throws PdfException 
+	 * @param bIncompleteOnly boolean true to skip files marked complete
+	 * @return OpenFile object 
+	 */
+	public OpenFile fileForward(boolean bIncompleteOnly) throws PdfException {
+		oCurrent = nextFileForward(bIncompleteOnly);
+		oCurrent.viewFile();
+		return oCurrent;		
+	}
 
+	/**
+	 * Look for the next file backward.
+	 * Do not yet change state.
+	 * @param bIncompleteOnly boolean true to skip files marked complete
+	 * @return boolean true if more file(s) available forward 
+	 */
+	public boolean moreFilesBack(boolean bIncompleteOnly) {
+		boolean bRet = false;
+		Integer iCurrent = aOpenFiles.indexOf(oCurrent); // 0 indexed
+		for( int i = iCurrent - 1; i >= 0; i-- ) {
+			OpenFile oNext = aOpenFiles.get(i); // 0 indexed
+			if(  !bIncompleteOnly || !aFilesComplete.contains(oNext) ) {
+				bRet = true;
+				break;
+			}
+		}
+		return bRet;
+	}
+	
+	/**
+	 * Return the next file backward that is not yet completed.
+	 * Do not yet change state
+	 * @param bIncompleteOnly boolean true to skip files marked complete
+	 * @return OpenFile object 
+	 */
+	private OpenFile nextFileBack(boolean bIncompleteOnly) {
+		OpenFile oRet = null;
+		Integer iCurrent = aOpenFiles.indexOf(oCurrent); // 0 indexed
+		for( int i = iCurrent - 1; i >= 0; i-- ) {
+			OpenFile oNext = aOpenFiles.get(i); // 0 indexed
+			if( !bIncompleteOnly || !aFilesComplete.contains(oNext) ) {
+				oRet = oNext;
+				break;
+			}
+		}
+		if( oRet == null ) {
+			System.err.println( iCurrent + " of " + aOpenFiles.size() + " files returned null in back");
+		}
+		return oRet;
+	}
+
+	/**
+	 * Move oCurrent pointer to the next file back
+	 * @throws PdfException 
+	 * @param bIncompleteOnly boolean true to skip files marked complete
+	 * @return OpenFile object 
+	 */
+	public OpenFile fileBackward(boolean bIncompleteOnly) throws PdfException {
+		oCurrent = nextFileBack(bIncompleteOnly);
+		oCurrent.viewFile();
+		return oCurrent;
+	}
 
 }

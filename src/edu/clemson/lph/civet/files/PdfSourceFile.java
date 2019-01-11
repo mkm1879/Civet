@@ -19,9 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.jpedal.PdfDecoder;
-import org.jpedal.exception.PdfException;
-
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfCopy;
 import com.itextpdf.text.pdf.PdfImportedPage;
@@ -31,6 +28,7 @@ import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.dialogs.QuestionDialog;
 import edu.clemson.lph.pdfgen.MergePDF;
 import edu.clemson.lph.pdfgen.PDFUtils;
+import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -38,14 +36,13 @@ import edu.clemson.lph.utils.FileUtils;
  */
 public class PdfSourceFile extends SourceFile {
 	
-	public PdfSourceFile( File fFile ) throws SourceFileException {
-		super(fFile);
+	public PdfSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
+		super(fFile, viewer);
 		type = Types.PDF;
 		try {
 			pdfBytes = FileUtils.readBinaryFile(fSource);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("Could not open PDF file " + fSource.getName(), e);
+			throw new SourceFileException(e);
 		}
 		model = new StdeCviXmlModel();
 		model.setPDFAttachment(getPDFBytes(iPage), fSource.getName());
@@ -90,6 +87,11 @@ public class PdfSourceFile extends SourceFile {
 		return newModel;
 	}
 	
+	/**
+	 * By convention, the data model holds only pages in the current PDF
+	 * For ordinary PDF files this is a subset of the whole file.
+	 * Here we add a new page to the data model from the source.
+	 */
 	@Override
 	public void addPageToCurrent( Integer iPage ) throws SourceFileException {
 		this.iPage = iPage;
@@ -104,9 +106,13 @@ public class PdfSourceFile extends SourceFile {
 		}
 	}
 	
+	/**
+	 * By convention, the data model holds only pages in the current PDF
+	 * For ordinary PDF files this is a subset of the whole file.
+	 */
 	@Override
-	public void setCurrentPage( Integer iPage ) {
-		this.iPage = iPage;
+	public void gotoPageNo( Integer iPageNo ) {
+		this.iPage = iPageNo;
 		model = new StdeCviXmlModel();
 		byte pdfPageBytes[] = getPDFBytes(iPage);
 		model.setPDFAttachment(pdfPageBytes, fSource.getName());

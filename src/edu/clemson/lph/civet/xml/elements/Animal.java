@@ -34,9 +34,9 @@ public class Animal {
 	public String sex;
 	// Ingnore SexDetail unless received in source file
 	public String inspectionDate;
-	
+
 	public Animal(Element eAnimal, SpeciesCode speciesCode, ArrayList<AnimalTag> animalTags,  String age, String breed,
-			 	String sex, String inspectionDate ) {
+			String sex, String inspectionDate ) {
 		this.eAnimal = eAnimal;
 		this.speciesCode = speciesCode;
 		if( animalTags != null )
@@ -44,8 +44,95 @@ public class Animal {
 		else
 			this.animalTags = new ArrayList<AnimalTag>();
 		this.age = age;
-			this.breed = breed;
-			this.sex = sex;
-			this.inspectionDate = inspectionDate;
+		this.breed = breed;
+		this.sex = sex;
+		this.inspectionDate = inspectionDate;
+	}
+	
+	public Animal(String sSpeciesCode, String sTag ) {
+		this.speciesCode = new SpeciesCode( sSpeciesCode );
+		animalTags = new ArrayList<AnimalTag>();
+		animalTags.add( new AnimalTag(sTag) );
+		this.age = null;
+		this.breed = null;
+		this.sex = null;
+		this.inspectionDate = null;		
+	}
+		
+	public Animal(SpeciesCode speciesCode, String sTag ) {
+		eAnimal = null;
+		this.speciesCode = speciesCode;
+		animalTags = new ArrayList<AnimalTag>();
+		animalTags.add( new AnimalTag(sTag) );
+		this.age = null;
+		this.breed = null;
+		this.sex = null;
+		this.inspectionDate = null;
+	}
+	
+	public Animal(SpeciesCode speciesCode, ArrayList<AnimalTag> aTags ) {
+		eAnimal = null;
+		this.speciesCode = speciesCode;
+		animalTags = aTags;
+		this.age = null;
+		this.breed = null;
+		this.sex = null;
+		this.inspectionDate = null;
+	}
+	
+	@Override
+	public Animal clone() {		
+		SpeciesCode newSpp = new SpeciesCode(speciesCode.isStandardCode, speciesCode.code, speciesCode.text);
+		ArrayList<AnimalTag> newTags = new ArrayList<AnimalTag>();
+		newTags.addAll(animalTags);
+		Animal newAnimal = new Animal(newSpp, newTags);
+		newAnimal.age = age;
+		newAnimal.breed = breed;
+		newAnimal.sex = sex;
+		newAnimal.inspectionDate = inspectionDate;
+		return newAnimal;
+	}
+
+	/**
+	 * Used to allow update of existing animal record pulled from XML
+	 */
+	@Override
+	public boolean equals( Object object ) {
+		boolean bRet = false;
+		// If pulled from source XML use the element it came from as identity
+		if( eAnimal != null && object instanceof Animal ) {
+			Element eAnimal2 = ((Animal)object).eAnimal;
+			bRet = (eAnimal2 != null && eAnimal2 == eAnimal);  // Intentionally testing identity of objects
+		} // End xml animals
+		// For animals created here use speciesCode and tag value.  We only assign one so the looping is kind of silly.
+		else if( eAnimal == null && object instanceof Animal ) {
+			Animal animal2 = (Animal)object;
+			if (animal2.eAnimal == null && animal2.speciesCode.equals(speciesCode) ) {
+				if( animal2.animalTags != null && animalTags != null ) {
+					for( AnimalTag tag : animalTags ) {
+						String sTag = tag.value;
+						for( AnimalTag tag2 :animal2.animalTags ) {
+							String sTag2 = tag2.value;
+							if( sTag2 != null && sTag2.equals(sTag) ) {
+								bRet = true;
+								break;
+							}
+						} // End for each of the other animal's tags
+					} // End for each of my tags
+				} // End if they both have tags
+			} // End if neither is from XML and same species
+		} // End non-xml animals
+		return bRet;
+	}
+	
+	public String getFirstOfficialID() {
+		String sRet = null;
+		for( AnimalTag tag : animalTags ) {
+			if( tag.isOfficial() ) {
+				sRet = tag.value;
+				break;
+			}
+		}
+		return sRet;
 	}
 }

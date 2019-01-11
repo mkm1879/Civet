@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
-import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
 
 import edu.clemson.lph.civet.Civet;
@@ -31,8 +30,8 @@ import edu.clemson.lph.civet.CivetEditDialog;
 import edu.clemson.lph.civet.CivetEditDialogController;
 import edu.clemson.lph.civet.files.OpenFileList;
 import edu.clemson.lph.civet.files.SourceFileException;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
-import edu.clemson.lph.dialogs.QuestionDialog;
 
 public class OpenFilesThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
@@ -41,7 +40,6 @@ public class OpenFilesThread extends Thread {
 	private CivetEditDialog dlg;
 	ArrayList<File> filesToOpen = null;
 	OpenFileList openFiles = null;
-	private PdfDecoder pdfDecoder;
 	private File currentFile;
 	private String sFilePath;
 	
@@ -50,16 +48,16 @@ public class OpenFilesThread extends Thread {
 	 * @param dlg CivetEditDialog that owns this thread
 	 * @param fCurrentFile
 	 */
-	public OpenFilesThread(CivetEditDialogController dlgController, ArrayList<File> filesToOpen) {
+	public OpenFilesThread(CivetEditDialogController dlgController, ArrayList<File> filesToOpen, OpenFileList openFiles) {
 		this.dlgController = dlgController;
 		this.dlg = dlgController.getDialog();
 		this.filesToOpen = filesToOpen;
+		this.openFiles = openFiles;
 		if( this.filesToOpen != null && this.filesToOpen.size() > 0 ) {
 			this.currentFile = this.filesToOpen.get(0);
 			prog = new ProgressDialog(dlg, "Civet", "Opening CVI File " + this.currentFile.getName() );
 			prog.setAuto(true);
 			prog.setVisible(true);
-			this.pdfDecoder = dlg.getPdfDecoder();
 		} 
 		else {
 			logger.error("OpenFilesThread called with empty file list");
@@ -73,7 +71,8 @@ public class OpenFilesThread extends Thread {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					logger.error("OpenFilesThread run with empty file list");
-					dlgController.openFilesComplete(openFiles);
+					MessageDialog.showMessage(dlg, "Civet Error", "OpenFilesThread run with empty file list");
+					dlgController.openFilesComplete();
 					prog.setVisible(false);
 					prog.dispose();
 				}
@@ -81,17 +80,16 @@ public class OpenFilesThread extends Thread {
 			return;
 		}
 		try {
-			openFiles = new OpenFileList();
 			for( File f : filesToOpen ) {
 				prog.setMessage("Opening CVI File " + f.getName());
 				openFiles.openFile(f);
 			}
-		} catch(SourceFileException e){
+		} catch(SourceFileException | PdfException e){
 			logger.error("\nError reading or decoding file " + sFilePath, e );
 		} finally {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					dlgController.openFilesComplete(openFiles);
+					dlgController.openFilesComplete();
 					prog.setVisible(false);
 					prog.dispose();
 				}

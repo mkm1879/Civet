@@ -23,60 +23,67 @@ import javax.swing.table.AbstractTableModel;
 
 import org.apache.log4j.Logger;
 
+import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.civet.xml.elements.Animal;
+import edu.clemson.lph.civet.xml.elements.SpeciesCode;
 import edu.clemson.lph.dialogs.MessageDialog;
 
 @SuppressWarnings("serial")
 public class AnimalIDListTableModel extends AbstractTableModel {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private ArrayList<AnimalIDRecord> rows;
-	private ArrayList<AnimalIDRecord> savedRows;
+	private StdeCviXmlModel xmlModel;
+	private ArrayList<AnimalIDRecord> savedAnimals;  // Stored as native data compatible with XML
+	private ArrayList<AnimalIDRecord> rows;  // Stored in table model friendly format.
 	
-	public AnimalIDListTableModel() {
-		rows = new ArrayList<AnimalIDRecord>();
-	}
-	
-	public AnimalIDListTableModel( ArrayList<AnimalIDRecord> rowsIn ) {
-		if( rowsIn != null )
-			rows = rowsIn;
-		else
+	public AnimalIDListTableModel( StdeCviXmlModel xmlModel ) {
+		this.xmlModel = xmlModel;
+		if( xmlModel != null ) {
+			ArrayList<Animal>animals = xmlModel.getAnimals();
 			rows = new ArrayList<AnimalIDRecord>();
+			for( Animal animal : animals ) {
+				AnimalIDRecord row = new AnimalIDRecord( animal );
+				rows.add(row);
+			}
+		}
+		else {
+			rows = new ArrayList<AnimalIDRecord>();
+		}
 	}
-	
-	public void clear() {
-		rows.clear();
-		if( savedRows != null )
-			savedRows.clear();
-	}
-	
+
 	public void saveState() {
-		savedRows = new ArrayList<AnimalIDRecord>();
-		for( AnimalIDRecord r : rows )
-			savedRows.add(r);
+		savedAnimals = new ArrayList<AnimalIDRecord>();
+		for( AnimalIDRecord a : rows ) {
+			savedAnimals.add(a);
+		}
 	}
 	
 	public void restoreState() {
-		if( savedRows == null )
-			logger.error("Attempt to restore AnimalIDListTableModel without saved state");
-		else {
-			rows.clear();
-			for( AnimalIDRecord r : savedRows )
-				rows.add(r);
-		}
+		rows = savedAnimals;
 	}
 	
-	public void addRow( AnimalIDRecord rowIn ) {
-		if( rows.contains(rowIn) ) {
-			MessageDialog.showMessage(null, "Civet: Duplicate ID", "ID " + rowIn.sTag + 
-					                        " is already in the list for species " + rowIn.sSpecies);
+	/**
+	 * The primary way to add an identified animal to the XML data.
+	 * @param animalIn
+	 */
+	public void addRow( Animal animalIn ) {
+		AnimalIDRecord r = new AnimalIDRecord( animalIn );
+		if( rows.contains(r) ) {
+			MessageDialog.showMessage(null, "Civet: Duplicate ID", "ID " + animalIn.getFirstOfficialID() + 
+					                        " is already in the list for species " + animalIn.speciesCode.text);
 		}
 		else {
-			rows.add(rowIn);
+			rows.add(r);
+			if( animalIn.eAnimal == null ) // don't try to add one we read from model in the first place
+				animalIn.eAnimal = xmlModel.addAnimal(animalIn); // Now in model so track as element from now on
+			else 
+				xmlModel.editAnimal(animalIn);
 			fireTableDataChanged();
 		}
-	}
+	}	
 	
-	public void addRow( String sSpeciesCode, String sSpecies, String sTag ) {
-		addRow( new AnimalIDRecord( sSpeciesCode, sSpecies, sTag ) );
+	public void addRow( String sSpeciesCode, String sTag ) {
+		SpeciesCode sCode = new SpeciesCode( sSpeciesCode );
+		addRow( new Animal( sCode, sTag ) );
 	}
 	
 	public void deleteRow( int iRowID ) {
@@ -89,6 +96,7 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 		}
 		if( rowToDel != null ) {
 			rows.remove(rowToDel);
+			xmlModel.removeAnimal(rowToDel.animal);
 			fireTableDataChanged();
 		}
 	}
@@ -112,6 +120,10 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 		return rowsOut;
 	}
 	
+	/**
+	 * Currently ONLY used by 9-3
+	 * @return
+	 */
 	public final ArrayList<AnimalIDRecord> cloneRows() {
 		final ArrayList<AnimalIDRecord> rowsOut = new ArrayList<AnimalIDRecord>();
 		for( AnimalIDRecord record : rows ) {
@@ -120,6 +132,7 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 		return rowsOut;
 	}
 	
+	// Table model stuff.
 	@Override
 	public String getColumnName( int arg0 ) {
 		if( arg0 == 0 )
@@ -162,9 +175,9 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 			if( iCol == 0 )
 				return iRow + 1; // Integer.toString(iRow + 1);
 			if( iCol == 1 )
-				return rows.get(iRow).sSpecies;
+				return rows.get(iRow).animal.speciesCode.code;
 			if( iCol == 2)
-				return rows.get(iRow).sTag;
+				return rows.get(iRow).animal.getFirstOfficialID();
 			else
 				return null;
 		}
@@ -174,7 +187,7 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 
 	public String getSpeciesCodeAt(int iRow) {
 		if( iRow >=0 && iRow < rows.size() ) {
-			return rows.get(iRow).sSpeciesCode;
+			return rows.get(iRow).animal.speciesCode.code;
 		}
 		else
 			return null;

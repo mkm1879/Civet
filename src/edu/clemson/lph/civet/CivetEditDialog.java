@@ -185,10 +185,15 @@ public final class CivetEditDialog extends JFrame {
 			this.parent = parent;
 			this.dialogParent = null;
 		}
-		viewer = new PDFViewer();
 		initializeDisplay();
 		controller = new CivetEditDialogController( this, files);
 		controller.openFiles();
+	}
+	
+	public void setViewer( PDFViewer viewer ) {
+		this.viewer = viewer;
+		// This is the magic.  We simply put the pdfDecoder in the viewport of the scroll pane.
+		display.setViewportView(viewer.getPdfDecoder());
 	}
 	
 	public CivetEditDialog getDialogParent() {
@@ -314,8 +319,6 @@ public final class CivetEditDialog extends JFrame {
 		display = new JScrollPane();
 		display.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		display.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		// This is the magic.  We simply put the pdfDecoder in the viewport of the scroll pane.
-		display.setViewportView(viewer.getPdfDecoder());
 		pView.add(display, BorderLayout.CENTER);
 
 		altDisplay = new JPanel();

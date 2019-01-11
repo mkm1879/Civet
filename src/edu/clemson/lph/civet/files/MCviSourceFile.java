@@ -41,6 +41,7 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.SafeDocBuilder;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.civet.xml.XMLDocHelper;
+import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.IDTypeGuesser;
 
@@ -49,13 +50,22 @@ import edu.clemson.lph.utils.IDTypeGuesser;
  */
 public class MCviSourceFile extends SourceFile {
 	
-	public MCviSourceFile( File fFile ) throws SourceFileException  {
-		super(fFile);
+	public MCviSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
+		super(fFile, viewer);
 		type = Types.mCVI;
 		if( fSource == null || !fSource.exists() )
 			logger.error("File " + sFilePath + " does not exist");
 		sDataPath = getDataFilePath( sFilePath );
 		fData = new File( sDataPath );
+		try {
+			pdfBytes = FileUtils.readBinaryFile(fSource);
+			String sAcrobatXML = FileUtils.readTextFile(fData);
+			String sStdXML = toStdXMLString( sAcrobatXML );
+			model = new StdeCviXmlModel(sStdXML);
+			model.setPDFAttachment(getPDFBytes(), fSource.getName());
+		} catch (Exception e) {
+			throw new SourceFileException(e);
+		}
 		
 	}
 
@@ -76,6 +86,11 @@ public class MCviSourceFile extends SourceFile {
 			}
 		}
 		return bRet;
+	}
+	
+	@Override
+	public boolean isDataFile() {
+		return true;
 	}
 
 	@Override
@@ -111,6 +126,28 @@ public class MCviSourceFile extends SourceFile {
 		}
 		return pdfBytes;
 	}
+
+
+	
+	@Override
+	public boolean moveToDirectory( File fDir ) {
+		boolean bRet = super.moveToDirectory(fDir);
+		File fNew = new File(fDir, fData.getName());
+		if( fNew.exists() ) {
+			logger.error(fNew.getName() + " already exists in " + fDir.getAbsolutePath() + " .\n" +
+						"Check that it really is a duplicate and manually delete.");
+			String sOutPath = fNew.getAbsolutePath();
+			sOutPath = FileUtils.incrementFileName(sOutPath);
+			fNew = new File( sOutPath );
+		}
+		boolean success = fData.renameTo(fNew);
+		if (!success) {
+			logger.error("Could not move " + getFilePath() + " to " + fNew.getAbsolutePath() );
+			bRet = false;
+		}
+		return bRet;
+	}
+
 	
 	/*
 	 * For now this is identical to AgView but they could diverge

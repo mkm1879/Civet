@@ -29,6 +29,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.jpedal.PdfDecoder;
 
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -36,8 +37,8 @@ import edu.clemson.lph.utils.FileUtils;
  */
 public class CivetSourceFile extends SourceFile {
 	
-	public CivetSourceFile( File fFile ) throws SourceFileException  {
-		super(fFile);
+	public CivetSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
+		super(fFile, viewer);
 		type = Types.Civet;
 		if( fSource != null && fSource.exists() && fSource.isFile() ) {
 			try {
@@ -97,6 +98,11 @@ public class CivetSourceFile extends SourceFile {
 			bRet = true;
 		}
 		return bRet;
+	}
+	
+	@Override
+	public boolean isDataFile() {
+		return true;
 	}
 
 	@Override

@@ -47,6 +47,7 @@ import org.xml.sax.SAXException;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.xml.elements.AnimalTag;
 import edu.clemson.lph.utils.IDTypeGuesser;
 import edu.clemson.lph.utils.XMLUtility;
 
@@ -268,7 +269,7 @@ public class CoKsXML {
 				String sTag = eTag.getAttribute("Number");
 				String sType = eTag.getAttribute("Type");
 				if( sType == null || sType.trim().length() == 0 || sType.equalsIgnoreCase("UN") ) {
-					sType = IDTypeGuesser.getTagType(sTag);
+					sType = AnimalTag.getElementName(IDTypeGuesser.getTagType(sTag, true));
 					eTag.setAttribute("Type", sType);
 				}
 			}

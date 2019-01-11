@@ -6,6 +6,7 @@ import org.jpedal.exception.PdfException;
 import org.jpedal.objects.PdfPageData;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.dialogs.QuestionDialog;
 
 /**
@@ -21,14 +22,22 @@ public class PDFViewer {
 	int iRotation = 0;
 	float scale = 1.0f;
 	int iPageNo = 1;
+	boolean bXFA = false;
 
 	public PDFViewer() {
 		pdfDecoder = new PdfDecoder();
 	}
 	
-	public void setPdfBytes( byte pdfBytes[] ) throws PdfException {
+	/**
+	 * Pass in bytes to read and to save checking twice the XFA status
+	 * @param pdfBytes
+	 * @param bXFA
+	 * @throws PdfException
+	 */
+	public void setPdfBytes( byte pdfBytes[], boolean bXFA ) throws PdfException {
 		this.pdfBytes = pdfBytes;
 		pdfDecoder.openPdfArray(pdfBytes);
+		this.bXFA = bXFA;
 		checkEncryption();
 	}
 
@@ -49,6 +58,16 @@ public class PDFViewer {
 		this.iRotation = ( iPageRotation + iRelativeRotation ) % 360; 
 	}
 	
+	/**
+	 * Rotation change from current rotation in integer degrees
+	 * @param iRotationChange
+	 */
+	public void alterRotation( int iRotationChange ) { 
+		PdfPageData pd = pdfDecoder.getPdfPageData();
+		int iPageRotation = pd.getRotation(iPageNo);
+		this.iRotation = ( this.iRotation + iRotationChange ) % 360; 
+	}
+	
 	public int getRotation() {
 		return iRotation;
 	}
@@ -57,20 +76,35 @@ public class PDFViewer {
 		return pdfDecoder.getPageCount();
 	}
 	
-	public void setPage( int iPage ) {
+	private void setPage( int iPage ) {
 		this.iPageNo = iPage;
 	}
 	
 	public int getPage() {
-		return iPageNo;
+		return iPageNo; 
 	}
 	
+	public void alterScale( float fScaleChange ) {
+		this.scale = this.scale * fScaleChange;
+	}
 	public void setScale( float fScale ) {
 		this.scale = fScale;
 	}
 	
-	public double getScale() {
+	public float getScale() {
 		return scale;
+	}
+	
+	public void viewPage( int iPageNo ) {
+		setPage(iPageNo);
+		if( bXFA && !CivetConfig.isJPedalXFA() && CivetConfig.isAutoOpenPdf() ) {
+				PDFOpener opener = new PDFOpener(null);
+				opener.openPDFContentInAcrobat(pdfBytes);
+		}
+		else {
+			pdfDecoder.decodePage(iPageNo);
+			updatePdfDisplay();
+		}
 	}
 
 	/**
@@ -84,25 +118,25 @@ public class PDFViewer {
 		pdfDecoder.updateUI();
 		pdfDecoder.validate();
 	}
+	
+	public void closePdfFile() {
+		pdfDecoder.closePdfFile();
+	}
 
 	/**
 	 * check if encryption present and acertain password, return true if content accessable
+	 * This is poorly implemented but I don't think anyone ever encounters an encrypted CVI PDF.
+	 * @throws PdfException 
 	 */
-	private boolean checkEncryption() {
+	private boolean checkEncryption() throws PdfException {
 		//    check if file is encrypted
 		if(pdfDecoder.isEncrypted()){
 			//if file has a null password it will have been decoded and isFileViewable will return true
 			while(!pdfDecoder.isFileViewable()) {
 				String password = QuestionDialog.askWait(null, "PDF Encrypted", "Please enter password");
 				/** try and reopen with new password */
-				if (password != null) {
-					try {
-						pdfDecoder.setEncryptionPassword(password);
-					} catch (PdfException e) {
-						logger.error(e.getMessage() + "\nError opening encrypted PDF file");  //To change body of catch statement use File | Settings | File Templates.
-						return false;
-					}
-				}
+				if (password != null)
+					pdfDecoder.setEncryptionPassword(password);
 			}
 			return true;
 		}

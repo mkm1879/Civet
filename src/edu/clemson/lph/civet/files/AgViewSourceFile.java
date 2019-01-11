@@ -18,6 +18,7 @@ import java.io.File;
 
 import edu.clemson.lph.civet.files.SourceFile.Types;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -25,8 +26,8 @@ import edu.clemson.lph.utils.FileUtils;
  */
 public class AgViewSourceFile extends SourceFile {
 	
-	public AgViewSourceFile( File fFile ) throws SourceFileException {
-		super(fFile);
+	public AgViewSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
+		super(fFile, viewer);
 		type = Types.AgView;
 		if( fSource == null || !fSource.exists() )
 			logger.error("File " + sFilePath + " does not exist");
@@ -36,12 +37,12 @@ public class AgViewSourceFile extends SourceFile {
 				logger.error("Cannot find data file " + sDataPath);
 		}
 		try {
+			pdfBytes = FileUtils.readBinaryFile(fSource);
 			String sStdXML = FileUtils.readTextFile(fData);
 			model = new StdeCviXmlModel(sStdXML);
 			model.setPDFAttachment(getPDFBytes(), fSource.getName());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("Failed to read file " + fData.getName(), e);
+			throw new SourceFileException(e);
 		}
 	}
 
@@ -88,6 +89,11 @@ public class AgViewSourceFile extends SourceFile {
 		}
 		return model;
 	}	
+	
+	@Override
+	public boolean isDataFile() {
+		return true;
+	}
 
 	@Override
 	public byte[] getPDFBytes() {
@@ -110,6 +116,25 @@ public class AgViewSourceFile extends SourceFile {
 		int iLastDot = sCVIPath.lastIndexOf('.');
 		sRet = sCVIPath.substring(0,iLastDot) + ".xml";  
 		return sRet;
+	}
+	
+	@Override
+	public boolean moveToDirectory( File fDir ) {
+		boolean bRet = super.moveToDirectory(fDir);
+		File fNew = new File(fDir, fData.getName());
+		if( fNew.exists() ) {
+			logger.error(fNew.getName() + " already exists in " + fDir.getAbsolutePath() + " .\n" +
+						"Check that it really is a duplicate and manually delete.");
+			String sOutPath = fNew.getAbsolutePath();
+			sOutPath = FileUtils.incrementFileName(sOutPath);
+			fNew = new File( sOutPath );
+		}
+		boolean success = fData.renameTo(fNew);
+		if (!success) {
+			logger.error("Could not move " + getFilePath() + " to " + fNew.getAbsolutePath() );
+			bRet = false;
+		}
+		return bRet;
 	}
 	
 

@@ -47,11 +47,10 @@ import javax.swing.WindowConstants;
 import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
-import org.jpedal.PdfDecoder;
+import org.jpedal.exception.PdfException;
 
 import edu.clemson.lph.civet.files.OpenFile;
 import edu.clemson.lph.civet.files.OpenFileList;
-import edu.clemson.lph.civet.files.SourceFile;
 import edu.clemson.lph.civet.files.SourceFileException;
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.lookup.Counties;
@@ -62,7 +61,6 @@ import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.threads.AddPageToCviThread;
 import edu.clemson.lph.civet.threads.OpenFilesThread;
 import edu.clemson.lph.civet.threads.SaveCVIThread;
 import edu.clemson.lph.civet.webservice.PremisesSearchDialog;
@@ -72,16 +70,15 @@ import edu.clemson.lph.civet.webservice.VetSearchDialog;
 import edu.clemson.lph.civet.webservice.WebServiceException;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
-import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 import edu.clemson.lph.civet.xml.elements.Animal;
-import edu.clemson.lph.civet.xml.elements.AnimalTag;
 import edu.clemson.lph.civet.xml.elements.GroupLot;
+import edu.clemson.lph.civet.xml.elements.SpeciesCode;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.OneLineQuestionDialog;
 import edu.clemson.lph.dialogs.YesNoDialog;
 import edu.clemson.lph.pdfgen.PDFOpener;
+import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.CountyUtils;
-import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.PremCheckSum;
 
 
@@ -93,7 +90,7 @@ public final class CivetEditDialogController {
 
 	ArrayList<SpeciesRecord> aSpecies = new ArrayList<SpeciesRecord>();
 	HashMap<String,String> mSpeciesChanges;
-	AnimalIDListTableModel idListModel = new AnimalIDListTableModel();
+	AnimalIDListTableModel idListModel = null; //new AnimalIDListTableModel();
 	ArrayList<String> aErrorKeys;
 	String sErrorNotes;
 	
@@ -115,6 +112,7 @@ public final class CivetEditDialogController {
 	private OpenFileList openFileList = null;
 	private OpenFile currentFile = null;
 	private File fLastSaved = null;
+	private PDFViewer viewer = null;
 
 	private String sDefaultPurpose;
 	
@@ -130,38 +128,67 @@ public final class CivetEditDialogController {
 	public CivetEditDialogController( CivetEditDialog dlg, ArrayList<File> files ) throws SourceFileException{
 		this.dlg = dlg;
 		this.filesToOpen = files;
+		this.viewer = new PDFViewer();
+		// Run various initialization routines that are not dependent on current file
+		initializeActionHandlers();
+		initializeDBComponents();
+		addFormChangeListeners();
 	}
 	
 	/** 
 	 * Call from CivetEditDialog.show(true);
 	 */
 	public void openFiles() {
-		OpenFilesThread t = new OpenFilesThread(this, filesToOpen);
+		// Encapsulation breaks down here.  Viewer is too resource intensive to 
+		// create anew when needed for metadata, etc.
+		openFileList = new OpenFileList(viewer);
+		OpenFilesThread t = new OpenFilesThread(this, filesToOpen, openFileList);
 		t.start();
 	}
 	
-	public void openFilesComplete( OpenFileList list ) {
-		// Create object to track files in the list.  Locate on first file.
-		openFileList = list; 
-		if( list == null ) {
-			MessageDialog.showMessage(dlg, "Civet Error: Empty File List", "Open files returned an empty list");
-			logger.error("Open files returned an empty list");
-			dlg.setVisible(false);
+	public void openFilesComplete() {
+		try {
+			if( openFileList == null ) {
+				MessageDialog.showMessage(dlg, "Civet Error: Empty File List", "Open files returned an empty list");
+				logger.error("Open files returned an empty list");
+				dlg.setVisible(false);
+			}
+			else {
+				openFileList.firstFile();
+				dlg.setViewer(viewer);
+			}
+		} catch (PdfException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+			e.printStackTrace();
 		}
-		currentFile = openFileList.currentFile(this);
-		// Run various initialization routines
-		initializeDBComponents();
-		initializeActionHandlers();
-		addFormChangeListeners();
-		dlg.setDecoder(currentFile.getSource().getPdfDecoder());
-		setupFile(currentFile);
+		setupFilePage();
+	}
+		
+	private void setupFilePage() {
+		try {
+		currentFile = openFileList.getCurrentFile();
+		idListModel = new AnimalIDListTableModel(currentFile.getModel());
 		setAllFocus();
 		setTraversal();
-		setupPage(currentFile.getSource().getFileName(), currentFile.getCurrentPage(), currentFile.getPageCount(), 
-				openFileList.currentFileNo(), openFileList.getFileCount(), false );
-		dlg.updatePdfDisplay();
-		populateFromStdXml(currentFile.getSource().getDataModel()) ;
+		dlg.setTitle(getViewerTitle()+currentFile.getSource().getFileName());
+		setPage(currentFile.getCurrentPageNo());
+		setPages(currentFile.getPageCount());
+		setFile(openFileList.getCurrentFileNo());
+		setFiles(openFileList.getFileCount());
+		dlg.setFormEditable(dlg.iMode != CivetEditDialog.VIEW_MODE);
+		updateCounterPanel();
+		viewer.viewPage(currentFile.getCurrentPageNo()); 
+		setupSaveButtons();	
+		viewer.updatePdfDisplay();
+		if( currentFile.getSource().isDataFile() )
+			populateFromStdXml(currentFile.getSource().getDataModel()) ;
+		dlg.make90Percent();
 		dlg.setVisible(true);
+		} catch( Exception e ) {
+			logger.error(e);
+			e.printStackTrace();
+		}
 	}
 	
 	public CivetEditDialog getDialog() {
@@ -215,7 +242,6 @@ public final class CivetEditDialogController {
 				sDefaultPurpose = CivetConfig.getDefaultPurpose();
 				if( sDefaultPurpose != null )
 					dlg.cbPurpose.setSelectedItem(sDefaultPurpose);
-				dlg.make90Percent();
 				refreshThisCounties();
 
 			}
@@ -263,25 +289,25 @@ public final class CivetEditDialogController {
 		});
 		dlg.mntmRefresh.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				dlg.updatePdfDisplay();
+				dlg.viewer.updatePdfDisplay();
 			}
 		});
 		dlg.bBigger.addActionListener( new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				dlg.fScale = dlg.fScale * 1.1f;
-				dlg.updatePdfDisplay();
+				dlg.viewer.alterScale( 1.1f );
+				dlg.viewer.updatePdfDisplay();
 			}
 		});
 		dlg.bSmaller.addActionListener( new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				dlg.fScale = dlg.fScale / 1.1f;
-				dlg.updatePdfDisplay();
+				dlg.viewer.alterScale( 1.0f/1.1f );
+				dlg.viewer.updatePdfDisplay();
 			}
 		});
 		dlg.bRotate.addActionListener( new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				dlg.iRotation = (dlg.iRotation + 90) % 360;
-				dlg.updatePdfDisplay();
+				dlg.viewer.alterRotation(90);
+				dlg.viewer.updatePdfDisplay();
 			}
 		});
 		dlg.bPDFView.addActionListener( new ActionListener() {
@@ -310,14 +336,30 @@ public final class CivetEditDialogController {
 			});
 			dlg.pCounters.bFileBack.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					openFileList.fileBackward();
+					try {
+						if( openFileList.moreFilesBack(false) ) {
+							openFileList.fileBackward(false);
+							setupFilePage();
+						}
+					} catch (PdfException e1) {
+						// TODO Auto-generated catch block
+						logger.error(e1);
+					}
 				}
 			});
 			dlg.pCounters.bPageBack.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
-						currentFile.pageBackward();
-					} catch (SourceFileException e1) {
+						if( currentFile.morePagesBack(false) )
+							currentFile.pageBackward(false);
+						else if( openFileList.moreFilesBack(false) ) {
+							openFileList.fileBackward(false);
+						}
+						else {
+							logger.error("Attempt to move past first page");
+						}
+						setupFilePage();
+					} catch (SourceFileException | PdfException e1) {
 						// TODO Auto-generated catch block
 						logger.error(e1);
 					}
@@ -345,12 +387,32 @@ public final class CivetEditDialogController {
 			});
 			dlg.pCounters.bPageForward.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					currentFile.nextPageForward();
+					try {
+						if( currentFile.morePagesForward(false) )
+							currentFile.pageForward(false);
+						else if( openFileList.moreFilesForward(false) ) {
+							openFileList.fileForward(false);
+						}
+						else {
+							logger.error("Attempt to move past last page");
+						}
+						setupFilePage();
+					} catch (SourceFileException | PdfException e1) {
+						// TODO Auto-generated catch block
+						logger.error(e1);
+						e1.printStackTrace();
+					}
 				}
 			});
 			dlg.pCounters.bFileForward.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					openFileList.fileForward();
+					try {
+						openFileList.fileForward(false);
+						setupFilePage();
+					} catch (PdfException e1) {
+						// TODO Auto-generated catch block
+						logger.error(e1);
+					}
 				}
 			});
 		}
@@ -554,33 +616,7 @@ public final class CivetEditDialogController {
 		dlg.bAddIDs.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if( ( dlg.cbSpecies.getSelectedCode() == null || dlg.cbSpecies.getSelectedCode().trim().length() == 0 ) && aSpecies.size() == 0 ) {
-					MessageDialog.showMessage(dlg, "Civet Error", "Species must be added before IDs" );
-				}
-				else {
-					ArrayList<String> aSpeciesStrings = new ArrayList<String>();
-					if( aSpecies.size() > 0 ) {
-						for( SpeciesRecord r : aSpecies ) {
-							aSpeciesStrings.add(dlg.cbSpecies.getValueForCode(r.sSpeciesCode));
-						}
-					}
-					if( dlg.cbSpecies.getSelectedCode() != null ) {
-						String sSpecies = dlg.cbSpecies.getSelectedValue();
-						if( !aSpeciesStrings.contains(sSpecies) ) {
-							aSpeciesStrings.add(sSpecies);
-						}
-					}
-					HashMap<String, String> hSpecies = new HashMap<String, String>();
-					for( String sSp : aSpeciesStrings ) {
-						SpeciesLookup spp = new SpeciesLookup( sSp, true );
-						String sCode = spp.getSpeciesCode();
-						hSpecies.put(sCode,sSp);
-					}
-					AddAnimalsDialog dlg = new AddAnimalsDialog( hSpecies, idListModel );
-					dlg.setModal(true);
-					dlg.setVisible(true);
-					setActiveSpecies( dlg.getSelectedSpecies() );
-				}
+				doAddIDs();
 			}
 		});
 		dlg.bSave.addActionListener(new java.awt.event.ActionListener() {
@@ -719,67 +755,6 @@ public final class CivetEditDialogController {
 		traversal.setFirstComponent("OtherState");
 		dlg.setFocusTraversalPolicy(traversal);
 	}
-	
-	/**
-	 *  File is read during OpenFiles nextFile and prevFile calls.  
-	 * @param openFile
-	 */
-	public void setupFile(OpenFile openFile) {
-		this.currentFile = openFile; 
-		int iPage = currentFile.getCurrentPage();
-		int iPages = currentFile.getPageCount();
-		int iFileNo = openFileList.currentFileNo();
-		int iFiles = openFileList.getFileCount();
-		boolean bComplete = currentFile.isPageComplete(iPage);
-		String currentFileName = currentFile.getSource().getFileName();
-		// Populate the view page with the current page from current file.
-		setPage(currentFile.getCurrentPage());
-		PdfDecoder pdfDecoder = dlg.getPdfDecoder();
-		try {
-			pdfDecoder.openPdfArray(currentFile.getPDFBytes());
-			pdfDecoder.decodePage(iPage);
-			// TODO Move this logic
-			pdfDecoder.setPageParameters(dlg.getScale(), iPage, dlg.getRotation()); //values scaling (1=100%). page number
-//			int iPagesInFile = pdfDecoder.getPageCount();
-			if( currentFile.getSource().getType() == SourceFile.Types.CO_KS_PDF ) {
-				if( !CivetConfig.isJPedalXFA() && CivetConfig.isAutoOpenPdf() ) {
-					PDFOpener opener = new PDFOpener(dlg);
-					opener.openPDFContentInAcrobat(currentFile.getSource().getPDFBytes());
-				}
-				dlg.setRotation(0);  // Always rotate 180 (actually 0) since we know they are right that way
-			}
-			else {
-				dlg.setRotation( CivetConfig.getRotation() );
-			}
-			// Set counters, etc.  
-			setupPage(currentFileName, iPage, iPages, iFileNo, iFiles, bComplete);
-			dlg.setVisible(true);
-			dlg.updatePdfDisplay();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
-		}
-	}
-	
-	/**
-	 * Called from setupFile and from page forward and back.
-	 * @param sFileName
-	 * @param iPageNo
-	 * @param iPagesInFile
-	 * @param iFileNo
-	 * @param iFiles
-	 * @param bPageComplete
-	 */
-	void setupPage( String sFileName, int iPageNo, int iPagesInFile, int iFileNo, int iFiles, boolean bPageComplete ) {
-		dlg.setTitle(getViewerTitle()+sFileName);
-		setPage(iPageNo);
-		setPages(iPagesInFile);
-		setFile(iFileNo);
-		setFiles(iFiles);
-		dlg.setFormEditable(!bPageComplete && dlg.iMode != CivetEditDialog.VIEW_MODE);
-		updateCounterPanel();
-		setupSaveButtons();	
-	}
 
 	void setupSaveButtons() {
 		if( isReopened() ) {
@@ -794,12 +769,12 @@ public final class CivetEditDialogController {
 	 * Use OpenFiles controller to set the file/page counter
 	 */
 	public void updateCounterPanel() {
-		boolean morePagesBack = currentFile.morePagesBack();
-		boolean morePagesForward = currentFile.morePagesForward();
+		boolean morePagesBack = currentFile.morePagesBack(false);
+		boolean morePagesForward = currentFile.morePagesForward(false);
 		dlg.pCounters.setPageBackEnabled(morePagesBack);
 		dlg.pCounters.setPageForwardEnabled(morePagesForward);
-		dlg.pCounters.setFileBackEnabled(openFileList.moreFilesBack());
-		dlg.pCounters.setFileForwardEnabled(openFileList.moreFilesForward());
+		dlg.pCounters.setFileBackEnabled(openFileList.moreFilesBack(false));
+		dlg.pCounters.setFileForwardEnabled(openFileList.moreFilesForward(false));
 		if( morePagesBack || morePagesForward )
 			dlg.bGotoPage.setEnabled(true);
 		else
@@ -895,7 +870,7 @@ public final class CivetEditDialogController {
 		bInClearForm = false;
 	}
 
-	public int getPageNo() { return currentFile.getCurrentPage(); }
+	public int getPageNo() { return currentFile.getCurrentPageNo(); }
 	
 	private void checkPreDate() {
 		java.util.Date dateInspected = dlg.jtfDateInspected.getDate();
@@ -928,7 +903,7 @@ public final class CivetEditDialogController {
 	}
 
 	public boolean isReopened() {
-		String sCurrentPath = currentFile.getSource().getDataFile().getAbsolutePath();
+		String sCurrentPath = currentFile.getSource().getFilePath();
 		String sCurrentDir = sCurrentPath.substring(0,sCurrentPath.lastIndexOf('\\')+1);
 		// This is a huge kluge to detect that we are reopening a toBeFiled stdXML
 	    return( sCurrentDir.equalsIgnoreCase(CivetConfig.getToFileDirPath()) );
@@ -945,10 +920,19 @@ public final class CivetEditDialogController {
 	 * @param iPage Both page and file numbers are 1 based indexes they are converted to zero based
 	 * as needed inside each method.
 	 */
-	public void setPage( int iPage ) {
-		dlg.iPageNo = iPage;
+	public void gotoPage( int iPage ) {
+		try {
+			currentFile.gotoPageNo(iPage);
+			setupFilePage();
+		} catch (SourceFileException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
 	}
-
+	
+	public void setPage( int iPage ) {
+		dlg.pCounters.setPage(iPage);
+	}
 
 	void setPages( int iPages ) {
 		dlg.pCounters.setPages(iPages);
@@ -984,12 +968,7 @@ public final class CivetEditDialogController {
 			MessageDialog.showMessage(dlg, "Civet: Error", "Cannot parse " + sPage + " as a number");
 			return;
 		}
-		setPage(iPage);
-	}
-	
-	void gotoLastPage() {
-		int iPages = currentFile.getPageCount();
-		setPage(iPages);
+		gotoPage(iPage);
 	}
 
 	void jtfThisPIN_focusLost(FocusEvent e) {
@@ -1254,7 +1233,6 @@ public final class CivetEditDialogController {
 			if( c != null)
 				c.requestFocus();
 		}
-		idListModel.clear();
 		aErrorKeys = new ArrayList<String>();
 		sErrorNotes = null;
 		aSpecies = new ArrayList<SpeciesRecord>();
@@ -1451,39 +1429,12 @@ public final class CivetEditDialogController {
 		ArrayList<String> aBadSpecies = new ArrayList<String>();
 		ArrayList<Animal> aAnimals = std.getAnimals();
 		String sSpeciesCode = null;
-		String sSpeciesName = null;
 		for( Animal animal : aAnimals ) {
 			sSpeciesCode = animal.speciesCode.code;
-			ArrayList<AnimalTag> tags = animal.animalTags;
-			String sAnimalID = null;
-			for( AnimalTag tag : tags) {
-				if( tag.isOfficial() ) {
-					sAnimalID = tag.value;
-					break;  // Just display the first official ID
-				}
-			}
-			if( sAnimalID == null || sAnimalID.trim().length() == 0 ) 
-				sAnimalID = "Not provided";  // This will flag as individual animal record in XML
 			boolean bSet = false;
-			SpeciesLookup sppLookup = null;
-			if( aBadSpecies == null || !aBadSpecies.contains(sSpeciesCode) )
-				sppLookup = new SpeciesLookup( sSpeciesCode );
-			if( sppLookup == null || sppLookup.getSpeciesName() == null ) {
-				aBadSpecies.add(sSpeciesCode);
-				sSpeciesCode = "OTH";
-				sSpeciesName = "Other";
-				//continue;  // Without a valid code, we cannot create a valid animal.
-				// TODO: Replace giving up with a dialog to select species?
-			}
-			else {
-				sSpeciesName = sppLookup.getSpeciesName();
-			}
-			if( sSpeciesCode != null && sAnimalID != null && sAnimalID.trim().length() > 0 ) {
-				idListModel.addRow(sSpeciesCode, sSpeciesName, sAnimalID);
-			}
 			if( aSpecies.size() > 0 ) {
 				for( SpeciesRecord r : aSpecies ) {
-					if( r.sSpeciesCode.equals(sSpeciesCode) ) {
+					if( sSpeciesCode != null && sSpeciesCode.equals(r.sSpeciesCode) ) {
 						r.iNumber++;
 						bSet = true;
 						break;
@@ -1500,22 +1451,9 @@ public final class CivetEditDialogController {
 			sSpeciesCode = group.speciesCode.code;
 			int iQuantity = group.quantity.intValue();
 			boolean bSet = false;
-			SpeciesLookup sppLookup = null;
-			if( aBadSpecies == null || !aBadSpecies.contains(sSpeciesCode) )
-				sppLookup = new SpeciesLookup( sSpeciesCode );
-			if( sppLookup == null || sppLookup.getSpeciesName() == null ) {
-				aBadSpecies.add(sSpeciesCode);
-				sSpeciesCode = "OTH";
-				sSpeciesName = "Other";
-				//continue;  // Without a valid code, we cannot create a valid animal.
-				// TODO: Replace giving up with a dialog to select species?
-			}
-			else {
-				sSpeciesName = sppLookup.getSpeciesName();
-			}
 			if( aSpecies.size() > 0 ) {
 				for( SpeciesRecord r : aSpecies ) {
-					if( r.sSpeciesCode.equals(sSpeciesCode) ) {
+					if( sSpeciesCode != null && sSpeciesCode.equals(r.sSpeciesCode) ) {
 						r.iNumber += iQuantity;
 						bSet = true;
 						break;
@@ -1555,7 +1493,7 @@ public final class CivetEditDialogController {
 	// but not good practice.
 	// May be too slow if moving to different drive instead of just renaming to new folder.
 	public void allFilesDone() {
-		dlg.pdfDecoder.closePdfFile();
+		dlg.viewer.closePdfFile();
 	    if( !isReopened() ) {
 //	    	TODO Deal with complete files
 //	    	File completeFiles[] = cviFileController.getCompleteFiles();
@@ -1567,51 +1505,34 @@ public final class CivetEditDialogController {
 	    dlg.setVisible(false);
 	}
 	
-	private void moveCompleteFiles( File[] completeFiles ) {
-    	// Destination for files 
-		File dirIn =  new File(CivetConfig.getInputDirPath());
-		String sDirIn = dirIn.getAbsolutePath();
-    	File dir = new File(CivetConfig.getOutputDirPath());
-    	int iFiles = 0;
-    	for( File fCurrent : completeFiles ) {
-    		// Don't move opened and saved files waiting to upload.
-    		if( fCurrent.getAbsolutePath().startsWith(sDirIn) ) {
-    			// Move file to new directory
-    			File fNew = new File(dir, fCurrent.getName());
-    			if( fNew.exists() ) {
-    				MessageDialog.showMessage(dlg, "Civet Error", fNew.getAbsolutePath() + " already exists in OutBox.\n" +
-    							"Check that it really is a duplicate and manually delete.");
-    				String sOutPath = fNew.getAbsolutePath();
-    				sOutPath = FileUtils.incrementFileName(sOutPath);
-    				fNew = new File( sOutPath );
-    			}
-    			boolean success = fCurrent.renameTo(fNew);
-    			if (!success) {
-    				MessageDialog.showMessage(dlg, "Civet Error", "Could not move " + fCurrent.getAbsolutePath() + " to " + fNew.getAbsolutePath() );
-    			}
-    			else {
-    				iFiles++; 
-    			}
-    			String sMCviDataFile = CVIFileController.getMCviDataFilename(fCurrent);
-    			File fMCviDataFile = new File( sMCviDataFile );
-    			if(fMCviDataFile.exists() ) {
-    				File fMovedFile = new File( dir, fMCviDataFile.getName() );
-    				if( fMovedFile.exists() ) {
-    					MessageDialog.showMessage(dlg, "Civet Error", fMovedFile.getAbsolutePath() + " already exists in OutBox.\n" +
-    							"Check that it really is a duplicate and manually delete.");
-    					String sOutPath = fNew.getAbsolutePath();
-    					sOutPath = FileUtils.incrementFileName(sOutPath);
-    					fNew = new File( sOutPath );
-    				}
-    				success = fMCviDataFile.renameTo(fMovedFile);
-    				if (!success) {
-    					MessageDialog.showMessage(dlg, "Civet Error", "Could not move " + fMCviDataFile.getAbsolutePath() + " to " + fMovedFile.getAbsolutePath() );
-    				}
-    			}
-    		}
-    	}
-    	if( iFiles > 0 )
-    		MessageDialog.showMessage(dlg, "Civet Complete", iFiles + " files ready to submit to USAHERDS.\n Original files moved to " + dir.getPath() );
+	private void doAddIDs() {
+		if( ( dlg.cbSpecies.getSelectedCode() == null || dlg.cbSpecies.getSelectedCode().trim().length() == 0 ) && aSpecies.size() == 0 ) {
+			MessageDialog.showMessage(dlg, "Civet Error", "Species must be added before IDs" );
+		}
+		else {
+			// TODO Rework this using the Animal list from XML model
+			ArrayList<String> aSpeciesStrings = new ArrayList<String>();
+			if( aSpecies.size() > 0 ) {
+				for( SpeciesRecord r : aSpecies ) {
+					aSpeciesStrings.add(dlg.cbSpecies.getValueForCode(r.sSpeciesCode));
+				}
+			}
+			if( dlg.cbSpecies.getSelectedCode() != null ) {
+				String sSpecies = dlg.cbSpecies.getSelectedValue();
+				if( !aSpeciesStrings.contains(sSpecies) ) {
+					aSpeciesStrings.add(sSpecies);
+				}
+			}
+			HashMap<String, String> hSpecies = new HashMap<String, String>();
+			for( String sSp : aSpeciesStrings ) {
+				String sCode = SpeciesLookup.getCodeForName(sSp);
+				hSpecies.put(sCode,sSp);
+			}
+			AddAnimalsDialog dlg = new AddAnimalsDialog( hSpecies, idListModel );
+			dlg.setModal(true);
+			dlg.setVisible(true);
+			setActiveSpecies( dlg.getSelectedSpecies() );
+		}
 	}
 	
 	private void doSave() {
@@ -1703,36 +1624,6 @@ public final class CivetEditDialogController {
 			return false;
 		}
 
-		// Setup the two variables that combine to tell what to save where.
-		// XFAPdf or Image files send and save the original file contents (bytes null, file populated)
-		// Pageable Pdf send and save extracted bytes (bytes populated, file null)
-		// Image file send Pdf, save original (both populated)
-		// TODO Remove this part.  Should already have pdf in the model.
-//		byte[] bAttachmentBytes = null;
-//		String sAttachmentFileName = null;
-//		File fAttachmentFile = null;
-//		if( model != null ) {
-//			sAttachmentFileName = model.getPDFAttachmentFilename();
-//			// Bytes and Name came from stdXML attachment
-//			if( sAttachmentFileName != null ) {
-//				bAttachmentBytes = model.getPDFAttachmentBytes();
-//			}
-//			// File without name set is an XFA XML from which we extracted data for stdXML
-//			else { 
-//				fAttachmentFile = cviFileController.getCurrentFile();
-//			}
-//		}
-//		else {
-//			// Bytes without file or name is page(s) from multipage
-//			if( currentFile.getSource().isPageable() ) {
-//				bAttachmentBytes = cviFileController.extractPagesToNewPDF();
-//				// leave filename to save thread
-//			}
-//			// File without name or bytes is single CVI PDF or image just send PDF bytes 
-//			else {
-//				bAttachmentBytes = cviFileController.getCurrentPdfBytes();
-//			}
-//		}
 		// Precondition: PDF, Species and Errors already in model.
 		// NOTE!!!!  model is not thread safe at this point.  
 		SaveCVIThread thread = new SaveCVIThread(this, model, bInbound, bXFA, bAgView, sOtherStateCode,
@@ -1748,7 +1639,14 @@ public final class CivetEditDialogController {
 	}
 	
 	public void saveComplete() {
-		// TODO move on to next.
+		moveCompletedFiles();
+	}
+	
+	private void moveCompletedFiles() {
+		int iFiles = openFileList.moveCompleteFiles();
+		String sDirOut = CivetConfig.getOutputDirPath();
+    	if( iFiles > 0 )
+    		MessageDialog.showMessage(dlg, "Civet Complete", iFiles + " files ready to submit to USAHERDS.\n Original files moved to " + sDirOut );
 	}
 
 	private void minimizeAll() {
@@ -1791,8 +1689,8 @@ public final class CivetEditDialogController {
 	void pdfView() {
 		PDFOpener opener = new PDFOpener(dlg);
 		// If the file is really a PDF, open it from disk so even things like CO/KS open natively.
-		if( currentFile.getSource().isPageable() ) {
-			opener.openPageContentInAcrobat(currentFile.getSource().getFilePath(), currentFile.getCurrentPage());
+		if( currentFile.getSource().canSplit() ) {
+			opener.openPageContentInAcrobat(currentFile.getSource().getFilePath(), currentFile.getCurrentPageNo());
 		}
 		// Otherwise use the content converted to PDF earlier
 		else {
@@ -1892,10 +1790,9 @@ public final class CivetEditDialogController {
 	 * @param sPreviousSpecies
 	 * @param sNewSpecies
 	 */
-	private void changeSpecies( String sPreviousSpecies, String sNewSpecies ) {
+	private void changeSpecies( String sPreviousCode, String sNewSpecies ) {
 		// Species has changed.  Change Previous to New where ever if exists.
-		String sPreviousCode = (new SpeciesLookup(sPreviousSpecies, true)).getSpeciesCode();
-		String sNewCode = (new SpeciesLookup(sNewSpecies, true)).getSpeciesCode();
+		String sNewCode = SpeciesLookup.getCodeForName(sNewSpecies);
 		System.out.println( "Old: " + sPreviousCode + " to " + sNewCode );
 		mSpeciesChanges.put(sPreviousCode, sNewCode);
 		for( SpeciesRecord sr : aSpecies ) {
@@ -1903,8 +1800,8 @@ public final class CivetEditDialogController {
 				sr.sSpeciesCode = sNewCode;
 		}
 		for( AnimalIDRecord ar : idListModel.getRows() ) {
-			if(sPreviousCode.equals(ar.sSpeciesCode))
-				ar.sSpeciesCode = sNewCode;
+			if(sPreviousCode.equals(ar.animal.speciesCode.code))
+				ar.animal.speciesCode = new SpeciesCode (sNewCode);
 		}
 
 	}
