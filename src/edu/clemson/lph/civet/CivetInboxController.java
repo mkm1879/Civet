@@ -42,12 +42,22 @@ import edu.clemson.lph.utils.Validator;
 public class CivetInboxController {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private CivetInbox inbox = null;
+	private static CivetInboxController singleInstance;
 
 	public CivetInboxController(CivetInbox inbox) {
+		if( singleInstance != null ) {
+			logger.error("Duplicating Inbox");
+			System.exit(100);
+		}
 		this.inbox = inbox;
+		singleInstance = this;
 		initializeActionHandlers();
 		viewNew();
 		inbox.setVisible( true );
+	}
+	
+	public static CivetInboxController getCivetInboxController() {
+		return singleInstance;
 	}
 
 	/**

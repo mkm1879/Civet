@@ -178,6 +178,7 @@ public class StdeCviXmlModel {
 			}
 			helper = new XMLDocHelper( doc, root );
 			binaries = new StdeCviBinaries( helper );
+			metaData = binaries.getMetaData();
 		} catch (Exception e ) {
 			logger.error(e);
 		}
@@ -192,6 +193,7 @@ public class StdeCviXmlModel {
 		Element root = doc.getDocumentElement();
 		helper = new XMLDocHelper( doc, root );
 		binaries = new StdeCviBinaries( helper );
+		metaData = binaries.getMetaData();
 	}
 	
 
@@ -295,11 +297,10 @@ public class StdeCviXmlModel {
 			if( vet.nationalAccreditationNumber  != null && vet.nationalAccreditationNumber .trim().length() > 0 )
 				helper.setAttribute(eVet, "NationalAccreditationNumber", vet.nationalAccreditationNumber );
 			Element person = helper.getOrAppendChild(eVet,"Person");
-			if( vet.person.name != null && vet.person.name.length() > 0 ) {
-				Element name = helper.getOrAppendChild(person, "Name");
-				name.setTextContent(vet.person.name);
-			}
-			else if (vet.person.nameParts != null) {  // this should only happen with data files.
+			if (vet.person.nameParts != null) {  
+				Element eName = helper.getOrAppendChild(person, "Name");
+				if( eName != null)
+					helper.removeElement(eName);
 				Element eNameParts = helper.getOrAppendChild(person, "NameParts");
 				sAfter = "LastName";
 				if( vet.person.nameParts.firstName != null && vet.person.nameParts.firstName.trim().length() > 0 ) {
@@ -311,6 +312,11 @@ public class StdeCviXmlModel {
 					eLastName.setTextContent(vet.person.nameParts.lastName);
 				}
 			}
+			else if( vet.person.name != null && vet.person.name.length() > 0 ) {
+				Element eName = helper.getOrAppendChild(person, "Name");
+				eName.setTextContent(vet.person.name);
+			}
+
 			if( vet.person.phone != null && vet.person.phone.trim().length() > 0 ) {
 				Element phone = helper.getOrAppendChild(person, "Phone");
 				helper.setAttribute(phone, "Type", "Unknown");
@@ -389,7 +395,7 @@ public class StdeCviXmlModel {
 			else if( addr.county != null && addr.county.trim().length() == 0 ) {
 				helper.removeChild(address, "County");
 			}
-			if( addr.zip != null ) {
+			if( addr.zip != null && addr.zip.trim().length() > 0 ) {
 				sAfter = "Country,GeoPoint";
 				Element zip = helper.getOrInsertElementBefore( address, "ZIP", sAfter);
 				address.appendChild(zip);
@@ -488,62 +494,65 @@ public class StdeCviXmlModel {
 			premName.setTextContent(prem.premName);
 		}
 		setAddress( ePremises, prem.address );
-		Element person = helper.getOrAppendChild(ePremises,"Person");
-		// Careful of choice between name and name parts
-		if( prem.personNameParts != null ) {  // This condition will only occur when prem
-			                                  // was populated by incoming data and thus should not have Name
-			Element ePersonName = helper.getChildElementByName(person, "Name");
-			if( ePersonName != null ) {
-				logger.error( "Attempt to update Name with NameParts in " + ePremises.getTagName() );
-				return ePremises;
+		if( (prem.personName != null && prem.personName.trim().length() > 0 ) 
+				|| (prem.personNameParts != null) ) {
+			Element person = helper.getOrAppendChild(ePremises,"Person");
+			// Careful of choice between name and name parts
+			if( prem.personNameParts != null ) {  // This condition will only occur when prem
+				// was populated by incoming data and thus should not have Name
+				Element ePersonName = helper.getChildElementByName(person, "Name");
+				if( ePersonName != null ) {
+					logger.error( "Attempt to update Name with NameParts in " + ePremises.getTagName() );
+					return ePremises;
+				}
+				sAfter = "Name,Phone,Email";
+				Element nameParts = helper.getOrInsertElementBefore(person,"NameParts",sAfter);
+				if( prem.personNameParts.businessName != null && prem.personNameParts.businessName.trim().length() > 0 ) {
+					sAfter = "OtherName,MiddleName,LastName,OtherName";
+					Element businessName = helper.getOrInsertElementBefore(nameParts,"BusinessName",sAfter);
+					businessName.setTextContent(prem.personNameParts.businessName);
+				}
+				if( prem.personNameParts.firstName != null && prem.personNameParts.firstName.trim().length() > 0 ) {
+					sAfter = "MiddleName,LastName,OtherName";
+					Element firstName = helper.getOrInsertElementBefore(nameParts,"OtherName",sAfter);
+					firstName.setTextContent(prem.personNameParts.firstName);
+				}
+				if( prem.personNameParts.middleName != null && prem.personNameParts.middleName.trim().length() > 0 ) {
+					sAfter = "LastName,OtherName";
+					Element middleName = helper.getOrInsertElementBefore(nameParts,"MiddleName",sAfter);
+					middleName.setTextContent(prem.personNameParts.middleName);
+				}
+				if( prem.personNameParts.lastName != null && prem.personNameParts.lastName.trim().length() > 0 ) {
+					sAfter = "OtherName";
+					Element lastName = helper.getOrInsertElementBefore(nameParts,"LastName",sAfter);
+					lastName.setTextContent(prem.personNameParts.lastName);
+				}
+			}			
+			else if( (prem.personName != null && prem.personName.trim().length() > 0) ||
+					(prem.personPhone != null && prem.personPhone.trim().length() > 0) ) {
+				Element ePersonNameParts = helper.getChildElementByName(person, "NameParts");
+				if( ePersonNameParts != null ) {
+					logger.error( "Attempt to update NameParts with Name in " + ePremises.getTagName() );
+					return ePremises;
+				}
+				if( (prem.personName == null || prem.personName.trim().length() == 0) ) {
+					if(prem.premName != null && prem.premName.trim().length() > 0 )
+						prem.personName = prem.premName;
+					else 
+						prem.personName = "Not provided";
+				}
+				sAfter = "Phone,Email";
+				Element name = helper.getOrInsertElementBefore(person,"Name",sAfter);
+				name.setTextContent(prem.personName);
 			}
-			sAfter = "Name,Phone,Email";
-			Element nameParts = helper.getOrInsertElementBefore(person,"NameParts",sAfter);
-			if( prem.personNameParts.businessName != null && prem.personNameParts.businessName.trim().length() > 0 ) {
-				sAfter = "OtherName,MiddleName,LastName,OtherName";
-				Element businessName = helper.getOrInsertElementBefore(nameParts,"BusinessName",sAfter);
-				businessName.setTextContent(prem.personNameParts.businessName);
-			}
-			if( prem.personNameParts.firstName != null && prem.personNameParts.firstName.trim().length() > 0 ) {
-				sAfter = "MiddleName,LastName,OtherName";
-				Element firstName = helper.getOrInsertElementBefore(nameParts,"OtherName",sAfter);
-				firstName.setTextContent(prem.personNameParts.firstName);
-			}
-			if( prem.personNameParts.middleName != null && prem.personNameParts.middleName.trim().length() > 0 ) {
-				sAfter = "LastName,OtherName";
-				Element middleName = helper.getOrInsertElementBefore(nameParts,"MiddleName",sAfter);
-				middleName.setTextContent(prem.personNameParts.middleName);
-			}
-			if( prem.personNameParts.lastName != null && prem.personNameParts.lastName.trim().length() > 0 ) {
-				sAfter = "OtherName";
-				Element lastName = helper.getOrInsertElementBefore(nameParts,"LastName",sAfter);
-				lastName.setTextContent(prem.personNameParts.lastName);
-			}
-		}			
-		else if( (prem.personName != null && prem.personName.trim().length() > 0) ||
-				  (prem.personPhone != null && prem.personPhone.trim().length() > 0) ) {
-			Element ePersonNameParts = helper.getChildElementByName(person, "NameParts");
-			if( ePersonNameParts != null ) {
-				logger.error( "Attempt to update NameParts with Name in " + ePremises.getTagName() );
-				return ePremises;
-			}
-			if( (prem.personName == null || prem.personName.trim().length() == 0) ) {
-				if(prem.premName != null && prem.premName.trim().length() > 0 )
-					prem.personName = prem.premName;
-				else 
-					prem.personName = "Not provided";
-			}
-			sAfter = "Phone,Email";
-			Element name = helper.getOrInsertElementBefore(person,"Name",sAfter);
-			name.setTextContent(prem.personName);
+			if( prem.personPhone != null && checkPhoneLength(prem.personPhone) ) {
+				sAfter = "Email";
+				Element phone = helper.getOrInsertElementBefore(ePremises,"Phone",sAfter);
+				person.appendChild(phone);
+				helper.setAttribute(phone, "Type", "Unknown");
+				helper.setAttribute(phone, "Number", prem.personPhone);
+			}	
 		}
-		if( prem.personPhone != null && checkPhoneLength(prem.personPhone) ) {
-			sAfter = "Email";
-			Element phone = helper.getOrInsertElementBefore(ePremises,"Phone",sAfter);
-			person.appendChild(phone);
-			helper.setAttribute(phone, "Type", "Unknown");
-			helper.setAttribute(phone, "Number", prem.personPhone);
-		}	
 		return ePremises;
 	}
 

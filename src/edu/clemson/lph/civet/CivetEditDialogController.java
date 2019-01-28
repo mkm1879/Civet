@@ -1853,8 +1853,10 @@ public final class CivetEditDialogController {
 			}
 			else {
 				moveCompletedFiles();
+				CivetInboxController.getCivetInboxController().refreshTables();
 				dlg.setVisible(false);
 				dlg.dispose();
+				return;
 			}
 			setupFilePage();
 		} catch (SourceFileException | PdfException e) {
@@ -1952,7 +1954,7 @@ public final class CivetEditDialogController {
 			}
 			boolean bFound = false;
 			for( SpeciesRecord sr : aSpecies ) {
-				if( sr.sSpeciesCode.equals(sSpeciesCode) ) {
+				if( sr.sSpeciesCode != null && sr.sSpeciesCode.equals(sSpeciesCode) ) {
 					bFound = true;
 					sr.iNumber = iNum;
 				}

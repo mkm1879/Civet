@@ -65,7 +65,9 @@ public class GroupLot {
 		this.age = null;
 		this.breed = null;
 		this.sex = null;
-		String sSpecies = speciesCode.toString();
+		String sSpecies = "OTH";
+		if( speciesCode != null )
+			speciesCode.toString();
 		Integer iQuant = quantity.intValue(); 
 		description = "Group of " + iQuant.toString() + " " + sSpecies;
 	}

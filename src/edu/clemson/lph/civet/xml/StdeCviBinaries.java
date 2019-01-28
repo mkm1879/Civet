@@ -70,7 +70,7 @@ public class StdeCviBinaries {
 		Element eRet = null;
 		for( Element e : helper.getElementsByName("Attachment") ) {
 			if( e != null ) {
-				String sThisFile = e.getAttribute("FileName");
+				String sThisFile = e.getAttribute("Filename");
 				if( sFileName.equals(sThisFile) ) {
 					eRet = e;
 					break;
@@ -174,7 +174,7 @@ public class StdeCviBinaries {
 		try {
 			String sMetaBase64 = metaData.getBase64String();
 			String sID = null;
-			Element eAttach = helper.getElementByPathAndAttribute("Attachment", "Filename", "CviMetadata.xml");
+			Element eAttach = getAttachment("CviMetadata.xml");
 			if( eAttach == null ) {
 				String sAfter = StdeCviXmlModel.getFollowingElementList("MiscAttribute");
 				sID = getNextId("A");

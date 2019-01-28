@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.civet.xml.elements.Veterinarian;
+import edu.clemson.lph.utils.FileUtils;
 
 @SuppressWarnings("serial")
 public class StdXMLFilesTableModel extends FilesTableModel {

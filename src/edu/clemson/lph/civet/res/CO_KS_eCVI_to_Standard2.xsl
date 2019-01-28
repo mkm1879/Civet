@@ -246,7 +246,7 @@
                     </xsl:element>
                     <xsl:if test="./eiaResult != 'N/A' and ./eiaResult != ''">
                         <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Test">
-                            <xsl:attribute name="idref">EIA<xsl:value-of select="./itemIndex"/></xsl:attribute>
+                            <xsl:attribute name="AccessionRef">EIA<xsl:value-of select="./itemIndex"/></xsl:attribute>
                             <xsl:attribute name="TestCode">EIA</xsl:attribute>
                             <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Result">
                                 <xsl:attribute name="ResultName">RESULT</xsl:attribute>
@@ -258,7 +258,7 @@
                     </xsl:if>
                     <xsl:if test="./brucResult != 'N/A' and ./brucResult != ''">
                         <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Test">
-                            <xsl:attribute name="idref">BRUC<xsl:value-of select="./itemIndex"/></xsl:attribute>
+                            <xsl:attribute name="AccessionRef">BRUC<xsl:value-of select="./itemIndex"/></xsl:attribute>
                             <xsl:attribute name="TestCode">BRUC</xsl:attribute>
                             <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Result">
                                 <xsl:attribute name="ResultName">RESULT</xsl:attribute>

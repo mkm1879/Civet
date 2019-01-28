@@ -36,6 +36,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.XMLUtility;
 
 public class CviMetaDataXml {

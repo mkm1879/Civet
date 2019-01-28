@@ -273,7 +273,13 @@ public class SaveCVIThread extends Thread {
 			}
 			else {
 				VetLookup vetLookup = new VetLookup( iIssuedByKey );
-				model.setVet( vetLookup.getFormattedName() );
+				NameParts parts = new NameParts(null, vetLookup.getFirstName(), null, vetLookup.getLastName(), null );
+				AddressBlock addr = new AddressBlock(vetLookup.getAddress(), null, vetLookup.getCity(), null, 
+						vetLookup.getState(), vetLookup.getZipCode(), null, null, null);
+				Person person = new Person(parts, vetLookup.getPhoneDigits(), null );
+				Veterinarian vet = new Veterinarian(person, addr.toString(), CivetConfig.getHomeStateAbbr(),
+						vetLookup.getLicenseNo(), vetLookup.getNAN());
+				model.setVet( vet );
 			}
 			model.setPurpose(sStdPurpose);
 		} // End if !bXFA
@@ -300,14 +306,14 @@ public class SaveCVIThread extends Thread {
 			int iCountIds = 0;
 			if( animals != null ) {
 				for( Animal animal : animals ) {
-					if( animal.speciesCode.code.equals(sSpeciesCode) ) {
+					if(  animal.speciesCode.code != null && animal.speciesCode.code.equals(sSpeciesCode) ) {
 						iCountIds++;
 					}
 				}
 			}
 			boolean bFound = false;
 			for( GroupLot group : groups ) {
-				if( group.speciesCode.code.equals(sSpeciesCode) ) {
+				if( group.speciesCode.code != null && group.speciesCode.code.equals(sSpeciesCode) ) {
 					bFound = true;
 					if(iCountIds == iNumOfSpp) {
 						model.removeGroupLot(group);

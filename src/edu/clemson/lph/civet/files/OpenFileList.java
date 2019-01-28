@@ -130,9 +130,12 @@ public class OpenFileList {
     	// Destination for files 
     	File dirOut = new File(CivetConfig.getOutputDirPath());
     	iRet = 0;
+    	String sDirIn = CivetConfig.getInputDirPath();
     	for( OpenFile fCurrent : aFilesComplete ) {
-    		if( fCurrent.getSource().moveToDirectory(dirOut) )
-    			iRet++;
+    		if( fCurrent.getSource().fSource.getAbsolutePath().startsWith(sDirIn) ) {
+    			if( fCurrent.getSource().moveToDirectory(dirOut) )
+    				iRet++;
+    		}
     	}
     	return iRet;
 	}
