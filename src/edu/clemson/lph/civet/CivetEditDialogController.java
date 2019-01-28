@@ -131,6 +131,7 @@ public final class CivetEditDialogController {
 		this.dlg = dlg;
 		this.filesToOpen = files;
 		this.viewer = new PDFViewer();
+		viewer.alterRotation(CivetConfig.getRotation());  // Not sure why inverted relative to acrobat.
 		// Run various initialization routines that are not dependent on current file
 		initializeActionHandlers();
 		initializeDBComponents();
@@ -169,6 +170,7 @@ public final class CivetEditDialogController {
 			logger.error(e);
 			e.printStackTrace();
 		}
+		iCurrentSaveMode = OPEN;
 		setupFilePage();
 	}
 		
@@ -891,6 +893,8 @@ public final class CivetEditDialogController {
 		try {
 			// If save() finds errors be sure form is editable so they can be corrected.
 			dlg.setFormEditable( false );
+			currentFile.setCurrentPagesDone();
+			setFileCompleteStatus();
 			int iSaveModeIn = iCurrentSaveMode;
 			iCurrentSaveMode = SAVED;
 			if( !save() ) {
@@ -905,6 +909,13 @@ public final class CivetEditDialogController {
 		// Processing returns in saveComplete() after thread completes.;
 	}
 	
+	private void setFileCompleteStatus() {
+		if( !currentFile.getSource().canSplit() // File goes as a whole
+				|| (!currentFile.morePagesForward(true) && !currentFile.morePagesBack(true)) ) { // or no pages left
+			openFileList.markFileComplete(currentFile);
+		}
+	}
+	
 	/**
 	 * Save the previously entered data and clear form for current page
 	 */
@@ -913,6 +924,7 @@ public final class CivetEditDialogController {
 			dlg.setFormEditable( false );
 			currentFile.pageBackward(true);  // Kluge move back so we can move forward after save
 			int iSaveModeIn = iCurrentSaveMode;
+			currentFile.setCurrentPagesDone();
 			iCurrentSaveMode = SAVED;
 			if( !save() ) {
 				iCurrentSaveMode = iSaveModeIn;
@@ -932,12 +944,12 @@ public final class CivetEditDialogController {
 	private void doViewNext() {
 		try {
 			currentFile.pageForward(true);
+			iCurrentSaveMode = CHOSEVIEW;
+			setupFilePage();  // Update the display
 		} catch (SourceFileException e) {
 			// TODO Auto-generated catch block
 			logger.error(e);
 		}
-		iCurrentSaveMode = CHOSEVIEW;
-		setupSaveLogic();
 	}
 	
 	/**

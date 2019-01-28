@@ -46,6 +46,7 @@ public class PdfSourceFile extends SourceFile {
 		}
 		model = new StdeCviXmlModel();
 		model.setPDFAttachment(getPDFBytes(iPage), fSource.getName());
+		viewer.alterRotation(180);  // Our scanned PDFs are off.
 	}
 	
 	/**
