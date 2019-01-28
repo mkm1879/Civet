@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.clemson.lph.civet.xml.elements.Animal;
+import edu.clemson.lph.civet.xml.elements.AnimalTag;
 import edu.clemson.lph.controls.DBNumericField;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.ClipboardUtils;
@@ -71,7 +72,6 @@ public class AddAnimalsDialog extends JDialog {
 	public AddAnimalsDialog( HashMap<String, String> hSpecies, AnimalIDListTableModel tableModel ) {
 		this.hSpecies = hSpecies;
 		this.tableModel = tableModel;
-		tableModel.saveState();
 		ImageIcon appIcon = new ImageIcon(getClass().getResource("/edu/clemson/lph/civet/res/civet32.png"));
 		this.setIconImage(appIcon.getImage());
 		setTitle("Civet: Add Animal IDs");
@@ -215,6 +215,7 @@ public class AddAnimalsDialog extends JDialog {
 				okButton.addActionListener( new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
+						AddAnimalsDialog.this.tableModel.save();
 						setVisible( false );
 					}
 				});
@@ -226,7 +227,6 @@ public class AddAnimalsDialog extends JDialog {
 				cancelButton.addActionListener( new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						AddAnimalsDialog.this.tableModel.restoreState();
 						setVisible( false );
 					}
 				});
@@ -276,7 +276,6 @@ public class AddAnimalsDialog extends JDialog {
 		if( sID != null && sID.trim().length() > 0 ) {
 			tableModel.addRow(a);
 		}
-
 		jtfNewId.setText("");
 		jtfNewId.requestFocus();
 	}
@@ -328,7 +327,7 @@ public class AddAnimalsDialog extends JDialog {
 					return;
 				}
 				for( String sNext : sIDs ) {
-					Animal a = new Animal( sSpeciesCode, sNext );
+					Animal a = new Animal( sSpeciesCode, AnimalTag.Types.OtherOfficialID, sNext );
 					tableModel.addRow(a);
 				}
 			} catch (Exception e) {

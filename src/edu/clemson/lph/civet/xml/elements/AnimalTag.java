@@ -44,17 +44,20 @@ public class AnimalTag {
 	public AnimalTag(String number) {
 		this.type = IDTypeGuesser.getTagType(number);
 		this.value = number;
+		fixCase();
 	}
 	
 	public AnimalTag(Types type, String number) {
 		this.type = type;
 		this.value = number;
+		fixCase();
 	}
 	
 	public AnimalTag(Types type, String otherType, String number) {
 		this.type = type;
 		this.otherType = otherType;
 		this.value = number;
+		fixCase();
 	}
 	
 	public AnimalTag(EquineDescription description) {
@@ -74,6 +77,11 @@ public class AnimalTag {
 		this.type = Types.BrandImage;
 		this.value = "See attached image: " + brand.toString();
 		this.brand = brand;
+	}
+	
+	private void fixCase() {
+		if( value != null && (type == Types.NUES8 || type == Types.NUES9) )
+			value = value.toUpperCase();
 	}
 	
 	public String getElementName() {

@@ -642,7 +642,7 @@
                 </xsl:element>
             </xsl:if>
             <xsl:if test="$city != ''">
-                <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Line2">
+                <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Town">
                     <xsl:value-of select="$city"/>
                 </xsl:element>
             </xsl:if>

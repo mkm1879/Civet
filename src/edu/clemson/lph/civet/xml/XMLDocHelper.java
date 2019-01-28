@@ -131,7 +131,7 @@ public class XMLDocHelper {
 	 */
 	public Element insertElementBefore( Element eParent, String sElementName, String sAfter ) {
 		Element e = doc.createElement(sElementName);
-		Element after = getChildElementByNames(root,sAfter);
+		Element after = getChildElementByNames(eParent,sAfter);
 		if( after != null )
 			eParent.insertBefore(e, after);
 		else

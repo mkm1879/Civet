@@ -1,7 +1,5 @@
 package edu.clemson.lph.civet.xml;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.StringBufferInputStream;
+
 /*
 Copyright 2014 Michael K Martin
 
@@ -20,47 +18,44 @@ GNU General Public License for more details.
 You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
-import java.io.UnsupportedEncodingException;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.StringTokenizer;
+import java.util.HashSet;
 
-import javax.swing.JDialog;
-import javax.swing.SwingUtilities;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.apache.commons.codec.binary.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.elements.*;
-import edu.clemson.lph.civet.xml.elements.AnimalTag.Types;
 import edu.clemson.lph.controls.PhoneField;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.FileUtils;
-import edu.clemson.lph.utils.IDTypeGuesser;
 import edu.clemson.lph.utils.XMLUtility;
 
 // TODO Refactor rename to StdXmlDataModel
 public class StdeCviXmlModel {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	private static final String allElements = "Veterinarian,MovementPurpose,Origin,Destination,Consignor,Consignee," +
+	private static final String allElements = "Veterinarian,MovementPurposes,Origin,Destination,Consignor,Consignee," +
 	                                   "Carrier,TransportMode,Accessions,Animal,GroupLot,Statements,Attachment," +
 			                           "MiscAttribute,Binary";
 	private XMLDocHelper helper;
 	private StdeCviBinaries binaries;
+	private CviMetaDataXml metaData;
 	
 	/**
 	 * This constructs a list of elements before which an inserted new element should appear by
@@ -155,6 +150,7 @@ public class StdeCviXmlModel {
 			doc.appendChild(root);
 			helper = new XMLDocHelper( doc, root );
 			binaries = new StdeCviBinaries( helper );
+			metaData = new CviMetaDataXml();
 		} catch (Exception e ) {
 			logger.error(e);
 		}
@@ -197,12 +193,37 @@ public class StdeCviXmlModel {
 		helper = new XMLDocHelper( doc, root );
 		binaries = new StdeCviBinaries( helper );
 	}
+	
+
+	/** 
+	 * Create an XML document from a File.  
+	 * @param doc
+	 */
+	public StdeCviXmlModel( File fXML ) {
+		try {
+			String sXML = FileUtils.readTextFile(fXML);
+			FileUtils.writeTextFile(sXML, "FileRead.xml");
+			createModel(sXML);		
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+	}
 
 	/** 
 	 * Create an XML document from the raw XML string.  
 	 * @param doc
 	 */
 	public StdeCviXmlModel( String sXML ) {
+		createModel(sXML);
+	}
+	
+
+	/** 
+	 * Create an XML document from the raw XML string.  
+	 * @param doc
+	 */
+	public void createModel( String sXML ) {
 		try {
 			Document doc = null;
 			Element root = null;
@@ -251,11 +272,22 @@ public class StdeCviXmlModel {
 		}
 	}
 	
+	/**
+	 * Set the vet from just a name string (Imports)
+	 * @param sName
+	 * @return
+	 */
+	public Element setVet( String sName ) {
+		Person vetPerson = new Person(sName, null, null);
+		Veterinarian vet = new Veterinarian(vetPerson, null, null, null, null );
+		return setVet(vet);
+	}
+	
 	public Element setVet( Veterinarian vet ) {
 		Element eVet = null;
 		if( !isValidDoc() )
 			return null;
-		if( vet.person.name != null && vet.person.name.trim().length() > 0 ) {
+		if( vet.person != null ) {
 			String sAfter = getFollowingElementList("MovementPurposes");
 			eVet = helper.getOrInsertElementBefore("Veterinarian", sAfter);
 			if( vet.licenseNumber != null && vet.licenseNumber.trim().length() > 0 )
@@ -263,8 +295,22 @@ public class StdeCviXmlModel {
 			if( vet.nationalAccreditationNumber  != null && vet.nationalAccreditationNumber .trim().length() > 0 )
 				helper.setAttribute(eVet, "NationalAccreditationNumber", vet.nationalAccreditationNumber );
 			Element person = helper.getOrAppendChild(eVet,"Person");
-			Element name = helper.getOrAppendChild(person, "Name");
-			name.setTextContent(vet.person.name);
+			if( vet.person.name != null && vet.person.name.length() > 0 ) {
+				Element name = helper.getOrAppendChild(person, "Name");
+				name.setTextContent(vet.person.name);
+			}
+			else if (vet.person.nameParts != null) {  // this should only happen with data files.
+				Element eNameParts = helper.getOrAppendChild(person, "NameParts");
+				sAfter = "LastName";
+				if( vet.person.nameParts.firstName != null && vet.person.nameParts.firstName.trim().length() > 0 ) {
+					Element eFirstName = helper.getOrInsertElementBefore(eNameParts, "FirstName", sAfter);
+					eFirstName.setTextContent(vet.person.nameParts.firstName);
+				}
+				if( vet.person.nameParts.lastName != null && vet.person.nameParts.lastName.trim().length() > 0 ) {
+					Element eLastName = helper.getOrAppendChild(eNameParts, "LastName");
+					eLastName.setTextContent(vet.person.nameParts.lastName);
+				}
+			}
 			if( vet.person.phone != null && vet.person.phone.trim().length() > 0 ) {
 				Element phone = helper.getOrAppendChild(person, "Phone");
 				helper.setAttribute(phone, "Type", "Unknown");
@@ -309,7 +355,7 @@ public class StdeCviXmlModel {
 		Element address = null;
 		if( e != null ) {
 			String sAfter = null;
-			address = helper.getOrAppendChild(e, "Adddress" );
+			address = helper.getOrAppendChild(e, "Address" );
 			if( addr.line1 != null && addr.line1.trim().length() > 0 ) {
 				sAfter = "Line2,Town,County,State,ZIP,Country,GeoPoint";
 				Element line1 = helper.getOrInsertElementBefore( address, "Line1", sAfter);
@@ -375,41 +421,82 @@ public class StdeCviXmlModel {
 	 */
 	public String getPurpose() {
 		String sRet = null;
-		String sPath = "//MovementPurposes/MovementPurpose";
+		String sPath = "MovementPurposes/MovementPurpose";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
+	
+	/**
+	 * Set values in the Premises record for the element sElementName with values listed in String params.
+	 * Do not overwrite with null values, but do overwrite changes. 
+	 * For convenience, these are the values with fields in the Edit Dialog.
+	 * @param sElement
+	 * @param sPIN
+	 * @param sPremName
+	 * @param sPhone
+	 * @param sAddressLine1
+	 * @param sCity
+	 * @param sCounty
+	 * @param sStateCode
+	 * @param sZipCode
+	 * @return
+	 */
+	public Element setPremises(String sElement,  String sPIN, String sPremName, String sPhone, 
+			String sAddressLine1, String sCity, String sCounty, String sStateCode, String sZipCode) {
+		Address address = new Address(sAddressLine1, null, sCity, sCounty, sStateCode, sZipCode, "USA",
+				null, null);
+		Premises prem = new Premises(sPIN, sPremName, address, (String)null, sPhone, null );
+		return setPremises( prem, sElement);
+	}
 
-	private Element setPremises( Premises prem, String sElementName ) {
+	/**
+	 * Set values in the Premises record for the element sElementName with values in prem
+	 * Do not overwrite with null values, but do overwrite changes.
+	 * @param prem
+	 * @param sElementName
+	 * @return
+	 */
+	public Element setPremises( Premises prem, String sElement ) {
+		Element ePremises = helper.getElementByName(sElement);
+		if( ePremises != null ) {
+			updatePremises( ePremises, prem );
+		}
+		else {
+			ePremises = addPremises( prem, sElement );
+		}
+		return ePremises;
+	}
+
+	/**
+	 * Update values from prem input but do NOT remove existing values
+	 * @param ePremises Existing Premises element
+	 * @param prem Premises object with data to write
+	 * @return same ePremises element with updated data
+	 */
+	private Element updatePremises( Element ePremises, Premises prem ) {
+		String sAfter = null;
 		if( !isValidDoc() )
 			return null;
-		String sAfter = ("Origin".equals(sElementName)?getFollowingElementList("Destination"):getFollowingElementList("Consignor") );
-		Element premises = helper.getOrInsertElementBefore(sElementName, sAfter);
 		if( prem.premid  != null && prem.premid.trim().length() > 0 ) {
 			sAfter = "PremName,Address,StateZoneOrAreaStatus,HerdOrFlockStatus,Person";
-			Element pin = helper.getOrInsertElementBefore(premises, "PremId", sAfter);
-			premises.appendChild(pin);
+			Element pin = helper.getOrInsertElementBefore(ePremises, "PremId", sAfter);
 			pin.setTextContent(prem.premid);
 		}
 		if( prem.premName != null && prem.premName.trim().length() > 0 ) {
 			sAfter = "Address,StateZoneOrAreaStatus,HerdOrFlockStatus,Person";
-
-			Element premName = helper.getOrInsertElementBefore(premises,"PremName",sAfter);
-			premises.appendChild(premName);
+			Element premName = helper.getOrInsertElementBefore(ePremises,"PremName",sAfter);
 			premName.setTextContent(prem.premName);
 		}
-		setAddress( premises, prem.address );
-		Element person = helper.getOrAppendChild(premises,"PremName");
-		sAfter = "Phone,Email";
+		setAddress( ePremises, prem.address );
+		Element person = helper.getOrAppendChild(ePremises,"Person");
 		// Careful of choice between name and name parts
-		if( prem.personName != null && prem.personName.trim().length() > 0 ) {
-			helper.removeChild(person, "NameParts");
-			sAfter = "Phone,Email";
-			Element name = helper.getOrInsertElementBefore(person,"Name",sAfter);
-			name.setTextContent(prem.personName);
-		}
-		else if( prem.personNameParts != null ) {
-			helper.removeChild(person, "Name");  // If we have parts DO NOT include single name
+		if( prem.personNameParts != null ) {  // This condition will only occur when prem
+			                                  // was populated by incoming data and thus should not have Name
+			Element ePersonName = helper.getChildElementByName(person, "Name");
+			if( ePersonName != null ) {
+				logger.error( "Attempt to update Name with NameParts in " + ePremises.getTagName() );
+				return ePremises;
+			}
 			sAfter = "Name,Phone,Email";
 			Element nameParts = helper.getOrInsertElementBefore(person,"NameParts",sAfter);
 			if( prem.personNameParts.businessName != null && prem.personNameParts.businessName.trim().length() > 0 ) {
@@ -433,15 +520,47 @@ public class StdeCviXmlModel {
 				lastName.setTextContent(prem.personNameParts.lastName);
 			}
 		}			
+		else if( (prem.personName != null && prem.personName.trim().length() > 0) ||
+				  (prem.personPhone != null && prem.personPhone.trim().length() > 0) ) {
+			Element ePersonNameParts = helper.getChildElementByName(person, "NameParts");
+			if( ePersonNameParts != null ) {
+				logger.error( "Attempt to update NameParts with Name in " + ePremises.getTagName() );
+				return ePremises;
+			}
+			if( (prem.personName == null || prem.personName.trim().length() == 0) ) {
+				if(prem.premName != null && prem.premName.trim().length() > 0 )
+					prem.personName = prem.premName;
+				else 
+					prem.personName = "Not provided";
+			}
+			sAfter = "Phone,Email";
+			Element name = helper.getOrInsertElementBefore(person,"Name",sAfter);
+			name.setTextContent(prem.personName);
+		}
 		if( prem.personPhone != null && checkPhoneLength(prem.personPhone) ) {
 			sAfter = "Email";
-			Element phone = helper.getOrInsertElementBefore(premises,"Phone",sAfter);
+			Element phone = helper.getOrInsertElementBefore(ePremises,"Phone",sAfter);
 			person.appendChild(phone);
 			helper.setAttribute(phone, "Type", "Unknown");
 			helper.setAttribute(phone, "Number", prem.personPhone);
 		}	
-		return premises;
+		return ePremises;
 	}
+
+	/**
+	 * Set values in the Premises record for the element sElementName with values in prem
+	 * @param prem
+	 * @param sElementName
+	 * @return
+	 */
+	private Element addPremises( Premises prem, String sElementName ) {
+		if( !isValidDoc() )
+			return null;
+		String sAfter = ("Origin".equals(sElementName)?getFollowingElementList("Destination"):getFollowingElementList("Consignor") );
+		Element ePremises = helper.getOrInsertElementBefore(sElementName, sAfter);
+		return updatePremises(ePremises, prem);
+	}
+
 	
 	private boolean checkPhoneLength( String sPhone ) {
 		boolean bRet = true;
@@ -457,6 +576,8 @@ public class StdeCviXmlModel {
 	private Premises getPremises( String sElementName ) {
 		Premises prem = null;
 		Element ePremises = helper.getElementByName(sElementName);
+		if( ePremises == null )
+			return new Premises();
 		String premid = null;
 		Element ePIN = helper.getChildElementByName(ePremises, "PremId");
 		if( ePIN != null )
@@ -493,6 +614,9 @@ public class StdeCviXmlModel {
 					prem = new Premises(premid, premName, address, name, phone, email);
 				}
 			}
+		}
+		else {
+			prem = new Premises(premid, premName, address);
 		}
 		return prem;
 	}
@@ -539,7 +663,15 @@ public class StdeCviXmlModel {
 				latitude, longitude);
 		return address;
 	}
-	
+
+	//	public Element setPremises(String sElement,  String sPIN, String sPremName,  
+	//		String sAddressLine1, String sCity, String sCounty, String sStateCode, String sZipCode) {
+
+	public Element setOrigin(String sOriginPIN, String sOriginName, String sOriginPhone, String sOriginAddress, 
+			String sOriginCity, String sOriginCounty, String sOriginStateCode, String sOriginZipCode) {
+		return setPremises( "Origin", sOriginPIN, sOriginName, sOriginPhone, sOriginAddress, 
+			sOriginCity, sOriginCounty, sOriginStateCode, sOriginZipCode);
+	}
 
 	public Element setOrigin( Premises premises ) {
 		return setPremises( premises, "Origin");
@@ -547,6 +679,12 @@ public class StdeCviXmlModel {
 	
 	public Premises getOrigin() {
 		return getPremises("Origin");
+	}
+
+	public Element setDestination(String sOriginPIN, String sOriginName, String sOriginPhone, String sOriginAddress, 
+			String sOriginCity, String sOriginCounty, String sOriginStateCode, String sOriginZipCode) {
+		return setPremises( "Destination", sOriginPIN, sOriginName, sOriginPhone, sOriginAddress, 
+			sOriginCity, sOriginCounty, sOriginStateCode, sOriginZipCode);
 	}
 
 	public Element setDestination( Premises premises ) {
@@ -750,6 +888,7 @@ public class StdeCviXmlModel {
 			helper.setAttribute(speciesOther, "Code", animalData.speciesCode.code);
 			helper.setAttribute(speciesOther, "Text", animalData.speciesCode.text);
 		}
+		Element animalTags = helper.appendChild(eAnimal, "AnimalTags");
 		for( AnimalTag tag : animalData.animalTags ) {
 			switch( tag.type ) {
 			case AIN:
@@ -758,16 +897,16 @@ public class StdeCviXmlModel {
 			case NUES8:
 			case OtherOfficialID:
 			case ManagementID:
-				addIDNumber(eAnimal, tag);
+				addIDNumber(animalTags, tag);
 				break; 
 			case BrandImage:
-				addBrandImage(eAnimal, tag);
+				addBrandImage(animalTags, tag);
 				break; 
 			case EquineDescription:
-				addEquineDescription(eAnimal, tag);
+				addEquineDescription(animalTags, tag);
 				break; 
 			case EquinePhotographs:
-				addEquinePhotographs(eAnimal, tag);
+				addEquinePhotographs(animalTags, tag);
 				break; 
 			default:
 				logger.error("Unexpected tag " + tag.toString() );
@@ -783,8 +922,38 @@ public class StdeCviXmlModel {
 		String sSex = animalData.sex;
 		if( sSex != null && sSex.trim().length() > 0 )
 			helper.setAttribute(eAnimal, "Sex", sSex);
-		helper.setAttribute(eAnimal, "InspectionDate", animalData.inspectionDate);
+		String sInsp = animalData.inspectionDate;
+		// Required attribute, guess.
+		if(sInsp == null ) sInsp = dateFormat.format(getIssueDate());
+		helper.setAttribute(eAnimal, "InspectionDate", sInsp);
 		return eAnimal;
+	}
+	
+	/**
+	 * Convenience method to list all species in a cert.
+	 * @return
+	 */
+	public String getSpeciesCodes() {
+		StringBuffer sb = new StringBuffer();
+		HashSet<String> codes = new HashSet<String>();
+		for( Animal a : getAnimals() ) {
+			String sCode = a.speciesCode.code;
+			if( !codes.contains(sCode) )
+				codes.add(sCode);
+		}
+		for( GroupLot g : getGroups() ) {
+			String sCode = g.speciesCode.code;
+			if( !codes.contains(sCode) )
+				codes.add(sCode);
+		}
+		boolean bFirst = true;
+		for( String s : codes ) {
+			if( !bFirst )
+				sb.append(", ");
+			sb.append(s);
+			bFirst = false;
+		}
+		return sb.toString();
 	}
 	
 	public ArrayList<Animal> getAnimals() {
@@ -832,29 +1001,34 @@ public class StdeCviXmlModel {
 			helper.setAttribute(speciesOther, "Code", animalData.speciesCode.code);
 			helper.setAttribute(speciesOther, "Text", animalData.speciesCode.text);
 		}
+		Element animalTags = helper.getChildElementByName(eAnimal, "AnimalTags");
+		if( animalTags == null ) {
+			animalTags = helper.appendChild(eAnimal, "AnimalTags");
+		}
 		for( AnimalTag tag : animalData.animalTags ) {
-			switch( tag.type ) {
-			case AIN:
-			case MfrRFID:
-			case NUES9:
-			case NUES8:
-			case OtherOfficialID:
-			case ManagementID:
-				addIDNumber(eAnimal, tag);
-				break; 
-			case BrandImage:
-				addBrandImage(eAnimal, tag);
-				break; 
-			case EquineDescription:
-				addEquineDescription(eAnimal, tag);
-				break; 
-			case EquinePhotographs:
-				addEquinePhotographs(eAnimal, tag);
-				break; 
-			default:
-				logger.error("Unexpected tag " + tag.toString() );
+			if( getTag(eAnimal, tag.value) == null ) {
+				switch( tag.type ) {
+				case AIN:
+				case MfrRFID:
+				case NUES9:
+				case NUES8:
+				case OtherOfficialID:
+				case ManagementID:
+					addIDNumber(animalTags, tag);
+					break; 
+				case BrandImage:
+					addBrandImage(animalTags, tag);
+					break; 
+				case EquineDescription:
+					addEquineDescription(animalTags, tag);
+					break; 
+				case EquinePhotographs:
+					addEquinePhotographs(animalTags, tag);
+					break; 
+				default:
+					logger.error("Unexpected tag " + tag.toString() );
+				}
 			}
-
 		}
 		String sAge = animalData.age;
 		if( sAge != null && sAge.trim().length() > 0 )
@@ -868,6 +1042,19 @@ public class StdeCviXmlModel {
 		helper.setAttribute(eAnimal, "InspectionDate", animalData.inspectionDate);
 	}
 	
+	public Element getTag( Element eAnimal, String sTagNum ) {
+		Element eTag = null;
+		eTag = helper.getElementByPathAndAttribute(eAnimal, "AnimalTags/AIN", "Number", sTagNum);
+		if( eTag == null )
+			eTag = helper.getElementByPathAndAttribute(eAnimal, "AnimalTags/MfrRFID", "Number", sTagNum);
+		if( eTag == null )
+			eTag = helper.getElementByPathAndAttribute(eAnimal, "AnimalTags/NUES9", "Number", sTagNum);
+		if( eTag == null )
+			eTag = helper.getElementByPathAndAttribute(eAnimal, "AnimalTags/NUES8", "Number", sTagNum);
+		if( eTag == null )
+			eTag = helper.getElementByPathAndAttribute(eAnimal, "AnimalTags/OtherOfficialID", "Number", sTagNum);
+		return eTag;
+	}
 
 	public ArrayList<GroupLot> getGroups() {
 		ArrayList<GroupLot> groups = new ArrayList<GroupLot>();
@@ -992,23 +1179,20 @@ public class StdeCviXmlModel {
 		helper.setAttribute(eTag, "Number", tag.value);
 	}
 	
-	private void addBrandImage(Element animal, AnimalTag tag) {
-		String sAfter = "Test,Vaccination";
-		Element eTag = helper.insertElementBefore(animal, "BrandImage", sAfter);
+	private void addBrandImage(Element animalTags, AnimalTag tag) {
+		Element eTag = helper.appendChild(animalTags, "BrandImage");
 		helper.setAttribute(eTag, "BrandImageRef", findImageRef(tag));
 		helper.setAttribute(eTag, "Description", tag.value);
 	}
 	
-	private void addEquineDescription(Element animal, AnimalTag tag) {
-		String sAfter = "Test,Vaccination";
-		Element eTag = helper.insertElementBefore(animal, "EquineDescription", sAfter);
+	private void addEquineDescription(Element animalTags, AnimalTag tag) {
+		Element eTag = helper.appendChild(animalTags, "EquineDescription");
 		helper.setAttribute(eTag, "Name", tag.description.name);
 		helper.setAttribute(eTag, "Description", tag.description.description);
 	}
 	
-	private void addEquinePhotographs(Element animal, AnimalTag tag) {
-		String sAfter = "Test,Vaccination";
-		Element eTag = helper.insertElementBefore(animal, "EquinePhotographs", sAfter);
+	private void addEquinePhotographs(Element animalTags, AnimalTag tag) {
+		Element eTag = helper.appendChild(animalTags, "EquinePhotographs");
 		for( String sView : tag.photographs.views ) {
 			helper.setAttribute(eTag, "ImageRef", findImageRef(tag, sView));
 			helper.setAttribute(eTag, "View", sView);	
@@ -1114,11 +1298,18 @@ public class StdeCviXmlModel {
 		return bRet;
 	}
 	
+	public void removeGroupLot( GroupLot group ) {
+		helper.removeElement(group.eGroupLot);
+	}
+	
 	public void editGroupLot( GroupLot group ) {
 		if( !isValidDoc() ) 
 			return;
 		String sAfter = getFollowingElementList("Statements");
 		Element eGroupLot = group.eGroupLot;
+		if( eGroupLot == null ) {
+			eGroupLot = helper.insertElementBefore("GroupLot", sAfter);
+		}
 		if( group.speciesCode.isStandardCode ) {
 			Element speciesCode = helper.getChildElementByName(eGroupLot, "SpeciesCode");
 			if( speciesCode == null ) {
@@ -1173,6 +1364,7 @@ public class StdeCviXmlModel {
 	}
 	
 	public void setPDFAttachment( byte[] pdfBytes, String sFileName ) {
+		sFileName = FileUtils.replaceInvalidFileNameChars(sFileName);
 		if( isValidDoc() && pdfBytes != null && pdfBytes.length > 0 && !attachmentExists(sFileName)) {
 			binaries.setPDFAttachment(pdfBytes, sFileName);
 		}
@@ -1216,7 +1408,7 @@ public class StdeCviXmlModel {
 		} catch (ParseException e) {
 			dExp = null;
 		}
-		ArrayList<String> aInspDates = helper.listAttributesByPath( "/eCVI/Animal", "InspectionDate" );
+		ArrayList<String> aInspDates = helper.listAttributesByPath( "Animal", "InspectionDate" );
 		for( String sInsp : aInspDates ) {
 			if( sInsp != null && sInsp.trim().length() > 0 ) {
 				java.util.Date dInsp = null;
@@ -1251,13 +1443,13 @@ public class StdeCviXmlModel {
 		String sPin = null;
 		String sPath = null;
 		// Destination
-		sPath = "/eCVI/Destination/PremId";
+		sPath = "Destination/PremId";
 		sPin = helper.getElementTextByPath(sPath);
 		if( sPin != null && sPin.trim().length() != 7 ) {
 			helper.removeElementByPath(sPath);
 		}
 		// Origin	
-		sPath = "/eCVI/Origin/PremId";
+		sPath = "Origin/PremId";
 		sPin = helper.getElementTextByPath(sPath);
 		if( sPin != null && sPin.trim().length() != 7 ) {
 			helper.removeElementByPath(sPath);
@@ -1272,6 +1464,15 @@ public class StdeCviXmlModel {
 		return sRet;
 	}
 	
+	public void setCertificateNumber(String sCertificateNbr) {
+		String sPath = "/eCVI";
+		String sAttr = "CviNumber";
+		helper.setAttributeByPath(sPath, sAttr, sCertificateNbr);
+		CviMetaDataXml meta = getMetaData();
+		meta.setCertificateNbr(sCertificateNbr);
+		binaries.addOrUpdateMetadata(meta);
+	}
+	
 	public java.util.Date getIssueDate() {
 		java.util.Date dRet = null;
 		String sPath = "/eCVI";
@@ -1280,19 +1481,38 @@ public class StdeCviXmlModel {
 		dRet = XMLUtility.xmlDateToDate(sDate);
 		return dRet;
 	}
+
+	// The following are convenience methods to pull elements from the metadata attachment.
 	
 	public CviMetaDataXml getMetaData() {
-		CviMetaDataXml mRet = binaries.getMetaData();
-		return mRet;
+		if( metaData == null ) {
+			metaData = binaries.getMetaData();
+			if( metaData == null ) {
+				metaData = new CviMetaDataXml();
+				binaries.addOrUpdateMetadata(metaData);
+			}
+		}
+		return metaData;
 	}
 	
-	// The following are convenience methods to pull elements from the metadata attachment.
+	public void setCVINumberSource(String sCVINbrSource) {
+		CviMetaDataXml meta = getMetaData();
+		meta.setCVINumberSource(sCVINbrSource);
+		binaries.addOrUpdateMetadata(meta);		
+	}
+	
 	public java.util.Date getBureauReceiptDate() {
 		java.util.Date dRet = null;
 		CviMetaDataXml meta = getMetaData();
 		if( meta != null )
-			return meta.getBureauReceiptDate();
+			dRet = meta.getBureauReceiptDate();
 		return dRet;
+	}
+	
+	public void setBureauReceiptDate( java.util.Date dReceived ) {
+		CviMetaDataXml meta = getMetaData();
+		meta.setBureauReceiptDate(dReceived);
+		binaries.addOrUpdateMetadata(meta);
 	}
 	
 	public boolean hasErrors() {

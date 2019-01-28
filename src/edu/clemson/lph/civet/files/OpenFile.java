@@ -138,6 +138,10 @@ public class OpenFile {
 		return source.isXFA();
 	}
 	
+	public boolean isDataFile() {
+		return source.isDataFile();
+	}
+	
 	/**
 	 * Preconditions:  source.iPage points to last page transcribed
 	 * model has been updated with content of that page

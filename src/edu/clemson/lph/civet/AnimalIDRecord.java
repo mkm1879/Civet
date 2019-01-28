@@ -46,12 +46,22 @@ public class AnimalIDRecord {
 
 	@Override
 	public boolean equals( Object o ) {
-		if( !( o instanceof AnimalIDRecord ) ) return false;
 		if( o == null ) return false;
+		if( !( o instanceof AnimalIDRecord ) ) return false;
 		AnimalIDRecord rOther = (AnimalIDRecord)o;
-		if( rOther.animal == this.animal )  // Test identity of animals =
+		if( rOther.animal == this.animal )  // Test identity of animals Objects
 			return true;
-		// Or test equality of values.
+		if( rOther.animal == null && this.animal != null)
+			return false;
+		if( rOther.animal != null && this.animal == null)
+			return false;
+		if( rOther.animal == null && this.animal == null)
+			return false;
+		if( rOther.animal.getFirstOfficialID() == null || this.animal.getFirstOfficialID() == null )
+			return false;
+		if( rOther.animal.speciesCode.code == null || this.animal.speciesCode.code == null )
+			return false;
+		// Or test equality of values. 
 		return ( rOther.animal.speciesCode.code == this.animal.speciesCode.code && 
 				rOther.animal.getFirstOfficialID().equals(this.animal.getFirstOfficialID() ) );
 	}

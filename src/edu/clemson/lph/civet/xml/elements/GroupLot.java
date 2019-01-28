@@ -21,6 +21,8 @@ package edu.clemson.lph.civet.xml.elements;
 
 import org.w3c.dom.Element;
 
+import edu.clemson.lph.civet.lookup.SpeciesLookup;
+
 public class GroupLot {
 	public Element eGroupLot;
 	public SpeciesCode speciesCode;
@@ -34,9 +36,9 @@ public class GroupLot {
 	public String sex;
 	// Ingnore SexDetail unless received in source file
 	public String description;
-	
+
 	public GroupLot(Element eGroupLot, SpeciesCode speciesCode, String groupLotId, Double quantity, String unit, 
-				String age, String breed, String sex, String description ) {
+			String age, String breed, String sex, String description ) {
 		this.eGroupLot = eGroupLot;
 		this.speciesCode = speciesCode;
 		this.groupLotId = groupLotId;
@@ -52,5 +54,19 @@ public class GroupLot {
 			Long iQuant = (Long) Math.round(quantity); 
 			description = "Group of " + iQuant.toString() + " " + sSpecies;
 		}
+	}
+
+	public GroupLot(String speciesCode, Double quantity ) {
+		this.eGroupLot = null;
+		this.speciesCode = new SpeciesCode(speciesCode);
+		this.groupLotId = null;
+		this.quantity = quantity;
+		this.unit = null;
+		this.age = null;
+		this.breed = null;
+		this.sex = null;
+		String sSpecies = speciesCode.toString();
+		Integer iQuant = quantity.intValue(); 
+		description = "Group of " + iQuant.toString() + " " + sSpecies;
 	}
 }

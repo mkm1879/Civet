@@ -73,12 +73,14 @@ import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.civet.xml.elements.Animal;
 import edu.clemson.lph.civet.xml.elements.GroupLot;
 import edu.clemson.lph.civet.xml.elements.SpeciesCode;
+import edu.clemson.lph.civet.xml.elements.Veterinarian;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.OneLineQuestionDialog;
 import edu.clemson.lph.dialogs.YesNoDialog;
 import edu.clemson.lph.pdfgen.PDFOpener;
 import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.CountyUtils;
+import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.PremCheckSum;
 
 
@@ -105,7 +107,7 @@ public final class CivetEditDialogController {
 	private String sPrevCVINo;
 	private String sPreviousSpecies;
 	private boolean bSppEntered = false;
-	private boolean bInClearForm = false;
+	private boolean bInSppChangeByCode = false;
 	boolean bInSearch = false;
 	private FormEditListener formEditListener = null;
 	private ArrayList<File> filesToOpen = null;
@@ -175,7 +177,6 @@ public final class CivetEditDialogController {
 		currentFile = openFileList.getCurrentFile();
 		idListModel = new AnimalIDListTableModel(currentFile.getModel());
 		setAllFocus();
-		setTraversal();
 		dlg.setTitle(getViewerTitle()+currentFile.getSource().getFileName());
 		setPage(currentFile.getCurrentPageNo());
 		setPages(currentFile.getPageCount());
@@ -183,8 +184,9 @@ public final class CivetEditDialogController {
 		setFiles(openFileList.getFileCount());
 		dlg.setFormEditable(dlg.iMode != CivetEditDialog.VIEW_MODE);
 		updateCounterPanel();
+		setupSaveLogic();	
 		viewer.viewPage(currentFile.getCurrentPageNo()); 
-		setupSaveButtons();	
+		clearForm();
 		viewer.updatePdfDisplay();
 		if( currentFile.getSource().isDataFile() )
 			populateFromStdXml(currentFile.getSource().getDataModel()) ;
@@ -212,6 +214,7 @@ public final class CivetEditDialogController {
 	private void initializeDBComponents() {
 		if( !Beans.isDesignTime() ) {
 			try {
+				setTraversal();
 				String sDirection = CivetConfig.getDefaultDirection();
 				if( "Import".equalsIgnoreCase(sDirection) ) {
 					dlg.rbImport.setSelected(true);
@@ -279,7 +282,7 @@ public final class CivetEditDialogController {
 		});
 		dlg.mntmSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				doSave();
+				doSaveOptions();
 			}
 		});
 		dlg.mntmClose.addActionListener(new ActionListener() {
@@ -540,27 +543,14 @@ public final class CivetEditDialogController {
 		dlg.cbSpecies.addFocusListener( new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				if(bInClearForm)
-					return;
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						doCheckSpeciesChange1();
-					}
-				});
+				doCheckSpeciesChange1();
 				
 			}
 		});
 		dlg.cbSpecies.addItemListener( new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent arg0) {
-				if(bInClearForm)
-					return;
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						if( !bInClearForm )
-							doCheckSpeciesChange2();
-					}
-				});
+				doCheckSpeciesChange2();
 			}
 		});
 		dlg.bAddSpecies.addActionListener(new java.awt.event.ActionListener() {
@@ -613,9 +603,9 @@ public final class CivetEditDialogController {
 				runErrorDialog();
 			}
 		});
-		dlg.bAddToLast.addActionListener(new java.awt.event.ActionListener() {
+		dlg.bPageOptions.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				doAddToLast();
+				doPageOptions();
 			}
 		});
 		dlg.bAddIDs.addActionListener( new ActionListener() {
@@ -626,7 +616,7 @@ public final class CivetEditDialogController {
 		});
 		dlg.bSave.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				doSave();
+				doSaveOptions();
 			}
 		});
 
@@ -761,11 +751,212 @@ public final class CivetEditDialogController {
 		dlg.setFocusTraversalPolicy(traversal);
 	}
 
-	void setupSaveButtons() {
-		if( isReopened() ) {
-			dlg.bAddToLast.setVisible(false);			
+	private static final int OPEN = 0;
+	private static final int ONEPAGE = 1;
+	private static final int NOSPLITMORE = 2;
+	private static final int LASTPAGE = 3;
+	private static final int SPLITMORE = 4;
+	private static final int CHOOSE = 5;
+	private static final int CHOSEADD = 6;
+	private static final int CHOSENEW = 7;
+	private static final int CHOSEVIEW = 8;
+	private static final int SAVED = 9;
+	private int iCurrentSaveMode = ONEPAGE;
+	
+	/**
+	 * Complex logic around saving versus adding pages
+	 * if multipage PDF and there are more pages forward, delay saving until next page is viewed
+	 * Save = Next Page
+	 * Add to Last = invisible unless in preview or Add Page to Previous
+	 * This method determines appropriate mode and then calls setupSaveButtons
+	 */
+	private void setupSaveLogic() {
+		switch(iCurrentSaveMode) {
+		case OPEN:
+		case CHOSEADD:
+		case CHOSENEW:
+		case SAVED:
+			if( currentFile.getPageCount() == 1 )
+				iCurrentSaveMode = ONEPAGE;
+			else if( currentFile.getCurrentPageNo() == currentFile.getPageCount() )
+				iCurrentSaveMode = LASTPAGE;
+			else if( !currentFile.getSource().canSplit() && currentFile.getCurrentPageNo() != currentFile.getPageCount() )
+				iCurrentSaveMode = NOSPLITMORE;
+			else if( currentFile.getSource().canSplit() && currentFile.getCurrentPageNo() != currentFile.getPageCount() )
+				iCurrentSaveMode = SPLITMORE;
+			break;
+		case CHOSEVIEW:
+			if( currentFile.getCurrentPageNo() == currentFile.getPageCount() )
+				iCurrentSaveMode = LASTPAGE;
+			else if( !currentFile.getSource().canSplit() && currentFile.getCurrentPageNo() != currentFile.getPageCount() )
+				iCurrentSaveMode = NOSPLITMORE;
+			else if( currentFile.getSource().canSplit() && currentFile.getCurrentPageNo() != currentFile.getPageCount() )
+				iCurrentSaveMode = CHOOSE;		}
+		setupSaveButtons();
+	}
+	
+	/**
+	 * This method sets button text and visibility
+	 */
+	private void setupSaveButtons() {
+		switch( iCurrentSaveMode ) {
+		case ONEPAGE:
+		case LASTPAGE:
+			dlg.bPageOptions.setVisible(false);	
+			dlg.bSave.setVisible(true);
+			dlg.bSave.setText("Save");
+			dlg.setFormEditable(true);
+			break;
+		case NOSPLITMORE:
+			dlg.bPageOptions.setVisible(true);	
+			dlg.bPageOptions.setText("View Next Page");
+			dlg.bSave.setVisible(true);
+			dlg.bSave.setText("Save All Pages");
+			dlg.setFormEditable(true);
+			break;
+		case SPLITMORE:
+			dlg.bPageOptions.setVisible(true);	
+			dlg.bPageOptions.setText("View Next Page");
+			dlg.bSave.setVisible(false);
+			dlg.setFormEditable(true);
+			break;
+		case CHOOSE:
+			dlg.bPageOptions.setVisible(true);	
+			dlg.bPageOptions.setText("Add Page to Previous");
+			dlg.bSave.setVisible(true);
+			dlg.bSave.setText("Save New CVI");
+			dlg.setFormEditable(false);
+			break;
+		default:
+			logger.error("Invalid Save Mode in setupButtons " + iCurrentSaveMode);
 		}
-		dlg.bEditLast.setEnabled(true);
+	}
+	
+	/** 
+	 * Perform current function of the Page Options button
+	 */
+	private void doPageOptions() {
+		if( currentFile.getSource().canSplit() ) {
+			try {
+				currentFile.addPageToCurrent();	 
+			} catch (SourceFileException e) {
+				// TODO Auto-generated catch block
+				logger.error(e);
+			}
+		}
+		switch( iCurrentSaveMode ) {
+		case ONEPAGE:
+		case LASTPAGE:
+			// Invisible
+			break;
+		case NOSPLITMORE:
+			doViewNext();
+			break;
+		case CHOOSE:
+			doAddToPrevious();
+			break;
+		case SPLITMORE:
+			doViewNext();
+			break;
+		default:
+			logger.error("Invalid Save Mode in doPageOptions " + iCurrentSaveMode);
+		}
+	}
+	
+	/**
+	 *  Perform current function of Save button.
+	 */
+	private void doSaveOptions() {
+		switch( iCurrentSaveMode ) {
+		case ONEPAGE:
+		case LASTPAGE:
+		case NOSPLITMORE:
+			doSave();
+			break;
+		case CHOOSE:
+			doSaveNew();
+			break;
+		case SPLITMORE:
+			// Invisible
+			break;
+		default:
+			logger.error("Invalid Save Mode in doSaveOptions " + iCurrentSaveMode);
+		}
+	}
+
+	/**
+	 * Default save action for currently loaded model and form.
+	 */
+	private void doSave() {
+		try {
+			// If save() finds errors be sure form is editable so they can be corrected.
+			dlg.setFormEditable( false );
+			int iSaveModeIn = iCurrentSaveMode;
+			iCurrentSaveMode = SAVED;
+			if( !save() ) {
+				iCurrentSaveMode = iSaveModeIn;
+				dlg.setFormEditable( true );
+			}
+		} catch (SourceFileException e) {
+			String sCVINo = dlg.jtfCVINo.getText();
+			MessageDialog.showMessage(getDialog(), "Civet Error", "Failed to save Certificate number " + sCVINo);
+			logger.error(e);
+		}
+		// Processing returns in saveComplete() after thread completes.;
+	}
+	
+	/**
+	 * Save the previously entered data and clear form for current page
+	 */
+	private void doSaveNew() {
+		try {
+			dlg.setFormEditable( false );
+			currentFile.pageBackward(true);  // Kluge move back so we can move forward after save
+			int iSaveModeIn = iCurrentSaveMode;
+			iCurrentSaveMode = SAVED;
+			if( !save() ) {
+				iCurrentSaveMode = iSaveModeIn;
+				dlg.setFormEditable( true );
+			}
+		} catch (SourceFileException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+		// Processing returns in saveComplete() after thread completes.;
+	}
+	
+	/**
+	 * View the next page while retaining data and model 
+	 * before splitting or saving.
+	 */
+	private void doViewNext() {
+		try {
+			currentFile.pageForward(true);
+		} catch (SourceFileException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+		iCurrentSaveMode = CHOSEVIEW;
+		setupSaveLogic();
+	}
+	
+	/**
+	 * Add the currently displayed page to model retained 
+	 * from previous page and open controls for further editing
+	 */
+	private void doAddToPrevious() {
+		try {
+			// Adds the current PDF page to the data model attachment
+			// already partially edited.
+			// This drills all the way down to the PDFSourceFile subclass
+			// which is the only one that can be split and assembled.
+			currentFile.addPageToCurrent();
+		} catch (SourceFileException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+		iCurrentSaveMode = CHOSEADD;
+		setupSaveLogic();
 	}
 	
 	public String getViewerTitle() { return viewerTitle; }
@@ -832,20 +1023,6 @@ public final class CivetEditDialogController {
 		}
 	}
 	
-	/** 
-	 * This may be obsolete or changing.
-	 */
-	void doAddToLast() {
-		if( currentFile.getSource().canSplit() ) {
-			try {
-				currentFile.addPageToCurrent();	 
-			} catch (SourceFileException e) {
-				// TODO Auto-generated catch block
-				logger.error(e);
-			}
-		}
-	}
-
 	
 	protected void checkZipcode(JTextField jtfZip) {
 		if( jtfZip == null ) return;
@@ -863,7 +1040,7 @@ public final class CivetEditDialogController {
 	}
 
 	private void setActiveSpecies( String sSpecies ) {
-		bInClearForm = true;
+		bInSppChangeByCode = true;
 		updateSpeciesList(false);
 		dlg.cbSpecies.setSelectedItem(sSpecies);
 		String sSpeciesCode = dlg.cbSpecies.getSelectedCode();
@@ -872,7 +1049,11 @@ public final class CivetEditDialogController {
 				dlg.jtfNumber.setText(Integer.toString(r.iNumber) );
 			}
 		}
-		bInClearForm = false;
+		bInSppChangeByCode = false;
+	}
+	
+	public String getOriginalFileName() {
+		return currentFile.getSource().getFileName();
 	}
 
 	public int getPageNo() { return currentFile.getCurrentPageNo(); }
@@ -1162,7 +1343,7 @@ public final class CivetEditDialogController {
 	 */
 	public void clearForm() {
 		bSppEntered = false;
-		bInClearForm = true;
+		bInSppChangeByCode = true;
 		formEditListener.clear();
 		// Always start with a blank search box.
 		dlg.jtfThisPIN.getSearchDialog().clear(); 
@@ -1243,7 +1424,7 @@ public final class CivetEditDialogController {
 		aSpecies = new ArrayList<SpeciesRecord>();
 		dlg.lError.setVisible(false);
 		dlg.bMultiSpecies = false;
-		bInClearForm = false;
+		bInSppChangeByCode = false;
 	}
 
 	/**
@@ -1258,7 +1439,7 @@ public final class CivetEditDialogController {
 		else {
 			try {
 				bSppEntered = true;
-				bInClearForm = true;
+				bInSppChangeByCode = true;
 				String sOriginState = xStd.getOrigin().address.state;
 				if( sOriginState != null ) {
 					sOriginState = States.getState(sOriginState);
@@ -1355,7 +1536,10 @@ public final class CivetEditDialogController {
 						String sThisHerdsCounty = getHerdsCounty( sThisState, sThisCountyIn, sThisZip);
 						dlg.cbThisCounty.setSelectedItem(sThisHerdsCounty);
 						dlg.jtfZip.setText(sThisZip);
-						String sVetName = xStd.getVet().person.name;
+						Veterinarian vet = xStd.getVet();
+						String sVetName = "";
+						if( vet != null )
+							sVetName = vet.person.name;
 						dlg.jtfIssuedBy.setText(sVetName);
 
 					}
@@ -1404,7 +1588,7 @@ public final class CivetEditDialogController {
 //					if( c != null)
 //						c.requestFocus();
 				}
-				bInClearForm = false;
+				bInSppChangeByCode = false;
 			} catch( Exception e ) {
 				logger.error("Unexpected error loading from XML standard document", e);
 			}
@@ -1413,7 +1597,7 @@ public final class CivetEditDialogController {
 	
 	private String getHerdsCounty( String sStateCode, String sCounty, String sZip ) {
 		String sRet = Counties.getHerdsCounty(sStateCode, sCounty);
-		if( sRet == null && sZip.trim().length() >= 5 && !sZip.equals("00000") ) {
+		if( sRet == null && sZip != null && sZip.trim().length() >= 5 && !sZip.equals("00000") ) {
 				try {
 					String sZipCounty = CountyUtils.getCounty(sZip);
 					sRet = Counties.getHerdsCounty(sStateCode, sZipCounty);	
@@ -1537,28 +1721,7 @@ public final class CivetEditDialogController {
 			dlg.setModal(true);
 			dlg.setVisible(true);
 			setActiveSpecies( dlg.getSelectedSpecies() );
-		}
-	}
-	
-	private void doSave() {
-		String sCVINo = dlg.jtfCVINo.getText();
-		try {
-			if( sCVINo.equalsIgnoreCase(sPrevCVINo) ) {
-				MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " hasn't changed since last save");
-				dlg.jtfCVINo.requestFocus();
-				return;
-			}
-			if( CertificateNbrLookup.certficateNbrExists(dlg.jtfCVINo.getText()) ) {
-				MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " already exists");
-				dlg.jtfCVINo.requestFocus();
-				return;
-			}
-			// If save() finds errors be sure form is editable so they can be corrected.
-			if( !save() )
-				dlg.setFormEditable( true );
-		} catch (SourceFileException e) {
-			MessageDialog.showMessage(getDialog(), "Civet Error", "Failed to save Certificate number " + sCVINo);
-			logger.error(e);
+			FileUtils.writeTextFile(currentFile.getModel().getXMLString(), "AfterAdd.xml");
 		}
 	}
 
@@ -1567,12 +1730,21 @@ public final class CivetEditDialogController {
 	 * @throws SourceFileException 
 	 */
 	boolean save() throws SourceFileException {
-		currentFile.addPageToCurrent();
+		String sCVINo = dlg.jtfCVINo.getText();
+			if( sCVINo.equalsIgnoreCase(sPrevCVINo) ) {
+				MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " hasn't changed since last save");
+				dlg.jtfCVINo.requestFocus();
+				return false;
+			}
+			if( CertificateNbrLookup.certficateNbrExists(dlg.jtfCVINo.getText()) ) {
+				MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " already exists");
+				dlg.jtfCVINo.requestFocus();
+				return false;
+			}
 		// Collect up all values needed
 		dlg.setImport(dlg.rbImport.isSelected());
 		boolean bInbound = dlg.rbImport.isSelected();
-		boolean bXFA = false;
-		boolean bAgView = false;
+		boolean bDataFile = currentFile.isDataFile();
 		String sOtherState = dlg.cbOtherState.getSelectedValue();
 		String sOtherStateCode = States.getStateCode(sOtherState);
 		String sOtherName = dlg.jtfOtherName.getText();
@@ -1611,7 +1783,6 @@ public final class CivetEditDialogController {
 			MessageDialog.showMessage(dlg, "Civet Error", "Issuing Veterinarian is required");
 			return false;
 		}
-		String sCVINo = dlg.jtfCVINo.getText();
 		updateSpeciesList(false);
 		StdeCviXmlModel model = currentFile.getModel();
 		if( sOtherState == null || sOtherState.trim().length() == 0 || aSpecies.size() == 0 
@@ -1629,22 +1800,55 @@ public final class CivetEditDialogController {
 			return false;
 		}
 
-		// Precondition: PDF, Species and Errors already in model.
+		// Precondition: PDF, Animals and Errors already in model.
 		// NOTE!!!!  model is not thread safe at this point.  
-		SaveCVIThread thread = new SaveCVIThread(this, model, bInbound, bXFA, bAgView, sOtherStateCode,
+		SaveCVIThread thread = new SaveCVIThread(this, model, bInbound, bDataFile, 
+				aSpecies, sOtherStateCode,
 				sOtherName, sOtherAddress, sOtherCity, sOtherCounty, sOtherZipcode, sOtherPIN,
 				sThisPremisesId, sThisName, sPhone,
 				sStreetAddress, sCity, sThisCounty, sZipcode,
 				dDateIssued, dDateReceived, iIssuedByKey, sIssuedByName, sCVINo,
 				sMovementPurpose);
-		// Messy way of checking for rapid fire duplicate entry
 		sPrevCVINo = sCVINo;
 		thread.start();
 		return true;
 	}
 	
+	/**
+	 * Called by save thread to allow edit last, add page to last, etc.
+	 * @param fLast
+	 */
+	public void setLastSavedFile( File fLast ) {
+		this.fLastSaved = fLast;
+	}
+	
+	/**
+	 * Navigate to the next page to edit
+	 * Here we ask for only incomplete pages.  (Nav bar steps through all pages and files).
+	 * TODO Decide if the next page MIGHT be part of the just saved CVI and offer correct choices.
+	 */
 	public void saveComplete() {
-		moveCompletedFiles();
+		try {
+			// Only on multipage PDF do we page forward on save
+			if( currentFile.getSource().canSplit() && currentFile.morePagesForward(true) ) {
+				currentFile.pageForward(true);
+				viewer.viewPage(currentFile.getCurrentPageNo());
+			}
+			// Backup to get skipped pages?  Not currently.
+			else if ( openFileList.moreFilesForward(true) || openFileList.moreFilesBack(true) ) {
+				currentFile = openFileList.nextFile(true);
+				currentFile.viewFile();
+			}
+			else {
+				moveCompletedFiles();
+				dlg.setVisible(false);
+				dlg.dispose();
+			}
+			setupFilePage();
+		} catch (SourceFileException | PdfException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
 	}
 	
 	private void moveCompletedFiles() {
@@ -1715,6 +1919,13 @@ public final class CivetEditDialogController {
 		opener.openPDFContentInAcrobat(currentFile.getPDFBytes());
 	}
 
+	/**
+	 * Save logic is pretty clear EXCEPT when we do weird things like add species
+	 * to allow multi-species CVIs.
+	 * The ArrayList aSpecies holds the species code and number of each species
+	 * for use in the AddIds dialog and save().
+	 * @param bClear
+	 */
 	private void updateSpeciesList( boolean bClear )  {
 		String sNum = dlg.jtfNumber.getText();
 		String sSpeciesCode = dlg.cbSpecies.getSelectedCode();
@@ -1754,7 +1965,9 @@ public final class CivetEditDialogController {
 	    simply NOT triggering a change for harmless things like clearing the form.
 	*/
 	private void doCheckSpeciesChange1() {
-		sPreviousSpecies = dlg.cbSpecies.getSelectedValue();
+		if( !bInSppChangeByCode ) {  // prevent this being called by other triggers.
+			sPreviousSpecies = dlg.cbSpecies.getSelectedValue();
+		}
 	}
 	
 	/** This pair of handlers is a complicated way to detect if the selected species
@@ -1764,8 +1977,8 @@ public final class CivetEditDialogController {
     If the change is confirmed, perform the change.
 	*/	
 	private void doCheckSpeciesChange2() {
-		{
-			bInClearForm = true;
+		if( !bInSppChangeByCode ) {  // prevent this being called by other triggers.
+			bInSppChangeByCode = true; 
 			String sNewSpecies = dlg.cbSpecies.getSelectedValue();
 			if( bSppEntered ) {
 			if( sPreviousSpecies != null && sPreviousSpecies.trim().length() > 0 &&
@@ -1784,7 +1997,7 @@ public final class CivetEditDialogController {
 				}
 			}
 			}
-			bInClearForm = false;
+			bInSppChangeByCode = false;
 			bSppEntered = true;
 			sPreviousSpecies = null;
 		}
@@ -1823,13 +2036,15 @@ public final class CivetEditDialogController {
 		if( aErrorKeys == null )
 			aErrorKeys = new ArrayList<String>();
 		CVIErrorDialog dlgErrorDialog = new CVIErrorDialog( dlg, aErrorKeys, sErrorNotes );
+		dlgErrorDialog.setModal(true);
 		dlgErrorDialog.setVisible(true);
 		if( dlgErrorDialog.isExitOK() ) {
 			sErrorNotes = dlgErrorDialog.getNotes();
+			currentFile.getModel().getMetaData().setErrorNote(sErrorNotes);
 			logger.info( "Error note: " + sErrorNotes);
-//			for( String sError : aErrorKeys ) {
-//				logger.info("Error key " + sError + " noted");
-//			}
+			for( String sError : aErrorKeys ) {
+				currentFile.getModel().getMetaData().addError(sError);
+			}
 			// Process the error list and notes
 			if( aErrorKeys.size() > 0 ) {
 				dlg.lError.setVisible(true);

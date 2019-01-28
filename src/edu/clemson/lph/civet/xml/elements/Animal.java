@@ -58,7 +58,17 @@ public class Animal {
 		this.sex = null;
 		this.inspectionDate = null;		
 	}
-		
+	
+	public Animal(String sSpeciesCode, AnimalTag.Types type, String sTag ) {
+		this.speciesCode = new SpeciesCode( sSpeciesCode );
+		animalTags = new ArrayList<AnimalTag>();
+		animalTags.add( new AnimalTag(type, sTag) );
+		this.age = null;
+		this.breed = null;
+		this.sex = null;
+		this.inspectionDate = null;		
+	}
+
 	public Animal(SpeciesCode speciesCode, String sTag ) {
 		eAnimal = null;
 		this.speciesCode = speciesCode;
@@ -70,6 +80,17 @@ public class Animal {
 		this.inspectionDate = null;
 	}
 	
+	public Animal(SpeciesCode speciesCode, AnimalTag.Types type, String sTag ) {
+		eAnimal = null;
+		this.speciesCode = speciesCode;
+		animalTags = new ArrayList<AnimalTag>();
+		animalTags.add( new AnimalTag(type, sTag) );
+		this.age = null;
+		this.breed = null;
+		this.sex = null;
+		this.inspectionDate = null;
+	}
+
 	public Animal(SpeciesCode speciesCode, ArrayList<AnimalTag> aTags ) {
 		eAnimal = null;
 		this.speciesCode = speciesCode;
@@ -86,6 +107,7 @@ public class Animal {
 		ArrayList<AnimalTag> newTags = new ArrayList<AnimalTag>();
 		newTags.addAll(animalTags);
 		Animal newAnimal = new Animal(newSpp, newTags);
+		newAnimal.eAnimal = eAnimal;
 		newAnimal.age = age;
 		newAnimal.breed = breed;
 		newAnimal.sex = sex;

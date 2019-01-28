@@ -220,28 +220,28 @@ public class StdeCviXmlV1 {
 	
 	public String getOriginPremName() {
 		String sRet = null;
-		String sPath = "/eCVI/Origin/PremName";
+		String sPath = "//Origin/PremName";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getOriginPremId() {
 		String sRet = null;
-		String sPath = "/eCVI/Origin/PremId";
+		String sPath = "//Origin/PremId";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getOriginPersonName() {
 		String sRet = null;
-		String sPath = "/eCVI/Origin/Person/Name";
+		String sPath = "//Origin/Person/Name";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getOriginPhone() {
 		String sRet = null;
-		String sPath = "/eCVI/Origin/Person/Phone";
+		String sPath = "//Origin/Person/Phone";
 		String sAttr = "Number";
 		sRet = helper.getAttributeByPath(sPath,sAttr);
 		return sRet;
@@ -250,30 +250,30 @@ public class StdeCviXmlV1 {
 
 	public String getOriginStreet() {
 		String sRet = null;
-		String sPath = "/eCVI/Origin/Address/Line1";
+		String sPath = "//Origin/Address/Line1";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getOriginCity() {
 		String sRet = null;
-		String sPath = "/eCVI/Origin/Address/Town";
+		String sPath = "//Origin/Address/Town";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getOriginCounty() {
 		String sRet = null;
-		String sPath = "/eCVI/Origin/Address/County";
+		String sPath = "//Origin/Address/County";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String validateHerdsOriginCounty() {
 		String sRet = null;
-		String sStatePath = "/eCVI/Origin/Address/State";
+		String sStatePath = "//Origin/Address/State";
 		String sState = helper.getElementTextByPath(sStatePath);
-		String sCountyPath = "/eCVI/Origin/Address/County";
+		String sCountyPath = "//Origin/Address/County";
 		String sOriginalCounty = helper.getElementTextByPath(sCountyPath);
 		if( sOriginalCounty != null ) {
 			sRet = Counties.getHerdsCounty(sState, sOriginalCounty);
@@ -289,21 +289,21 @@ public class StdeCviXmlV1 {
 	
 	public String getOriginState() {
 		String sRet = null;
-		String sPath = "/eCVI/Origin/Address/State";
+		String sPath = "//Origin/Address/State";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getOriginZip() {
 		String sRet = null;
-		String sPath = "/eCVI/Origin/Address/ZIP";
+		String sPath = "//Origin/Address/ZIP";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getOriginCountry() {
 		String sRet = null;
-		String sPath = "/eCVI/Origin/Address/Country";
+		String sPath = "//Origin/Address/Country";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
@@ -311,28 +311,28 @@ public class StdeCviXmlV1 {
 	
 	public String getDestinationPremName() {
 		String sRet = null;
-		String sPath = "/eCVI/Destination/PremName";
+		String sPath = "//Destination/PremName";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getDestinationPremId() {
 		String sRet = null;
-		String sPath = "/eCVI/Destination/PremId";
+		String sPath = "//Destination/PremId";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getDestinationPersonName() {
 		String sRet = null;
-		String sPath = "/eCVI/Destination/Person/Name";
+		String sPath = "//Destination/Person/Name";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getDestinationPhone() {
 		String sRet = null;
-		String sPath = "/eCVI/Destination/Person/Phone";
+		String sPath = "//Destination/Person/Phone";
 		String sAttr = "Number";
 		sRet = helper.getAttributeByPath(sPath,sAttr);
 		return sRet;
@@ -340,30 +340,30 @@ public class StdeCviXmlV1 {
 	
 	public String getDestinationStreet() {
 		String sRet = null;
-		String sPath = "/eCVI/Destination/Address/Line1";
+		String sPath = "//Destination/Address/Line1";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getDestinationCity() {
 		String sRet = null;
-		String sPath = "/eCVI/Destination/Address/Town";
+		String sPath = "//Destination/Address/Town";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getDestinationCounty() {
 		String sRet = null;
-		String sPath = "/eCVI/Destination/Address/County";
+		String sPath = "//Destination/Address/County";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String validateHerdsDestinationCounty() {
 		String sRet = null;
-		String sStatePath = "/eCVI/Destination/Address/State";
+		String sStatePath = "//Destination/Address/State";
 		String sState = helper.getElementTextByPath(sStatePath);
-		String sCountyPath = "/eCVI/Destination/Address/County";
+		String sCountyPath = "//Destination/Address/County";
 		String sOriginalCounty = helper.getElementTextByPath(sCountyPath);
 		sRet = Counties.getHerdsCounty(sState, sOriginalCounty);
 		if( sOriginalCounty != null ) {
@@ -380,35 +380,35 @@ public class StdeCviXmlV1 {
 	
 	public String getDestinationState() {
 		String sRet = null;
-		String sPath = "/eCVI/Destination/Address/State";
+		String sPath = "//Destination/Address/State";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getDestinationZip() {
 		String sRet = null;
-		String sPath = "/eCVI/Destination/Address/ZIP";
+		String sPath = "//Destination/Address/ZIP";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 	
 	public String getDestinationCountry() {
 		String sRet = null;
-		String sPath = "/eCVI/Destination/Address/Country";
+		String sPath = "//Destination/Address/Country";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 
 	public String getVetName() {
 		String sRet = null;
-		String sPath = "/eCVI/Veterinarian/Person/Name";
+		String sPath = "//Veterinarian/Person/Name";
 		sRet = helper.getElementTextByPath(sPath);
 		return sRet;
 	}
 
 	public String getVetLicNo() {
 		String sRet = null;
-		String sPath = "/eCVI/Veterinarian";
+		String sPath = "//Veterinarian";
 		String sAttr = "LicenseNumber";
 		sRet = helper.getAttributeByPath(sPath, sAttr);
 		return sRet;
@@ -416,7 +416,7 @@ public class StdeCviXmlV1 {
 
 	public String getVetNAN() {
 		String sRet = null;
-		String sPath = "/eCVI/Veterinarian";
+		String sPath = "//Veterinarian";
 		String sAttr = "NationalAccreditationNumber";
 		sRet = helper.getAttributeByPath(sPath, sAttr);
 		return sRet;
@@ -424,16 +424,16 @@ public class StdeCviXmlV1 {
 	
 	public String getVetPhone() {
 		String sRet = null;
-		sRet = helper.getAttributeByPath( "/eCVI/Veterinarian/Person/Phone", "Number");
+		sRet = helper.getAttributeByPath( "//Veterinarian/Person/Phone", "Number");
 		return sRet;
 	}
 	
 	public NodeList listAnimals() {
-		return helper.getNodeListByPath( "/eCVI/Animal" );
+		return helper.getNodeListByPath( "//Animal" );
 	}
 	
 	public NodeList listGroups() {
-		return helper.getNodeListByPath( "/eCVI/GroupLot" );
+		return helper.getNodeListByPath( "//GroupLot" );
 	}
 	
 	public void setOriginalCVI( byte[] pdfBytes, String sFileName ) {
@@ -450,7 +450,7 @@ public class StdeCviXmlV1 {
 					logger.error("Missing root element", new Exception("Bad XMLDocumentHelper"));
 					return;
 				}
-				Element attach = helper.getElementByPathAndAttribute( "/eCVI/Attachment", "DocType", "PDF CVI");
+				Element attach = helper.getElementByPathAndAttribute( "//Attachment", "DocType", "PDF CVI");
 				if( attach == null ) {
 					attach = doc.createElement("Attachment");
 					root.appendChild(attach);
@@ -480,7 +480,7 @@ public class StdeCviXmlV1 {
 	
 	public byte[] getOriginalCVI() {
 		byte[] bytes = null;
-		Element e = helper.getElementByPathAndAttribute( "/eCVI/Attachment", "DocType", "PDF CVI");
+		Element e = helper.getElementByPathAndAttribute( "//Attachment", "DocType", "PDF CVI");
 		if( e != null ) {
 			Element payload = helper.getElementByPath(e, "Payload");
 			if( payload != null ) {
@@ -493,7 +493,7 @@ public class StdeCviXmlV1 {
 	
 	public String getOriginalCVIFileName() {
 		String sRet = null;
-		Element e = helper.getElementByPathAndAttribute( "/eCVI/Attachment", "DocType", "PDF CVI");
+		Element e = helper.getElementByPathAndAttribute( "//Attachment", "DocType", "PDF CVI");
 		if( e != null )
 			sRet = e.getAttribute("Filename");
 		return sRet;
@@ -515,7 +515,7 @@ public class StdeCviXmlV1 {
 					logger.error("Missing root element", new Exception("Bad XMLDocumentHelper"));
 					return;
 				}
-				Element attach = helper.getElementByPathAndAttribute( "/eCVI/Attachment", "Filename", "CviMetadata.xml");
+				Element attach = helper.getElementByPathAndAttribute( "//Attachment", "Filename", "CviMetadata.xml");
 				if( attach == null ) {
 					attach = doc.createElement("Attachment");
 					root.appendChild(attach);
@@ -539,7 +539,7 @@ public class StdeCviXmlV1 {
 	
 	public CviMetaDataXml getMetaData() {
 		CviMetaDataXml mRet = null;
-		Element e = helper.getElementByPathAndAttribute( "/eCVI/Attachment", "Filename", "CviMetadata.xml");
+		Element e = helper.getElementByPathAndAttribute( "//Attachment", "Filename", "CviMetadata.xml");
 		if( e != null ) {
 			String sBase64 = e.getTextContent();
 			mRet = new CviMetaDataXml( sBase64 );

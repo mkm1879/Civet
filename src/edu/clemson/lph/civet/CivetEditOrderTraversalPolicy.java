@@ -385,8 +385,8 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 		hComponentIndexes.put("ShowAllVets",35 );
 		hComponentIndexes.put("Purpose",36 );
 		hComponentIndexes.put("ErrorsButton",37 );
-		hComponentIndexes.put("AddPageButton",38 );
-		hComponentIndexes.put("AddAnimalIDsButton",39 );
+		hComponentIndexes.put("AddAnimalIDsButton",38 );
+		hComponentIndexes.put("AddPageButton",39 );
 		hComponentIndexes.put("SaveNextButton",40 );
 
 	}

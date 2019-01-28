@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.utils.FileUtils;
 
 /**
  * Just to get the complexity of Binaries and their references isolated.
@@ -58,8 +59,8 @@ public class StdeCviBinaries {
 	
 	private ArrayList<String> listIds() {
 		ArrayList<String> aRet = new ArrayList<String>();
-		aRet.addAll(0, helper.listAttributesByPath("/eCVI/Accessions/Accession", "id") );
-		aRet.addAll(0, helper.listAttributesByPath("/eCVI/Binary", "ID") );
+		aRet.addAll(0, helper.listAttributesByPath("Accessions/Accession", "id") );
+		aRet.addAll(0, helper.listAttributesByPath("Binary", "ID") );
 		return aRet;
 	}
 	
@@ -173,7 +174,7 @@ public class StdeCviBinaries {
 		try {
 			String sMetaBase64 = metaData.getBase64String();
 			String sID = null;
-			Element eAttach = helper.getElementByPathAndAttribute("/Attachment", "Filename", "CviMetadata.xml");
+			Element eAttach = helper.getElementByPathAndAttribute("Attachment", "Filename", "CviMetadata.xml");
 			if( eAttach == null ) {
 				String sAfter = StdeCviXmlModel.getFollowingElementList("MiscAttribute");
 				sID = getNextId("A");
@@ -184,7 +185,7 @@ public class StdeCviBinaries {
 			} else {
 				sID = eAttach.getAttribute("AttachmentRef");
 			}
-			Element binary = helper.getElementByPathAndAttribute("/Binary", "ID", sID);
+			Element binary = helper.getElementByPathAndAttribute("Binary", "ID", sID);
 			if( binary == null ) {
 				binary = helper.appendChild(helper.getRootElement(), "Binary");
 				binary.setAttribute("MimeType", "text/xml");

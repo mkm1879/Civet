@@ -96,7 +96,7 @@ public class LocalPremisesTableModel implements PremisesTableModel {
 				List<String> lLine = parser.getNext();
 				while( lLine != null ) {
 					dataStore.addPremises(lLine.get(0), lLine.get(1), lLine.get(2), lLine.get(3), 
-							lLine.get(4), lLine.get(5), lLine.get(6), lLine.get(7));
+							null, lLine.get(4), lLine.get(5), lLine.get(6));
 					lLine = parser.getNext();
 				}
 			} catch (IOException e1) {

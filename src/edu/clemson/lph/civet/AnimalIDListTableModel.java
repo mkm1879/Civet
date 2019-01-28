@@ -18,25 +18,25 @@ You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.util.ArrayList;
-
 import javax.swing.table.AbstractTableModel;
-
 import org.apache.log4j.Logger;
-
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.civet.xml.elements.Animal;
+import edu.clemson.lph.civet.xml.elements.AnimalTag;
 import edu.clemson.lph.civet.xml.elements.SpeciesCode;
 import edu.clemson.lph.dialogs.MessageDialog;
+import edu.clemson.lph.utils.IDTypeGuesser;
 
 @SuppressWarnings("serial")
 public class AnimalIDListTableModel extends AbstractTableModel {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private StdeCviXmlModel xmlModel;
-	private ArrayList<AnimalIDRecord> savedAnimals;  // Stored as native data compatible with XML
+	private ArrayList<Animal> deletedAnimals;  // Stored as native data compatible with XML
 	private ArrayList<AnimalIDRecord> rows;  // Stored in table model friendly format.
 	
 	public AnimalIDListTableModel( StdeCviXmlModel xmlModel ) {
 		this.xmlModel = xmlModel;
+		deletedAnimals = new ArrayList<Animal>();
 		if( xmlModel != null ) {
 			ArrayList<Animal>animals = xmlModel.getAnimals();
 			rows = new ArrayList<AnimalIDRecord>();
@@ -49,16 +49,18 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 			rows = new ArrayList<AnimalIDRecord>();
 		}
 	}
-
-	public void saveState() {
-		savedAnimals = new ArrayList<AnimalIDRecord>();
-		for( AnimalIDRecord a : rows ) {
-			savedAnimals.add(a);
-		}
-	}
 	
-	public void restoreState() {
-		rows = savedAnimals;
+	public void save() {
+		for( Animal animal : deletedAnimals ) {
+			xmlModel.removeAnimal(animal);
+		}
+		for( AnimalIDRecord record : rows ) {
+			Animal animalIn = record.animal;
+			if( animalIn.eAnimal == null ) // don't try to add one we read from model in the first place
+				animalIn.eAnimal = xmlModel.addAnimal(animalIn); // Now in model so track as element from now on
+			else 
+				xmlModel.editAnimal(animalIn);
+		}
 	}
 	
 	/**
@@ -73,36 +75,22 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 		}
 		else {
 			rows.add(r);
-			if( animalIn.eAnimal == null ) // don't try to add one we read from model in the first place
-				animalIn.eAnimal = xmlModel.addAnimal(animalIn); // Now in model so track as element from now on
-			else 
-				xmlModel.editAnimal(animalIn);
 			fireTableDataChanged();
 		}
 	}	
 	
 	public void addRow( String sSpeciesCode, String sTag ) {
 		SpeciesCode sCode = new SpeciesCode( sSpeciesCode );
-		addRow( new Animal( sCode, sTag ) );
-	}
-	
-	public void deleteRow( int iRowID ) {
-		AnimalIDRecord rowToDel = null;
-		for( AnimalIDRecord row : rows) {
-			if( row.iRowID == iRowID ) {
-				rowToDel = row;
-				break;
-			}
-		}
-		if( rowToDel != null ) {
-			rows.remove(rowToDel);
-			xmlModel.removeAnimal(rowToDel.animal);
-			fireTableDataChanged();
-		}
+		// Assume if we are entering here, they are official guess but use OtherOfficial otherwise.
+		AnimalTag.Types type = IDTypeGuesser.getTagType(sTag);
+		if( type == null || type == AnimalTag.Types.ManagementID )
+			type = AnimalTag.Types.OtherOfficialID;
+		addRow( new Animal( sCode, type , sTag ) );
 	}
 	
 	public void deleteRow( AnimalIDRecord rowToDel ) {
 		rows.remove(rowToDel);
+		deletedAnimals.add(rowToDel.animal);
 		fireTableDataChanged();
 	}
 	

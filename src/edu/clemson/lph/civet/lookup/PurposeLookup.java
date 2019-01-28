@@ -31,8 +31,14 @@ public class PurposeLookup extends DBComboBoxModel {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private static final ArrayList<String> aStdCodes = 
-			new ArrayList<String>(Arrays.asList("breeding","feeding","grazing","medicalTreatment",
-					                            "pet","race","rodeo","sale","show","slaughter","training","other"));
+	new ArrayList<String>(Arrays.asList("Racing","Sale","Grazing","Training","Slaughter","Medical Treatment",
+									"Exhibition/Show/Rodeo","Breeding","Competition","Feeding to condition",
+									"Feeding to slaughter","Laying Hens","Hunting for harvest","Companion Animal",
+									"Personal Travel/Transit","Owner relocating","Evacuation from Natural Disaster","Other"));
+
+	// V1 codes were
+//	new ArrayList<String>(Arrays.asList("breeding","feeding","grazing","medicalTreatment",
+//    "pet","race","rodeo","sale","show","slaughter","training","other"));
 
 	public static boolean isStdCode( String sCode ) {
 		return aStdCodes.contains(sCode);

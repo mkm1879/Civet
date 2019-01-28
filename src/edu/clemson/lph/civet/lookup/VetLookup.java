@@ -274,7 +274,10 @@ public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.s
 	
 	public String getFormattedName() {
 		if( vet == null ) return null;
-		return vet.sLastName + ", " + vet.sFirstName;
+		if( vet.sFormattedName != null && vet.sFormattedName.trim().length() > 0 )
+			return vet.sFormattedName;
+		else
+			return vet.sLastName + ", " + vet.sFirstName;
 	}
 	
 	public String getFirstName() {

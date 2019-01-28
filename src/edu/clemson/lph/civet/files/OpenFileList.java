@@ -99,7 +99,7 @@ public class OpenFileList {
 	}
 	
 	/**
-	 * Use to navigate to the next available file forward or back
+	 * Use to navigate to the next available file forward or back; marking current on complete
 	 * See navigation section below for details and specific move functions.
 	 * @param bIncompleteOnly boolean true to skip files marked complete
 	 * @return Any not yet complete file
@@ -109,6 +109,8 @@ public class OpenFileList {
 		oRet = nextFileForward(bIncompleteOnly);
 		if( oRet == null )
 			oRet = nextFileBack(bIncompleteOnly);
+		aFilesComplete.add(oCurrent);
+		oCurrent = oRet;
 		return oRet;
 	}
 	
@@ -126,10 +128,8 @@ public class OpenFileList {
 	public int moveCompleteFiles() {
 		int iRet = 0;
     	// Destination for files 
-		File dirIn =  new File(CivetConfig.getInputDirPath());
-		String sDirIn = dirIn.getAbsolutePath();
     	File dirOut = new File(CivetConfig.getOutputDirPath());
-    	int iFiles = 0;
+    	iRet = 0;
     	for( OpenFile fCurrent : aFilesComplete ) {
     		if( fCurrent.getSource().moveToDirectory(dirOut) )
     			iRet++;

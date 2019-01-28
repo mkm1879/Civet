@@ -27,7 +27,8 @@ import javax.swing.table.TableRowSorter;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.xml.StdeCviXmlV1;
+import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.civet.xml.elements.Veterinarian;
 
 @SuppressWarnings("serial")
 public class StdXMLFilesTableModel extends FilesTableModel {
@@ -53,15 +54,22 @@ public class StdXMLFilesTableModel extends FilesTableModel {
 	
 	private void buildDocuments() {
 		for( File f : allFiles ) {
-			StdeCviXmlV1 thisStd = new StdeCviXmlV1( f );
+			StdeCviXmlModel thisStd = new StdeCviXmlModel( f );
 			String aRow[] = new String[8];
 			aRow[0] = thisStd.getCertificateNumber();
-			aRow[1] = thisStd.getOriginState();
-			aRow[2] = thisStd.getDestinationState();
+			aRow[1] = thisStd.getOrigin().address.state;
+			aRow[2] = thisStd.getDestination().address.state;
 			aRow[3] = thisStd.getSpeciesCodes();
-			aRow[4] = thisStd.getVetName();
+			Veterinarian vet = thisStd.getVet();
+			if( vet != null )
+				aRow[4] = vet.person.name;
+			else
+				aRow[4] = "";
 			aRow[5] = df.format(thisStd.getIssueDate());
-			aRow[6] = df.format(thisStd.getBureauReceiptDate());
+			java.util.Date dSaved = thisStd.getBureauReceiptDate();
+			if( dSaved == null ) 
+				dSaved = new java.util.Date(f.lastModified());
+			aRow[6] = df.format(dSaved);
 			String sErrors = thisStd.getErrorsString();
 			if( sErrors == null ) 
 				sErrors = "None";

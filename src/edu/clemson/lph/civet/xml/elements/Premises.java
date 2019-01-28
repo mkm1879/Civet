@@ -27,6 +27,23 @@ public class Premises {
 	public String personPhone;
 	public String personEmail;
 	
+	public Premises() {
+		this.premid = null;
+		this.premName = null;
+		this.address = null;
+		this.personName = null;
+		this.personPhone = null;
+		this.personEmail = null;
+	}
+	
+	public Premises(String premid, String premName, Address address ) {
+		this.premid = premid;
+		this.premName = premName;
+		this.address = address;
+		this.personName = null;
+		this.personPhone = null;
+		this.personEmail = null;
+	}
 	public Premises(String premid, String premName, Address address, String personName, String personPhone, String personEmail ) {
 		this.premid = premid;
 		this.premName = premName;

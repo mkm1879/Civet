@@ -158,7 +158,7 @@ public final class CivetEditDialog extends JFrame {
 	JPanel pButtons;
 	TitledBorder tbButtons;
 	JPanel pEdit;
-	JButton bAddToLast;
+	JButton bPageOptions;
 	JButton bGotoPage;
 	JButton bAddIDs;
 	JButton bEditLast;
@@ -873,30 +873,31 @@ public final class CivetEditDialog extends JFrame {
 		gbc_lError.gridy = 1;
 		pButtons.add(lError, gbc_lError);
 		lError.setVisible(false);
-	
-		bAddToLast = new JButton("Add Page to Previous");
-		GridBagConstraints gbc_bAddToLast = new GridBagConstraints();
-		gbc_bAddToLast.fill = GridBagConstraints.BOTH;
-		gbc_bAddToLast.insets = new Insets(2, 0, 0, 10);
-		gbc_bAddToLast.gridx = 1;
-		gbc_bAddToLast.gridy = 2;
-		pButtons.add(bAddToLast, gbc_bAddToLast);
 
 		bAddIDs = new JButton("Add Animal IDs");
 		GridBagConstraints gbc_btnAddIDs = new GridBagConstraints();
 		gbc_btnAddIDs.fill = GridBagConstraints.BOTH;
 		gbc_btnAddIDs.insets = new Insets(2, 0, 0, 10);
 		gbc_btnAddIDs.gridx = 1;
-		gbc_btnAddIDs.gridy = 3;
+		gbc_btnAddIDs.gridy = 2;
 		pButtons.add(bAddIDs, gbc_btnAddIDs);
 		
-		bSave = new JButton("Save");
+		bPageOptions = new JButton("Add Page to Previous");  // Text and handler varies
+		GridBagConstraints gbc_bAddToLast = new GridBagConstraints();
+		gbc_bAddToLast.fill = GridBagConstraints.BOTH;
+		gbc_bAddToLast.insets = new Insets(2, 0, 0, 10);
+		gbc_bAddToLast.gridx = 1;
+		gbc_bAddToLast.gridy = 3;
+		pButtons.add(bPageOptions, gbc_bAddToLast);
+		
+		bSave = new JButton("Save");  // Text and handler varies
 		GridBagConstraints gbc_bSave = new GridBagConstraints();
 		gbc_bSave.fill = GridBagConstraints.BOTH;
 		gbc_bSave.insets = new Insets(2, 0, 0, 10);
 		gbc_bSave.gridx = 1;
 		gbc_bSave.gridy = 4;
 		pButtons.add(bSave, gbc_bSave);
+
 	}
 	
 	public void make90Percent() {

@@ -1,6 +1,6 @@
 package edu.clemson.lph.civet.threads;
 /*
-Copyright 2014 Michael K Martin
+Copyright 2014 - 2019 Michael K Martin
 
 This file is part of Civet.
 
@@ -18,52 +18,38 @@ You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
 import javax.swing.SwingUtilities;
-
 import org.apache.log4j.Logger;
-import org.w3c.dom.Element;
 
-import edu.clemson.lph.civet.AnimalIDRecord;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetEditDialog;
 import edu.clemson.lph.civet.CivetEditDialogController;
 import edu.clemson.lph.civet.SpeciesRecord;
-import edu.clemson.lph.civet.lookup.ErrorTypeLookup;
+import edu.clemson.lph.civet.lookup.Counties;
 import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
 import edu.clemson.lph.civet.lookup.PremisesLocalStore;
 import edu.clemson.lph.civet.lookup.PurposeLookup;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXmlV1;
+import edu.clemson.lph.civet.xml.elements.*;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.FileUtils;
-import edu.clemson.lph.utils.IDTypeGuesser;
 
 public class SaveCVIThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private static final long MAX_SANE_SIZE = 5000000;
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_CIVET;
 	private CivetEditDialogController controller;
 	private ProgressDialog prog;
 	private StdeCviXmlModel model = null;
-	private byte bAttachmentBytes[] = null;
-	private String sAttachmentFileName; // Either original filename or same as email
-	private byte bAttachmentFileBytes[] = null;
-	private String sOriginalFileName = null;
-	private File fOriginalFile = null; // Original file IF it is to be stored in message
-	private String sOpenedAsFileName = null;
 	private String sXmlFileName;
 	private boolean bImport;
 	private String sOriginStateCode;
@@ -84,6 +70,7 @@ public class SaveCVIThread extends Thread {
 	private String sDestinationPhone;
 	private java.util.Date dDateIssued;
 	private java.util.Date dDateReceived;
+	private ArrayList<SpeciesRecord> aSpecies;
 	
 	private String sStdPurpose;
 	private Integer iIssuedByKey;
@@ -91,23 +78,52 @@ public class SaveCVIThread extends Thread {
 	private String sCVINo;
 	private boolean bNoEmail;
 	private boolean bCancel = false;
-	private boolean bXFA = false;
-	private boolean bAgView = false;
+	private boolean bIsDataFile = false;
 
+	/**
+	 * Pass in the values from each of the GUI controls with single values.
+	 * @param dlgController To call back to the controller.
+	 * @param model  The XML Data Model with Animals, Errors, Attachments, etc. in place
+	 * @param bImport  Direction so controls are assigned to the right elements
+	 * @param bIsDataFile  Lets us know whether to worry about existing data
+	 * @param aSpecies  Used to calculate the number of anonymous groups to add
+	 * @param sOtherStateCode
+	 * @param sOtherName
+	 * @param sOtherAddress
+	 * @param sOtherCity
+	 * @param sOtherCounty
+	 * @param sOtherZipcode
+	 * @param sOtherPIN
+	 * @param sThisPIN
+	 * @param sThisName
+	 * @param sPhone
+	 * @param sThisAddress
+	 * @param sThisCity
+	 * @param sThisCounty
+	 * @param sZipcode
+	 * @param dDateIssued
+	 * @param dDateReceived
+	 * @param iIssuedByKey   Value from picklist of in state vets.
+	 * @param sIssuedByName  Name of other state vets if entered.
+	 * @param sCVINo
+	 * @param sMovementPurpose
+	 */
 	public SaveCVIThread(CivetEditDialogController dlgController, StdeCviXmlModel model,  
-			boolean bImport, boolean bXFAIn, boolean bAgViewIn,
+			boolean bImport, boolean bIsDataFile, ArrayList<SpeciesRecord> aSpecies, 
 			String sOtherStateCode, String sOtherName, String sOtherAddress, String sOtherCity, 
 			String sOtherCounty, String sOtherZipcode, String sOtherPIN,
 			String sThisPIN, String sThisName, String sPhone,
 			String sThisAddress, String sThisCity, String sThisCounty, String sZipcode,
 			java.util.Date dDateIssued, java.util.Date dDateReceived, Integer iIssuedByKey, String sIssuedByName, String sCVINo,
 			String sMovementPurpose) {
-		this.bImport = bImport;
 		this.controller = dlgController;
 		prog = new ProgressDialog(dlgController.getDialog(), "Civet", "Saving CVI");
 		prog.setAuto(true);
 		prog.setVisible(true);
+		this.bImport = bImport;
+		this.bIsDataFile = bIsDataFile;
 		this.model = model;
+		this.aSpecies = aSpecies;
 		this.dDateIssued = dDateIssued;
 		this.dDateReceived = dDateReceived;
 		this.iIssuedByKey = iIssuedByKey;
@@ -153,8 +169,6 @@ public class SaveCVIThread extends Thread {
 			this.sDestinationZipCode = sOtherZipcode;
 			this.sDestinationPhone = null;
 		}
-		this.bXFA = bXFAIn;
-		this.bAgView = bAgViewIn;
 	}
 
 
@@ -199,70 +213,24 @@ public class SaveCVIThread extends Thread {
 					sOriginCounty, sOriginStateCode,  sOriginZipCode,  sOriginPhone );
 	}
 
+	/**
+	 * This is much simplified by new model.
+	 */
 	private void setUpFileNamesAndContent() {
-		// In the Web Services version we want to use potentially two different file types.
-		// For the attachment in USAHerds we want the original file if not PDF or is XFA.  
-		// For email, we want a PDF made from whatever image format was sent.  NOTE: for
-		// SC ours start as PDF but other users may scan to tiff, etc.
-		
-		// First case, the original file was an XFA PDF
-		if( bAttachmentBytes == null && fOriginalFile != null ) {
-			long len = fOriginalFile.length();
-			FileInputStream r;
-			try {
-				r = new FileInputStream( fOriginalFile );
-				byte bOriginalFileBytes[] = new byte[(int)len];
-				int iRead = r.read(bOriginalFileBytes);
-				r.close();
-				if( iRead != len ) {
-					throw new IOException( "Array length "+ iRead + " does not match file length " + len);
-				}
-				bAttachmentFileBytes = bOriginalFileBytes;
-				// Use original filename unless there isn't one or it is not .pdf
-				if( sAttachmentFileName == null ) {
-					sAttachmentFileName = fOriginalFile.getName();
-				}
-			} catch (IOException e) {
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						MessageDialog.showMessage( controller.getDialog(), "Civet: Error",
-								"Error Reading PDF File " + fOriginalFile.getAbsolutePath() )	;
-						prog.setVisible(false);
-						prog.dispose();
-					}
-				});
-				bCancel = true;
-				return;
-			}
-		}
-		// In this case we use the filename and bytes from a previously saved eCVI
-		else if( bAttachmentBytes != null && sOriginalFileName != null ) {
-			sAttachmentFileName = sOriginalFileName;
-			bAttachmentFileBytes = bAttachmentBytes;
-		}
-		// This applies to the original scenario where we extract pages and save as individual PDFs.
-		// Because the standard expects attached images to be PDF, we'll save even other image formats
-		// this way.  
-		else if( bAttachmentBytes != null && sAttachmentFileName == null ) {
-			sAttachmentFileName = "CVI_" + sOriginStateCode + "_To_" + sDestinationStateCode + "_" + sCVINo + ".pdf";
-			bAttachmentFileBytes = bAttachmentBytes;
-		}
-		if( bAttachmentFileBytes == null || sAttachmentFileName == null )
-			logger.error( "Reached end of setupFilenameAndContent with no name or content");
-		
 		sXmlFileName = "CVI_" + sOriginStateCode + "_To_" + sDestinationStateCode + "_" + sCVINo + ".cvi";
-		checkExistingFiles( sOpenedAsFileName, sXmlFileName );
-		sAttachmentFileName = FileUtils.replaceInvalidFileNameChars(sAttachmentFileName);
-		sXmlFileName = FileUtils.replaceInvalidFileNameChars(sXmlFileName);		
+		sXmlFileName = FileUtils.replaceInvalidFileNameChars(sXmlFileName);	
+		String sOriginalFileName = controller.getOriginalFileName();
+		checkExistingFiles( sOriginalFileName, sXmlFileName );
 	}
 	
 	/**
 	 * Look for existing .cvi files whose names will change due to state or cvi number edits
 	 * Delete any existing.
-	 * @param sExisting filename
-	 * @param sNew filename
+	 * @param sExisting filename  (just name)
+	 * @param sNew filename  (just name)
 	 */
 	private void checkExistingFiles(String sExisting, String sNew) {
+		// Don't waste time if not editing an existing file
 		if( sExisting != null && sExisting.toLowerCase().endsWith(".cvi") && !sExisting.equalsIgnoreCase(sNew) ) {
 			// Appears we opened and changed an existing .cvi file need to delete existing before saving.
 			String sEmailOutDir = CivetConfig.getEmailOutDirPath();
@@ -294,100 +262,79 @@ public class SaveCVIThread extends Thread {
 
 
 	private String buildXml() {
-		// NOTE: Starting with everything in original.
-		if( model != null ) {
-			model.validateHerdsOriginCounty();
-			model.validateHerdsDestinationCounty();
-		}
-		StdeCviXmlModel xmlBuilder = new StdeCviXmlModel(model);
-		for( String sPreviousCode : mSpeciesChanges.keySet() ) {
-			String sNewCode = mSpeciesChanges.get(sPreviousCode);
-			xmlBuilder.updateSpecies(sPreviousCode, sNewCode);
-		}
-		VetLookup vet = new VetLookup( iIssuedByKey );
-		xmlBuilder.setCviNumber(sCVINo);
-		xmlBuilder.setIssueDate(dDateIssued);
-		if( !bXFA && (model == null || model.getVetName() == null) ) {  // Don't override vet that signed XFA or mCVI or V2 document
-			Element eVet = null;
+		// Make sure spelling matches HERDS if possible
+		sOriginCounty = Counties.getHerdsCounty(sOriginStateCode, sOriginCounty);
+		sDestinationCounty = Counties.getHerdsCounty(sDestinationStateCode, sDestinationCounty); 
+		model.setCviNumber(sCVINo);
+		model.setIssueDate(dDateIssued);
+		if( !bIsDataFile ) {  // Don't override vet that signed XFA or mCVI or V2 document
 			if( bImport ) {
-				xmlBuilder.setVet(sIssuedByName);
+				model.setVet(sIssuedByName);
 			}
 			else {
-				String sVetName = vet.getLastName() + ", " + vet.getFirstName();
-				eVet = xmlBuilder.setVet(sVetName, vet.getLicenseNo(), vet.getNAN(), vet.getPhoneDigits());
-				xmlBuilder.setAddress(eVet, vet.getAddress(), vet.getCity(), null, vet.getState(), vet.getZipCode());
+				VetLookup vetLookup = new VetLookup( iIssuedByKey );
+				model.setVet( vetLookup.getFormattedName() );
 			}
-			// Use std if XFA
-			xmlBuilder.setPurpose(sStdPurpose);
+			model.setPurpose(sStdPurpose);
 		} // End if !bXFA
 		// Expiration date will be set automatically from getXML();
 		// We don't enter the person name, normally  or add logic to tell prem name from person name.
-		Element eOrigin = xmlBuilder.setOrigin(sOriginPIN, sOriginName, null, sOriginPhone);
-		xmlBuilder.setAddress(eOrigin, sOriginAddress, sOriginCity, sOriginCounty, sOriginStateCode, sOriginZipCode);
-		Element eDestination = xmlBuilder.setDestination(sDestinationPIN, sDestinationName, null, sDestinationPhone);
-		xmlBuilder.setAddress(eDestination, sDestinationAddress, sDestinationCity, sDestinationCounty, sDestinationStateCode, sDestinationZipCode);
+
+		model.setOrigin(sOriginPIN, sOriginName, sOriginPhone, sOriginAddress, sOriginCity, sOriginCounty, sOriginStateCode, sOriginZipCode);
+		model.setDestination(sDestinationPIN, sDestinationName,  
+					sDestinationPhone, sDestinationAddress, sDestinationCity, sDestinationCounty, 
+					sDestinationStateCode, sDestinationZipCode);
+		// By suggestion of Mitzy at CAI DO NOT populate Consignor or Consignee unless different!
+		
 		// Add animals and groups.  This logic is tortured!
 		// This could be greatly improved to better coordinate with CO/KS list of animals and the standard's group concept.
-		xmlBuilder.clearGroups();
+		// Precondition:  The model provided already has the species list populated with Animals.
+		// Use species list to calculate the number of unidentified animals and build groups accordingly.
+		// Precondition:  Individually identified animals were added when the AddIdentifiers dialog closed.
+		ArrayList<Animal> animals = model.getAnimals();
+		ArrayList<GroupLot> groups = model.getGroups();
 		for( SpeciesRecord sr : aSpecies ) {
 			// Only add group lot if not officially IDd so count ids and subtract
 			String sSpeciesCode = sr.sSpeciesCode;
+			int iNumOfSpp = sr.iNumber;
 			int iCountIds = 0;
-			if( aAnimalIDs != null ) {
-				for( AnimalIDRecord ar : aAnimalIDs ) {
-					if( ar.sSpeciesCode.equals(sSpeciesCode) ) {
+			if( animals != null ) {
+				for( Animal animal : animals ) {
+					if( animal.speciesCode.code.equals(sSpeciesCode) ) {
 						iCountIds++;
 					}
 				}
 			}
-			if( iCountIds < sr.iNumber ) {
-				if( !xmlBuilder.hasGroup(sSpeciesCode) )
-					xmlBuilder.addGroup(sr.iNumber - iCountIds, "Group Lot", sSpeciesCode, null, null );
-			}
-		}
-		xmlBuilder.clearAnimals();
-		if( aAnimalIDs != null ) {
-			for( AnimalIDRecord ar : aAnimalIDs ) {
-				if( "CO/KS No ID".equals(ar.sTag) || "Not provided".equals(ar.sTag) ) {
-					xmlBuilder.addAnimal( ar.sSpeciesCode, dDateIssued,null,null,null,"UN",ar.sTag);
-				}
-				else {
-					String sType = IDTypeGuesser.getTagType(ar.sTag);
-					xmlBuilder.addAnimal( ar.sSpeciesCode, dDateIssued,null,null,null,sType,ar.sTag);
-				}
-			}
-		}
-		if( !bXFA && !bAgView ) { 
-			// Don't check size on XFA PDFs because we don't control those.
-			if( bAttachmentFileBytes != null ) {
-				if( bAttachmentFileBytes.length > MAX_SANE_SIZE ) {
-					MessageDialog.messageWait(controller, "Civet Warning", "The PDF attachment is larger than normal.\nCheck your scanner settings");
-				}
-			}
-		} // End if !bXFA
-		CviMetaDataXml metaData = new CviMetaDataXml();
-		metaData.setCertificateNbr(sCVINo);
-		metaData.setBureauReceiptDate(dDateReceived);
-		if( aErrorKeys != null )
-			for( String sErr : aErrorKeys ) {
-				if( sErr != null ) {
-					String sErrorDesc = ErrorTypeLookup.getDescriptionForErrorKey(sErr);
-					if( sErrorDesc == null || sErrorDesc.trim().length() == 0 ) {
-						logger.error("Error key " + sErr + " lacks a description");
-						aErrorKeys.remove(sErr);
+			boolean bFound = false;
+			for( GroupLot group : groups ) {
+				if( group.speciesCode.code.equals(sSpeciesCode) ) {
+					bFound = true;
+					if(iCountIds == iNumOfSpp) {
+						model.removeGroupLot(group);
 					}
-					else {
-						metaData.addError(sErr);
+					else if( iCountIds > iNumOfSpp ) {
+						logger.error("Number of tags " + iCountIds + " > number of animals " + iNumOfSpp + " for species " + sSpeciesCode);
+						// Leave things alone.
+					}
+					else if( iCountIds != iNumOfSpp ) {
+						Integer iNumUntagged = iNumOfSpp - iCountIds;
+						group.quantity = iNumUntagged.doubleValue();
+						model.editGroupLot(group);
 					}
 				}
 			}
-		if( sErrorNotes != null && sErrorNotes.trim().length() > 0 )
-			metaData.setErrorNote(sErrorNotes);
-		metaData.setCVINumberSource(sCVINbrSource);
-//	System.out.println(metaData.getXmlString());
-		xmlBuilder.addMetadataAttachement(metaData);
-		xmlBuilder.setPDFAttachment(bAttachmentFileBytes, sAttachmentFileName);
-		return xmlBuilder.getXMLString();
+			if( !bFound ) {
+				Integer iNumUntagged = iNumOfSpp - iCountIds;
+				GroupLot group = new GroupLot(sSpeciesCode, iNumUntagged.doubleValue());
+				model.editGroupLot(group);
+			}
+		}
+//		Precondition model contains the current page or pages in the attachment
+//      Precondition model contains metadata for errors saved from the add errors dialog.
+		model.setCertificateNumber(sCVINo);
+		model.setBureauReceiptDate(dDateReceived);
+		model.setCVINumberSource(sCVINbrSource);
+		return model.getXMLString();
 	}
 	
 	private void saveXml(String sStdXml) {
@@ -400,10 +347,10 @@ public class SaveCVIThread extends Thread {
 			pw.close();
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					controller.getController().setLastSavedFile(fileOut);
+					controller.setLastSavedFile(fileOut);
 					CivetEditDialog dlgParent = controller.getDialogParent();
 					if( dlgParent != null ) {
-						dlgParent.getController().setLastSavedFile(fileOut);
+						dlgParent.getDialogController().setLastSavedFile(fileOut);
 					}
 				}
 			});
@@ -411,7 +358,7 @@ public class SaveCVIThread extends Thread {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					logger.error("Could not save " + sFilePath, e);
-					MessageDialog.showMessage(controller, "Civet Error: File Save", "Could not save file\n " + sFilePath );
+					MessageDialog.showMessage(controller.getDialog(), "Civet Error: File Save", "Could not save file\n " + sFilePath );
 					prog.setVisible(false);
 					prog.dispose();
 				}
@@ -425,16 +372,8 @@ public class SaveCVIThread extends Thread {
 		String sFilePath = null;
 		if( !bImport ) 
 			sFilePath = CivetConfig.getEmailOutDirPath() + sXmlFileName;
-		else if( aErrorKeys != null && aErrorKeys.size() > 0 ) {
-			for( String sKey : aErrorKeys ) {
-				if( sKey != null ) {
-					sFilePath = CivetConfig.getEmailErrorsDirPath() + sXmlFileName;
-					break;
-				}
-				else {
-					logger.error("Null error key encountered in saveCVI. " + sCVINo);
-				}
-			}
+		else if( model.hasErrors() ) {
+			sFilePath = CivetConfig.getEmailErrorsDirPath() + sXmlFileName;
 		}
 		if( sFilePath == null ) 
 			return;
@@ -446,7 +385,7 @@ public class SaveCVIThread extends Thread {
 			pw.close();
 		} catch (IOException e) {
 			logger.error("Could not save " + sFilePath, e);
-			MessageDialog.messageLater(controller, "Civet Error: File Save", "Could not save file\n " + sFilePath );
+			MessageDialog.messageLater(controller.getDialog(), "Civet Error: File Save", "Could not save file\n " + sFilePath );
 			return;
 		} 
 	}

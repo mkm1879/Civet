@@ -86,6 +86,12 @@ public abstract class SourceFile {
 		return fData;
 	}
 	
+	public java.util.Date getSaveDate() {
+		java.util.Date dSaved = null;
+		dSaved = new java.util.Date(fSource.lastModified());
+		return dSaved;
+	}
+	
 	public abstract StdeCviXmlModel getDataModel();
 	
 	public Integer getCurrentPageNo() {
