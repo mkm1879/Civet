@@ -16,6 +16,8 @@ package edu.clemson.lph.civet.files;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -213,7 +215,9 @@ public class CoKsSourceFile extends SourceFile {
 		String sRet = null;
 		String sXSLT = CivetConfig.getCoKsXSLTFile();
 		try {
-			InputStream isXLT = getClass().getResourceAsStream("../res/CO_KS_eCVI_to_Standard2.xsl");
+			File fTransform = new File(sXSLT);
+			InputStream isXLT = new FileInputStream(fTransform);
+//			InputStream isXLT = getClass().getResourceAsStream("../res/CO_KS_eCVI_to_Standard2.xsl");
 		    StringReader sourceReader = new StringReader( sAcrobatXml );
 		    ByteArrayOutputStream baosDest = new ByteArrayOutputStream();
 			TransformerFactory tFactory = TransformerFactory.newInstance();
@@ -226,6 +230,8 @@ public class CoKsSourceFile extends SourceFile {
 				logger.error("Failed to transform XML with XSLT: " + sXSLT, e);
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Should not see this unsupported encoding", e);
+			} catch (FileNotFoundException e) {
+				logger.error("Could not find transform file " + sXSLT, e);
 			}
  		return sRet;
 	}

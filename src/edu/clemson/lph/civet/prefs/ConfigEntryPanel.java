@@ -174,7 +174,7 @@ public class ConfigEntryPanel extends JPanel {
 		}
 		chooser.setCurrentDirectory(fCurrent);
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
-				"Civet Files", "csv", "txt", "xsd", "xslt", "exe");
+				"Civet Files", "csv", "txt", "xsd", "xslt", "exe", "CSV", "TXT", "XSD", "XSLT", "EXE");
 		chooser.setFileFilter(filter);
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		int returnVal = chooser.showDialog(this, "Select");

@@ -16,6 +16,8 @@ package edu.clemson.lph.civet.files;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -72,8 +74,11 @@ public class CivetSourceFile extends SourceFile {
 
 	private String makeV2(String sStdXmlV1) {
 		String sRet = null;
+		String sXSLT = "eCVI1_to_eCVI2.xsl";
 		try {
-			InputStream isXLT = getClass().getResourceAsStream("../res/eCVI1_to_eCVI2.xsl");
+			File fTransform = new File(sXSLT);
+			InputStream isXLT = new FileInputStream(fTransform);
+//			InputStream isXLT = getClass().getResourceAsStream("../res/eCVI1_to_eCVI2.xsl");
 			StringReader sourceReader = new StringReader( sStdXmlV1 );
 			ByteArrayOutputStream baosDest = new ByteArrayOutputStream();
 			TransformerFactory tFactory = TransformerFactory.newInstance();
@@ -84,9 +89,11 @@ public class CivetSourceFile extends SourceFile {
 			sRet = new String( baosDest.toByteArray(), "UTF-8" );
 			sRet = postProcessv2(sRet);
 		} catch ( TransformerException e) {
-			logger.error("Failed to transform XML with XSLT: \"../res/eCVI1_to_eCVI2.xsl\"", e);
+			logger.error("Failed to transform XML with XSLT: \"eCVI1_to_eCVI2.xsl\"", e);
 		} catch (UnsupportedEncodingException e) {
 			logger.error("Should not see this unsupported encoding", e);
+		} catch (FileNotFoundException e) {
+			logger.error("Could not find XSLT: \"eCVI1_to_eCVI2.xsl\"", e);
 		}
 		return sRet;
 	}

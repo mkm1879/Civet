@@ -64,6 +64,8 @@ PublishCivetLocal.bat
 PublishCivetXFA.bat
 Purposes.txt
 SavedStdXMLFilesTableModel.txt
+Packager/*
+Inst4J/*
 TestErrors.cvi
 TestVSPSCvis.txt
 VSPSData/

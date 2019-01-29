@@ -33,7 +33,7 @@ Folders,Y,OutputDirPath,.\CivetOutbox\,Dir,,Folder for completed CVI files and o
 Folders,N,vspsDirPath,.\VSPSData\,Dir,,Optional folder for VSPS downloads,
 Folders,N,EmailOnlyInputPath,.\EmailOnlyIn\,Dir,,Optional folder for Email Only Input,
 Folders,N,EmailOnlySendPath,.\EmailOnlySend\,Dir,,Optional folder for VSPS downloads,
-Files,Y,CoKsXSLTFile,.\CO_KS_eCVI_to_Standard.xsl,File,,XSLT transform file from Adobe to USAHA format data,
+Files,Y,CoKsXSLTFile,.\CO_KS_eCVI_to_Standard2.xsl,File,,XSLT transform file from Adobe to USAHA format data,
 Files,Y,StdSchema,.\ecviDraftRelaxed.xsd,File,,XML Schema for CVI data files,
 Files,N,acrobatPath,C:\Program Files (x86)\Adobe\Acrobat 10.0\Acrobat\Acrobat.exe,File,,Optional path to Acrobat.exe file (for non Adobe default PDF application),
 Files,Y,ExportEmailTemplate,.\CivetExportsEmailMessage.txt,File,,Template file for export CVI emails,
