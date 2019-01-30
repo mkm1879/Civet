@@ -28,7 +28,7 @@ PublishCivet.bat and PublishCivetAnt.bat files show how I package up the executa
 the existence of a ./lib folder with all the listed library jar files.  I will supply most of them or download
 newer and update the version numbers, etc.  JPedal and SqlServer if used require separate download. 
 
-Beginning with version 5 Civet is distributed as a Windows installer (other platforms if requested) courtesy of Install4J the multi-platform installer builder. https://www.ej-technologies.com/products/install4j/overview.html
+Beginning with version 5 Civet is distributed as a Windows installer (other platforms if requested) courtesy of Install4J the multi-platform installer builder. https://www.ej-technologies.com/products/install4j/overview.html ![Install4J the multi-platform installer builder](https://www.ej-technologies.com/images/product_banners/install4j_large.png)
 
 The CivetConfig.txt file will require extensive editing to conform to local absolute file paths, IP addresses,
 email settings, etc.
