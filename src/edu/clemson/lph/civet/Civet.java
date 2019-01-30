@@ -76,8 +76,6 @@ public class Civet {
 		logger.setLevel(CivetConfig.getLogLevel());
 		CivetInbox.VERSION = readVersion();
 		// TODO Remove Me!!!!
-		CivetConfig.setHERDSUserName("mmarti5");
-		CivetConfig.setHERDSPassword("G00dHERD$");
 		logger.info("Civet running build: " + CivetInbox.VERSION);
 		if( CivetInbox.VERSION.endsWith("XFA") && !stillValid() ) {
 			logger.error("JPedalXFA trial has expired.  Use Civet.jar with JPedal.jar in ./lib" );
