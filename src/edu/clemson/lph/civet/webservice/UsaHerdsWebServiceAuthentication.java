@@ -25,8 +25,9 @@ public class UsaHerdsWebServiceAuthentication {
 	 * Get the current security token if any and not expired
 	 * else authenticate using username and password provided by CivetConfig
 	 * @return token as String or null on failure.
+	 * @throws Exception 
 	 */
-	public static String getToken() {
+	public static String getToken() throws WebServiceException {
 		String sURL = CivetConfig.getHERDSWebServiceURL();
 		String sUserName = CivetConfig.getHERDSUserName();
 		String sPassword = CivetConfig.getHERDSPassword();
@@ -39,30 +40,27 @@ public class UsaHerdsWebServiceAuthentication {
 	 * @param sUserName
 	 * @param sPassword
 	 * @return token as String or null on failure.
+	 * @throws WebServiceException 
 	 */
-	public static String getToken( String sURL, String sUserName, String sPassword ) {
+	public static String getToken( String sURL, String sUserName, String sPassword ) throws WebServiceException {
 		long lNow = System.currentTimeMillis();
 		sURL = sURL + AUTH_URL;
-		try {
-			if( sToken == null || lAuthExpires <= lNow ) {
-				// Reauthenticate
-				HttpPostClient auth = new HttpPostClient();
-				auth.addParameter("grant_type", "password");
-				auth.addParameter("username", sUserName);
-				auth.addParameter("password", sPassword);
-				if( auth.getURL(sURL) ) {
-					JSONParser parser = new JSONParser( auth.getBody() );
-					sToken = parser.get("access_token");
-					sTokenType = parser.get("token_type");
-					lAuthExpires = lNow + (1000l + Integer.parseInt(parser.get("expires_in")));
-				}
-				else {
-					logger.error("Error in authorization at URL: " + sURL + '\n' + auth.getError());
-					sToken = null;
-				}
+		if( sToken == null || lAuthExpires <= lNow ) {
+			// Reauthenticate
+			HttpPostClient auth = new HttpPostClient();
+			auth.addParameter("grant_type", "password");
+			auth.addParameter("username", sUserName);
+			auth.addParameter("password", sPassword);
+			if( auth.getURL(sURL) ) {
+				JSONParser parser = new JSONParser( auth.getBody() );
+				sToken = parser.get("access_token");
+				sTokenType = parser.get("token_type");
+				lAuthExpires = lNow + (1000l + Integer.parseInt(parser.get("expires_in")));
 			}
-		} catch( Exception e ) {
-			e.printStackTrace();
+			else {
+				sToken = null;
+				throw new WebServiceException("Error in authorization at URL: " + sURL + '\n' + auth.getError());
+			}
 		}
 		return sToken;
 	}

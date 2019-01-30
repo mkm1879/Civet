@@ -72,7 +72,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 	 * @throws WebServiceException 
 	 */
 	public UsaHerdsLookupPrems() throws WebServiceException {
-		CivetWebServices service = CivetWebServiceFactory.getService();
+		CivetWebServices service = new CivetWebServices();
 		Document doc = service.getCivetPremises(null, null, null, null, "CO", null, null, null, null, null);
 //		System.out.println(XMLUtility.domToString(doc));
 		populateRows(doc);
@@ -97,7 +97,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 	public UsaHerdsLookupPrems( String sStatePremID, String sFedPremID, 
 			String sAddress1, String sCity, String sStateCode, String sZipCode, 
 			String sCounty, String sCountry, String sPhone, String sClassType ) throws WebServiceException {
-		CivetWebServices service = CivetWebServiceFactory.getService();
+		CivetWebServices service = new CivetWebServices();
 		Document doc = service.getCivetPremises(sStatePremID, sFedPremID, 
 				 sAddress1, sCity, sStateCode, sZipCode, 
 				 sCounty, sCountry, sPhone, sClassType);
@@ -111,7 +111,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 	 * @throws WebServiceException 
 	 */
 	public UsaHerdsLookupPrems( String sPhone ) throws WebServiceException {
-		CivetWebServices service = CivetWebServiceFactory.getService();
+		CivetWebServices service = new CivetWebServices();
 		Document doc = service.getCivetPremises(null, null,null,null,null, null,null,null, sPhone, null);
 		populateRows(doc);
 		iCurrentRow = -1;
@@ -124,7 +124,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 	 * @throws WebServiceException 
 	 */
 	public UsaHerdsLookupPrems( String sStatePremisesId, String sFedPremisesId ) throws WebServiceException {
-		CivetWebServices service = CivetWebServiceFactory.getService();
+		CivetWebServices service = new CivetWebServices();
 		Document doc = service.getCivetPremises(sStatePremisesId, sFedPremisesId,null,null,null, null,null,null, null, null);
 		populateRows(doc);
 		iCurrentRow = -1;
@@ -139,7 +139,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 	 * @throws WebServiceException 
 	 */
 	public UsaHerdsLookupPrems( String sAddress, String sCity, String sStateCode, String sZipCode ) throws WebServiceException {
-		CivetWebServices service = CivetWebServiceFactory.getService();
+		CivetWebServices service = new CivetWebServices();
 		Document doc = service.getCivetPremises(null, null, sAddress, sCity, sStateCode, sZipCode,null,null, null, null);
 		populateRows(doc);
 		iCurrentRow = -1;

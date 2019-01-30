@@ -60,7 +60,7 @@ public class UsaHerdsWebServiceLookup {
 	private WebServiceLookupRow currentRow;
 
 	public UsaHerdsWebServiceLookup( String sLookupType ) throws WebServiceException {
-		CivetWebServices service = CivetWebServiceFactory.getService();
+		CivetWebServices service = new CivetWebServices();
 		Document doc = service.getCivetLookupDocument(sLookupType);
 		if( doc == null ) {
 			logger.error("Failed Lookup, null document", new Exception());

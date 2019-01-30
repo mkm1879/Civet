@@ -20,9 +20,8 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
-import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
+import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CoKsXML;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlV1;
@@ -150,7 +149,7 @@ public class COKSRobot extends Thread {
 					if( bStd ) {
 						if( bLoggedIn ) {
 							try {
-								CivetWebServices service = CivetWebServiceFactory.getService();
+								CivetWebServices service = new CivetWebServices();
 								String sRet = service.sendCviXML(sStdXML);
 								if( !sRet.contains(service.getSuccessMessage()) ) {
 									saveToXml(fXMLOut, sStdXML);

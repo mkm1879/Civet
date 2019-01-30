@@ -81,7 +81,7 @@ public class UsaHerdsLookupVets {
 	 */
 	public UsaHerdsLookupVets( boolean bAccredOnly ) throws WebServiceException {
 		String sVetFile = CivetConfig.getVetTableFile();
-		CivetWebServices service = CivetWebServiceFactory.getService();
+		CivetWebServices service = new CivetWebServices();
 		Document doc = service.getCivetVets( null, null, null, null, bAccredOnly);
 		if( doc != null )
 			populateRows(doc);
@@ -93,7 +93,7 @@ public class UsaHerdsLookupVets {
 	public UsaHerdsLookupVets(String sLastName, String sFirstName, 
 			String sAddress, String sCity, String sStateCode, String sZipCode, 
 			String sPhone, String sNan, String sLicNbr) throws WebServiceException {
-		CivetWebServices service = CivetWebServiceFactory.getService();
+		CivetWebServices service = new CivetWebServices();
 		Document doc = service.getCivetVets(sLastName, sFirstName, 
 				sAddress, sCity, sStateCode, sZipCode, 
 				sPhone, sNan, sLicNbr );

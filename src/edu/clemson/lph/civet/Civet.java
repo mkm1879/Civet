@@ -29,13 +29,11 @@ unusually details of your application to mmarti5@clemson.edu.
 import java.awt.EventQueue;
 import java.awt.Window;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
@@ -46,6 +44,8 @@ import edu.clemson.lph.civet.files.SourceFileException;
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.robot.COKSRobot;
+import edu.clemson.lph.civet.webservice.UsaHerdsWebServiceAuthentication;
+import edu.clemson.lph.civet.webservice.WebServiceException;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.StdErrLog;
@@ -107,6 +107,7 @@ public class Civet {
 				CivetConfig.setHERDSPassword( args[1] );
 			}
 			StdErrLog.tieSystemErrToLog();
+			CivetConfig.validateHerdCredentials();
 			if( !CivetInbox.VERSION.contains("XFA") )
 				System.setProperty("org.jpedal.jai","true");
 			EventQueue.invokeLater(new Runnable() {

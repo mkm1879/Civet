@@ -47,7 +47,7 @@ public class HttpGetClient {
 		
 	}
 	
-	public void authenticate() {
+	public void authenticate() throws WebServiceException {
 		String sType = UsaHerdsWebServiceAuthentication.getTokenType();
 		String sToken = UsaHerdsWebServiceAuthentication.getToken();
 		addHeader("authorization", sType + " " + sToken );

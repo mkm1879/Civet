@@ -30,7 +30,7 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
-import edu.clemson.lph.civet.webservice.CivetWebServicesNew;
+import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
