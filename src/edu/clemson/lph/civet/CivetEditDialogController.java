@@ -1632,6 +1632,19 @@ public final class CivetEditDialogController {
 		String sSpeciesCode = null;
 		for( Animal animal : aAnimals ) {
 			sSpeciesCode = animal.speciesCode.code;
+			if( sSpeciesCode == null || sSpeciesCode.trim().length() == 0 ) {
+				MessageDialog.showMessage(dlg, "Civet Warning: Invalid Species", "Species code is blank.\nSaving as Other.");
+				sSpeciesCode = "OTH";
+			}
+			if( !SpeciesLookup.isCodeStandard(sSpeciesCode) && !sSpeciesCode.equalsIgnoreCase("OTH") ) {
+				MessageDialog.showMessage(dlg, "Civet Warning: Nonstandard Species", "Species code " + sSpeciesCode + " is not in standard");
+				aBadSpecies.add(sSpeciesCode);
+			}
+			if( !SpeciesLookup.isCodeInHerds(sSpeciesCode) && !sSpeciesCode.equalsIgnoreCase("OTH") ) {
+				MessageDialog.showMessage(dlg, "Civet Warning: Invalid Species", "Species code " + sSpeciesCode 
+						+ " is not in USAHERDS as CVI species.\nSaving as Other.");
+				aBadSpecies.add(sSpeciesCode);
+			}
 			boolean bSet = false;
 			if( aSpecies.size() > 0 ) {
 				for( SpeciesRecord r : aSpecies ) {
@@ -1650,6 +1663,19 @@ public final class CivetEditDialogController {
 		ArrayList<GroupLot> aGroups = std.getGroups();
 		for( GroupLot group : aGroups ) {
 			sSpeciesCode = group.speciesCode.code;
+			if( sSpeciesCode == null || sSpeciesCode.trim().length() == 0 ) {
+				MessageDialog.showMessage(dlg, "Civet Warning: Invalid Species", "Species code is blank.\nSaving as Other.");
+				sSpeciesCode = "OTH";
+			}
+			if( !SpeciesLookup.isCodeStandard(sSpeciesCode) && !sSpeciesCode.equalsIgnoreCase("OTH") ) {
+				MessageDialog.showMessage(dlg, "Civet Warning: Nonstandard Species", "Species code " + sSpeciesCode + " is not in standard");
+				aBadSpecies.add(sSpeciesCode);
+			}
+			if( !SpeciesLookup.isCodeInHerds(sSpeciesCode) && !sSpeciesCode.equalsIgnoreCase("OTH") ) {
+				MessageDialog.showMessage(dlg, "Civet Warning: Invalid Species", "Species code " + sSpeciesCode 
+						+ " is not in USAHERDS as CVI species.\nSaving as Other.");
+				aBadSpecies.add(sSpeciesCode);
+			}
 			int iQuantity = group.quantity.intValue();
 			boolean bSet = false;
 			if( aSpecies.size() > 0 ) {

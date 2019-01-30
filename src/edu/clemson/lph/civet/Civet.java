@@ -29,13 +29,13 @@ unusually details of your application to mmarti5@clemson.edu.
 import java.awt.EventQueue;
 import java.awt.Window;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.Scanner;
 
 import javax.swing.JFrame;
@@ -48,7 +48,6 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.robot.COKSRobot;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
-import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.StdErrLog;
 
 import org.apache.log4j.Level;
@@ -63,7 +62,6 @@ public class Civet {
 	     logger.setLevel(Level.INFO);
 	}
 	private static ProgressDialog prog;
-	private static String sFile = null;
 
 	/**
 	 * Launch the application.
@@ -75,13 +73,8 @@ public class Civet {
 		CivetConfig.checkAllConfig();
 		logger.setLevel(CivetConfig.getLogLevel());
 		CivetInbox.VERSION = readVersion();
-		// TODO Remove Me!!!!
 		logger.info("Civet running build: " + CivetInbox.VERSION);
-		if( CivetInbox.VERSION.endsWith("XFA") && !stillValid() ) {
-			logger.error("JPedalXFA trial has expired.  Use Civet.jar with JPedal.jar in ./lib" );
-			System.exit(1);
-		}
-		if( args.length == 1  && !args[0].toLowerCase().equals("-robot") ) {
+		if( args.length == 1  && !args[0].startsWith("-")) {
 			String sFile = args[0];
 			if( sFile != null && ( sFile.toLowerCase().endsWith(".cvi") || sFile.toLowerCase().endsWith(".pdf")) ) {
 				previewFile( sFile );

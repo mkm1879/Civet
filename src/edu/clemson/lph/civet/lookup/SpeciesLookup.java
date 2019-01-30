@@ -104,29 +104,28 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 			// Walk through the file we got from HERDS and check each to see if it is official
 			while( line != null ) {
 				boolean bStd = false;
+				boolean bHerds = true;
 				 String sSppCode = line.get( parser.getLabelIdx( "USDACode" ) );
 				 if( sSppCode == null || sSppCode.trim().length() == 0 ) {  // No code, 
-					 sSppCode = "OTH";
+					 line = parser.getNext();
+					 continue;
+					 // don't bother with species with no code
 				 }
-				 if( sSppCode.trim().length() > 0 && stdCodes.contains(sSppCode) ) {
+				 if( stdCodes.contains(sSppCode) ) {
 					 bStd = true;
 				 }
 				 String sSppName = line.get( parser.getLabelIdx( "Description" ) );
-				 // Add code/name pairs from HERDS
+				 // Add code/name pairs from HERDS but not if already populated
 				 if( code2text.get(sSppCode) == null ) {
 					 text2code.put(sSppName, sSppCode);
 					 code2text.put(sSppCode, sSppName);
-				 }
-				 // Map all the entries with no code to OTH but OTH will return OTHER when run the other way.
-				 else if( text2code.get(sSppName) == null && sSppCode.equalsIgnoreCase("OTH") ) {
-					 text2code.put(sSppName, sSppCode);					 
 				 }
 				 else {
 					 // Use the standard name if it exists
 					 sSppName = code2text.get(sSppCode);
 				 }
 				 // NOW construct an Spp record for the map that includes standard code or other code flag.
-				 Spp spp = new Spp(sSppCode, sSppName, bStd);
+				 Spp spp = new Spp(sSppCode, sSppName, bStd, bHerds);
 				 sppCodeMap.put(sSppCode, spp);
 				 super.addElement(sSppName);
 				 // These two Hashmaps are used by GUI components.
@@ -141,7 +140,7 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 			for( String sCode : stdCodes ) {
 				Spp spp = sppCodeMap.get(sCode);
 				if( spp == null) {
-					spp = new Spp(sCode, getNameForCode(sCode), true);
+					spp = new Spp(sCode, getNameForCode(sCode), true, false);
 					sppCodeMap.put(sCode, spp);
 					addSearchRow(sCode, getNameForCode(sCode), getNameForCode(sCode) );
 					sbBadSpp.append(sCode);
@@ -180,15 +179,25 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 		return bRet;
 	}
 	
+	public static boolean isCodeInHerds( String sSppCode ) {
+		boolean bRet = false;
+		if( me == null ) me = new SpeciesLookup();
+		Spp spp = sppCodeMap.get(sSppCode);
+		if( spp != null ) bRet = spp.bHerds;
+		return bRet;
+	}
+	
 	private static class Spp {
 		public String sSppCode;
 		public String sSppName;
 		public boolean bStd;
+		public boolean bHerds;
 		
-		public Spp( String sSppCode, String sSppName, boolean bStd ) {
+		public Spp( String sSppCode, String sSppName, boolean bStd, boolean bHerds ) {
 			this.sSppCode = sSppCode;
 			this.sSppName = sSppName;
 			this.bStd = bStd;
+			this.bHerds = bHerds;
 		}
 	}
 	

@@ -67,6 +67,8 @@ SavedStdXMLFilesTableModel.txt
 Packager/*
 Inst4J/*
 TestErrors.cvi
+Creds.txt
+OldSource/*
 TestVSPSCvis.txt
 VSPSData/
 clemson.jar

@@ -71,6 +71,8 @@ public class CoKsSourceFile extends SourceFile {
 		}
 		String sAcrobatXML = toAcrobatXMLString();
 		String sStdXML = toStdXMLString( sAcrobatXML);
+		
+	FileUtils.writeTextFile(sStdXML, "Transform.xml");	
 		model = new StdeCviXmlModel(sStdXML);
 		model.setPDFAttachment(pdfBytes, fSource.getName());
 	}
@@ -236,42 +238,4 @@ public class CoKsSourceFile extends SourceFile {
  		return sRet;
 	}
 	
-//	private String postProcessStdXML( String sStdXML ) {
-//		Document doc = null;
-//		if( sStdXML != null ) {
-//			try {
-//				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); 
-//				InputSource is = new InputSource();
-//				is.setCharacterStream(new StringReader(sStdXML));
-//				doc = db.parse(is);
-//				doc.setXmlStandalone(true);
-//			} catch (SAXException e) {
-//				logger.error("Failed to parse XML\n" + sStdXML, e);
-//				return null;
-//			} catch (IOException e) {
-//				logger.error("Failed to read XML\n" + sStdXML, e);
-//				return null;
-//			}
-//		}
-//		return postProcessStdXML( doc );
-//	}
-//	
-//	private String postProcessStdXML( Document doc ) {
-//		if( doc == null ) return null;
-//		XMLDocHelper helper = new XMLDocHelper( doc );
-//		NodeList nlAnimalTags = helper.getNodeListByPath("//AnimalTags");
-//		if( nlAnimalTags != null ) {
-//			for( int i = 0; i < nlAnimalTags.getLength(); i++ ) {
-//				Element eTag = (Element)nlAnimalTags.item(i);
-//				String sTag = eTag.getAttribute("Number");
-//				String sType = eTag.getAttribute("Type");
-//				if( sType == null || sType.trim().length() == 0 || sType.equalsIgnoreCase("UN") ) {
-//					sType = AnimalTag.getElementName(IDTypeGuesser.getTagType(sTag,true));
-//					eTag.setAttribute("Type", sType);
-//				}
-//			}
-//		}
-//		return helper.getXMLString();
-//	}
-
 }
