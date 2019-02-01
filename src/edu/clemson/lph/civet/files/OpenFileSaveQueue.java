@@ -3,6 +3,7 @@ package edu.clemson.lph.civet.files;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.threads.SaveCVIModelThread;
 
 /**
  * this is a queue of exactly two items 
@@ -15,6 +16,11 @@ public class OpenFileSaveQueue {
 
 	public OpenFileSaveQueue() {
 		// TODO Auto-generated constructor stub
+	}
+	
+	@Override protected void finalize() throws Throwable {
+	    flush();
+	    super.finalize();
 	}
 	
 	public void push( OpenFile openFile ) {
@@ -30,6 +36,7 @@ public class OpenFileSaveQueue {
 				}
 			}
 			save(fileOut);
+			fileOut = null;
 		}
 		fileIn = openFile;
 	}
@@ -45,6 +52,7 @@ public class OpenFileSaveQueue {
 			fileOut = fileIn;
 			fileIn = null;
 			save( fileOut );
+			fileOut = null;
 		}
 	}
 	
@@ -52,9 +60,10 @@ public class OpenFileSaveQueue {
 		bInSave = false;
 	}
 
-	private synchronized void save(OpenFile fileOut2) {
+	private synchronized void save(OpenFile fileOut) {
 		bInSave = true;
-		
+		SaveCVIModelThread saveThread = new SaveCVIModelThread( this, fileOut);
+		saveThread.start();
 	}
 
 }

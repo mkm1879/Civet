@@ -35,7 +35,6 @@ public class OpenFile {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private SourceFile source = null;
 	private PDFViewer viewer = null;
-	private StdeCviXmlModel xmlModel = null;
 	private ArrayList<Integer> aPagesInCurrent = null;
 	private ArrayList<Integer> aPagesDone = null;
 
@@ -57,7 +56,6 @@ public class OpenFile {
 			source = SourceFile.readSourceFile(fFile, viewer);
 			// xmlModel may be split in case of multi-CVI PDF files 
 			// so don't just call source.getDataModel() directly
-			xmlModel = source.getDataModel();
 			aPagesInCurrent = new ArrayList<Integer>();
 			aPagesInCurrent.add(getCurrentPageNo());
 			aPagesDone = new ArrayList<Integer>();
@@ -80,7 +78,6 @@ public class OpenFile {
 			source = SourceFile.readSourceFile(fFile, viewer);
 			// xmlModel may be split in case of multi-CVI PDF files 
 			// so don't just call source.getDataModel() directly
-			xmlModel = source.getDataModel();
 			aPagesInCurrent = new ArrayList<Integer>();
 			aPagesInCurrent.add(getCurrentPageNo());
 			aPagesDone = new ArrayList<Integer>();
@@ -107,7 +104,6 @@ public class OpenFile {
 			// Deep copy source as needed.
 			fileOut.source = this.source.cloneCurrentState();
 			// Model was deep copied by source
-			fileOut.xmlModel = fileOut.source.getDataModel();
 			// State Arrays are deep copies
 			fileOut.aPagesInCurrent = new ArrayList<Integer>();
 			fileOut.aPagesInCurrent.addAll(this.aPagesInCurrent);
@@ -153,7 +149,7 @@ public class OpenFile {
 	}
 
 	public StdeCviXmlModel getModel() {
-		return xmlModel;
+		return source.getDataModel();
 	}
 	
 	public Integer getCurrentPageNo() {
@@ -170,33 +166,6 @@ public class OpenFile {
 	
 	public boolean isDataFile() {
 		return source.isDataFile();
-	}
-	
-	/**
-	 * Preconditions:  source.iPage points to last page transcribed
-	 * model has been updated with content of that page
-	 * model pdf has had that page added
-	 * aPagesInCurrent contains all pages that have been updated into model
-	 * decoder displays the next page
-	 * Postcondition:  model returned is ready to save to appropriate folder(s)
-	 * source file now has new empty data model containing pdf content of the next page
-	 * @return the model to save
-	 * @throws SourceFileException
-	 */
-	public StdeCviXmlModel saveNext() throws SourceFileException {
-		StdeCviXmlModel modelRet = null;
-		if( source.canSplit() ) {
-			aPagesDone.addAll(aPagesInCurrent);
-			modelRet = source.split();
-//			Integer iPage = nextUnsavedPage();
-//			source.setCurrentPage(iPage);
-			aPagesInCurrent = new ArrayList<Integer>();
-			aPagesInCurrent.add(getCurrentPageNo());
-		}
-		else {
-			throw new SourceFileException("saveNext called on non-splittable source");
-		}
-		return modelRet;
 	}
 	
 	public Integer nextUnsavedPage() {
@@ -217,8 +186,7 @@ public class OpenFile {
 	 * @param iPage
 	 * @throws SourceFileException
 	 */
-	public void addPageToCurrent() throws SourceFileException {
-		int iPage = getCurrentPageNo();
+	public void addPageToCurrent(int iPage) throws SourceFileException {
 		if( source.canSplit() ) {
 			source.addPageToCurrent(iPage);
 			aPagesInCurrent.add(iPage);

@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -96,23 +97,10 @@ public class StdeCviBinaries {
 	
 	public byte[] getPDFAttachmentBytes() {
 		byte[] pdfBytes = null;
-		Element attach = null;
-		for( Element e : helper.getElementsByName("Attachment") ) {
-			if( e != null ) {
-				String sDocType = e.getAttribute("DocType");
-				if( "PDF CVI".equals(sDocType) ) {
-					attach = e;
-					break;
-				}
-			}
-		}
-		if( attach != null ) {  // MOST do not have a PDF attached.
-			String sId = attach.getAttribute("AttachmentRef");
-			if( sId != null && sId.trim().length() > 0 ) {
-				Element binary = getBinary( sId );
-				if( binary == null ) return pdfBytes;
-				Element payload = helper.getChildElementByName(binary, "Payload");
-				if( payload == null ) return pdfBytes;
+		Element eBinary = getPDFAttachmentBinaryElement();
+		if( eBinary != null ) {
+			Element payload = helper.getChildElementByName(eBinary, "Payload");
+			if( payload != null ) {
 				String sBase64 = payload.getTextContent();
 				pdfBytes = Base64.decodeBase64(sBase64);
 			}
@@ -120,8 +108,29 @@ public class StdeCviBinaries {
 		return pdfBytes;
 	}
 	
+	private Element getPDFAttachmentBinaryElement() {
+		Element eBinary = null;
+		Element eAttach = getPDFAttachmentElement();
+		if( eAttach != null ) {
+			String sId = eAttach.getAttribute("AttachmentRef");
+			if( sId != null && sId.trim().length() > 0 ) {
+				eBinary = getBinary( sId );
+			}
+			
+		}
+		return eBinary;
+	}
+	
 	public String getPDFAttachmentFilename() {
 		String sRet = null;
+		Element attach = getPDFAttachmentElement();
+		if( attach != null ) {  // MOST do not have a PDF attached.
+			sRet = attach.getAttribute("Filename");
+		}
+		return sRet;
+	}
+	
+	private Element getPDFAttachmentElement() {
 		Element attach = null;
 		for( Element e : helper.getElementsByName("Attachment") ) {
 			if( e != null ) {
@@ -132,13 +141,28 @@ public class StdeCviBinaries {
 				}
 			}
 		}
-		if( attach != null ) {  // MOST do not have a PDF attached.
-			sRet = attach.getAttribute("Filename");
-		}
-		return sRet;
+		return attach;
 	}
 	
-	public void setPDFAttachment( byte[] pdfBytes, String sFileName ) {
+	public void setOrUpdatePDFAttachment(  byte[] pdfBytes, String sFileName ) {
+		Element eBinary = getPDFAttachmentBinaryElement();
+		if( eBinary != null ) {
+			Element payload = helper.getChildElementByName(eBinary, "Payload");
+			if( payload != null ) {
+				String sPDFBase64 = new String(Base64.encodeBase64(pdfBytes)); 
+				payload.setTextContent(sPDFBase64);
+			}
+			else {
+				MessageDialog.showMessage(null, "Civet Error", "Found Attachment element with no binary content");
+				logger.error("Found Attachment element with no binary content");
+			}
+		}
+		else {
+			setPDFAttachment( pdfBytes, sFileName );
+		}
+	}
+	
+	private void setPDFAttachment( byte[] pdfBytes, String sFileName ) {
 		try {
 			String sPDFBase64 = new String(Base64.encodeBase64(pdfBytes));
 			String sID = null;

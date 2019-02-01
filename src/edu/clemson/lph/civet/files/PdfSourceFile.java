@@ -52,7 +52,7 @@ public class PdfSourceFile extends SourceFile {
 			throw new SourceFileException(e);
 		}
 		model = new StdeCviXmlModel();
-		model.setPDFAttachment(getPDFBytes(iPage), fSource.getName());
+		model.setOrUpdatePDFAttachment(getPDFBytes(iPage), fSource.getName());
 		viewer.alterRotation(180);  // Our scanned PDFs are off.
 	}
 	
@@ -82,20 +82,6 @@ public class PdfSourceFile extends SourceFile {
 	}
 	
 	/**
-	 * Return model from previous page(s) to be saved.
-	 * Start new model with the page after the one we were on.
-	 */
-	@Override
-	public StdeCviXmlModel split() throws SourceFileException {
-		StdeCviXmlModel oldModel = model;
-		model = new StdeCviXmlModel();
-		iPage++;
-		byte pdfPageBytes[] = getPDFBytes(iPage);
-		model.setPDFAttachment(pdfPageBytes, fSource.getName());
-		return oldModel;
-	}
-	
-	/**
 	 * By convention, the data model holds only pages in the current PDF
 	 * For ordinary PDF files this is a subset of the whole file.
 	 * Here we add a new page to the data model from the source.
@@ -104,11 +90,14 @@ public class PdfSourceFile extends SourceFile {
 	public void addPageToCurrent( Integer iPage ) throws SourceFileException {
 		this.iPage = iPage;
 		byte pdfBytesCurrent[] = model.getPDFAttachmentBytes();
+		FileUtils.writeBinaryFile(pdfBytesCurrent, "CurrentPDF.pdf");
 		byte pdfPageBytes[] = getPDFBytes(iPage);  // extract pages from original full pdf
+		FileUtils.writeBinaryFile(pdfPageBytes, "PageBytes.pdf");
 		try {
 			byte pdfCombined[] = MergePDF.appendPDFtoPDF(pdfBytesCurrent, pdfPageBytes);
+			FileUtils.writeBinaryFile(pdfCombined, "Combined.pdf");
 			String sFileName = model.getPDFAttachmentFilename();
-			model.setPDFAttachment(pdfCombined, sFileName);
+			model.setOrUpdatePDFAttachment(pdfCombined, sFileName);
 		} catch (IOException e) {
 			logger.error(e);
 		}
@@ -123,7 +112,7 @@ public class PdfSourceFile extends SourceFile {
 		this.iPage = iPageNo;
 		model = new StdeCviXmlModel();
 		byte pdfPageBytes[] = getPDFBytes(iPage);
-		model.setPDFAttachment(pdfPageBytes, fSource.getName());
+		model.setOrUpdatePDFAttachment(pdfPageBytes, fSource.getName());
 	}
 	
 
@@ -135,7 +124,7 @@ public class PdfSourceFile extends SourceFile {
 		if( model == null ) {
 			model = new StdeCviXmlModel();
 			byte pageBytes[] = getPDFBytes(1);
-			model.setPDFAttachment(pageBytes, fSource.getName());
+			model.setOrUpdatePDFAttachment(pageBytes, fSource.getName());
 		}
 		return model;
 	}

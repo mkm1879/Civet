@@ -80,6 +80,15 @@ public class OpenFileList {
 		return oCurrent;
 	}
 	
+	public void replaceFile( OpenFile replaceFile, OpenFile withFile ) {
+		int iIndex = aOpenFiles.indexOf(replaceFile);
+		aOpenFiles.set(iIndex, withFile);
+		aFilesComplete.remove(replaceFile);
+		if( oCurrent == replaceFile ) {  // Yes I mean to test identity not equality.
+			oCurrent = withFile;
+		}
+	}
+	
 	/**
 	 * Convert the index of the currently open file to 1 based index
 	 * @return current file 1-based index

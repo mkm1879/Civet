@@ -1325,13 +1325,20 @@ public class StdeCviXmlModel {
 			helper.setAttribute(eGroupLot, "Description", sDescription);
 		return;
 	}
-	
-	public void setPDFAttachment( byte[] pdfBytes, String sFileName ) {
+
+	public void setOrUpdatePDFAttachment( byte[] pdfBytes, String sFileName ) {
 		sFileName = FileUtils.replaceInvalidFileNameChars(sFileName);
-		if( isValidDoc() && pdfBytes != null && pdfBytes.length > 0 && !attachmentExists(sFileName)) {
-			binaries.setPDFAttachment(pdfBytes, sFileName);
+		if( isValidDoc() && pdfBytes != null && pdfBytes.length > 0 ) {
+			binaries.setOrUpdatePDFAttachment(pdfBytes, sFileName);
 		}
 	}
+//	
+//	private void setPDFAttachment( byte[] pdfBytes, String sFileName ) {
+//		sFileName = FileUtils.replaceInvalidFileNameChars(sFileName);
+//		if( isValidDoc() && pdfBytes != null && pdfBytes.length > 0 ) {
+//			binaries.setPDFAttachment(pdfBytes, sFileName);
+//		}
+//	}
 	
 	public byte[] getPDFAttachmentBytes() {
 		return binaries.getPDFAttachmentBytes();

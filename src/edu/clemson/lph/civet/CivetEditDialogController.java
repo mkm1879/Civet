@@ -176,32 +176,63 @@ public final class CivetEditDialogController {
 			logger.error(e);
 			e.printStackTrace();
 		}
-		setupFilePage();
+		setupNewFilePage();
 	}
 		
-	private void setupFilePage() {
+	private void setupNewFilePage() {
 		try {
-		currentFile = openFileList.getCurrentFile();
-		idListModel = new AnimalIDListTableModel(currentFile.getModel());
-		setAllFocus();
-		dlg.setTitle(getViewerTitle()+currentFile.getSource().getFileName());
-		setPage(currentFile.getCurrentPageNo());
-		setPages(currentFile.getPageCount());
-		setFile(openFileList.getCurrentFileNo());
-		setFiles(openFileList.getFileCount());
-		dlg.setFormEditable(dlg.iMode != CivetEditDialog.VIEW_MODE);
-		updateCounterPanel();
-		viewer.viewPage(currentFile.getCurrentPageNo()); 
-		clearForm();
-		viewer.updatePdfDisplay();
-		if( currentFile.getSource().isDataFile() )
-			populateFromStdXml(currentFile.getSource().getDataModel()) ;
-		dlg.make90Percent();
-		dlg.setVisible(true);  // Only now display
+			currentFile = openFileList.getCurrentFile();
+			idListModel = new AnimalIDListTableModel(currentFile.getModel());
+			setAllFocus();
+			dlg.setTitle(getViewerTitle()+currentFile.getSource().getFileName());
+			setPage(currentFile.getCurrentPageNo());
+			setPages(currentFile.getPageCount());
+			setFile(openFileList.getCurrentFileNo());
+			setFiles(openFileList.getFileCount());
+			dlg.setFormEditable(dlg.iMode != CivetEditDialog.VIEW_MODE);
+			updateCounterPanel();
+			viewer.viewPage(currentFile.getCurrentPageNo()); 
+			clearForm();
+			viewer.updatePdfDisplay();
+			if( currentFile.getSource().isDataFile() )
+				populateFromStdXml(currentFile.getSource().getDataModel()) ;
+			setupSaveButtons();
+			dlg.make90Percent();
+			dlg.setVisible(true);  // Only now display
 		} catch( Exception e ) {
 			logger.error(e);
 			e.printStackTrace();
 		}
+	}
+	
+	private void updateFilePage() {
+		try {
+			clearForm();
+			currentFile = openFileList.getCurrentFile();
+			dlg.setTitle(getViewerTitle()+currentFile.getSource().getFileName());
+			setPage(currentFile.getCurrentPageNo());
+			setPages(currentFile.getPageCount());
+			setFile(openFileList.getCurrentFileNo());
+			setFiles(openFileList.getFileCount());
+			dlg.setFormEditable(dlg.iMode != CivetEditDialog.VIEW_MODE);
+			updateCounterPanel();
+			viewer.viewPage(currentFile.getCurrentPageNo()); 
+			viewer.updatePdfDisplay();
+			setupSaveButtons();
+		} catch( Exception e ) {
+			logger.error(e);
+			e.printStackTrace();
+		}
+	}
+	
+	private void setupSaveButtons() {
+		if( currentFile.getSource().canSplit() && currentFile.getCurrentPageNo() > 1 ) {
+			dlg.bAddToPrevious.setVisible(true);
+		}
+		else {
+			dlg.bAddToPrevious.setVisible(false);
+		}
+			
 	}
 	
 	public CivetEditDialog getDialog() {
@@ -353,7 +384,7 @@ public final class CivetEditDialogController {
 					try {
 						if( openFileList.moreFilesBack(false) ) {
 							openFileList.fileBackward(false);
-							setupFilePage();
+							updateFilePage();
 						}
 					} catch (PdfException e1) {
 						// TODO Auto-generated catch block
@@ -372,7 +403,7 @@ public final class CivetEditDialogController {
 						else {
 							logger.error("Attempt to move past first page");
 						}
-						setupFilePage();
+						updateFilePage();
 					} catch (SourceFileException | PdfException e1) {
 						// TODO Auto-generated catch block
 						logger.error(e1);
@@ -410,7 +441,7 @@ public final class CivetEditDialogController {
 						else {
 							logger.error("Attempt to move past last page");
 						}
-						setupFilePage();
+						updateFilePage();
 					} catch (SourceFileException | PdfException e1) {
 						// TODO Auto-generated catch block
 						logger.error(e1);
@@ -422,7 +453,7 @@ public final class CivetEditDialogController {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						openFileList.fileForward(false);
-						setupFilePage();
+						updateFilePage();
 					} catch (PdfException e1) {
 						// TODO Auto-generated catch block
 						logger.error(e1);
@@ -766,9 +797,10 @@ public final class CivetEditDialogController {
 			dlg.setFormEditable( false );
 			currentFile.setCurrentPagesDone();
 			setFileCompleteStatus();
-			if( !save() ) {
-				dlg.setFormEditable( true );
+			if( save() ) {
+				saveComplete();
 			}
+			dlg.setFormEditable( true );
 		} catch (SourceFileException e) {
 			String sCVINo = dlg.jtfCVINo.getText();
 			MessageDialog.showMessage(getDialog(), "Civet Error", "Failed to save Certificate number " + sCVINo);
@@ -792,9 +824,12 @@ public final class CivetEditDialogController {
 	private void doAddToPrevious() {
 		try {
 			int iCurrentPage = currentFile.getCurrentPageNo();
+			OpenFile prevFile = currentFile;
 			currentFile = saveQueue.pop();
-			currentFile.gotoPageNo(iCurrentPage);
-			currentFile.addPageToCurrent();
+			openFileList.replaceFile(prevFile, currentFile);
+			populateFromStdXml( currentFile.getModel() );
+			currentFile.addPageToCurrent(iCurrentPage);
+			sPrevCVINo = null;  // Disable duplicate check because it will be the saved one.
 			viewer.viewPage(iCurrentPage); 
 			viewer.updatePdfDisplay();
 
@@ -928,6 +963,7 @@ public final class CivetEditDialogController {
 	}
 	
 	private void doCleanup() {
+		saveQueue.flush();
     	if( parent instanceof CivetInbox) {
     		((CivetInbox)parent).inboxController.refreshTables();
     	}
@@ -954,7 +990,7 @@ public final class CivetEditDialogController {
 	public void gotoPage( int iPage ) {
 		try {
 			currentFile.gotoPageNo(iPage);
-			setupFilePage();
+			updateFilePage();
 		} catch (SourceFileException e) {
 			// TODO Auto-generated catch block
 			logger.error(e);
@@ -1719,13 +1755,15 @@ public final class CivetEditDialogController {
 				currentFile.viewFile();
 			}
 			else {
+				openFileList.markFileComplete(currentFile);
+				saveQueue.flush();
 				moveCompletedFiles();
 				CivetInboxController.getCivetInboxController().refreshTables();
 				dlg.setVisible(false);
 				dlg.dispose();
 				return;
 			}
-			setupFilePage();
+			updateFilePage();
 		} catch (SourceFileException | PdfException e) {
 			// TODO Auto-generated catch block
 			logger.error(e);
