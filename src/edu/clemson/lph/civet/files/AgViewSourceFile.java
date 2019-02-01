@@ -118,6 +118,11 @@ public class AgViewSourceFile extends SourceFile {
 		return sRet;
 	}
 	
+	/**
+	 * Note: AgView and MCvi use the same logic of PDF and Data file as will Civet going forward.
+	 * I don't think it worth adding an intermediate class to avoid this duplication but that 
+	 * might change.  This method is identical to MCvi.
+	 */
 	@Override
 	public boolean moveToDirectory( File fDir ) {
 		boolean bRet = super.moveToDirectory(fDir);
@@ -127,16 +132,16 @@ public class AgViewSourceFile extends SourceFile {
 						"Check that it really is a duplicate and manually delete.");
 			String sOutPath = fNew.getAbsolutePath();
 			sOutPath = FileUtils.incrementFileName(sOutPath);
+			logger.error(fNew.getName() + " already exists in " + fDir.getAbsolutePath() + " .\n" +
+					"Saving as " + sOutPath);
 			fNew = new File( sOutPath );
 		}
-		boolean success = fData.renameTo(fNew);
-		if (!success) {
-			logger.error("Could not move " + getFilePath() + " to " + fNew.getAbsolutePath() );
-			bRet = false;
+		bRet = fData.renameTo(fNew);
+		if (!bRet) {
+			logger.error("Could not move " + fData.getAbsolutePath() + " to " + fNew.getAbsolutePath() );
 		}
 		return bRet;
-	}
-	
+	}	
 
 	@Override
 	public boolean canSplit() {

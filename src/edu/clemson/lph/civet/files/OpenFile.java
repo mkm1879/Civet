@@ -14,6 +14,7 @@
  */
 package edu.clemson.lph.civet.files;
 
+import java.awt.Window.Type;
 import java.io.File;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
@@ -38,6 +39,10 @@ public class OpenFile {
 	private ArrayList<Integer> aPagesInCurrent = null;
 	private ArrayList<Integer> aPagesDone = null;
 
+	private OpenFile() {
+		
+	}
+	
 	/**
 	 * Remove if we don't end up with a use
 	 * @throws SourceFileException 
@@ -86,6 +91,31 @@ public class OpenFile {
 		else  {
 			throw new SourceFileException( "Attempt to read null file" );
 		}
+	}
+	
+	/**
+	 * This is a strangely overloaded method.  For all types other than PdfSource
+	 * it simply returns the original since no split file thread issues.
+	 * @return
+	 */
+	public OpenFile cloneCurrentState() {
+		OpenFile fileOut = this;
+		if( source.getType() == SourceFile.Types.PDF ) {
+			fileOut = new OpenFile();
+			// viewer is a singleton anyway.
+			fileOut.viewer = this.viewer;
+			// Deep copy source as needed.
+			fileOut.source = this.source.cloneCurrentState();
+			// Model was deep copied by source
+			fileOut.xmlModel = fileOut.source.getDataModel();
+			// State Arrays are deep copies
+			fileOut.aPagesInCurrent = new ArrayList<Integer>();
+			fileOut.aPagesInCurrent.addAll(this.aPagesInCurrent);
+			fileOut.aPagesDone = new ArrayList<Integer>();
+			fileOut.aPagesDone.addAll(this.aPagesDone);
+		}
+		this.aPagesInCurrent.clear();
+		return fileOut;
 	}
 	
 	public boolean isPageComplete( Integer iPage ) {
@@ -157,14 +187,14 @@ public class OpenFile {
 		StdeCviXmlModel modelRet = null;
 		if( source.canSplit() ) {
 			aPagesDone.addAll(aPagesInCurrent);
-			xmlModel = source.split();
+			modelRet = source.split();
 //			Integer iPage = nextUnsavedPage();
 //			source.setCurrentPage(iPage);
 			aPagesInCurrent = new ArrayList<Integer>();
 			aPagesInCurrent.add(getCurrentPageNo());
 		}
 		else {
-			throw new SourceFileException("addPageToCurrent called on non-splittable source");
+			throw new SourceFileException("saveNext called on non-splittable source");
 		}
 		return modelRet;
 	}

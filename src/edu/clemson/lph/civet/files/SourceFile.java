@@ -56,8 +56,44 @@ public abstract class SourceFile {
 	protected Integer iPage = null;
 	protected PDFViewer viewer = null;
 
+	public SourceFile cloneCurrentState() {
+		SourceFile sourceFile = null;
+		switch( type ) {
+		case PDF:
+			sourceFile = clonePdfSource();
+			break;
+		default:
+			sourceFile = this;
+		}
+		return sourceFile;
+	}
+	
+	public SourceFile clonePdfSource() {
+		SourceFile clone = new PdfSourceFile();
+		clone.sFilePath = sFilePath;
+		clone.sFileName = sFileName;
+		clone.sDataPath = sDataPath;
+		// fSource is the original PDF or image
+		clone.fSource = fSource;
+		// fData only populated for mCVI and AgView where there is a separate data file.
+		clone.fData = fData;
+		// pdfBytes is the whole file read from disk or converted from image.
+		clone.pdfBytes = pdfBytes;
+		clone.type = null;
+		// model will hold the pdf as currently constructed.
+		clone.model = new  StdeCviXmlModel( model.getXMLString() );  // Model is a deep copy.
+		clone.iPage = iPage;
+		clone.viewer = viewer;
+		return clone;
+	}
 
-
+	/**
+	 * used only by PDFSource in Clone.
+	 */
+	protected SourceFile() {
+		
+	}
+	
 	protected SourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
 		if( fFile != null && fFile.exists() && fFile.isFile() ) {
 			sFileName = fFile.getName();
@@ -177,6 +213,8 @@ public abstract class SourceFile {
 						"Check that it really is a duplicate and manually delete.");
 			String sOutPath = fNew.getAbsolutePath();
 			sOutPath = FileUtils.incrementFileName(sOutPath);
+			logger.error(fNew.getName() + " already exists in " + fDir.getAbsolutePath() + " .\n" +
+					"Saving as " + sOutPath);
 			fNew = new File( sOutPath );
 		}
 		bRet = fSource.renameTo(fNew);

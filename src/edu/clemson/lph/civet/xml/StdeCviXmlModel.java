@@ -73,70 +73,6 @@ public class StdeCviXmlModel {
 		return sRet;
 	}
 	
-	public static void main( String args[] ) {
-	     PropertyConfigurator.configure("CivetConfig.txt");
-	     logger.setLevel(Level.INFO);
-		String sXML;
-		try {
-			sXML = FileUtils.readTextFile(new java.io.File( "./std2samples/sample1.xml") );
-			StdeCviXmlModel model = new StdeCviXmlModel( sXML );
-			System.out.println(model.getCertificateNumber());
-			System.out.println(model.getIssueDate());
-			System.out.println("Vet");
-			Veterinarian vet = model.getVet();
-			System.out.println(vet.nationalAccreditationNumber);
-			System.out.println(vet.person.name);
-			System.out.println(model.getPurpose());
-			Premises origin = model.getOrigin();
-			System.out.println("Origin");
-			System.out.println(origin.address.line1);
-			System.out.println(origin.address.line2);
-			System.out.println(origin.address.zip);
-			System.out.println(origin.address.county);
-			System.out.println("Consignor");
-			Contact consignor = model.getConsignor();
-			System.out.println(consignor.addressBlock);
-			System.out.println(consignor.person.phone);
-			System.out.println("Animals: ");
-			ArrayList<Animal> aAnimals = model.getAnimals();
-			int i = 1;
-			for( Animal a : aAnimals ) {
-				System.out.println(a.speciesCode.code);
-				for( AnimalTag t : a.animalTags ) {
-					System.out.println(t.value);
-					System.out.println(t.type.toString());
-					if( i++ == 3 ) {
-						a.speciesCode.text = "A Horse of Course";
-						model.editAnimal(a);
-					}
-				}
-			}
-			System.out.println("Groups: ");
-			ArrayList<GroupLot> aGroups = model.getGroups();
-			for( GroupLot g : aGroups ) {
-				System.out.println(g.description);
-				System.out.println(g.speciesCode.code);
-				System.out.println(g.age);
-				g.speciesCode.code = "DAI";
-				g.speciesCode.text = "Dairy Cattle";
-				g.quantity = 201d;
-				model.editGroupLot(g);
-			}
-			CviMetaDataXml meta = new CviMetaDataXml();
-			meta.addError("NID");
-			meta.setBureauReceiptDate(new java.util.Date());
-			meta.setErrorNote("This is quite an error");
-			model.addOrUpdateMetadataAttachement(meta);
-			FileUtils.writeTextFile(model.getXMLString(), "TestBuilder.xml");
-
-			byte pdfBytes[] = model.getPDFAttachmentBytes();
-			if( pdfBytes != null )
-				FileUtils.writeBinaryFile(pdfBytes, model.getPDFAttachmentFilename());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 
 	/**
 	 * Create an empty XML document.
@@ -398,7 +334,6 @@ public class StdeCviXmlModel {
 			if( addr.zip != null && addr.zip.trim().length() > 0 ) {
 				sAfter = "Country,GeoPoint";
 				Element zip = helper.getOrInsertElementBefore( address, "ZIP", sAfter);
-				address.appendChild(zip);
 				zip.setTextContent(addr.zip);
 			}
 			else {
@@ -933,7 +868,12 @@ public class StdeCviXmlModel {
 			helper.setAttribute(eAnimal, "Sex", sSex);
 		String sInsp = animalData.inspectionDate;
 		// Required attribute, guess.
-		if(sInsp == null ) sInsp = dateFormat.format(getIssueDate());
+		if(sInsp == null ) {
+			java.util.Date dIssue = getIssueDate();
+			if( dIssue != null )
+				sInsp = dateFormat.format(getIssueDate());
+			// Still might be blank but will get set at save time.
+		}
 		helper.setAttribute(eAnimal, "InspectionDate", sInsp);
 		return eAnimal;
 	}
@@ -982,6 +922,20 @@ public class StdeCviXmlModel {
 			}
 		}
 		return animals;
+	}
+	
+	/**
+	 * Call late in editing to fill in any missing animal inspection dates.
+	 * @param dInsp
+	 */
+	public void setDefaultAnimalInspectionDates( java.util.Date dInsp ) {
+		for( Animal animal : getAnimals() ) {
+			if( animal.inspectionDate == null ) {
+				Element eAnimal = animal.eAnimal;
+				String sInsp = dateFormat.format(dInsp);
+				helper.setAttribute(eAnimal, "InspectionDate", sInsp);
+			}			
+		}
 	}
 
 	public void editAnimal( Animal animalData ) {
@@ -1487,7 +1441,8 @@ public class StdeCviXmlModel {
 		String sPath = "/eCVI";
 		String sAttr = "IssueDate";
 		String sDate = helper.getAttributeByPath(sPath,sAttr);
-		dRet = XMLUtility.xmlDateToDate(sDate);
+		if( sDate != null && sDate.trim().length() > 0 )
+			dRet = XMLUtility.xmlDateToDate(sDate);
 		return dRet;
 	}
 
@@ -1522,6 +1477,45 @@ public class StdeCviXmlModel {
 		CviMetaDataXml meta = getMetaData();
 		meta.setBureauReceiptDate(dReceived);
 		binaries.addOrUpdateMetadata(meta);
+	}
+	
+	public String getOriginStateCode() {
+		String sRet = null;
+		Premises pOrigin = getOrigin();
+		if( pOrigin != null ) {
+			Address addrOrigin = pOrigin.address;
+			if( addrOrigin != null && addrOrigin.state != null ) {
+				sRet = addrOrigin.state;
+			}
+		}
+		return sRet;
+	}
+	
+	public String getDestinationStateCode() {
+		String sRet = null;
+		Premises pDest = getDestination();
+		if( pDest != null ) {
+			Address addrDest = pDest.address;
+			if( addrDest != null && addrDest.state != null ) {
+				sRet = addrDest.state;
+			}
+		}
+		return sRet;
+	}
+	
+	public boolean isExport() {
+		boolean bRet = false;
+		Premises pDest = getDestination();
+		if( pDest != null ) {
+			Address addrDest = pDest.address;
+			if( addrDest != null ) {
+				String sHomeState = CivetConfig.getHomeStateAbbr();
+				String sDestState = addrDest.state;
+				if( sDestState != null && !sDestState.equalsIgnoreCase(sHomeState) ) 
+					bRet = true;
+			}
+		}
+		return bRet;
 	}
 	
 	public boolean hasErrors() {

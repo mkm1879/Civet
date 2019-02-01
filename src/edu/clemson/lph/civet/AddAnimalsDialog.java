@@ -43,6 +43,7 @@ import edu.clemson.lph.civet.xml.elements.AnimalTag;
 import edu.clemson.lph.controls.DBNumericField;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.ClipboardUtils;
+import edu.clemson.lph.utils.IDTypeGuesser;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -272,7 +273,8 @@ public class AddAnimalsDialog extends JDialog {
 		String sSpecies = (String)cbSpecies.getSelectedItem();
 		String sSpeciesCode = getCodeForSpecies( sSpecies );
 //		int iNextRow = model.getMaxRowID() + 1;
-		Animal a = new Animal( sSpeciesCode, sID );
+		AnimalTag.Types type = IDTypeGuesser.getTagType(sID);
+		Animal a = new Animal( sSpeciesCode, type, sID );
 		if( sID != null && sID.trim().length() > 0 ) {
 			tableModel.addRow(a);
 		}
@@ -327,7 +329,8 @@ public class AddAnimalsDialog extends JDialog {
 					return;
 				}
 				for( String sNext : sIDs ) {
-					Animal a = new Animal( sSpeciesCode, AnimalTag.Types.OtherOfficialID, sNext );
+					AnimalTag.Types type = IDTypeGuesser.getTagType(sNext);
+					Animal a = new Animal( sSpeciesCode, type, sNext );
 					tableModel.addRow(a);
 				}
 			} catch (Exception e) {

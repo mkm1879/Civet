@@ -51,6 +51,7 @@ import org.jpedal.exception.PdfException;
 
 import edu.clemson.lph.civet.files.OpenFile;
 import edu.clemson.lph.civet.files.OpenFileList;
+import edu.clemson.lph.civet.files.OpenFileSaveQueue;
 import edu.clemson.lph.civet.files.SourceFileException;
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.lookup.Counties;
@@ -70,8 +71,11 @@ import edu.clemson.lph.civet.webservice.VetSearchDialog;
 import edu.clemson.lph.civet.webservice.WebServiceException;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.civet.xml.elements.AddressBlock;
 import edu.clemson.lph.civet.xml.elements.Animal;
 import edu.clemson.lph.civet.xml.elements.GroupLot;
+import edu.clemson.lph.civet.xml.elements.NameParts;
+import edu.clemson.lph.civet.xml.elements.Person;
 import edu.clemson.lph.civet.xml.elements.SpeciesCode;
 import edu.clemson.lph.civet.xml.elements.Veterinarian;
 import edu.clemson.lph.dialogs.MessageDialog;
@@ -113,6 +117,7 @@ public final class CivetEditDialogController {
 	private ArrayList<File> filesToOpen = null;
 	private OpenFileList openFileList = null;
 	private OpenFile currentFile = null;
+	private OpenFileSaveQueue saveQueue = null;
 	private File fLastSaved = null;
 	private PDFViewer viewer = null;
 
@@ -131,6 +136,7 @@ public final class CivetEditDialogController {
 		this.dlg = dlg;
 		this.filesToOpen = files;
 		this.viewer = new PDFViewer();
+		this.saveQueue = new OpenFileSaveQueue();
 		viewer.alterRotation(CivetConfig.getRotation());  // Not sure why inverted relative to acrobat.
 		// Run various initialization routines that are not dependent on current file
 		initializeActionHandlers();
@@ -170,7 +176,6 @@ public final class CivetEditDialogController {
 			logger.error(e);
 			e.printStackTrace();
 		}
-		iCurrentSaveMode = OPEN;
 		setupFilePage();
 	}
 		
@@ -186,7 +191,6 @@ public final class CivetEditDialogController {
 		setFiles(openFileList.getFileCount());
 		dlg.setFormEditable(dlg.iMode != CivetEditDialog.VIEW_MODE);
 		updateCounterPanel();
-		setupSaveLogic();	
 		viewer.viewPage(currentFile.getCurrentPageNo()); 
 		clearForm();
 		viewer.updatePdfDisplay();
@@ -284,7 +288,7 @@ public final class CivetEditDialogController {
 		});
 		dlg.mntmSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				doSaveOptions();
+				doSave();
 			}
 		});
 		dlg.mntmClose.addActionListener(new ActionListener() {
@@ -605,9 +609,9 @@ public final class CivetEditDialogController {
 				runErrorDialog();
 			}
 		});
-		dlg.bPageOptions.addActionListener(new java.awt.event.ActionListener() {
+		dlg.bAddToPrevious.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				doPageOptions();
+				doAddToPrevious();
 			}
 		});
 		dlg.bAddIDs.addActionListener( new ActionListener() {
@@ -618,7 +622,7 @@ public final class CivetEditDialogController {
 		});
 		dlg.bSave.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				doSaveOptions();
+				doSave();
 			}
 		});
 
@@ -753,139 +757,6 @@ public final class CivetEditDialogController {
 		dlg.setFocusTraversalPolicy(traversal);
 	}
 
-	private static final int OPEN = 0;
-	private static final int ONEPAGE = 1;
-	private static final int NOSPLITMORE = 2;
-	private static final int LASTPAGE = 3;
-	private static final int SPLITMORE = 4;
-	private static final int CHOOSE = 5;
-	private static final int CHOSEADD = 6;
-	private static final int CHOSENEW = 7;
-	private static final int CHOSEVIEW = 8;
-	private static final int SAVED = 9;
-	private int iCurrentSaveMode = ONEPAGE;
-	
-	/**
-	 * Complex logic around saving versus adding pages
-	 * if multipage PDF and there are more pages forward, delay saving until next page is viewed
-	 * Save = Next Page
-	 * Add to Last = invisible unless in preview or Add Page to Previous
-	 * This method determines appropriate mode and then calls setupSaveButtons
-	 */
-	private void setupSaveLogic() {
-		switch(iCurrentSaveMode) {
-		case OPEN:
-		case CHOSEADD:
-		case CHOSENEW:
-		case SAVED:
-			if( currentFile.getPageCount() == 1 )
-				iCurrentSaveMode = ONEPAGE;
-			else if( currentFile.getCurrentPageNo() == currentFile.getPageCount() )
-				iCurrentSaveMode = LASTPAGE;
-			else if( !currentFile.getSource().canSplit() && currentFile.getCurrentPageNo() != currentFile.getPageCount() )
-				iCurrentSaveMode = NOSPLITMORE;
-			else if( currentFile.getSource().canSplit() && currentFile.getCurrentPageNo() != currentFile.getPageCount() )
-				iCurrentSaveMode = SPLITMORE;
-			break;
-		case CHOSEVIEW:
-			if( currentFile.getCurrentPageNo() == currentFile.getPageCount() )
-				iCurrentSaveMode = LASTPAGE;
-			else if( !currentFile.getSource().canSplit() && currentFile.getCurrentPageNo() != currentFile.getPageCount() )
-				iCurrentSaveMode = NOSPLITMORE;
-			else if( currentFile.getSource().canSplit() && currentFile.getCurrentPageNo() != currentFile.getPageCount() )
-				iCurrentSaveMode = CHOOSE;		}
-		setupSaveButtons();
-	}
-	
-	/**
-	 * This method sets button text and visibility
-	 */
-	private void setupSaveButtons() {
-		switch( iCurrentSaveMode ) {
-		case ONEPAGE:
-		case LASTPAGE:
-			dlg.bPageOptions.setVisible(false);	
-			dlg.bSave.setVisible(true);
-			dlg.bSave.setText("Save");
-			dlg.setFormEditable(true);
-			break;
-		case NOSPLITMORE:
-			dlg.bPageOptions.setVisible(true);	
-			dlg.bPageOptions.setText("View Next Page");
-			dlg.bSave.setVisible(true);
-			dlg.bSave.setText("Save All Pages");
-			dlg.setFormEditable(true);
-			break;
-		case SPLITMORE:
-			dlg.bPageOptions.setVisible(true);	
-			dlg.bPageOptions.setText("View Next Page");
-			dlg.bSave.setVisible(false);
-			dlg.setFormEditable(true);
-			break;
-		case CHOOSE:
-			dlg.bPageOptions.setVisible(true);	
-			dlg.bPageOptions.setText("Add Page to Previous");
-			dlg.bSave.setVisible(true);
-			dlg.bSave.setText("Save New CVI");
-			dlg.setFormEditable(false);
-			break;
-		default:
-			logger.error("Invalid Save Mode in setupButtons " + iCurrentSaveMode);
-		}
-	}
-	
-	/** 
-	 * Perform current function of the Page Options button
-	 */
-	private void doPageOptions() {
-		if( currentFile.getSource().canSplit() ) {
-			try {
-				currentFile.addPageToCurrent();	 
-			} catch (SourceFileException e) {
-				// TODO Auto-generated catch block
-				logger.error(e);
-			}
-		}
-		switch( iCurrentSaveMode ) {
-		case ONEPAGE:
-		case LASTPAGE:
-			// Invisible
-			break;
-		case NOSPLITMORE:
-			doViewNext();
-			break;
-		case CHOOSE:
-			doAddToPrevious();
-			break;
-		case SPLITMORE:
-			doViewNext();
-			break;
-		default:
-			logger.error("Invalid Save Mode in doPageOptions " + iCurrentSaveMode);
-		}
-	}
-	
-	/**
-	 *  Perform current function of Save button.
-	 */
-	private void doSaveOptions() {
-		switch( iCurrentSaveMode ) {
-		case ONEPAGE:
-		case LASTPAGE:
-		case NOSPLITMORE:
-			doSave();
-			break;
-		case CHOOSE:
-			doSaveNew();
-			break;
-		case SPLITMORE:
-			// Invisible
-			break;
-		default:
-			logger.error("Invalid Save Mode in doSaveOptions " + iCurrentSaveMode);
-		}
-	}
-
 	/**
 	 * Default save action for currently loaded model and form.
 	 */
@@ -895,10 +766,7 @@ public final class CivetEditDialogController {
 			dlg.setFormEditable( false );
 			currentFile.setCurrentPagesDone();
 			setFileCompleteStatus();
-			int iSaveModeIn = iCurrentSaveMode;
-			iCurrentSaveMode = SAVED;
 			if( !save() ) {
-				iCurrentSaveMode = iSaveModeIn;
 				dlg.setFormEditable( true );
 			}
 		} catch (SourceFileException e) {
@@ -916,41 +784,6 @@ public final class CivetEditDialogController {
 		}
 	}
 	
-	/**
-	 * Save the previously entered data and clear form for current page
-	 */
-	private void doSaveNew() {
-		try {
-			dlg.setFormEditable( false );
-			currentFile.pageBackward(true);  // Kluge move back so we can move forward after save
-			int iSaveModeIn = iCurrentSaveMode;
-			currentFile.setCurrentPagesDone();
-			iCurrentSaveMode = SAVED;
-			if( !save() ) {
-				iCurrentSaveMode = iSaveModeIn;
-				dlg.setFormEditable( true );
-			}
-		} catch (SourceFileException e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
-		}
-		// Processing returns in saveComplete() after thread completes.;
-	}
-	
-	/**
-	 * View the next page while retaining data and model 
-	 * before splitting or saving.
-	 */
-	private void doViewNext() {
-		try {
-			currentFile.pageForward(true);
-			iCurrentSaveMode = CHOSEVIEW;
-			setupFilePage();  // Update the display
-		} catch (SourceFileException e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
-		}
-	}
 	
 	/**
 	 * Add the currently displayed page to model retained 
@@ -958,17 +791,17 @@ public final class CivetEditDialogController {
 	 */
 	private void doAddToPrevious() {
 		try {
-			// Adds the current PDF page to the data model attachment
-			// already partially edited.
-			// This drills all the way down to the PDFSourceFile subclass
-			// which is the only one that can be split and assembled.
+			int iCurrentPage = currentFile.getCurrentPageNo();
+			currentFile = saveQueue.pop();
+			currentFile.gotoPageNo(iCurrentPage);
 			currentFile.addPageToCurrent();
+			viewer.viewPage(iCurrentPage); 
+			viewer.updatePdfDisplay();
+
 		} catch (SourceFileException e) {
 			// TODO Auto-generated catch block
 			logger.error(e);
 		}
-		iCurrentSaveMode = CHOSEADD;
-		setupSaveLogic();
 	}
 	
 	public String getViewerTitle() { return viewerTitle; }
@@ -1354,6 +1187,8 @@ public final class CivetEditDialogController {
 	 * Clearing the form is complicated by various modes and settings.
 	 */
 	public void clearForm() {
+//		if( iCurrentSaveMode == CHOOSE ) // Add page to previous doesn't call clearForm.  Why?
+//			return;
 		bSppEntered = false;
 		bInSppChangeByCode = true;
 		formEditListener.clear();
@@ -1764,10 +1599,17 @@ public final class CivetEditDialogController {
 	}
 
 	/** 
-	 * Gather values from dialog controls and dispatch to appropriate insert or update thread.
+	 * The NORMAL Save Mode is to save the model and current file.
 	 * @throws SourceFileException 
 	 */
 	boolean save() throws SourceFileException {
+		return save(currentFile.cloneCurrentState());
+	}
+	/** 
+	 * Specify the OpenFile and model to save for use in split files.
+	 * @throws SourceFileException 
+	 */
+	boolean save( OpenFile fileToSave ) throws SourceFileException {
 		String sCVINo = dlg.jtfCVINo.getText();
 			if( sCVINo.equalsIgnoreCase(sPrevCVINo) ) {
 				MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " hasn't changed since last save");
@@ -1822,7 +1664,6 @@ public final class CivetEditDialogController {
 			return false;
 		}
 		updateSpeciesList(false);
-		StdeCviXmlModel model = currentFile.getModel();
 		if( sOtherState == null || sOtherState.trim().length() == 0 || aSpecies.size() == 0 
 				|| dDateIssued == null || dDateReceived == null ) {
 			String sFields = "";
@@ -1840,7 +1681,7 @@ public final class CivetEditDialogController {
 
 		// Precondition: PDF, Animals and Errors already in model.
 		// NOTE!!!!  model is not thread safe at this point.  
-		SaveCVIThread thread = new SaveCVIThread(this, model, bInbound, bDataFile, 
+		buildXml( fileToSave.getModel(), bInbound, bDataFile, 
 				aSpecies, sOtherStateCode,
 				sOtherName, sOtherAddress, sOtherCity, sOtherCounty, sOtherZipcode, sOtherPIN,
 				sThisPremisesId, sThisName, sPhone,
@@ -1848,7 +1689,7 @@ public final class CivetEditDialogController {
 				dDateIssued, dDateReceived, iIssuedByKey, sIssuedByName, sCVINo,
 				sMovementPurpose);
 		sPrevCVINo = sCVINo;
-		thread.start();
+		saveQueue.push(fileToSave);
 		return true;
 	}
 	
@@ -2094,4 +1935,151 @@ public final class CivetEditDialogController {
 			}
 		}
 	}
-}// End Class CVIPdfEdit
+	
+	private void buildXml( StdeCviXmlModel model,  
+			boolean bImport, boolean bIsDataFile, ArrayList<SpeciesRecord> aSpecies, 
+			String sOtherStateCode, String sOtherName, String sOtherAddress, String sOtherCity, 
+			String sOtherCounty, String sOtherZipcode, String sOtherPIN,
+			String sThisPIN, String sThisName, String sPhone,
+			String sThisAddress, String sThisCity, String sThisCounty, String sZipcode,
+			java.util.Date dDateIssued, java.util.Date dDateReceived, Integer iIssuedByKey, String sIssuedByName, String sCVINo,
+			String sMovementPurpose) {
+		String sOriginStateCode;
+		String sOriginPIN;
+		String sOriginName ;
+		String sOriginAddress;
+		String sOriginCity;
+		String sOriginCounty;
+		String sOriginZipCode;
+		String sOriginPhone;
+		String sDestinationStateCode;
+		String sDestinationPIN;
+		String sDestinationName;
+		String sDestinationAddress;
+		String sDestinationCity;
+		String sDestinationCounty;
+		String sDestinationZipCode;
+		String sDestinationPhone;
+		PurposeLookup purpose = new PurposeLookup();
+		String sStdPurpose = purpose.getCodeForValue(sMovementPurpose);
+		if( sStdPurpose == null || sStdPurpose.trim().length() == 0 )
+			sStdPurpose = "other";
+		if( bImport ) {
+			sOriginPIN = sOtherPIN;
+			sOriginName = sOtherName;
+			sOriginAddress = sOtherAddress;
+			sOriginStateCode = sOtherStateCode;
+			sOriginCity = sOtherCity;
+			sOriginCounty = sOtherCounty;
+			sOriginZipCode = sOtherZipcode;
+			sOriginPhone = null;
+			sDestinationPIN = sThisPIN;
+			sDestinationName = sThisName;
+			sDestinationAddress = sThisAddress;
+			sDestinationCity = sThisCity;
+			sDestinationCounty = sThisCounty;
+			sDestinationStateCode = CivetConfig.getHomeStateAbbr();
+			sDestinationZipCode = sZipcode;
+			sDestinationPhone = sPhone;
+		}
+		else {
+			sOriginPIN = sThisPIN;
+			sOriginName = sThisName;
+			sOriginAddress = sThisAddress;
+			sOriginStateCode = CivetConfig.getHomeStateAbbr();
+			sOriginCity = sThisCity;
+			sOriginCounty = sThisCounty;
+			sOriginZipCode = sZipcode;
+			sOriginPhone = sPhone;
+			sDestinationPIN = sOtherPIN;
+			sDestinationName = sOtherName;
+			sDestinationAddress = sOtherAddress;
+			sDestinationCity = sOtherCity;
+			sDestinationCounty = sOtherCounty;
+			sDestinationStateCode = sOtherStateCode;
+			sDestinationZipCode = sOtherZipcode;
+			sDestinationPhone = null;
+		}
+		// Make sure spelling matches HERDS if possible
+		sOriginCounty = Counties.getHerdsCounty(sOriginStateCode, sOriginCounty);
+		sDestinationCounty = Counties.getHerdsCounty(sDestinationStateCode, sDestinationCounty); 
+		model.setCviNumber(sCVINo);
+		model.setIssueDate(dDateIssued);
+		if( !bIsDataFile ) {  // Don't override vet that signed XFA or mCVI or V2 document
+			if( bImport ) {
+				model.setVet(sIssuedByName);
+			}
+			else {
+				VetLookup vetLookup = new VetLookup( iIssuedByKey );
+				NameParts parts = new NameParts(null, vetLookup.getFirstName(), null, vetLookup.getLastName(), null );
+				AddressBlock addr = new AddressBlock(vetLookup.getAddress(), null, vetLookup.getCity(), null, 
+						vetLookup.getState(), vetLookup.getZipCode(), null, null, null);
+				Person person = new Person(parts, vetLookup.getPhoneDigits(), null );
+				Veterinarian vet = new Veterinarian(person, addr.toString(), CivetConfig.getHomeStateAbbr(),
+						vetLookup.getLicenseNo(), vetLookup.getNAN());
+				model.setVet( vet );
+			}
+			model.setPurpose(sStdPurpose);
+		} // End if !bXFA
+		// Expiration date will be set automatically from getXML();
+		// We don't enter the person name, normally  or add logic to tell prem name from person name.
+
+		model.setOrigin(sOriginPIN, sOriginName, sOriginPhone, sOriginAddress, sOriginCity, sOriginCounty, sOriginStateCode, sOriginZipCode);
+		model.setDestination(sDestinationPIN, sDestinationName,  
+					sDestinationPhone, sDestinationAddress, sDestinationCity, sDestinationCounty, 
+					sDestinationStateCode, sDestinationZipCode);
+		// By suggestion of Mitzy at CAI DO NOT populate Consignor or Consignee unless different!
+		
+		// Add animals and groups.  This logic is tortured!
+		// This could be greatly improved to better coordinate with CO/KS list of animals and the standard's group concept.
+		// Precondition:  The model provided already has the species list populated with Animals.
+		// Use species list to calculate the number of unidentified animals and build groups accordingly.
+		// Precondition:  Individually identified animals were added when the AddIdentifiers dialog closed.
+		ArrayList<Animal> animals = model.getAnimals();
+		ArrayList<GroupLot> groups = model.getGroups();
+		for( SpeciesRecord sr : aSpecies ) {
+			// Only add group lot if not officially IDd so count ids and subtract
+			String sSpeciesCode = sr.sSpeciesCode;
+			int iNumOfSpp = sr.iNumber;
+			int iCountIds = 0;
+			if( animals != null ) {
+				for( Animal animal : animals ) {
+					if(  animal.speciesCode.code != null && animal.speciesCode.code.equals(sSpeciesCode) ) {
+						iCountIds++;
+					}
+				}
+			}
+			boolean bFound = false;
+			for( GroupLot group : groups ) {
+				if( group.speciesCode.code != null && group.speciesCode.code.equals(sSpeciesCode) ) {
+					bFound = true;
+					if(iCountIds == iNumOfSpp) {
+						model.removeGroupLot(group);
+					}
+					else if( iCountIds > iNumOfSpp ) {
+						logger.error("Number of tags " + iCountIds + " > number of animals " + iNumOfSpp + " for species " + sSpeciesCode);
+						// Leave things alone.
+					}
+					else if( iCountIds != iNumOfSpp ) {
+						Integer iNumUntagged = iNumOfSpp - iCountIds;
+						group.quantity = iNumUntagged.doubleValue();
+						model.editGroupLot(group);
+					}
+				}
+			}
+			if( !bFound ) {
+				Integer iNumUntagged = iNumOfSpp - iCountIds;
+				GroupLot group = new GroupLot(sSpeciesCode, iNumUntagged.doubleValue());
+				model.editGroupLot(group);
+			}
+		}
+//		Precondition model contains the current page or pages in the attachment
+//      Precondition model contains metadata for errors saved from the add errors dialog.
+		model.setDefaultAnimalInspectionDates(dDateIssued);
+		model.setCertificateNumber(sCVINo);
+		model.setBureauReceiptDate(dDateReceived);
+		String sCVINbrSource = CviMetaDataXml.CVI_SRC_CIVET;
+		model.setCVINumberSource(sCVINbrSource);
+	}
+
+}

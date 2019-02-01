@@ -28,7 +28,6 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.dialogs.MessageDialog;
@@ -59,7 +58,7 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 		prog.setCancelListener(this);
 		prog.setAuto(true);
 		prog.setVisible(true);
-		service = CivetWebServiceFactory.getService();
+		service = new CivetWebServices();
 	}
 	
 	@Override

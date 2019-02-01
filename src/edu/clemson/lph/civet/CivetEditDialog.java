@@ -158,7 +158,7 @@ public final class CivetEditDialog extends JFrame {
 	JPanel pButtons;
 	TitledBorder tbButtons;
 	JPanel pEdit;
-	JButton bPageOptions;
+	JButton bAddToPrevious;
 	JButton bGotoPage;
 	JButton bAddIDs;
 	JButton bEditLast;
@@ -882,13 +882,13 @@ public final class CivetEditDialog extends JFrame {
 		gbc_btnAddIDs.gridy = 2;
 		pButtons.add(bAddIDs, gbc_btnAddIDs);
 		
-		bPageOptions = new JButton("Add Page to Previous");  // Text and handler varies
+		bAddToPrevious = new JButton("Add Page to Previous");  // Text and handler varies
 		GridBagConstraints gbc_bAddToLast = new GridBagConstraints();
 		gbc_bAddToLast.fill = GridBagConstraints.BOTH;
 		gbc_bAddToLast.insets = new Insets(2, 0, 0, 10);
 		gbc_bAddToLast.gridx = 1;
 		gbc_bAddToLast.gridy = 3;
-		pButtons.add(bPageOptions, gbc_bAddToLast);
+		pButtons.add(bAddToPrevious, gbc_bAddToLast);
 		
 		bSave = new JButton("Save");  // Text and handler varies
 		GridBagConstraints gbc_bSave = new GridBagConstraints();

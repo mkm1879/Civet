@@ -36,6 +36,13 @@ import edu.clemson.lph.utils.FileUtils;
  */
 public class PdfSourceFile extends SourceFile {
 	
+	/**
+	 * Used only in cloneCurrentState
+	 */
+	protected PdfSourceFile() {
+		
+	}
+	
 	public PdfSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
 		super(fFile, viewer);
 		type = Types.PDF;
@@ -80,12 +87,12 @@ public class PdfSourceFile extends SourceFile {
 	 */
 	@Override
 	public StdeCviXmlModel split() throws SourceFileException {
-		StdeCviXmlModel newModel = model;
+		StdeCviXmlModel oldModel = model;
 		model = new StdeCviXmlModel();
 		iPage++;
 		byte pdfPageBytes[] = getPDFBytes(iPage);
 		model.setPDFAttachment(pdfPageBytes, fSource.getName());
-		return newModel;
+		return oldModel;
 	}
 	
 	/**

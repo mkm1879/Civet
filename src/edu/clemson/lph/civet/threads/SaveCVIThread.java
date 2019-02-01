@@ -337,6 +337,7 @@ public class SaveCVIThread extends Thread {
 		}
 //		Precondition model contains the current page or pages in the attachment
 //      Precondition model contains metadata for errors saved from the add errors dialog.
+		model.setDefaultAnimalInspectionDates(dDateIssued);
 		model.setCertificateNumber(sCVINo);
 		model.setBureauReceiptDate(dDateReceived);
 		model.setCVINumberSource(sCVINbrSource);

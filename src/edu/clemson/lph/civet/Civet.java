@@ -74,18 +74,9 @@ public class Civet {
 		logger.setLevel(CivetConfig.getLogLevel());
 		CivetInbox.VERSION = readVersion();
 		logger.info("Civet running build: " + CivetInbox.VERSION);
-		if( args.length == 1  && !args[0].startsWith("-")) {
-			String sFile = args[0];
-			if( sFile != null && ( sFile.toLowerCase().endsWith(".cvi") || sFile.toLowerCase().endsWith(".pdf")) ) {
-				previewFile( sFile );
-			}
-		}
-		else if( args.length >= 1 && args[0].toLowerCase().equals("-robot") ) {
+		// TODO Remove Robot once all have had a chance to respond.
+		if( args.length >= 1 && args[0].toLowerCase().equals("-robot") ) {
 			logger.info("Starting in Robot Mode");
-			if( !CivetConfig.isJPedalXFA() ) {
-				logger.error("Robot mode requires JPedalXFA" );
-				System.exit(1);
-			}
 			if( args.length >= 3 ) {
 				CivetConfig.setHERDSUserName( args[1] );
 				CivetConfig.setHERDSPassword( args[2] );
@@ -164,70 +155,33 @@ public class Civet {
 	     }
 	}
 	
+	/**
+	 * Read the version from a one line text file in Resources.
+	 * 
+	 *  I keep forgetting how this trick works.  See https://community.oracle.com/blogs/pat/2004/10/23/stupid-scanner-tricks
+	 	Finally now with Java 1.5's Scanner I have a true one-liner: 
+    	String text = new Scanner( source ).useDelimiter("\\A").next();
+		One line, one class. The only tricky is to remember the regex \A, which matches the beginning of input. 
+		This effectively tells Scanner to tokenize the entire stream, from beginning to (illogical) next beginning. 
+		As a bonus, Scanner can work not only with an InputStream as the source, but also a File, Channel, or 
+		anything that implements the new java.lang.Readable interface. For example, to read a file: 
+    	String text = new Scanner( new File("poem.txt") ).useDelimiter("\\A").next();
+	 * @return String with version number for display.
+	 */
 	private static String readVersion() {
 		String sRet = null;
 		try {
 			InputStream iVersion = Civet.class.getResourceAsStream("res/Version.txt");
-			Scanner s = new Scanner(iVersion).useDelimiter("\\A");
-			sRet = s.hasNext() ? s.next() : "";
-			s.close();
-			iVersion.close();
+			try ( Scanner s = new Scanner(iVersion).useDelimiter("\\A") ) {
+				sRet = s.hasNext() ? s.next() : "";
+				s.close();
+				iVersion.close();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.error(e);
 		}
 		return sRet;
-	}
-
-	private static boolean stillValid() {
-		boolean bRet = false;
-		java.util.Date dNow = new java.util.Date();
-		SimpleDateFormat df = new SimpleDateFormat( "yyyy-MM-dd");
-		try {
-			java.util.Date dNewYear = df.parse("2016-01-01");
-			if( dNow.before(dNewYear) )
-				bRet = true;
-			else {
-				MessageDialog.showMessage(null, "Civet Error: Expired", "The JPedal XFA trial has expired.  Please use Civet.jar with a valid JPedal library file");
-			}
-		} catch (ParseException e) {
-			logger.error(e);
-		}
-		
-		
-		return bRet;
-	}
-	
-	private static void previewFile( String sFile ) {
-		if( sFile == null || sFile.trim().length() == 0 ) return;
-		try {
-			File f = new File(sFile);
-			ArrayList<File> files = new ArrayList<File>(); files.add(f);
-			CivetEditDialog dlg;
-			dlg = new CivetEditDialog( (Window)null, files );
-			dlg.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			File fFile = new File(sFile);
-			if( !fFile.exists() ) return;
-			String sFileName = fFile.getName();
-			String sInbox = CivetConfig.getInputDirPath();
-			String sMoveTo = sInbox + sFileName;
-			if( !(sMoveTo.equalsIgnoreCase(sFile)) ){
-				File fMoveTo = new File( sMoveTo );
-				if( !fFile.renameTo(fMoveTo) ) {
-					MessageDialog.showMessage(dlg, "Civet: Preview Error", "Failed to move file\n" + sFile + "\n\t to Civet InBox\nOpening in Preview");
-				}
-				else {
-					fFile = fMoveTo;
-				}
-			}
-			File selectedFiles[] = {fFile};
-			//		dlg.openFiles(selectedFiles, true);
-			dlg.setVisible(true);
-			MessageDialog.showMessage(dlg, "Civet: Preview", "File\n" + sFile + "\n\tmoved to Civet InBox\nOpening in Preview");
-		} catch (SourceFileException e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
-		}
 	}
 	
 	/**

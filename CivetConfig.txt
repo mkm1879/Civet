@@ -44,7 +44,7 @@ EmailOnlySendPath=
 
 #Files
 CoKsXSLTFile=CO_KS_eCVI_to_Standard2.xsl
-StdSchema=E:\\Documents\\Civet\\ecviDraftRelaxed.xsd
+StdSchema=E:\\EclipseJava\\Civet\\ecvi2.xsd
 acrobatPath=
 ExportEmailTemplate=E:\\Documents\\CivetTest\\CivetExportsEmailMessage.txt
 ImportErrorsEmailTemplate=E:\\Documents\\CivetTest\\CivetImportsErrorEmailMessage.txt

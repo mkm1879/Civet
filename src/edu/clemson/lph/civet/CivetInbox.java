@@ -262,5 +262,12 @@ public class CivetInbox extends JFrame {
 		
 		menuBar1.add(menuHelp);
 	}
+	
+	/** 
+	 * Lazy convenience method replaces "parent.getController().refreshTables()"
+	 */
+	public void refreshTables() {
+		inboxController.refreshTables();
+	}
 
 } // End class Civet Inbox
