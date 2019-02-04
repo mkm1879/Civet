@@ -57,6 +57,42 @@ public class IDTypeGuesser {
 		}
 		return type;
 	}
+	
+	public static String getTagTypeString(AnimalTag.Types type) {
+		String sRet = null;
+		switch( type ) {
+		case AIN:
+			sRet = "AIN";
+			break;
+		case MfrRFID:
+			sRet = "MfrRFID";
+			break;
+		case NUES9:
+			sRet = "NUES9";
+			break;
+		case NUES8:
+			sRet = "NUES8";
+			break; 
+		case OtherOfficialID:
+			sRet = "OtherOfficialID";
+			break; 
+		case ManagementID:
+			sRet = "ManagementID"; 
+			break;
+		case BrandImage:
+			sRet = "BrandImage"; 
+			break;
+		case EquineDescription:
+			sRet = "EquineDescription"; 
+			break;
+		case EquinePhotographs:
+			sRet = "EquinePhotographs";
+			break;
+		default:
+			sRet = null;
+		}
+		return sRet;
+	}
 
 
 }

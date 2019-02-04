@@ -19,6 +19,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.awt.Window;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,11 +33,17 @@ import org.w3c.dom.Element;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
-import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.civet.xml.elements.AddressBlock;
+import edu.clemson.lph.civet.xml.elements.Animal;
+import edu.clemson.lph.civet.xml.elements.AnimalTag;
+import edu.clemson.lph.civet.xml.elements.GroupLot;
+import edu.clemson.lph.civet.xml.elements.NameParts;
+import edu.clemson.lph.civet.xml.elements.Person;
+import edu.clemson.lph.civet.xml.elements.SpeciesCode;
+import edu.clemson.lph.civet.xml.elements.Veterinarian;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.dialogs.ThreadCancelListener;
@@ -59,7 +66,7 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 		prog.setAuto(true);
 		prog.setCancelListener(this);
 		prog.setVisible(true);
-		service = CivetWebServiceFactory.getService();
+		service = new CivetWebServices();
 	}
 	
 	@Override
@@ -111,64 +118,60 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 	}
 	
 	private String buildXml( VspsCvi cvi ) throws IOException {
-		StdeCviXmlModel xmlBuilder = new StdeCviXmlModel();
-		VetLookup vet = new VetLookup( cvi.getVetLastName(), cvi.getVetFirstName() );
-		xmlBuilder.setCviNumber(cvi.getCVINumber());
-		xmlBuilder.setIssueDate(cvi.getInspectionDate());
+		StdeCviXmlModel xmlModel = new StdeCviXmlModel();
+		xmlModel.setCviNumber(cvi.getCVINumber());
+		xmlModel.setIssueDate(cvi.getInspectionDate());
 		Element eVet = null;
-		if( cvi.getOriginState().equalsIgnoreCase(CivetConfig.getHomeStateAbbr()) && vet != null ) {
-			String sVetName = vet.getLastName() + ", " + vet.getFirstName();
-			eVet = xmlBuilder.setVet(sVetName, vet.getLicenseNo(), vet.getNAN(), vet.getPhoneDigits());
-			xmlBuilder.setAddress(eVet, vet.getAddress(), vet.getCity(), null, vet.getState(), vet.getZipCode());
+		VetLookup vetLookup = new VetLookup( cvi.getVetLastName(), cvi.getVetFirstName() );
+		if( cvi.getOriginState().equalsIgnoreCase(CivetConfig.getHomeStateAbbr()) && vetLookup != null ) {
+//			String sVetName = vet.getLastName() + ", " + vet.getFirstName();
+//			eVet = xmlModel.setVet(sVetName, vet.getLicenseNo(), vet.getNAN(), vet.getPhoneDigits());
+//			xmlModel.setAddress(eVet, vet.getAddress(), vet.getCity(), null, vet.getState(), vet.getZipCode());
+			NameParts parts = new NameParts(null, vetLookup.getFirstName(), null, vetLookup.getLastName(), null );
+			AddressBlock addr = new AddressBlock(vetLookup.getAddress(), null, vetLookup.getCity(), null, 
+					vetLookup.getState(), vetLookup.getZipCode(), null, null, null);
+			Person person = new Person(parts, vetLookup.getPhoneDigits(), null );
+			Veterinarian vet = new Veterinarian(person, addr.toString(), CivetConfig.getHomeStateAbbr(),
+					vetLookup.getLicenseNo(), vetLookup.getNAN());
+			xmlModel.setVet( vet );
+
 		}
 		else {
-			xmlBuilder.setVet(cvi.getVeterinarianName());
+			xmlModel.setVet(cvi.getVeterinarianName());
 		}
 		// Expiration date will be set automatically from getXML();
-		xmlBuilder.setPurpose(VspsCodeLookup.getPurposeCode(cvi.getStdPurpose()));
+		xmlModel.setPurpose(VspsCodeLookup.getPurposeCode(cvi.getStdPurpose()));
 		// We don't enter the person name, normally  or add logic to tell prem name from person name.
 		VspsCviEntity origin = cvi.getOrigin();
-		Element eOrigin = xmlBuilder.setOrigin(origin.getPremisesId(), origin.getBusiness(), 
-				origin.getName(), origin.getPhoneDigits());
-		xmlBuilder.setAddress(eOrigin, origin.getAddress1(), origin.getCity(), 
-				origin.getCounty(), origin.getState(), origin.getPostalCode());
+		Element eOrigin = xmlModel.setOrigin( origin.getPremisesId(), origin.getName(), origin.getPhoneDigits(), origin.getAddress1(), 
+				origin.getCity(), origin.getCounty(), origin.getState(), origin.getPostalCode() );
 		VspsCviEntity destination = cvi.getDestination();
-		Element eDestination = xmlBuilder.setDestination(destination.getPremisesId(), destination.getBusiness(), 
-				destination.getName(), destination.getPhoneDigits());
-		xmlBuilder.setAddress(eDestination, destination.getAddress1(), destination.getCity(), 
-				destination.getCounty(), destination.getState(), destination.getPostalCode());
+		Element eDestination = xmlModel.setDestination( destination.getPremisesId(), destination.getName(), destination.getPhoneDigits(), destination.getAddress1(), 
+				destination.getCity(), destination.getCounty(), destination.getState(), destination.getPostalCode() );
 
 		HashMap<List<String>, Integer> hGroups = new HashMap<List<String>, Integer>();
 		List<VspsCviAnimal> animals = cvi.getAnimals();
-		for( VspsCviAnimal animal : animals ) {
-			String sSpecies = VspsCodeLookup.getSpCode(animal.getSpecies());
-			String sBreed = animal.getBreed();
-			String sGender = VspsCodeLookup.getGenderCode(animal.getGender());
-			Integer iCount = animal.getCount();
+		for( VspsCviAnimal vspsAnimal : animals ) {
+			String sSpecies = VspsCodeLookup.getSpCode(vspsAnimal.getSpecies());
+			String sBreed = vspsAnimal.getBreed();
+			String sGender = VspsCodeLookup.getGenderCode(vspsAnimal.getGender());
+			Integer iCount = vspsAnimal.getCount();
 			if( iCount == null )
 				iCount = 1;
-			ArrayList<AnimalTag> aTags = animal.getTags();
-			ArrayList<AnimalTag> aBadTags = animal.getBadTags();
-			if( aTags.size() > 0 && iCount == 1 ) {
-				Element eAnimal = null;
-				AnimalTag tag1 = animal.getFirstOfficialId();
-				if( tag1 == null )
-					tag1 = aTags.get(0);
-				eAnimal = xmlBuilder.addAnimal( sSpecies, cvi.getInspectionDate(), sBreed, null, 
-							sGender, tag1.getType(), tag1.getNumber() );
-				for( AnimalTag tag : aTags ) {
-					if( tag != tag1 ) {
-						String sType = tag.getType();
-						if( aBadTags.contains(tag) )
-							sType = "UN";
-						xmlBuilder.addAnimalTag(eAnimal, sType, tag.getNumber());
-					}
-				}
+			ArrayList<AnimalTag> aTags = vspsAnimal.getTags();
+			if( iCount == 1 && aTags.size() > 0 && iCount == 1 ) {
+				java.util.Date dInspDate = cvi.getInspectionDate();
+				String sInspDate = StdeCviXmlModel.dateFormat.format(dInspDate);
+				SpeciesCode scSpecies = new SpeciesCode(sSpecies);
+				Animal animal = new Animal(scSpecies, aTags, null, sBreed,
+						sGender, sInspDate);
+				xmlModel.addAnimal( animal );
 			}
 			else {
 				List<String> lKey = new ArrayList<String>();
 				lKey.add(sSpecies);
 				lKey.add(sGender);
+				lKey.add(sBreed);
 				Integer iNum = hGroups.get(lKey);
 				if( iNum != null ) {
 					iNum += iCount;
@@ -178,29 +181,24 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 					hGroups.put(lKey, iCount);
 				}
 			}
-			if( aBadTags.size() > 0 ) {
-				for( AnimalTag tag : aBadTags ) {
-					FileUtils.writeTextFile(cvi.getCVINumber() + ": " + tag.getNumber() + " type " + tag.getType() + "\r\n", 
-							"BadTags.txt", true);
-				}
-			}
 		}
 		// Add Groups.
 		for( Map.Entry<List<String>, Integer> entry : hGroups.entrySet() ) {
 			List<String> lKey = entry.getKey();
 			String sSpecies = lKey.get(0);
 			String sGender = lKey.get(1);
+			String sBreed = lKey.get(2);
 			Integer iNum = entry.getValue();
-			xmlBuilder.addGroup(iNum, "Non-identified Animals", sSpecies, null, sGender);
+			GroupLot group = new GroupLot(sSpecies, sBreed, sGender, new Double(iNum) );
+			xmlModel.addGroupLot(group);
 		}
 		CviMetaDataXml metaData = new CviMetaDataXml();
 		metaData.setCertificateNbr(cvi.getCVINumber());
 		metaData.setBureauReceiptDate(cvi.getCreateDate());
 		metaData.setErrorNote("VSPS Download");
 		metaData.setCVINumberSource(sCVINbrSource);
-//	System.out.println(metaData.getXmlString());
-		xmlBuilder.addMetadataAttachement(metaData);
-		return xmlBuilder.getXMLString();
+		xmlModel.addOrUpdateMetadataAttachement(metaData);
+		return xmlModel.getXMLString();
 	}
 
 }

@@ -71,4 +71,20 @@ public class GroupLot {
 		Integer iQuant = quantity.intValue(); 
 		description = "Group of " + iQuant.toString() + " " + sSpecies;
 	}
+
+	public GroupLot(String speciesCode, String sBreed, String sGender, Double quantity ) {
+		this.eGroupLot = null;
+		this.speciesCode = new SpeciesCode(speciesCode);
+		this.groupLotId = null;
+		this.quantity = quantity;
+		this.unit = null;
+		this.age = null;
+		this.breed = sBreed;
+		this.sex = sGender;
+		String sSpecies = "OTH";
+		if( speciesCode != null )
+			speciesCode.toString();
+		Integer iQuant = quantity.intValue(); 
+		description = "Group of " + iQuant.toString() + " " + sSpecies;
+	}
 }

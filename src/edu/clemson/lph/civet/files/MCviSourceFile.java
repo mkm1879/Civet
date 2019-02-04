@@ -62,7 +62,7 @@ public class MCviSourceFile extends SourceFile {
 			String sAcrobatXML = FileUtils.readTextFile(fData);
 			String sStdXML = toStdXMLString( sAcrobatXML );
 			model = new StdeCviXmlModel(sStdXML);
-			model.setPDFAttachment(getPDFBytes(), fSource.getName());
+			model.setOrUpdatePDFAttachment(getPDFBytes(), fSource.getName());
 		} catch (Exception e) {
 			throw new SourceFileException(e);
 		}
@@ -102,7 +102,7 @@ public class MCviSourceFile extends SourceFile {
 					String sStdXml = toStdXMLString( sAcrobatXml );
 					model = new StdeCviXmlModel(sStdXml);
 					byte pdfBytes[] = getPDFBytes();
-					model.setPDFAttachment(pdfBytes, fSource.getName());
+					model.setOrUpdatePDFAttachment(pdfBytes, fSource.getName());
 				}
 				else {
 					logger.error("Cannot find data file " + sDataPath);

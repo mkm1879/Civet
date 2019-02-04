@@ -40,7 +40,7 @@ public class AgViewSourceFile extends SourceFile {
 			pdfBytes = FileUtils.readBinaryFile(fSource);
 			String sStdXML = FileUtils.readTextFile(fData);
 			model = new StdeCviXmlModel(sStdXML);
-			model.setPDFAttachment(getPDFBytes(), fSource.getName());
+			model.setOrUpdatePDFAttachment(getPDFBytes(), fSource.getName());
 		} catch (Exception e) {
 			throw new SourceFileException(e);
 		}
@@ -78,7 +78,7 @@ public class AgViewSourceFile extends SourceFile {
 					String sStdXml = FileUtils.readTextFile(fData);
 					model = new StdeCviXmlModel(sStdXml);
 					byte pdfBytes[] = getPDFBytes();
-					model.setPDFAttachment(pdfBytes, fSource.getName());
+					model.setOrUpdatePDFAttachment(pdfBytes, fSource.getName());
 				}
 				else {
 					logger.error("Cannot find data file " + sDataPath);

@@ -49,6 +49,20 @@ public class Animal {
 		this.inspectionDate = inspectionDate;
 	}
 	
+	public Animal(SpeciesCode speciesCode, ArrayList<AnimalTag> animalTags,  String age, String breed,
+			String sex, String inspectionDate ) {
+		this.eAnimal = null;
+		this.speciesCode = speciesCode;
+		if( animalTags != null )
+			this.animalTags = animalTags;
+		else
+			this.animalTags = new ArrayList<AnimalTag>();
+		this.age = age;
+		this.breed = breed;
+		this.sex = sex;
+		this.inspectionDate = inspectionDate;
+	}
+	
 	public Animal(String sSpeciesCode, String sTag ) {
 		this.speciesCode = new SpeciesCode( sSpeciesCode );
 		animalTags = new ArrayList<AnimalTag>();

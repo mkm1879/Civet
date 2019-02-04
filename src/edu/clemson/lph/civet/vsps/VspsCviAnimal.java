@@ -27,7 +27,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.utils.IDTypeGuesser;
+import edu.clemson.lph.civet.xml.elements.AnimalTag;
+import edu.clemson.lph.civet.xml.elements.EquineDescription;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
 public class VspsCviAnimal {
@@ -37,7 +38,6 @@ public class VspsCviAnimal {
 	private DateFormat df = new SimpleDateFormat( "dd-MMM-yy");
 	private DateFormat df2 = new SimpleDateFormat( "d-MMM-yy");
 	private ArrayList<AnimalTag> aTags;
-	private ArrayList<AnimalTag> aBadTags;
 	
 	VspsCviAnimal( List<String> aColsIn, LabeledCSVParser parserIn ) {
 		aCols = aColsIn;
@@ -52,65 +52,51 @@ public class VspsCviAnimal {
 	 */
 	private void readIds() {
 		aTags = new ArrayList<AnimalTag>();
-		aBadTags = new ArrayList<AnimalTag>();
 		for( int i = 1; i <= 5; i++ ) {
-			boolean bBad = false;
 			try {
+				AnimalTag tag = null;
 				String sIdType = getIdentifierType(i);
 				String sId = getIdentifier(i);
-				boolean bOfficial = false;
+				String sOtherType = null;
 				if( sId == null || sId.trim().length() == 0 )
 					continue;
 				if( sId.startsWith("840") && sId.trim().length() >= 14 && sId.trim().length() <= 16) {
 					sId = sId.trim();
-					sIdType = "N840RFID";
-					bOfficial = true;
-					if( sId.trim().length() == 14 || sId.trim().length() == 16 )
-						bBad = true;
+					tag = new AnimalTag( AnimalTag.Types.AIN, sId);
 				}
 				else if( sId.startsWith("USA") && sId.trim().length() >= 14 && sId.trim().length() <= 16) {
 					sId = sId.trim();
-					sIdType = "AMID";
-					bOfficial = true;
-					if( sId.trim().length() == 14 || sId.trim().length() == 16 )
-						bBad = true;
+					tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, "USA", sId) ;
 				}
 				else if( "USDA Metal Tag".equalsIgnoreCase(sIdType) ) {
 					if( sId.trim().length() == 9 ) 
-						sIdType = "NUES9";
+						tag = new AnimalTag( AnimalTag.Types.NUES9, sId );
 					else if( sId.trim().length() == 8 )
-						sIdType = "NUES8";
-					else
-						sIdType = "UN";
-					bOfficial = true;
-					if( sId.trim().length() < 8 || sId.trim().length() > 9 ) 
-						bBad = true;
+						tag = new AnimalTag( AnimalTag.Types.NUES8, sId );
+					else {
+						sOtherType = "USDA Metal Tag";
+						tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, sOtherType, sId );
+					}
 				}
 				else if( "Registered Name of Animal".equalsIgnoreCase(sIdType) ) {
-					sIdType = "NAME";
-					bOfficial = true;
+					EquineDescription ed = new EquineDescription( sId, null );
+					tag = new AnimalTag( ed );
 				}
 				else if( "Tattoo".equalsIgnoreCase(sIdType) ) {
-					sIdType = "TAT";
-					bOfficial = true;
+					sOtherType = "Tattoo";
+					tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, sOtherType, sId );
 				}
 				else if( "Ear Tattoo".equalsIgnoreCase(sIdType) ) {
-					sIdType = "TAT";
-					bOfficial = true;
+					sOtherType = "Ear Tattoo";
+					tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, sOtherType, sId );
 				}
 				else if( "Call Name".equalsIgnoreCase(sIdType) ) {
-					sIdType = "OTH";
-					bOfficial = false;
+					sOtherType = "Call Name";
 				}
 				else {
-					sIdType = IDTypeGuesser.getTagType(sId);
-					if( isStdOfficialIdType(sIdType) || isOfficialVSPSIdType( getIdentifierType(i)) )
-						bOfficial = true;
+					tag = new AnimalTag( sId );
 				}
-				AnimalTag tag = new AnimalTag( sIdType, sId, bOfficial );
 				aTags.add(tag);
-				if( bBad )
-					aBadTags.add(tag);
 			} catch( IOException e ) {
 				logger.error("Could not read ID " + i, e);
 			}
@@ -129,16 +115,6 @@ public class VspsCviAnimal {
 	
 	public String getPurpose() throws IOException {
 		int iCol = parser.getLabelIdx("Purpose");
-		if( iCol < 0 || iCol >= aCols.size() )
-			return null;
-		else if( aCols.get(iCol).trim().length() == 0 )
-			return null;
-		else
-			return  aCols.get(iCol);
-	}
-	
-	public String getType() throws IOException {
-		int iCol = parser.getLabelIdx("Type");
 		if( iCol < 0 || iCol >= aCols.size() )
 			return null;
 		else if( aCols.get(iCol).trim().length() == 0 )
@@ -226,26 +202,6 @@ public class VspsCviAnimal {
 			return  aCols.get(iCol);
 	}
 
-	private boolean isStdOfficialIdType( String sIdType ) {
-		boolean bRet = false;
-		if( sIdType == null || sIdType.trim().length() == 0 )
-			return false;
-		if( sIdType.trim().startsWith("N840RFID") )
-			return true;
-		if( sIdType.trim().startsWith("AMID") )
-			return true;
-		if( sIdType.trim().startsWith("NUES9") )
-			return true;
-		if( sIdType.trim().startsWith("NUES8") )
-			return true;
-		if( sIdType.trim().startsWith("NPIN") )
-			return true;
-		if( sIdType.trim().startsWith("SGFLID") )
-			return true;
-		if( sIdType.trim().startsWith("TAT") )
-			return true;
-		return bRet;
-	}
 	
 	private boolean isOfficialVSPSIdType( String sIdType ) {
 		boolean bRet = false;
@@ -268,10 +224,6 @@ public class VspsCviAnimal {
 		return aTags;
 	}
 	
-	public ArrayList<AnimalTag> getBadTags() {
-		return aBadTags;
-	}
-	
 	/**
 	 * Used to be sure we put official IDs first.
 	 * @return one Id string or null if nothing "looks" like an official id
@@ -287,42 +239,6 @@ public class VspsCviAnimal {
 		}
 		return tRet;
 	}
-	
-	/**
-	 * Look for Id that fits a common official id pattern.
-	 * Store the ID in sFirstOfficial and type in sFirstOfficialType
-	 * @throws IOException
-	 */
-//	private void checkIds()  throws IOException {
-//		if( !bCheckedIds ) {
-//			for( int i = 1; i <= 5; i++ ) {
-//				String sIdType = getIdentifierType(i);
-//				String sId = getIdentifier(i);
-//				if( ( sIdType != null && isOfficialIdType(sIdType) ) || ( sId != null && isOfficialId( sId ) ) ) { 
-//					sFirstOfficial = sId.trim();
-//					if( "USDA Metal Tag".equalsIgnoreCase(sIdType) ) {
-//						if( sId.trim().length() == 9 ) 
-//							sIdType = "NUES9";
-//						else if( sId.trim().length() == 8 )
-//							sIdType = "NUES8";
-//					}
-//					else if( "Registered Name of Animal".equalsIgnoreCase(sIdType) ) {
-//						sIdType = "NAME";
-//					}
-//					else if( "Tattoo".equalsIgnoreCase(sIdType) ) {
-//						sIdType = "TAT";
-//					}
-//					else if( "Call Name".equalsIgnoreCase(sIdType) ) {
-//						sIdType = "OTH";
-//					}
-//					sFirstOfficialType = IDTypeGuesser.getTagType(sId);
-//					break;
-//				}
-//			}
-//			bCheckedIds = true;
-//		}
-//	}
-
 
 	public String getIdentifierType( int iIdNum) throws IOException {
 		if( iIdNum < 1 || iIdNum > 5)

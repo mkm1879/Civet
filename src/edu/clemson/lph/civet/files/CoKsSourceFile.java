@@ -74,7 +74,7 @@ public class CoKsSourceFile extends SourceFile {
 		
 	FileUtils.writeTextFile(sStdXML, "Transform.xml");	
 		model = new StdeCviXmlModel(sStdXML);
-		model.setPDFAttachment(pdfBytes, fSource.getName());
+		model.setOrUpdatePDFAttachment(pdfBytes, fSource.getName());
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class CoKsSourceFile extends SourceFile {
 					String sStdXml = toStdXMLString( sAcrobatXml );
 					model = new StdeCviXmlModel(sStdXml);
 					byte pdfBytes[] = getPDFBytes();
-					model.setPDFAttachment(pdfBytes, fSource.getName());
+					model.setOrUpdatePDFAttachment(pdfBytes, fSource.getName());
 				}
 				else {
 					logger.error("Cannot find data file " + sDataPath);

@@ -31,7 +31,7 @@ public class ImageSourceFile extends SourceFile {
 		if( fSource != null && fSource.exists() && fSource.isFile() ) {
 			pdfBytes = makePdf();
 			model = new StdeCviXmlModel();
-			model.setPDFAttachment(getPDFBytes(), fSource.getName() + ".pdf");			
+			model.setOrUpdatePDFAttachment(getPDFBytes(), fSource.getName() + ".pdf");			
 		}
 		else {
 			throw new SourceFileException("File " + sFilePath + " does not exist");
@@ -56,7 +56,7 @@ public class ImageSourceFile extends SourceFile {
 	public StdeCviXmlModel getDataModel() {
 		if( model == null ) {
 			model = new StdeCviXmlModel();
-			model.setPDFAttachment(pdfBytes, fSource.getName() + ".pdf");			
+			model.setOrUpdatePDFAttachment(pdfBytes, fSource.getName() + ".pdf");			
 		}
 		return model;
 	}

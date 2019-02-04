@@ -49,7 +49,7 @@ import edu.clemson.lph.utils.XMLUtility;
 // TODO Refactor rename to StdXmlDataModel
 public class StdeCviXmlModel {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	private static final String allElements = "Veterinarian,MovementPurposes,Origin,Destination,Consignor,Consignee," +
 	                                   "Carrier,TransportMode,Accessions,Animal,GroupLot,Statements,Attachment," +
 			                           "MiscAttribute,Binary";
