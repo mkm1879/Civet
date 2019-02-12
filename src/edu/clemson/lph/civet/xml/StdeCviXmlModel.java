@@ -31,14 +31,11 @@ import java.util.HashSet;
 
 import javax.xml.parsers.DocumentBuilder;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.elements.*;
 import edu.clemson.lph.controls.PhoneField;
@@ -87,34 +84,6 @@ public class StdeCviXmlModel {
 			helper = new XMLDocHelper( doc, root );
 			binaries = new StdeCviBinaries( helper );
 			metaData = new CviMetaDataXml();
-		} catch (Exception e ) {
-			logger.error(e);
-		}
-	}
-
-	/**
-	 * Create an XML document from an existing wrapper.  Will this ever apply.
-	 * @param cviIn
-	 */
-	public StdeCviXmlModel(StdeCviXmlV1 cviIn) {
-		try {
-			Document doc = null;
-			Element root = null;
-			if( cviIn != null ) {
-				doc = cviIn.getDocument();
-				doc.setXmlStandalone(true);
-				root = cviIn.getRoot();
-			}
-			if( doc == null ) {
-				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
-				doc = db.newDocument();
-				doc.setXmlStandalone(true);
-				root = doc.createElementNS("http://www.usaha.org/xmlns/ecvi2", "eCVI");
-				doc.appendChild(root);
-			}
-			helper = new XMLDocHelper( doc, root );
-			binaries = new StdeCviBinaries( helper );
-			metaData = binaries.getMetaData();
 		} catch (Exception e ) {
 			logger.error(e);
 		}
@@ -621,6 +590,22 @@ public class StdeCviXmlModel {
 		return setPremises( premises, "Origin");
 	}
 	
+	/** 
+	 * Simple convenience method to encapsulate lots of null checks.
+	 * @return
+	 */
+	public String getOriginState() {
+		String sRet = null;
+		Premises pOrigin = getOrigin();
+		if( pOrigin != null ) {
+			Address address = pOrigin.address;
+			if( address != null ) {
+				sRet = address.state;
+			}
+		}
+		return sRet;
+	}
+	
 	public Premises getOrigin() {
 		return getPremises("Origin");
 	}
@@ -633,6 +618,22 @@ public class StdeCviXmlModel {
 
 	public Element setDestination( Premises premises ) {
 		return setPremises( premises, "Destination");
+	}
+	
+	/** 
+	 * Simple convenience method to encapsulate lots of null checks.
+	 * @return
+	 */
+	public String getDestinationState() {
+		String sRet = null;
+		Premises pDestination = getOrigin();
+		if( pDestination != null ) {
+			Address address = pDestination.address;
+			if( address != null ) {
+				sRet = address.state;
+			}
+		}
+		return sRet;
 	}
 	
 	public Premises getDestination() {
@@ -1332,6 +1333,10 @@ public class StdeCviXmlModel {
 			binaries.setOrUpdatePDFAttachment(pdfBytes, sFileName);
 		}
 	}
+	
+	public void removePDFAttachment() {
+		binaries.removePDFAttachment();
+	}
 //	
 //	private void setPDFAttachment( byte[] pdfBytes, String sFileName ) {
 //		sFileName = FileUtils.replaceInvalidFileNameChars(sFileName);
@@ -1550,6 +1555,17 @@ public class StdeCviXmlModel {
 	
 	public String getXMLString() {
 		return helper.getXMLString();
+	}
+	
+	public byte[] getNoAttachmentXmlBytes() {
+		byte[] aRet = null;
+		byte[] pdfBytes = getPDFAttachmentBytes();
+		String sPdfFileName = getPDFAttachmentFilename();
+		removePDFAttachment();
+		String sRet = helper.getXMLString();
+		aRet = sRet.getBytes();
+		setOrUpdatePDFAttachment(pdfBytes, sPdfFileName);
+		return aRet;
 	}
 	
 

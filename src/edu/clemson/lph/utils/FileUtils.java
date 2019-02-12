@@ -23,6 +23,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.Scanner;
 
 import org.apache.log4j.Logger;
@@ -31,6 +36,16 @@ import edu.clemson.lph.civet.Civet;
 
 public class FileUtils {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	
+	public static java.util.Date getLastAccessedDate( File fIn ) throws IOException {
+		java.util.Date dAccessed = null;
+		Path file = FileSystems.getDefault().getPath( fIn.getAbsolutePath() );
+		BasicFileAttributes attrs;
+		attrs = Files.readAttributes(file, BasicFileAttributes.class);
+		FileTime time = attrs.lastAccessTime();
+		dAccessed = new java.util.Date( time.toMillis() );
+		return dAccessed;
+	}
 
 	public static String readTextFile( File fIn ) throws Exception {
 	    StringBuilder text = new StringBuilder();

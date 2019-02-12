@@ -43,7 +43,7 @@ import edu.clemson.lph.civet.lookup.StateVetLookup;
 import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXmlV1;
+import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.dialogs.*;
 
 public 
@@ -125,15 +125,15 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 				String sCurrentEmail = stateVet.getCVIErrorEmail(); 
 				ArrayList<File> aCVIsIn = mStateMap.get(sState);
 				ArrayList<byte[]> aLetterBytes = new ArrayList<byte[]>();
-				ArrayList<StdeCviXmlV1> aCVIsOut = new ArrayList<StdeCviXmlV1>();
+				ArrayList<StdeCviXmlModel> aCVIsOut = new ArrayList<StdeCviXmlModel>();
 				ArrayList<File> aCVIFilesOut = new ArrayList<File>();
 				long lAttachmentsSize = 0;
 				int iPart = 1;
 				int iPdf = 1; // count to bail on last one.
 				for( File fNext : aCVIsIn ) {
 					String sXml = FileUtils.readTextFile(fNext);
-					StdeCviXmlV1 stdXml = new StdeCviXmlV1( sXml );
-					byte[] pdfBytes = stdXml.getOriginalCVI();
+					StdeCviXmlModel stdXml = new StdeCviXmlModel( sXml );
+					byte[] pdfBytes = stdXml.getPDFAttachmentBytes();
 					if( pdfBytes == null || pdfBytes.length < 1 )
 						throw new Exception("Missing CVI attachment in send errors");
 					// Populate this for use in PdfGen/lookupCode
@@ -205,7 +205,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 		});
 	}
 
-	private boolean sendInboundErrorPackage( String sEmail, String sState, ArrayList<StdeCviXmlV1> aStdCvis, 
+	private boolean sendInboundErrorPackage( String sEmail, String sState, ArrayList<StdeCviXmlModel> aStdCvis, 
 			                                 ArrayList<byte[]> aLetterBytes, int iPart ) 
 			                                		 throws AuthenticationFailedException, Exception {
 		boolean bRet = false;
@@ -228,9 +228,9 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 				sEmail = sTestEmail;  
 			ArrayList<MIMEFile> aFiles = new ArrayList<MIMEFile>();
 			for( int i = 0; i < aStdCvis.size(); i++ ) {
-				StdeCviXmlV1 stdXml = aStdCvis.get(i);
+				StdeCviXmlModel stdXml = aStdCvis.get(i);
 				byte letterBytes[] = aLetterBytes.get(i);
-				byte pdfBytes[] = stdXml.getOriginalCVI();
+				byte pdfBytes[] = stdXml.getPDFAttachmentBytes();
 				String sCVINo = stdXml.getCertificateNumber();
 				// Attach PDF
 				aFiles.add(new MIMEFile( sCVINo + "_Cover.pdf","application/pdf",letterBytes));

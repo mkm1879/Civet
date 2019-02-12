@@ -123,9 +123,9 @@ public class StdeCviBinaries {
 	
 	public String getPDFAttachmentFilename() {
 		String sRet = null;
-		Element attach = getPDFAttachmentElement();
-		if( attach != null ) {  // MOST do not have a PDF attached.
-			sRet = attach.getAttribute("Filename");
+		Element eAttach = getPDFAttachmentElement();
+		if( eAttach != null ) {  // MOST do not have a PDF attached.
+			sRet = eAttach.getAttribute("Filename");
 		}
 		return sRet;
 	}
@@ -160,6 +160,15 @@ public class StdeCviBinaries {
 		else {
 			setPDFAttachment( pdfBytes, sFileName );
 		}
+	}
+	
+	public void removePDFAttachment() {
+		Element eBinary = getPDFAttachmentBinaryElement();
+		if( eBinary != null )
+			helper.removeElement(eBinary);
+		Element eAttach = getPDFAttachmentElement();
+		if( eAttach != null )
+			helper.removeElement(eAttach);
 	}
 	
 	private void setPDFAttachment( byte[] pdfBytes, String sFileName ) {

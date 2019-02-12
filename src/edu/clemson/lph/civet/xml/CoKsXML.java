@@ -277,15 +277,6 @@ public class CoKsXML {
 		return helper.getXMLString();
 	}
 	
-	public StdeCviXmlV1 getStdeCviXml() {
-		Node nRoot = toStdXMLNode();
-		if( nRoot != null )
-			return new StdeCviXmlV1( nRoot );
-		else
-			return null;
-	}
-
-	
 	public ArrayList<String> listSpeciesCodes() {
 		ArrayList<String> aRet = new ArrayList<String>();
 		String sXML = toAcrobatXMLString();

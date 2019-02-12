@@ -30,11 +30,8 @@ import org.apache.log4j.*;
 import edu.clemson.lph.mailman.*;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.lookup.StateVetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.xml.CviMetaDataXml;
-import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 import edu.clemson.lph.dialogs.*;
 
 public class EmailOnlySendFilesThread extends Thread {

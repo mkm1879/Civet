@@ -27,26 +27,15 @@ unusually details of your application to mmarti5@clemson.edu.
 */
 
 import java.awt.EventQueue;
-import java.awt.Window;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Scanner;
 
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import edu.clemson.lph.civet.files.SourceFileException;
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.robot.COKSRobot;
-import edu.clemson.lph.civet.webservice.UsaHerdsWebServiceAuthentication;
-import edu.clemson.lph.civet.webservice.WebServiceException;
-import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.StdErrLog;
 
@@ -74,87 +63,67 @@ public class Civet {
 		logger.setLevel(CivetConfig.getLogLevel());
 		CivetInbox.VERSION = readVersion();
 		logger.info("Civet running build: " + CivetInbox.VERSION);
-		// TODO Remove Robot once all have had a chance to respond.
-		if( args.length >= 1 && args[0].toLowerCase().equals("-robot") ) {
-			logger.info("Starting in Robot Mode");
-			if( args.length >= 3 ) {
-				CivetConfig.setHERDSUserName( args[1] );
-				CivetConfig.setHERDSPassword( args[2] );
-			}
-			COKSRobot robbie;
-			try {
-				CivetConfig.checkRobotConfig();
-				robbie = new COKSRobot();
-				robbie.start();
-				System.out.println("Running in Robot Mode\nMinimize but do not close this Command Window");
-			} catch (IOException e) {
-				logger.error("Failed to start robot", e);
-				System.exit(1);
-			}
+		if( args.length >= 2 ) {
+			CivetConfig.setHERDSUserName( args[0] );
+			CivetConfig.setHERDSPassword( args[1] );
 		}
-		else {
-			if( args.length >= 2 ) {
-				CivetConfig.setHERDSUserName( args[0] );
-				CivetConfig.setHERDSPassword( args[1] );
-			}
-			StdErrLog.tieSystemErrToLog();
-			CivetConfig.validateHerdCredentials();
-			if( !CivetInbox.VERSION.contains("XFA") )
-				System.setProperty("org.jpedal.jai","true");
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					try {
-						String os = System.getProperty("os.name");
-						if( os.toLowerCase().contains("mac os") ) {
-							System.setProperty("apple.laf.useScreenMenuBar", "true");
-							System.setProperty("com.apple.mrj.application.apple.menu.about.name",
-									"Civet");
-							System.setProperty("com.apple.mrj.application.growbox.intrudes",
-									"false");
-							UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-						}
-						else {
-							UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-						}
-					} 
-					catch (Exception e) {
-						logger.error(e.getMessage());
-					}
-					if( CivetConfig.isStandAlone() ) {
-						if( !LookupFilesGenerator.checkLookupFiles() ) {
-							throw( new RuntimeException("Failed to load lookup tables"));
-						}
-						else {
-							new CivetInbox();
-						}
+		StdErrLog.tieSystemErrToLog();
+		CivetConfig.validateHerdCredentials();
+		if( !CivetInbox.VERSION.contains("XFA") )
+			System.setProperty("org.jpedal.jai","true");
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					String os = System.getProperty("os.name");
+					if( os.toLowerCase().contains("mac os") ) {
+						System.setProperty("apple.laf.useScreenMenuBar", "true");
+						System.setProperty("com.apple.mrj.application.apple.menu.about.name",
+								"Civet");
+						System.setProperty("com.apple.mrj.application.growbox.intrudes",
+								"false");
+						UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 					}
 					else {
-						prog = new ProgressDialog(null, "Civet: Cache", "Updating lookup tables from USAHERDS database");
-						prog.setAuto(true);
-						prog.setVisible(true);
-						(new Thread() {
-							public void run() {
-								try {
-									CivetConfig.initWebServices();
-									LookupFilesGenerator gen = new LookupFilesGenerator();
-									gen.generateAllLookups();
-									SwingUtilities.invokeLater(new Runnable() {
-										public void run() {
-											prog.setVisible(false);
-											new CivetInbox();
-										}
-									});
-								} catch (Exception e) {
-									logger.error("Error running main program in event thread", e);
-								}
-							}
-						}).start();
+						UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+					}
+				} 
+				catch (Exception e) {
+					logger.error(e.getMessage());
+				}
+				if( CivetConfig.isStandAlone() ) {
+					if( !LookupFilesGenerator.checkLookupFiles() ) {
+						throw( new RuntimeException("Failed to load lookup tables"));
+					}
+					else {
+						new CivetInbox();
 					}
 				}
-			});
-	     }
+				else {
+					prog = new ProgressDialog(null, "Civet: Cache", "Updating lookup tables from USAHERDS database");
+					prog.setAuto(true);
+					prog.setVisible(true);
+					(new Thread() {
+						public void run() {
+							try {
+								CivetConfig.initWebServices();
+								LookupFilesGenerator gen = new LookupFilesGenerator();
+								gen.generateAllLookups();
+								SwingUtilities.invokeLater(new Runnable() {
+									public void run() {
+										prog.setVisible(false);
+										new CivetInbox();
+									}
+								});
+							} catch (Exception e) {
+								logger.error("Error running main program in event thread", e);
+							}
+						}
+					}).start();
+				}
+			}
+		});
 	}
-	
+
 	/**
 	 * Read the version from a one line text file in Resources.
 	 * 

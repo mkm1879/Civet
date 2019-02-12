@@ -12,7 +12,6 @@ import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.xml.StdeCviXmlV1;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.dialogs.QuestionDialog;

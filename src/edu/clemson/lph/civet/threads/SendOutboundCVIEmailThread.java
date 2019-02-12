@@ -32,13 +32,12 @@ import edu.clemson.lph.mailman.*;
 import edu.clemson.lph.pdfgen.PDFOpener;
 import edu.clemson.lph.pdfgen.PDFUtils;
 import edu.clemson.lph.utils.FileUtils;
-import edu.clemson.lph.civet.CVIFileController;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.lookup.StateVetLookup;
 import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.xml.StdeCviXmlV1;
+import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.dialogs.*;
 
 public class SendOutboundCVIEmailThread extends Thread {
@@ -126,14 +125,14 @@ public class SendOutboundCVIEmailThread extends Thread {
 					logger.error("Error getting destination info for state: " + sState, e);
 				}
 				ArrayList<File> aCVIFilesOut = new ArrayList<File>();
-				ArrayList<StdeCviXmlV1> aCVIsOut = new ArrayList<StdeCviXmlV1>();
+				ArrayList<StdeCviXmlModel> aCVIsOut = new ArrayList<StdeCviXmlModel>();
 				long lPDFSize = 0;
 				int iPart = 1;
 				int iPdf = 0; // count to bail on last one.
 				for( File fNext : aCVIsIn ) {
 					String sXml = FileUtils.readTextFile(fNext);
-					StdeCviXmlV1 stdXml = new StdeCviXmlV1( sXml );
-					byte[] pdfBytes = stdXml.getOriginalCVI();
+					StdeCviXmlModel stdXml = new StdeCviXmlModel( sXml );
+					byte[] pdfBytes = stdXml.getPDFAttachmentBytes();
 					if( pdfBytes == null || pdfBytes.length < 1 )
 						throw new Exception("Missing CVI attachment in send email");
 					aCVIsOut.add(stdXml);
@@ -195,7 +194,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 	}
 
 	private boolean sendOutboundCVIPackage( String sEmail, String sState, 
-				ArrayList<StdeCviXmlV1> aCVIs, String sCurrentFileType, int iPart ) throws AuthenticationFailedException {
+				ArrayList<StdeCviXmlModel> aCVIs, String sCurrentFileType, int iPart ) throws AuthenticationFailedException {
 		boolean bRet = false;
 		String sTemplateFile = null;
 		if( sOutBoundCVIMessage == null ) {
@@ -220,30 +219,19 @@ public class SendOutboundCVIEmailThread extends Thread {
 			if ( sTestEmail != null && sTestEmail.trim().length() > 0 )
 				sEmail = sTestEmail;  
 			ArrayList<MIMEFile> aFiles = new ArrayList<MIMEFile>();
-			for( StdeCviXmlV1 thisCVI : aCVIs) {
-				byte pdfBytes[] = thisCVI.getOriginalCVI();
+			for( StdeCviXmlModel thisCVI : aCVIs) {
+				byte pdfBytes[] = thisCVI.getPDFAttachmentBytes();
 				boolean bXFA = PDFUtils.isXFA(pdfBytes);
-				if( "CVI".equalsIgnoreCase(sCurrentFileType) && !bXFA ) {
-					// if the receiving state wants .CVI files we need to do some clean up
-					sFileName = thisCVI.getOriginState() + "_To_" + thisCVI.getDestinationState() + 
-							"_" + thisCVI.getCertificateNumber() + ".cvi";
-					// Remove 8 character State Premises Identifiers that may or may not be LIDs
-					if( CivetConfig.hasBrokenLIDs() )
-						thisCVI.purgeLids();
-					String sThisCvi = thisCVI.getXMLString();
-					byte cviBytes[] = sThisCvi.getBytes("UTF-8");
-					aFiles.add(new MIMEFile(sFileName,"text/xml",cviBytes));
-				}
-				else {
-					// Otherwise, we extract the original PDF as attached to the .cvi file
+		// TODO Send PDF and Standard XML Unless set to PDF
 					sFileName = thisCVI.getOriginState() + "_To_" + thisCVI.getDestinationState() + 
 							"_" + thisCVI.getCertificateNumber() + ".pdf";
-					String sCVIFilename = thisCVI.getOriginalCVIFileName();
-					MIMEFile mMCviDataFile = getMCviDataFile(sCVIFilename);
-					if( mMCviDataFile != null )
-						aFiles.add(mMCviDataFile);
 					aFiles.add(new MIMEFile(sFileName,"application/pdf",pdfBytes));
-				}
+					if( "CVI".equalsIgnoreCase(sCurrentFileType) ) {
+						String sDataFileName = thisCVI.getOriginState() + "_To_" + thisCVI.getDestinationState() + 
+								"_" + thisCVI.getCertificateNumber() + ".xml";
+						byte[] sDataXml = thisCVI.getNoAttachmentXmlBytes(); // Will remove attachment and put it back later
+						aFiles.add(new MIMEFile(sDataFileName,"text/xml",sDataXml));
+					}
 			}
 			String sFileCopyAddress = CivetConfig.getEmailCopyTo();
 			String sHomeState = CivetConfig.getHomeState();
@@ -276,39 +264,5 @@ public class SendOutboundCVIEmailThread extends Thread {
 		}
 		return bRet;
 	}
-	
-	/**
-	 * The original filename has been decorated by now so we jump through hoops to see
-	 * if the matching datafile exists in outbox.  And pull it out and rename it if it does.
-	 * @param sOrginalCVIFilename
-	 * @return
-	 */
-	private MIMEFile getMCviDataFile( String sCVIFilename ) {
-		MIMEFile mRet = null;
-		try {
-			// Check for mCVI data bundle in outbox.
-			String sOriginalCVIFilename = sCVIFilename.substring(sCVIFilename.lastIndexOf('_')+1);
-			if( sOriginalCVIFilename.contains("(")) {
-				sOriginalCVIFilename = sOriginalCVIFilename.substring(0,sOriginalCVIFilename.lastIndexOf('('));
-				sOriginalCVIFilename = sOriginalCVIFilename + ".pdf";
-				String sStateCode = CivetConfig.getHomeStateAbbr();
-				if( !sOriginalCVIFilename.startsWith(sStateCode + "-") )
-					sOriginalCVIFilename = sStateCode + "-" + sOriginalCVIFilename;
-			}
-			File dir = new File(CivetConfig.getOutputDirPath());
-			File fCVI = new File(dir, sOriginalCVIFilename);
-			String sMCviDataFilename = CVIFileController.getMCviDataFilename(fCVI);
-			File fMCviData = new File( sMCviDataFilename);
-			if( fMCviData.exists() ) {
-				byte mCviDataBytes[] = FileUtils.readBinaryFile(fMCviData);
-				sMCviDataFilename = sCVIFilename.substring(0,sCVIFilename.lastIndexOf('.')) + ".XML";
-				mRet =  new MIMEFile(sMCviDataFilename, "text/xml", mCviDataBytes);
-			}	
-		} catch( Exception e ) {
-			logger.error(e);
-		}
-		return mRet;
-	}
- 
 }// End class SendOutboundCVIEmailThread
 
