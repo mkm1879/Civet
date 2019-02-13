@@ -197,7 +197,7 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 		metaData.setBureauReceiptDate(cvi.getCreateDate());
 		metaData.setErrorNote("VSPS Download");
 		metaData.setCVINumberSource(sCVINbrSource);
-		xmlModel.addOrUpdateMetadataAttachement(metaData);
+		xmlModel.addOrUpdateMetadataAttachment(metaData);
 		return xmlModel.getXMLString();
 	}
 

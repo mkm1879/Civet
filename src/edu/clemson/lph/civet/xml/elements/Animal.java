@@ -171,4 +171,24 @@ public class Animal {
 		}
 		return sRet;
 	}
+	
+	public String getBestID() {
+		String sRet = null;
+		for( AnimalTag tag : animalTags ) {
+			if( tag.isOfficial() ) {
+				sRet = tag.value;
+				break;
+			}
+		}
+		if( sRet == null ) {
+			for( AnimalTag tag : animalTags ) {
+				if( tag.value != null ) {
+					sRet = tag.value;
+					break;
+				}
+			}
+
+		}
+		return sRet;
+	}
 }

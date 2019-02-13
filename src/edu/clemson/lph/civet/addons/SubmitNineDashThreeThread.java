@@ -13,19 +13,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
-import org.w3c.dom.Element;
 
 import edu.clemson.lph.civet.AnimalIDRecord;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.SpeciesRecord;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.civet.xml.elements.Address;
+import edu.clemson.lph.civet.xml.elements.Premises;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
 import edu.clemson.lph.dialogs.MessageDialog;
-import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.PremCheckSum;
 
@@ -37,6 +36,7 @@ public class SubmitNineDashThreeThread extends Thread {
 	Window parent;
 	CivetWebServices service;
 	DatabaseConnectionFactory factory;
+	private StdeCviXmlModel xmlModel;
 	private String sCVINo;
 	private java.util.Date dDateIssued;
 	private String sProduct;
@@ -66,6 +66,7 @@ public class SubmitNineDashThreeThread extends Thread {
 
 	
 	public SubmitNineDashThreeThread( DatabaseConnectionFactory factory, Window parent,
+			StdeCviXmlModel xmlModel,
 			 String sCVINo, 
 			 java.util.Date dDateIssued, 
 			 String sProduct, 
@@ -89,6 +90,7 @@ public class SubmitNineDashThreeThread extends Thread {
 			 String sDestinationZipCode  ) {
 		this.parent = parent;
 		this.factory = factory;
+		this.xmlModel = xmlModel;
 		this.sCVINo = sCVINo; 
 		this.dDateIssued = dDateIssued; 
 		this.sProduct = sProduct; 
@@ -110,7 +112,7 @@ public class SubmitNineDashThreeThread extends Thread {
 		this.sDestinationCity = sDestinationCity; 
 		this.sDestinationCounty = sDestinationCounty; 
 		this.sDestinationZipCode = sDestinationZipCode;
-		service = CivetWebServiceFactory.getService();
+		service = new CivetWebServices();
 	}
 	
 	/**
@@ -191,7 +193,6 @@ public class SubmitNineDashThreeThread extends Thread {
 	}
 	
 	private String buildXml() throws IOException {
-		StdeCviXmlModel xmlBuilder = new StdeCviXmlModel();
 		try {
 			if( !PremCheckSum.isValid(sOriginPIN) ) {
 				sOriginPIN = null;
@@ -217,41 +218,76 @@ public class SubmitNineDashThreeThread extends Thread {
 		}
 		else if( sDestinationStateCode == null || sDestinationStateCode.trim().length() == 0 )
 			sDestinationStateCode = CivetConfig.getHomeStateAbbr();
-		xmlBuilder.setCviNumber(sCVINo);
-		xmlBuilder.setIssueDate(dDateIssued);
-		xmlBuilder.setVet("NPIP");
+		xmlModel.setCviNumber(sCVINo);
+		xmlModel.setIssueDate(dDateIssued);
+		xmlModel.setVet("NPIP");
 		// Expiration date will be set automatically from getXML();
-		xmlBuilder.setPurpose("other");
-		// We don't enter the person name, normally  or add logic to tell prem name from person name.
-		Element origin = xmlBuilder.setOrigin(sOriginPIN, sOriginBusiness, sOriginName, null );
-		xmlBuilder.setAddress(origin, sOriginAddress, sOriginCity, sOriginCounty, sOriginStateCode, sOriginZipCode);
-		Element destination = xmlBuilder.setDestination(sDestinationPIN, sDestinationBusiness, sDestinationName, null );
-		xmlBuilder.setAddress(destination, sDestinationAddress, sDestinationCity, sDestinationCounty, 
-					sDestinationStateCode, sDestinationZipCode);
+		xmlModel.setPurpose("Other");
+
+		Address aOrigin = new Address(sOriginAddress, null, sOriginCity, sOriginCounty, sOriginStateCode, sOriginZipCode,
+				"USA", null, null);
+		Premises pOrigin = new Premises(sOriginPIN, sOriginBusiness, aOrigin); 
+		pOrigin.personName = sOriginName;
+		xmlModel.setOrigin( pOrigin );
+		Address aDestination = new Address(sDestinationAddress, null, sDestinationCity, sDestinationCounty, sDestinationStateCode, sDestinationZipCode,
+				"USA", null, null);
+		Premises pDestination = new Premises(sDestinationPIN, sDestinationBusiness, aDestination); 
+		pDestination.personName = sDestinationName;
+		xmlModel.setDestination(pDestination);
+
+		// xmlModel inside the IdListModel should already hold the animals.
+//		Original Implementation
+//		for( SpeciesRecord sr : aSpecies ) {
+//			String sSpeciesCode = sr.sSpeciesCode;
+//			Integer iNum = sr.iNumber;
+//			int iNumTags = 0;
+//			String sGender = "Gender Unknown";
+//			for( AnimalIDRecord ar : aAnimalIDs ) {
+//				if( ar.sSpeciesCode.equals( sSpeciesCode ) ) {
+//					xmlModel.addAnimal(sSpeciesCode, dDateIssued, null, null, sGender, "OTH", ar.sTag);
+//					iNumTags++;
+//				}
+//			}
+//			if( iNumTags < iNum ) {
+//				xmlModel.addGroup(iNum - iNumTags, "Poultry Lot Under NPIP 9-3", sSpeciesCode, null, sGender);
+//			}		
+//		}
+//		
+//		Implementation from BulkLoadReWrite
+//		Integer iNum = data.getAnimalCount();
+//		if( iNum == null ) {
+//			logger.error("Missing Animal Count in " + sCVINumber);
+//			iNum = 1;
+//		}
+//		String sGender = "Gender Unknown";
+//		int iNumTags = 0;
+//		if( data.hasTags() ) {
+//			for( String sID : data.listTagIds() ) {
+//				Animal animal = new Animal(sSpeciesCode, sID);
+//				animal.sex = sGender;
+//				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//				animal.inspectionDate = dateFormat.format(data.getInspectionDate());
+//				xmlModel.addAnimal(animal);
+//				iNumTags++;
+//			}
+//		}
+//		if( iNumTags < iNum ) {
+//			Double dNum = new Double(iNum - iNumTags);
+//			GroupLot group = new GroupLot(sSpeciesCode, dNum);
+//			group.sex = sGender;
+//			group.description = "Poultry Lot Under NPIP 9-3";
+//			xmlModel.addGroupLot(group);
+//		}
+
 		
-		for( SpeciesRecord sr : aSpecies ) {
-			String sSpeciesCode = sr.sSpeciesCode;
-			Integer iNum = sr.iNumber;
-			int iNumTags = 0;
-			String sGender = "Gender Unknown";
-			for( AnimalIDRecord ar : aAnimalIDs ) {
-				if( ar.sSpeciesCode.equals( sSpeciesCode ) ) {
-					xmlBuilder.addAnimal(sSpeciesCode, dDateIssued, null, null, sGender, "OTH", ar.sTag);
-					iNumTags++;
-				}
-			}
-			if( iNumTags < iNum ) {
-				xmlBuilder.addGroup(iNum - iNumTags, "Poultry Lot Under NPIP 9-3", sSpeciesCode, null, sGender);
-			}		
-		}
 		CviMetaDataXml metaData = new CviMetaDataXml();
 		metaData.setCertificateNbr(sCVINo);
 		metaData.setBureauReceiptDate((new java.util.Date()));
 		metaData.setErrorNote("NPIP 9-3 Form Spreadsheet");
 		metaData.setCVINumberSource("NPIP9_3");
 //	System.out.println(metaData.getXmlString());
-		xmlBuilder.addMetadataAttachement(metaData);
-		return xmlBuilder.getXMLString();
+		xmlModel.addOrUpdateMetadataAttachment(metaData);
+		return xmlModel.getXMLString();
 	}
 
 	/**

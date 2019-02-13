@@ -22,11 +22,15 @@ import edu.clemson.lph.civet.CSVFilter;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
-import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.civet.xml.elements.AddressBlock;
+import edu.clemson.lph.civet.xml.elements.GroupLot;
+import edu.clemson.lph.civet.xml.elements.NameParts;
+import edu.clemson.lph.civet.xml.elements.Person;
+import edu.clemson.lph.civet.xml.elements.Premises;
+import edu.clemson.lph.civet.xml.elements.Veterinarian;
 import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.utils.PremCheckSum;
 
@@ -39,7 +43,6 @@ import java.util.StringTokenizer;
 import javax.swing.*;
 
 import org.apache.log4j.*;
-import org.w3c.dom.Element;
 
 public class BulkLoadSwineMovementCSV implements AddOn {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
@@ -95,7 +98,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 			this.prog = prog;
 			this.sFilePath = sFilePath;
 			this.fParent = fParent;
-			service = CivetWebServiceFactory.getService();
+			service = new CivetWebServices();
 			prog.setCancelListener(this);
 		}
 		
@@ -103,7 +106,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 		public void cancelThread() {
 			bCanceled = true;
 			interrupt();
-			service = CivetWebServiceFactory.getService();
+			service = new CivetWebServices();  // Why is this here?
 		}
 
 		
@@ -144,46 +147,51 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 	}// end inner class TWorkSave
 	
 	private String buildXml( CSVDataFile data ) throws IOException {
-		StdeCviXmlModel xmlBuilder = new StdeCviXmlModel();
+		StdeCviXmlModel xmlModel = new StdeCviXmlModel();
 		StringTokenizer tok = new StringTokenizer(data.getVet(), " ," );
 		String sFirst = tok.nextToken();
 		String sLast = tok.nextToken();
-		VetLookup vet = new VetLookup( sLast, sFirst );
+		VetLookup vetLookup = new VetLookup( sLast, sFirst );
 		String sCviNumber = getCVINumber(data);
-		xmlBuilder.setCviNumber(sCviNumber);
-		xmlBuilder.setIssueDate(data.getDate());
-		Element eVet = null;
-		if( data.getSourceState().equalsIgnoreCase(CivetConfig.getHomeStateAbbr()) && vet != null ) {
-			String sVetName = vet.getLastName() + ", " + vet.getFirstName();
-			eVet = xmlBuilder.setVet(sVetName, vet.getLicenseNo(), vet.getNAN(), vet.getPhoneDigits());
-			String sVetState = vet.getState();
-			if( sVetState != null && sVetState.trim().length() == 2 )
-				xmlBuilder.setAddress(eVet, vet.getAddress(), vet.getCity(), null, vet.getState(), vet.getZipCode());
+		xmlModel.setCviNumber(sCviNumber);
+		xmlModel.setIssueDate(data.getDate());
+		if( data.getSourceState().equalsIgnoreCase(CivetConfig.getHomeStateAbbr()) && vetLookup != null ) {
+			NameParts parts = new NameParts(null, vetLookup.getFirstName(), null, vetLookup.getLastName(), null );
+			AddressBlock addr = new AddressBlock(vetLookup.getAddress(), null, vetLookup.getCity(), null, 
+					vetLookup.getState(), vetLookup.getZipCode(), null, null, null);
+			Person person = new Person(parts, vetLookup.getPhoneDigits(), null );
+			Veterinarian veterinarian = new Veterinarian(person, addr.toString(), CivetConfig.getHomeStateAbbr(),
+					vetLookup.getLicenseNo(), vetLookup.getNAN());
+			xmlModel.setVet( veterinarian );
 		}
 		else {
-			xmlBuilder.setVet(data.getVet());
+			xmlModel.setVet(data.getVet());
 		}
 		// Expiration date will be set automatically from getXML();
-		xmlBuilder.setPurpose("feeding");
+		xmlModel.setPurpose("feeding");
 		// We don't enter the person name, normally  or add logic to tell prem name from person name.
-		xmlBuilder.setOrigin(data.getSourcePin(), data.getSourceFarm(), data.getSourceState() );
-		xmlBuilder.setDestination(data.getDestPin(), data.getDestFarm(), data.getDestState() );
+		Premises pOrigin = new Premises(data.getSourcePin(), data.getSourceFarm(), data.getSourceState()); 
+		xmlModel.setOrigin( pOrigin );
+		Premises pDestination = new Premises(data.getDestPin(), data.getDestFarm(), data.getDestState());
+		xmlModel.setDestination(pDestination);
 
-		int iNum = data.getNumber();
+		Double dNum = new Double(data.getNumber());  // null reference risk?
 		String sSpecies = "POR";
 		String sAge = data.getAge();
 		String sGender = data.getSex();
 		if( sGender == null )
 			sGender = "Gender Unknown";
-		xmlBuilder.addGroup(iNum, "Swine Group Lot", sSpecies, sAge, sGender);
+		GroupLot group = new GroupLot(sSpecies, null, sGender, dNum);  //(String speciesCode, String sBreed, String sGender, Double quantity 
+		group.age = sAge;
+		xmlModel.addGroupLot(group);
 		CviMetaDataXml metaData = new CviMetaDataXml();
 		metaData.setCertificateNbr(sCviNumber);
 		metaData.setBureauReceiptDate(data.getSavedDate());
 		metaData.setErrorNote("Swine Bulk Spreadsheet");
 		metaData.setCVINumberSource(sCVINbrSource);
 //	System.out.println(metaData.getXmlString());
-		xmlBuilder.addMetadataAttachement(metaData);
-		return xmlBuilder.getXMLString();
+		xmlModel.addOrUpdateMetadataAttachment(metaData);
+		return xmlModel.getXMLString();
 	}
 
 	private String getCVINumber( CSVDataFile data ) {

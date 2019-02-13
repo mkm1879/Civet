@@ -44,6 +44,14 @@ public class Premises {
 		this.personPhone = null;
 		this.personEmail = null;
 	}
+	public Premises(String premid, String premName, String sState ) {
+		this.premid = premid;
+		this.premName = premName;
+		this.address = new Address(null, null, null, null, sState, null, null, null, null);
+		this.personName = null;
+		this.personPhone = null;
+		this.personEmail = null;
+	}
 	public Premises(String premid, String premName, Address address, String personName, String personPhone, String personEmail ) {
 		this.premid = premid;
 		this.premName = premName;

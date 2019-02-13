@@ -1658,6 +1658,7 @@ public final class CivetEditDialogController {
 				return false;
 			}
 		// Collect up all values needed
+		fileToSave.getModel().checkExpiration();  // Set expiration date if not in data file already.
 		dlg.setImport(dlg.rbImport.isSelected());
 		boolean bInbound = dlg.rbImport.isSelected();
 		boolean bDataFile = currentFile.isDataFile();

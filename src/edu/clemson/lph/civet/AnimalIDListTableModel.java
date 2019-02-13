@@ -165,7 +165,7 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 			if( iCol == 1 )
 				return rows.get(iRow).animal.speciesCode.code;
 			if( iCol == 2)
-				return rows.get(iRow).animal.getFirstOfficialID();
+				return rows.get(iRow).animal.getBestID();
 			else
 				return null;
 		}

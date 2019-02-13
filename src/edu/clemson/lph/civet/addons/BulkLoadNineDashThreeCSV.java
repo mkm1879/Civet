@@ -22,10 +22,13 @@ import edu.clemson.lph.civet.CSVFilter;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.webservice.CivetWebServiceFactory;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.civet.xml.elements.Address;
+import edu.clemson.lph.civet.xml.elements.Animal;
+import edu.clemson.lph.civet.xml.elements.GroupLot;
+import edu.clemson.lph.civet.xml.elements.Premises;
 import edu.clemson.lph.db.*;
 import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.utils.CountyUtils;
@@ -43,6 +46,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 
 import javax.swing.*;
 
@@ -102,7 +106,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			this.sFilePath = sFilePath;
 			this.parent = parent;
 			this.factory = factory;
-			service = CivetWebServiceFactory.getService();
+			service = new CivetWebServices();
 			prog.setCancelListener(this);
 		}
 		
@@ -212,7 +216,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 		}
 		
 		private String buildXml( CSVNineDashThreeDataFile data ) throws IOException {
-			StdeCviXmlModel xmlBuilder = new StdeCviXmlModel();
+			StdeCviXmlModel xmlModel = new StdeCviXmlModel();
 			String sCVINumber = data.getCVINumber();
 			String sSpecies = data.getSpecies();
 			String sSpeciesCode = null;
@@ -223,8 +227,8 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 				sSpeciesCode = sSpecies;
 			}
 			else {
-				SpeciesLookup spLu = new SpeciesLookup( StringUtils.toTitleCase(sSpecies.trim()), true );
-				sSpeciesCode = spLu.getSpeciesCode();
+				String sSpp = StringUtils.toTitleCase(sSpecies.trim());
+				sSpeciesCode = SpeciesLookup.getCodeForName(sSpp);
 				if( sSpeciesCode.equals("ERROR") ) {
 					sSpeciesCode = "POU";
 				}
@@ -258,19 +262,27 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			}
 			else if( sConsigneeState == null || sConsigneeState.trim().length() == 0 )
 				sConsigneeState = CivetConfig.getHomeStateAbbr();
-			xmlBuilder.setCviNumber(sCVINumber);
-			xmlBuilder.setIssueDate(data.getInspectionDate());
-			xmlBuilder.setVet("NPIP");
+			xmlModel.setCviNumber(sCVINumber);
+			xmlModel.setIssueDate(data.getInspectionDate());
+			xmlModel.setVet("NPIP");
 			// Expiration date will be set automatically from getXML();
-			xmlBuilder.setPurpose("other");
-			// We don't enter the person name, normally  or add logic to tell prem name from person name.
-			Element origin = xmlBuilder.setOrigin(sSourcePIN, data.getConsignorBusiness(), data.getConsignorName(), null );
+			xmlModel.setPurpose("other");
+			
 			String sOriginCounty = CountyUtils.getCounty(data.getConsignorZip());
-			xmlBuilder.setAddress(origin, data.getConsignorStreet(), data.getConsignorCity(), sOriginCounty, sConsignorState, data.getConsignorZip());
-			Element destination = xmlBuilder.setDestination(sDestinationPIN, data.getConsigneeBusiness(), data.getConsigneeName(), null );
-			String sDestCounty = CountyUtils.getCounty(data.getConsigneeZip());
-			xmlBuilder.setAddress(destination, data.getConsigneeStreet(), data.getConsigneeCity(), sDestCounty, sConsigneeState, data.getConsigneeZip());
+			String sDestinationCounty = CountyUtils.getCounty(data.getConsigneeZip());
 
+			Address aOrigin = new Address(data.getConsignorStreet(), null, data.getConsignorCity(), sOriginCounty, 
+					sConsignorState, data.getConsignorZip(), "USA", null, null);
+			Premises pOrigin = new Premises(sSourcePIN, data.getConsigneeBusiness(), aOrigin); 
+			pOrigin.personName = data.getConsignorName();
+			xmlModel.setOrigin( pOrigin );
+			Address aDestination = new Address(data.getConsigneeStreet(), null, data.getConsigneeCity(), sDestinationCounty, 
+					sConsigneeState, data.getConsigneeZip(), "USA", null, null);
+			Premises pDestination = new Premises(sDestinationPIN, data.getConsigneeBusiness(), aDestination); 
+			pDestination.personName = data.getConsigneeName();
+			xmlModel.setDestination(pDestination);
+
+			
 			Integer iNum = data.getAnimalCount();
 			if( iNum == null ) {
 				logger.error("Missing Animal Count in " + sCVINumber);
@@ -280,12 +292,20 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			int iNumTags = 0;
 			if( data.hasTags() ) {
 				for( String sID : data.listTagIds() ) {
-					xmlBuilder.addAnimal(sSpeciesCode, data.getInspectionDate(), null, null, sGender, "OTH", sID);
+					Animal animal = new Animal(sSpeciesCode, sID);
+					animal.sex = sGender;
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+					animal.inspectionDate = dateFormat.format(data.getInspectionDate());
+					xmlModel.addAnimal(animal);
 					iNumTags++;
 				}
 			}
 			if( iNumTags < iNum ) {
-				xmlBuilder.addGroup(iNum - iNumTags, "Poultry Lot Under NPIP 9-3", sSpeciesCode, null, sGender);
+				Double dNum = new Double(iNum - iNumTags);
+				GroupLot group = new GroupLot(sSpeciesCode, dNum);
+				group.sex = sGender;
+				group.description = "Poultry Lot Under NPIP 9-3";
+				xmlModel.addGroupLot(group);
 			}
 			CviMetaDataXml metaData = new CviMetaDataXml();
 			metaData.setCertificateNbr(sCVINumber);
@@ -293,8 +313,8 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			metaData.setErrorNote("NPIP 9-3 Form Spreadsheet");
 			metaData.setCVINumberSource(sCVINbrSource);
 //		System.out.println(metaData.getXmlString());
-			xmlBuilder.addMetadataAttachement(metaData);
-			return xmlBuilder.getXMLString();
+			xmlModel.addOrUpdateMetadataAttachment(metaData);
+			return xmlModel.getXMLString();
 		}
 
 		private boolean cviExists( String sCVINbr, String sState ) {

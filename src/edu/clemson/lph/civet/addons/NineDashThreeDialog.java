@@ -25,6 +25,7 @@ import edu.clemson.lph.civet.lookup.Counties;
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.controls.DBNumericField;
 import edu.clemson.lph.controls.DateField;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
@@ -69,7 +70,8 @@ public class NineDashThreeDialog extends JFrame {
 	JComboBox<String> cbSpecies = new JComboBox<String>();
 	JComboBox<String> cbProduct = new JComboBox<String>();
 	
-	AnimalIDListTableModel idModel = new AnimalIDListTableModel();
+	StdeCviXmlModel xmlModel = new StdeCviXmlModel();
+	AnimalIDListTableModel idModel = new AnimalIDListTableModel(xmlModel);
 	JTable tblIDs;
 	JList<String> lbSpecies;
 	ArrayList<SpeciesRecord> aSpecies = new ArrayList<SpeciesRecord>();
@@ -232,8 +234,8 @@ public class NineDashThreeDialog extends JFrame {
 				gbc_cbSpecies.gridx = 1;
 				gbc_cbSpecies.gridy = 5;
 				cbSpecies.addItem("");
-				cbSpecies.addItem("Chicken");
-				cbSpecies.addItem("Turkey");
+				cbSpecies.addItem("Chickens");
+				cbSpecies.addItem("Turkeys");
 				cbSpecies.addItem("Pigeon");
 				cbSpecies.addItem("Duck");
 				cbSpecies.addItem("Poultry");
@@ -447,6 +449,7 @@ public class NineDashThreeDialog extends JFrame {
 		ArrayList<AnimalIDRecord> aAnimalIDs = idModel.cloneRows();
 		SubmitNineDashThreeThread submitThread = 
 				new SubmitNineDashThreeThread( factory, (Window)this,
+				 xmlModel,
 				 jtfCVINo.getText(), 
 				 jtfDate.getDate(), 
 				 (String)cbProduct.getSelectedItem(), 
@@ -481,7 +484,8 @@ public class NineDashThreeDialog extends JFrame {
 		aSpecies = new ArrayList<SpeciesRecord>();
 		hSpecies.clear();
 		mSpListModel.clear();
-		idModel.clear();
+		xmlModel.clearAnimals();
+		xmlModel.clearGroupLots();
 		idModel.fireTableDataChanged();
 		if( !pConsignor.ckSticky.isSelected() )
 		{
@@ -522,8 +526,8 @@ public class NineDashThreeDialog extends JFrame {
 				logger.error("Number added without species");
 			}
  		}
-		String sSpCode = SpeciesLookup.getSpeciesCode(sSpecies);
-		if( sSpCode.equals("ERROR") ) {
+		String sSpCode = SpeciesLookup.getCodeForName(sSpecies);
+		if( sSpCode == null || sSpCode.equals("ERROR") ) {
 			logger.error((String)cbSpecies.getSelectedItem() + " resulted in ERROR on lookup");
 			return;
 		}

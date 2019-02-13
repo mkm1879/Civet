@@ -1365,7 +1365,7 @@ public class StdeCviXmlModel {
 		return bRet;
 	}
 	
-	public void addOrUpdateMetadataAttachement( CviMetaDataXml metaData ) {
+	public void addOrUpdateMetadataAttachment( CviMetaDataXml metaData ) {
 		binaries.addOrUpdateMetadata(metaData);
 	}
 	
@@ -1380,6 +1380,7 @@ public class StdeCviXmlModel {
 		boolean bSet = false;
 		try {
 			dExp = dateFormat.parse(sExp);
+			return;  // Already have valid expDate
 		} catch (ParseException e) {
 			dExp = null;
 		}
