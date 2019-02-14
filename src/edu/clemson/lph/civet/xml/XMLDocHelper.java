@@ -605,18 +605,18 @@ public class XMLDocHelper {
 	}
 	
 	public String getXMLString() {
+		String sRet = null;
 		try {
-		TransformerFactory transFactory = TransformerFactory.newInstance();
-		Transformer transformer = transFactory.newTransformer();
-		StringWriter buffer = new StringWriter();
-		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-			transformer.transform(new DOMSource(doc),
-			      new StreamResult(buffer));
-			return buffer.toString();
+			TransformerFactory transFactory = TransformerFactory.newInstance();
+			Transformer transformer = transFactory.newTransformer();
+			StringWriter buffer = new StringWriter();
+			//		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+			transformer.transform(new DOMSource(doc), new StreamResult(buffer));
+			sRet = buffer.toString();
 		} catch (TransformerException e) {
 			logger.error("Transform failure", e);
 		}
-		return null;
+		return sRet;
 	}
 	
 	public String getXMLString(boolean bOmitDeclaration) {

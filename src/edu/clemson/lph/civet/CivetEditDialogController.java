@@ -384,8 +384,8 @@ public final class CivetEditDialogController {
 					try {
 						if( openFileList.moreFilesBack(false) ) {
 							openFileList.fileBackward(false);
-							updateFilePage();
 						}
+						updateCounterPanel();
 					} catch (PdfException e1) {
 						// TODO Auto-generated catch block
 						logger.error(e1);
@@ -395,15 +395,16 @@ public final class CivetEditDialogController {
 			dlg.pCounters.bPageBack.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
-						if( currentFile.morePagesBack(false) )
+						if( currentFile.morePagesBack(false) ) {
 							currentFile.pageBackward(false);
+						}
 						else if( openFileList.moreFilesBack(false) ) {
 							openFileList.fileBackward(false);
 						}
 						else {
 							logger.error("Attempt to move past first page");
 						}
-						updateFilePage();
+						updateCounterPanel();
 					} catch (SourceFileException | PdfException e1) {
 						// TODO Auto-generated catch block
 						logger.error(e1);
@@ -433,15 +434,16 @@ public final class CivetEditDialogController {
 			dlg.pCounters.bPageForward.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
-						if( currentFile.morePagesForward(false) )
+						if( currentFile.morePagesForward(false) ) {
 							currentFile.pageForward(false);
+						}
 						else if( openFileList.moreFilesForward(false) ) {
 							openFileList.fileForward(false);
 						}
 						else {
 							logger.error("Attempt to move past last page");
 						}
-						updateFilePage();
+						updateCounterPanel();
 					} catch (SourceFileException | PdfException e1) {
 						// TODO Auto-generated catch block
 						logger.error(e1);
@@ -453,7 +455,7 @@ public final class CivetEditDialogController {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						openFileList.fileForward(false);
-						updateFilePage();
+						updateCounterPanel();
 					} catch (PdfException e1) {
 						// TODO Auto-generated catch block
 						logger.error(e1);
@@ -851,10 +853,16 @@ public final class CivetEditDialogController {
 		dlg.pCounters.setPageForwardEnabled(morePagesForward);
 		dlg.pCounters.setFileBackEnabled(openFileList.moreFilesBack(false));
 		dlg.pCounters.setFileForwardEnabled(openFileList.moreFilesForward(false));
+		dlg.pCounters.setFile(openFileList.getCurrentFileNo());
+		dlg.pCounters.setFiles(openFileList.getFileCount());
+		dlg.pCounters.setPage(openFileList.getCurrentFile().getCurrentPageNo());
+		dlg.pCounters.setPages(openFileList.getCurrentFile().getPageCount());
 		if( morePagesBack || morePagesForward )
 			dlg.bGotoPage.setEnabled(true);
 		else
-			dlg.bGotoPage.setEnabled(false);		
+			dlg.bGotoPage.setEnabled(false);	
+		// if navigated off the currentFile, disable editing
+		dlg.setFormEditable( openFileList.getCurrentFile() == currentFile );
 	}
 
 	private void refreshOtherCounties() {
@@ -2102,14 +2110,14 @@ public final class CivetEditDialogController {
 					else if( iCountIds != iNumOfSpp ) {
 						Integer iNumUntagged = iNumOfSpp - iCountIds;
 						group.quantity = iNumUntagged.doubleValue();
-						model.editGroupLot(group);
+						model.addOrEditGroupLot(group);
 					}
 				}
 			}
 			if( !bFound ) {
 				Integer iNumUntagged = iNumOfSpp - iCountIds;
 				GroupLot group = new GroupLot(sSpeciesCode, iNumUntagged.doubleValue());
-				model.editGroupLot(group);
+				model.addOrEditGroupLot(group);
 			}
 		}
 //		Precondition model contains the current page or pages in the attachment

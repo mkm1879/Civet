@@ -173,13 +173,8 @@ public class Animal {
 	}
 	
 	public String getBestID() {
-		String sRet = null;
-		for( AnimalTag tag : animalTags ) {
-			if( tag.isOfficial() ) {
-				sRet = tag.value;
-				break;
-			}
-		}
+		String sRet = getFirstOfficialID();
+//		Try for first official but use any we can find.
 		if( sRet == null ) {
 			for( AnimalTag tag : animalTags ) {
 				if( tag.value != null ) {

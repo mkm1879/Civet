@@ -325,14 +325,14 @@ public class SaveCVIThread extends Thread {
 					else if( iCountIds != iNumOfSpp ) {
 						Integer iNumUntagged = iNumOfSpp - iCountIds;
 						group.quantity = iNumUntagged.doubleValue();
-						model.editGroupLot(group);
+						model.addOrEditGroupLot(group);
 					}
 				}
 			}
 			if( !bFound ) {
 				Integer iNumUntagged = iNumOfSpp - iCountIds;
 				GroupLot group = new GroupLot(sSpeciesCode, iNumUntagged.doubleValue());
-				model.editGroupLot(group);
+				model.addOrEditGroupLot(group);
 			}
 		}
 //		Precondition model contains the current page or pages in the attachment

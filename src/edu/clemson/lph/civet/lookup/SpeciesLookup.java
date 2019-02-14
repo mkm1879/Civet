@@ -33,6 +33,7 @@ import edu.clemson.lph.db.DBComboBoxModel;
 import edu.clemson.lph.db.DBTableSource;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.LabeledCSVParser;
+import edu.clemson.lph.utils.StringComparator;
 
 /**
  * This class serves two distinct functions both based on the same value-set of species codes and names
@@ -115,19 +116,14 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 					 bStd = true;
 				 }
 				 String sSppName = line.get( parser.getLabelIdx( "Description" ) );
+				 text2code.put(sSppName, sSppCode);  // Add HERDS text in place of std
 				 // Add code/name pairs from HERDS but not if already populated
 				 if( code2text.get(sSppCode) == null ) {
-					 text2code.put(sSppName, sSppCode);
 					 code2text.put(sSppCode, sSppName);
-				 }
-				 else {
-					 // Use the standard name if it exists
-					 sSppName = code2text.get(sSppCode);
 				 }
 				 // NOW construct an Spp record for the map that includes standard code or other code flag.
 				 Spp spp = new Spp(sSppCode, sSppName, bStd, bHerds);
 				 sppCodeMap.put(sSppCode, spp);
-				 super.addElement(sSppName);
 				 // These two Hashmaps are used by GUI components.
 				 hValuesCodes.put(sSppName, sSppCode);
 				 hCodesValues.put(sSppCode, sSppName);
@@ -148,6 +144,14 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 				}
 				FileUtils.writeTextFile(sbBadSpp.toString(), "BadSpp.txt", false);
 			}
+			// Populate combo box with sorted names
+			ArrayList<String> aNames = new ArrayList<String>();
+			for( String sName : hValuesCodes.keySet() ) 
+				aNames.add(sName);
+			aNames.sort( new StringComparator() );
+			for( String sName : aNames )
+				super.addElement(sName);
+
 		} catch (IOException e) {
 			logger.error("Failed to read Species Table", e);
 		}

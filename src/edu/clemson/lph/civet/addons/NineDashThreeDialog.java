@@ -32,6 +32,7 @@ import edu.clemson.lph.db.DatabaseConnectionFactory;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.CountyUtils;
+import edu.clemson.lph.utils.FileUtils;
 
 import java.awt.GridLayout;
 
@@ -70,8 +71,8 @@ public class NineDashThreeDialog extends JFrame {
 	JComboBox<String> cbSpecies = new JComboBox<String>();
 	JComboBox<String> cbProduct = new JComboBox<String>();
 	
-	StdeCviXmlModel xmlModel = new StdeCviXmlModel();
-	AnimalIDListTableModel idModel = new AnimalIDListTableModel(xmlModel);
+	StdeCviXmlModel xmlModel = null;
+	AnimalIDListTableModel idModel = null;
 	JTable tblIDs;
 	JList<String> lbSpecies;
 	ArrayList<SpeciesRecord> aSpecies = new ArrayList<SpeciesRecord>();
@@ -113,6 +114,8 @@ public class NineDashThreeDialog extends JFrame {
 	 */
 	public NineDashThreeDialog(Window parent, DatabaseConnectionFactory factory) {
 		this.factory = factory;
+		xmlModel = new StdeCviXmlModel();
+		idModel = new AnimalIDListTableModel( xmlModel );
 		setBounds(100, 100, 700, 500);
 		setTitle("Civet: NPIP 9-3 Entry Form");
 		getContentPane().setLayout(new BorderLayout());
@@ -484,9 +487,8 @@ public class NineDashThreeDialog extends JFrame {
 		aSpecies = new ArrayList<SpeciesRecord>();
 		hSpecies.clear();
 		mSpListModel.clear();
-		xmlModel.clearAnimals();
-		xmlModel.clearGroupLots();
-		idModel.fireTableDataChanged();
+		xmlModel = new StdeCviXmlModel();
+		idModel = new AnimalIDListTableModel( xmlModel );
 		if( !pConsignor.ckSticky.isSelected() )
 		{
 			pConsignor.jtfPIN.setText("");

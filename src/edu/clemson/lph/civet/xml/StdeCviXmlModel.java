@@ -1017,6 +1017,10 @@ public class StdeCviXmlModel {
 			eTag = helper.getElementByPathAndAttribute(eAnimal, "AnimalTags/NUES8", "Number", sTagNum);
 		if( eTag == null )
 			eTag = helper.getElementByPathAndAttribute(eAnimal, "AnimalTags/OtherOfficialID", "Number", sTagNum);
+		if( eTag == null )
+			eTag = helper.getElementByPathAndAttribute(eAnimal, "AnimalTags/ManagementID", "Number", sTagNum);
+		if( eTag == null )
+			eTag = helper.getElementByPathAndAttribute(eAnimal, "AnimalTags/EquineDescription", "Name", sTagNum);
 		return eTag;
 	}
 
@@ -1266,7 +1270,7 @@ public class StdeCviXmlModel {
 		helper.removeElement(group.eGroupLot);
 	}
 	
-	public void editGroupLot( GroupLot group ) {
+	public void addOrEditGroupLot( GroupLot group ) {
 		if( !isValidDoc() ) 
 			return;
 		String sAfter = getFollowingElementList("Statements");

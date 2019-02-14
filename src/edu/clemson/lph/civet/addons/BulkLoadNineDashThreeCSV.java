@@ -294,8 +294,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 				for( String sID : data.listTagIds() ) {
 					Animal animal = new Animal(sSpeciesCode, sID);
 					animal.sex = sGender;
-					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-					animal.inspectionDate = dateFormat.format(data.getInspectionDate());
+					animal.inspectionDate = StdeCviXmlModel.dateFormat.format(data.getInspectionDate());
 					xmlModel.addAnimal(animal);
 					iNumTags++;
 				}

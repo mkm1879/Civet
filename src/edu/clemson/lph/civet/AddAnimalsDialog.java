@@ -216,8 +216,7 @@ public class AddAnimalsDialog extends JDialog {
 				okButton.addActionListener( new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						AddAnimalsDialog.this.tableModel.save();
-						setVisible( false );
+						doSave();
 					}
 				});
 			}
@@ -294,9 +293,13 @@ public class AddAnimalsDialog extends JDialog {
 			}
 		}
 		else {
-			// Do save (misnomer, Cancel requires active restore
-			setVisible( false );
+			doSave();
 		}
+	}
+	
+	private void doSave() {
+		tableModel.save();
+		setVisible( false );
 	}
 	
 	private void addIDs() {
