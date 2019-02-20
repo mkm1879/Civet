@@ -38,16 +38,19 @@ public class VspsCodeLookup {
 	hGenderCodeLu.put("Female", "Female");
 	hGenderCodeLu.put("Spayed Female", "Spayed Female");
 	// Purposes
-	hPurposeCodeLu.put("Breeding", "breeding");
-	hPurposeCodeLu.put("Competition", "other");
-	hPurposeCodeLu.put("Grazing", "grazing");
-	hPurposeCodeLu.put("Medical Treatment", "medicalTreatment");
-	hPurposeCodeLu.put("Pleasure","other");
-	hPurposeCodeLu.put("Race Track", "medicalTreatment");
-	hPurposeCodeLu.put("Rodeo", "rodeo");
-	hPurposeCodeLu.put("Sale", "sale");
-	hPurposeCodeLu.put("Show/Exhibition", "show");
-	hPurposeCodeLu.put("Transit", "other");
+	hPurposeCodeLu.put("Breeding",  "Breeding");
+	hPurposeCodeLu.put("Competition",  "Competition"); 
+	hPurposeCodeLu.put("Feeding",  "Feeding to condition");
+	hPurposeCodeLu.put("Finishing",  "Feeding to slaughter");
+	hPurposeCodeLu.put("Medical Treatment",  "Medical Treatment");
+	hPurposeCodeLu.put("Pleasure",  "Companion Animal");
+	hPurposeCodeLu.put("Production",  "Other");
+	hPurposeCodeLu.put("Race Track",  "Racing");
+	hPurposeCodeLu.put("Rodeo",  "Exhibition/Show/Rodeo");
+	hPurposeCodeLu.put("Sale",  "Sale");
+	hPurposeCodeLu.put("Show/Exhibition",  "Exhibition/Show/Rodeo");
+	hPurposeCodeLu.put("Transit",  "Personal Travel/Transit");
+
 	}
 	
 	public static String getSpCode( String sSpecies ) {

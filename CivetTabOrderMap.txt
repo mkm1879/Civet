@@ -6,7 +6,7 @@ pFirstControl=OtherState
 pInstateFirst=OtherName
 # Control with focus when Premise info found and filled in
 pPremiseFound=Species
-# Control with focus after form is filled with CO/KS PDF XFA data
+# Control with focus after form is filled with eCVI STD data
 pPDFLoaded=ReceivedDate
 #
 # Main tab order specification

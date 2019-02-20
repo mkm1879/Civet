@@ -78,7 +78,6 @@ public class NineDashThreeDialog extends JFrame {
 	ArrayList<SpeciesRecord> aSpecies = new ArrayList<SpeciesRecord>();
 	// maintaining this hashmap is redundant but done to match the signature 
 	// of the AddAnimalsDialog borrowed from the main Civet code base.
-	HashMap<String, String> hSpecies = new HashMap<String, String>();
 	DefaultListModel<String> mSpListModel = new DefaultListModel<String>();
 	ManualOrderFocusTraversalPolicy policy = new ManualOrderFocusTraversalPolicy();
 
@@ -485,7 +484,6 @@ public class NineDashThreeDialog extends JFrame {
 		cbSpecies.setSelectedItem(null);
 		jtfNumber.setText("");
 		aSpecies = new ArrayList<SpeciesRecord>();
-		hSpecies.clear();
 		mSpListModel.clear();
 		xmlModel = new StdeCviXmlModel();
 		idModel = new AnimalIDListTableModel( xmlModel );
@@ -517,7 +515,7 @@ public class NineDashThreeDialog extends JFrame {
 
 	protected void addIDs() {
 		updateSpecies();
-		AddAnimalsDialog dlg = new AddAnimalsDialog( hSpecies, idModel );
+		AddAnimalsDialog dlg = new AddAnimalsDialog( aSpecies, idModel );
 		dlg.setVisible(true);
 	}
 
@@ -542,9 +540,6 @@ public class NineDashThreeDialog extends JFrame {
 		}
 		if( !mSpListModel.contains(sSpecies)) {
 			mSpListModel.addElement(sSpecies);
-		}
-		if( !hSpecies.containsKey(sSpCode) ) {
-			hSpecies.put(sSpCode, sSpecies);
 		}
 		SpeciesRecord srThis = new SpeciesRecord(sSpCode, iNumber);
 		if( !aSpecies.contains(srThis) ) {

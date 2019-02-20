@@ -34,10 +34,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.xml.elements.Animal;
 import edu.clemson.lph.civet.xml.elements.AnimalTag;
 import edu.clemson.lph.controls.DBNumericField;
@@ -60,7 +59,7 @@ public class AddAnimalsDialog extends JDialog {
 	private DBNumericField jtfAddNum;
 	private JTable tblIDs;
 	private AnimalIDListTableModel tableModel;
-	HashMap<String, String> hSpecies;
+	ArrayList<SpeciesRecord> aSpecies;
 	private JComboBox<String> cbSpecies;
 	private JTextField jtfPrefix;
 	private int iDefaultWidth = 675;
@@ -70,8 +69,8 @@ public class AddAnimalsDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public AddAnimalsDialog( HashMap<String, String> hSpecies, AnimalIDListTableModel tableModel ) {
-		this.hSpecies = hSpecies;
+	public AddAnimalsDialog( ArrayList<SpeciesRecord> aSpecies, AnimalIDListTableModel tableModel ) {
+		this.aSpecies = aSpecies;
 		this.tableModel = tableModel;
 		ImageIcon appIcon = new ImageIcon(getClass().getResource("/edu/clemson/lph/civet/res/civet32.png"));
 		this.setIconImage(appIcon.getImage());
@@ -90,14 +89,14 @@ public class AddAnimalsDialog extends JDialog {
 			}
 			{
 				cbSpecies = new JComboBox<String>();
-				for( Map.Entry<String, String> e : hSpecies.entrySet() ) {
-					String sSpecies = e.getValue();
-					if( sSpecies.trim().length() > iLongSpeciesLen ) {
-						int iAdd = (sSpecies.trim().length() - iLongSpeciesLen) * 15;
+				for( SpeciesRecord rSpecies : aSpecies ) {
+					String sSpeciesCode = rSpecies.sSpeciesCode;
+					String sSpeciesName = SpeciesLookup.getNameForCode(sSpeciesCode);
+					if( sSpeciesName.trim().length() > iLongSpeciesLen ) {
+						int iAdd = (sSpeciesName.trim().length() - iLongSpeciesLen) * 15;
 						setBounds(500, 400, iDefaultWidth + iAdd, 400);
-						
 					}
-					cbSpecies.addItem(sSpecies);
+					cbSpecies.addItem(sSpeciesName);
 				}
 				panel.add(cbSpecies);
 			}
@@ -234,14 +233,6 @@ public class AddAnimalsDialog extends JDialog {
 		}
 	}
 	
-	private String getCodeForSpecies( String sSpecies ) {
-		for( String s : hSpecies.keySet() ) {
-			if( hSpecies.get(s).equals( sSpecies ) )
-				return s;
-		}
-		return null;
-	}
-	
 	public String getSelectedSpecies() {
 		String sSpecies = (String)cbSpecies.getSelectedItem();
 		return sSpecies;
@@ -270,7 +261,7 @@ public class AddAnimalsDialog extends JDialog {
 		else
 			sID = sPrefix + sSuffix;
 		String sSpecies = (String)cbSpecies.getSelectedItem();
-		String sSpeciesCode = getCodeForSpecies( sSpecies );
+		String sSpeciesCode = SpeciesLookup.getCodeForName( sSpecies );
 //		int iNextRow = model.getMaxRowID() + 1;
 		AnimalTag.Types type = IDTypeGuesser.getTagType(sID);
 		Animal a = new Animal( sSpeciesCode, type, sID );
@@ -314,7 +305,7 @@ public class AddAnimalsDialog extends JDialog {
 			return;
 		}
 		String sSpecies = (String)cbSpecies.getSelectedItem();
-		String sSpeciesCode = getCodeForSpecies( sSpecies );
+		String sSpeciesCode = SpeciesLookup.getCodeForName( sSpecies );
 		if( sID != null && sID.trim().length() > 0 && iNum > 0 ) {
 			try {
 				ArrayList<String> sIDs = null;
@@ -348,7 +339,7 @@ public class AddAnimalsDialog extends JDialog {
 		List<String> sIDs = ClipboardUtils.getClipStringList();
 		if( sIDs == null || sIDs.size() == 0 ) return;
 		String sSpecies = (String)cbSpecies.getSelectedItem();
-		String sSpeciesCode = getCodeForSpecies( sSpecies );
+		String sSpeciesCode = SpeciesLookup.getCodeForName( sSpecies );
 		for( String sID : sIDs ) {
 			Animal a = new Animal( sSpeciesCode, sID );
 			if( sID != null && sID.trim().length() > 0 ) {

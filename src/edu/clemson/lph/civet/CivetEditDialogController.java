@@ -124,6 +124,7 @@ public final class CivetEditDialogController {
 	private String sDefaultPurpose;
 	
 	CivetEditOrderTraversalPolicy traversal;
+	private Component cStartingComponentFocus = null;
 
 	VetLookup vetLookup;
 
@@ -172,9 +173,7 @@ public final class CivetEditDialogController {
 				dlg.setViewer(viewer);
 			}
 		} catch (PdfException e) {
-			// TODO Auto-generated catch block
 			logger.error(e);
-			e.printStackTrace();
 		}
 		setupNewFilePage();
 	}
@@ -199,15 +198,19 @@ public final class CivetEditDialogController {
 			setupSaveButtons();
 			dlg.make90Percent();
 			dlg.setVisible(true);  // Only now display
+			if( cStartingComponentFocus != null )
+				cStartingComponentFocus.requestFocus();
+
 		} catch( Exception e ) {
 			logger.error(e);
-			e.printStackTrace();
 		}
 	}
 	
 	private void updateFilePage() {
 		try {
 			clearForm();
+			if( currentFile.isDataFile() )
+				populateFromStdXml( currentFile.getModel() );
 			currentFile = openFileList.getCurrentFile();
 			dlg.setTitle(getViewerTitle()+currentFile.getSource().getFileName());
 			setPage(currentFile.getCurrentPageNo());
@@ -219,6 +222,9 @@ public final class CivetEditDialogController {
 			viewer.viewPage(currentFile.getCurrentPageNo()); 
 			viewer.updatePdfDisplay();
 			setupSaveButtons();
+			if( cStartingComponentFocus != null )
+				cStartingComponentFocus.requestFocus();
+
 		} catch( Exception e ) {
 			logger.error(e);
 			e.printStackTrace();
@@ -387,7 +393,6 @@ public final class CivetEditDialogController {
 						}
 						updateCounterPanel();
 					} catch (PdfException e1) {
-						// TODO Auto-generated catch block
 						logger.error(e1);
 					}
 				}
@@ -406,7 +411,6 @@ public final class CivetEditDialogController {
 						}
 						updateCounterPanel();
 					} catch (SourceFileException | PdfException e1) {
-						// TODO Auto-generated catch block
 						logger.error(e1);
 					}
 				}
@@ -445,7 +449,6 @@ public final class CivetEditDialogController {
 						}
 						updateCounterPanel();
 					} catch (SourceFileException | PdfException e1) {
-						// TODO Auto-generated catch block
 						logger.error(e1);
 						e1.printStackTrace();
 					}
@@ -457,7 +460,6 @@ public final class CivetEditDialogController {
 						openFileList.fileForward(false);
 						updateCounterPanel();
 					} catch (PdfException e1) {
-						// TODO Auto-generated catch block
 						logger.error(e1);
 					}
 				}
@@ -836,7 +838,6 @@ public final class CivetEditDialogController {
 			viewer.updatePdfDisplay();
 
 		} catch (SourceFileException e) {
-			// TODO Auto-generated catch block
 			logger.error(e);
 		}
 	}
@@ -846,7 +847,7 @@ public final class CivetEditDialogController {
 	/**
 	 * Use OpenFiles controller to set the file/page counter
 	 */
-	public void updateCounterPanel() {
+	private void updateCounterPanel() {
 		boolean morePagesBack = currentFile.morePagesBack(false);
 		boolean morePagesForward = currentFile.morePagesForward(false);
 		dlg.pCounters.setPageBackEnabled(morePagesBack);
@@ -1000,7 +1001,6 @@ public final class CivetEditDialogController {
 			currentFile.gotoPageNo(iPage);
 			updateFilePage();
 		} catch (SourceFileException e) {
-			// TODO Auto-generated catch block
 			logger.error(e);
 		}
 	}
@@ -1230,19 +1230,20 @@ public final class CivetEditDialogController {
 	/**
 	 * Clearing the form is complicated by various modes and settings.
 	 */
-	public void clearForm() {
-//		if( iCurrentSaveMode == CHOOSE ) // Add page to previous doesn't call clearForm.  Why?
-//			return;
+	private void clearForm() {
 		bSppEntered = false;
 		bInSppChangeByCode = true;
 		formEditListener.clear();
 		// Always start with a blank search box.
 		dlg.jtfThisPIN.getSearchDialog().clear(); 
+		// Don't save Certificate Number.  Highly error prone. Users may ask for this back!
+		dlg.jtfCVINo.setText("");
+		// Don't just clear() existing array because it has been passed by reference to saveThread.
+		aSpecies = new ArrayList<SpeciesRecord>(); 
 		// clear the form and select main map if the check box is not checked or we just did an XFA
 		if( !dlg.ckSticky.isSelected() ) {  // need to restore logic for file after XFA.
 			traversal.selectMainMap();
 			dlg.cbOtherState.setSelectedKey(-1);
-//			dlg.jtfOtherPIN.setText("");
 			dlg.jtfOtherName.setText("");
 			dlg.jtfOtherAddress.setText("");
 			dlg.jtfOtherCity.setText("");
@@ -1322,7 +1323,7 @@ public final class CivetEditDialogController {
 	 * Populate dialog form from standard eCVI XML
 	 * @param xStd StdeCviXml object representation of a CVI
 	 */
-	public void populateFromStdXml( StdeCviXmlModel xStd ) {
+	private void populateFromStdXml( StdeCviXmlModel xStd ) {
 		if( xStd == null ) {
 			logger.error(new Exception("populateFromStdXml called with null StdeCviXml"));
 			return;
@@ -1465,19 +1466,20 @@ public final class CivetEditDialogController {
 
 					}
 					else {
-						if( dlg.jtfDateReceived.getDate() == null ) {
-							if( CivetConfig.isDefaultReceivedDate() ) 
-								dlg.jtfDateReceived.setDate(new java.util.Date());
-							else
-								dlg.jtfDateReceived.setText("");
-						}
 						aErrorKeys = new ArrayList<String>();
 						dlg.lError.setVisible(false);					
 					}
+					if( dlg.jtfDateReceived.getDate() == null ) {
+						if( CivetConfig.isDefaultReceivedDate() ) 
+							dlg.jtfDateReceived.setDate(currentFile.getLastAccessDate());
+						else
+							dlg.jtfDateReceived.setText("");
+					}
+
 //TODO Fix this.
-//					Component c = traversal.getComponentByName(traversal.getProperty("pPDFLoaded"));
-//					if( c != null)
-//						c.requestFocus();
+					String sCompName = traversal.getProperty("pPDFLoaded");
+					Component c = traversal.getComponentByName(sCompName);
+					cStartingComponentFocus = c;
 				}
 				bInSppChangeByCode = false;
 			} catch( Exception e ) {
@@ -1493,7 +1495,6 @@ public final class CivetEditDialogController {
 					String sZipCounty = CountyUtils.getCounty(sZip);
 					sRet = Counties.getHerdsCounty(sStateCode, sZipCounty);	
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					logger.error(e);
 				}
 		}
@@ -1595,50 +1596,16 @@ public final class CivetEditDialogController {
 
 	}
 	
-	// Probably fast enough to leave in event dispatch thread
-	// but not good practice.
-	// May be too slow if moving to different drive instead of just renaming to new folder.
-	public void allFilesDone() {
-		dlg.viewer.closePdfFile();
-	    if( !isReopened() ) {
-//	    	TODO Deal with complete files
-//	    	File completeFiles[] = cviFileController.getCompleteFiles();
-//	    	moveCompleteFiles( completeFiles );
-	    }
-	    if( parent instanceof CivetInbox) {
-			((CivetInbox)parent).inboxController.refreshTables();
-		}
-	    dlg.setVisible(false);
-	}
-	
 	private void doAddIDs() {
 		if( ( dlg.cbSpecies.getSelectedCode() == null || dlg.cbSpecies.getSelectedCode().trim().length() == 0 ) && aSpecies.size() == 0 ) {
 			MessageDialog.showMessage(dlg, "Civet Error", "Species must be added before IDs" );
 		}
 		else {
-			// TODO Rework this using the Animal list from XML model
-			ArrayList<String> aSpeciesStrings = new ArrayList<String>();
-			if( aSpecies.size() > 0 ) {
-				for( SpeciesRecord r : aSpecies ) {
-					aSpeciesStrings.add(dlg.cbSpecies.getValueForCode(r.sSpeciesCode));
-				}
-			}
-			if( dlg.cbSpecies.getSelectedCode() != null ) {
-				String sSpecies = dlg.cbSpecies.getSelectedValue();
-				if( !aSpeciesStrings.contains(sSpecies) ) {
-					aSpeciesStrings.add(sSpecies);
-				}
-			}
-			HashMap<String, String> hSpecies = new HashMap<String, String>();
-			for( String sSp : aSpeciesStrings ) {
-				String sCode = SpeciesLookup.getCodeForName(sSp);
-				hSpecies.put(sCode,sSp);
-			}
-			AddAnimalsDialog dlg = new AddAnimalsDialog( hSpecies, idListModel );
+			updateSpeciesList(false);
+			AddAnimalsDialog dlg = new AddAnimalsDialog( aSpecies, idListModel );
 			dlg.setModal(true);
 			dlg.setVisible(true);
 			setActiveSpecies( dlg.getSelectedSpecies() );
-			FileUtils.writeTextFile(currentFile.getModel().getXMLString(), "AfterAdd.xml");
 		}
 	}
 
@@ -1646,14 +1613,14 @@ public final class CivetEditDialogController {
 	 * The NORMAL Save Mode is to save the model and current file.
 	 * @throws SourceFileException 
 	 */
-	boolean save() throws SourceFileException {
+	private boolean save() throws SourceFileException {
 		return save(currentFile.cloneCurrentState());
 	}
 	/** 
 	 * Specify the OpenFile and model to save for use in split files.
 	 * @throws SourceFileException 
 	 */
-	boolean save( OpenFile fileToSave ) throws SourceFileException {
+	private boolean save( OpenFile fileToSave ) throws SourceFileException {
 		String sCVINo = dlg.jtfCVINo.getText();
 			if( sCVINo.equalsIgnoreCase(sPrevCVINo) ) {
 				MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " hasn't changed since last save");
@@ -1751,7 +1718,7 @@ public final class CivetEditDialogController {
 	 * Here we ask for only incomplete pages.  (Nav bar steps through all pages and files).
 	 * TODO Decide if the next page MIGHT be part of the just saved CVI and offer correct choices.
 	 */
-	public void saveComplete() {
+	private void saveComplete() {
 		try {
 			// Only on multipage PDF do we page forward on save
 			if( currentFile.getSource().canSplit() && currentFile.morePagesForward(true) ) {

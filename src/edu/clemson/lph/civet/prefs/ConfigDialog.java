@@ -11,17 +11,11 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
-import java.util.StringTokenizer;
 
 import javax.swing.JTabbedPane;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-
 import org.apache.log4j.Logger;
-
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.mailman.MailMan;
 
@@ -36,7 +30,6 @@ public class ConfigDialog extends JDialog {
 
 	private ArrayList<String> aDefaulted = new ArrayList<String>();
 	private boolean bComplete;
-	private boolean bExitOK;
 
 	/**
 	 * Launch the application.  Testing only!
@@ -95,7 +88,6 @@ public class ConfigDialog extends JDialog {
 		CivetConfig.initConfig();
 		props = CivetConfig.getProps();
 		aEntries = new ArrayList<ConfigEntryPanel>();
-		bExitOK = false;
 		setBounds(100, 100, 650, 450);
 		getContentPane().setLayout(new BorderLayout());
 		{
@@ -159,7 +151,6 @@ public class ConfigDialog extends JDialog {
 			}
 		}
 		setVisible(false);
-		bExitOK = false;
 		dispose();
 	}
 
@@ -178,7 +169,6 @@ public class ConfigDialog extends JDialog {
 		if( !CivetConfig.writeConfigFile( "CivetConfig.txt") ) {
 			logger.error("Faild to save Config properties");
 		}
-		bExitOK = true;
 		// In case the user has already entered password, save it
 		String sMailUser = MailMan.getDefaultUserID();
 		String sMailPass = MailMan.getDefaultPassword();

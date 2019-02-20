@@ -140,7 +140,7 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 			xmlModel.setVet(cvi.getVeterinarianName());
 		}
 		// Expiration date will be set automatically from getXML();
-		xmlModel.setPurpose(VspsCodeLookup.getPurposeCode(cvi.getStdPurpose()));
+		xmlModel.setPurpose(cvi.getStdPurpose());
 		// We don't enter the person name, normally  or add logic to tell prem name from person name.
 		VspsCviEntity origin = cvi.getOrigin();
 		Element eOrigin = xmlModel.setOrigin( origin.getPremisesId(), origin.getName(), origin.getPhoneDigits(), origin.getAddress1(), 

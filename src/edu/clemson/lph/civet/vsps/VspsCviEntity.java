@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.utils.CountyUtils;
 import edu.clemson.lph.utils.LabeledCSVParser;
 import edu.clemson.lph.utils.PremCheckSum;
 
@@ -136,13 +137,20 @@ public class VspsCviEntity {
 	}
 
 	public String getCounty() throws IOException {
+		String sRet = null;
 		int iCol = iDelta + parser.getLabelIdx("Origin County");
 		if( iCol < 0 || iCol >= aCols.size() )
 			return null;
 		else if( aCols.get(iCol).trim().length() == 0 )
 			return null;
 		else
-			return  aCols.get(iCol);
+			sRet = aCols.get(iCol);
+		if( sRet == null || sRet.trim().length() == 0 ) {
+			String sZip = getPostalCode();
+			if( sZip != null && sZip.trim().length() > 0 )
+				sRet = CountyUtils.getCounty(sZip);
+		}
+		return sRet;
 	}
 
 	public String getState() throws IOException {

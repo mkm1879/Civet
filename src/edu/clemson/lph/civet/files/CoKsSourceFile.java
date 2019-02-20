@@ -72,7 +72,6 @@ public class CoKsSourceFile extends SourceFile {
 		String sAcrobatXML = toAcrobatXMLString();
 		String sStdXML = toStdXMLString( sAcrobatXML);
 		
-	FileUtils.writeTextFile(sStdXML, "Transform.xml");	
 		model = new StdeCviXmlModel(sStdXML);
 		model.setOrUpdatePDFAttachment(pdfBytes, fSource.getName());
 	}

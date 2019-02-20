@@ -168,7 +168,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 			xmlModel.setVet(data.getVet());
 		}
 		// Expiration date will be set automatically from getXML();
-		xmlModel.setPurpose("feeding");
+		xmlModel.setPurpose("Feeding to slaughter");
 		// We don't enter the person name, normally  or add logic to tell prem name from person name.
 		Premises pOrigin = new Premises(data.getSourcePin(), data.getSourceFarm(), data.getSourceState()); 
 		xmlModel.setOrigin( pOrigin );

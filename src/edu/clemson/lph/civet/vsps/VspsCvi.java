@@ -225,7 +225,7 @@ public class VspsCvi {
 	}
 	
 	public String getPurpose() throws IOException {
-		String sRet = "other";
+		String sRet = "Other";
 		int iCol = parser.getLabelIdx("Purpose");
 		if( iCol < 0 || iCol >= aCols.size() )
 			return null;
@@ -233,17 +233,14 @@ public class VspsCvi {
 			return null;
 		else {
 			String sPurpose = aCols.get(iCol);
-			if( "Transit".equals(sPurpose) )
-				sRet = "other";
-			else 
-				sRet = sPurpose;
+			sRet = sPurpose;
 		}
 		return sRet; 
 	}
 	
 	public String getStdPurpose() throws IOException {
-		String sRet = getPurpose();
-		//TODO: Convert to standard.
+		String sPurpose = getPurpose();
+		String sRet = VspsCodeLookup.getPurposeCode(sPurpose);
 		return sRet; 
 	}
 	

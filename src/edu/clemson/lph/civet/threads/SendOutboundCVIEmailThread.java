@@ -217,12 +217,11 @@ public class SendOutboundCVIEmailThread extends Thread {
 			// For testing, replace real destination with test email
 			String sTestEmail = CivetConfig.getEmailTestTo();
 			if ( sTestEmail != null && sTestEmail.trim().length() > 0 )
-				sEmail = sTestEmail;  
+				sEmail = sTestEmail; 
+			
 			ArrayList<MIMEFile> aFiles = new ArrayList<MIMEFile>();
 			for( StdeCviXmlModel thisCVI : aCVIs) {
 				byte pdfBytes[] = thisCVI.getPDFAttachmentBytes();
-				boolean bXFA = PDFUtils.isXFA(pdfBytes);
-		// TODO Send PDF and Standard XML Unless set to PDF
 					sFileName = thisCVI.getOriginState() + "_To_" + thisCVI.getDestinationState() + 
 							"_" + thisCVI.getCertificateNumber() + ".pdf";
 					aFiles.add(new MIMEFile(sFileName,"application/pdf",pdfBytes));
@@ -238,7 +237,6 @@ public class SendOutboundCVIEmailThread extends Thread {
 			bRet = MailMan.sendIt(sEmail, sFileCopyAddress,
 					 "CVIs From " + sHomeState + " to " + sState + (iPart>1?" Part " + iPart:""),
 					sOutBoundCVIMessage, aFiles);
-//			logger.info("Email sent to: " + sEmail + " at " + sState + " returned " + bRet);
 		} catch (AuthenticationFailedException e1) {
 			sCurrentEmailError = e1.getMessage();
 			MessageDialog.messageWait( prog.getWindowParent(), "Civet: Invalid UserID/Password", 

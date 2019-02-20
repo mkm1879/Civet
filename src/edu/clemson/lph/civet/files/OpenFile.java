@@ -16,6 +16,7 @@ package edu.clemson.lph.civet.files;
 
 import java.awt.Window.Type;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.jpedal.exception.PdfException;
@@ -23,6 +24,7 @@ import org.jpedal.exception.PdfException;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.pdfgen.PDFViewer;
+import edu.clemson.lph.utils.FileUtils;
 
 /**
  *  This class encapsulates actions taking place in one selected file.
@@ -166,6 +168,13 @@ public class OpenFile {
 	
 	public boolean isDataFile() {
 		return source.isDataFile();
+	}
+	
+	public java.util.Date getLastAccessDate() throws IOException {
+		java.util.Date dRet = null;
+		File fSource = getSource().fSource;
+		dRet = FileUtils.getLastAccessedDate(fSource);
+		return dRet;
 	}
 	
 	public Integer nextUnsavedPage() {

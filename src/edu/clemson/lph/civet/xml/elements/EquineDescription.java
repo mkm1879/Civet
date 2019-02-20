@@ -25,6 +25,8 @@ public class EquineDescription {
 	public EquineDescription(String name, String description) {
 		this.name = name;
 		this.description = description;
+		if( this.description == null || this.description.trim().length() == 0 )
+			this.description = "None provided";
 	}
 	
 	@Override

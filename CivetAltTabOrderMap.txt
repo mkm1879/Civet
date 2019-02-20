@@ -4,10 +4,12 @@
 #
 # Special Controls and Events
 # Control with focus when dialog opens
-pFirstControl=OtherAddress
-pInstateFirst=OtherAddress
+pFirstControl=OtherState
+pInstateFirst=OtherName
 # Control with focus when Premise info found and filled in
 pPremiseFound=Species
+# Control with focus after form is filled with eCVI STD data
+pPDFLoaded=ReceivedDate
 #
 # Alternate tab order specification
 # Usage = FromControl=ToControl

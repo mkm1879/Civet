@@ -266,7 +266,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			xmlModel.setIssueDate(data.getInspectionDate());
 			xmlModel.setVet("NPIP");
 			// Expiration date will be set automatically from getXML();
-			xmlModel.setPurpose("other");
+			xmlModel.setPurpose("Other");
 			
 			String sOriginCounty = CountyUtils.getCounty(data.getConsignorZip());
 			String sDestinationCounty = CountyUtils.getCounty(data.getConsigneeZip());

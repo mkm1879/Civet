@@ -131,7 +131,7 @@ public class SaveCVIThread extends Thread {
 		PurposeLookup purpose = new PurposeLookup();
 		this.sStdPurpose = purpose.getCodeForValue(sMovementPurpose);
 		if( sStdPurpose == null || sStdPurpose.trim().length() == 0 )
-			sStdPurpose = "other";
+			sStdPurpose = "Other";
 		this.sCVINo = sCVINo;
 		if( bImport ) {
 			this.sOriginPIN = sOtherPIN;
@@ -194,13 +194,6 @@ public class SaveCVIThread extends Thread {
 	    finally {
 	    	
 	    }
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				controller.saveComplete();
-				prog.setVisible(false);
-				prog.dispose();
-			}
-		});
 	}
 
 	private void saveLocalPremData() {

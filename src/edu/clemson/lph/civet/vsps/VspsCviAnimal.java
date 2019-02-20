@@ -92,6 +92,7 @@ public class VspsCviAnimal {
 				}
 				else if( "Call Name".equalsIgnoreCase(sIdType) ) {
 					sOtherType = "Call Name";
+					tag = new AnimalTag( AnimalTag.Types.ManagementID, sOtherType, sId );
 				}
 				else {
 					tag = new AnimalTag( sId );

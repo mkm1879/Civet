@@ -59,13 +59,6 @@ zipcodeTableFile=E:\\Documents\\CivetTest\\ZipTable.csv
 countiesTableFile=E:\\Documents\\CivetTest\\CountyTable.csv
 countyAliasesTableFile=E:\\Documents\\CivetTest\\CountyAliasesTable.csv
 
-#Robot
-robotInputPath=E:\\Documents\\CivetTest\\CivetRobotIn
-robotCompleteOutPath=E:\\Documents\\CivetTest\\CivetRobotComplete
-robotXMLOutPath=E:\\Documents\\CivetTest\\CivetRobotXML
-robotOutputFormat=STD
-robotWaitSeconds=15
-
 #Logging
 logLevel=INFO
 log4j.rootLogger=info, stdout, R
