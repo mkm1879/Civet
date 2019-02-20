@@ -441,6 +441,7 @@ public class CivetInboxController {
 			inbox.currentModel.refresh();
 			inbox.tblInBox.setModel(inbox.currentModel);
 			inbox.tblInBox.setRowSorter( inbox.currentModel.getSorter() );
+			inbox.tblInBox.clearSelection();
 			// Set items that apply in any view
 			if( inbox.currentModel.getRowCount() == 0 ) {
 				inbox.bOpen.setEnabled(false);

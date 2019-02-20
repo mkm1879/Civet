@@ -73,12 +73,10 @@ public class HttpPostClient {
             for( BasicNameValuePair pair : lHeaders ) {
             	httppost.addHeader(pair.getName(), pair.getValue());
             }
-
-            System.out.println("Executing request " + httppost.getRequestLine());
-            Header headers[] = httppost.getAllHeaders();
-            for( Header header : headers ) {
-            	System.out.println( "   " + header.getName() + ": " + header.getValue() );
-            }
+//            Header headers[] = httppost.getAllHeaders();
+//            for( Header header : headers ) {
+//            	System.out.println( "   " + header.getName() + ": " + header.getValue() );
+//            }
 
             // Create a custom response handler
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {

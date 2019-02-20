@@ -406,27 +406,29 @@ public class CivetConfig {
 		sHERDSPassword = sPass;
 	}
 	
-	public static boolean validateHerdCredentials() {
+	public static boolean validateHerdsCredentials() {
 		boolean bRet = false;
 		String sUser = CivetConfig.getHERDSUserName();
 		String sPass = CivetConfig.getHERDSPassword();
 		try {
 			boolean bValid = false;
 			while( !bValid ) {
-				try {
-					String sToken = UsaHerdsWebServiceAuthentication.getToken(CivetConfig.getHERDSWebServiceURL(), sUser, sPass);
-					if( sToken != null && sToken.trim().length() > 0 ) {
-						setHERDSUserName( sUser );
-						setHERDSPassword( sPass );
-						bRet = true;
-						break;
+				if( sUser != null && sUser.trim().length() > 0 && sPass != null && sPass.trim().length() > 0 ) {
+					try {
+						String sToken = UsaHerdsWebServiceAuthentication.getToken(CivetConfig.getHERDSWebServiceURL(), sUser, sPass);
+						if( sToken != null && sToken.trim().length() > 0 ) {
+							setHERDSUserName( sUser );
+							setHERDSPassword( sPass );
+							bRet = true;
+							break;
+						}
+						else {
+							MessageDialog.showMessage(null, "Civet Login Error", "Error logging into USAHERDS");
+						}
+					} catch( WebServiceException e ) {
+						MessageDialog.showMessage(null, "Civet Login Error", "Error logging into USAHERDS\n"+ e.getMessage());
+						bValid = false;
 					}
-					else {
-						MessageDialog.showMessage(null, "Civet Login Error", "Error logging into USAHERDS");
-					}
-				} catch( WebServiceException e ) {
-					MessageDialog.showMessage(null, "Civet Login Error", "Error logging into USAHERDS\n"+ e.getMessage());
-					bValid = false;
 				}
 				TwoLineQuestionDialog dlg = new TwoLineQuestionDialog( "USAHERDS Login: " + getHERDSWebServiceHost(), "UserID", "Password", true );
 				dlg.setIntro("USAHERDS Login Settings");

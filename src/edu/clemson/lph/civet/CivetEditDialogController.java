@@ -212,6 +212,7 @@ public final class CivetEditDialogController {
 			if( currentFile.isDataFile() )
 				populateFromStdXml( currentFile.getModel() );
 			currentFile = openFileList.getCurrentFile();
+			idListModel = new AnimalIDListTableModel( currentFile.getModel() );
 			dlg.setTitle(getViewerTitle()+currentFile.getSource().getFileName());
 			setPage(currentFile.getCurrentPageNo());
 			setPages(currentFile.getPageCount());
@@ -802,15 +803,20 @@ public final class CivetEditDialogController {
 			currentFile.setCurrentPagesDone();
 			setFileCompleteStatus();
 			if( save() ) {
-				saveComplete();
+				if( saveComplete() ) {
+					doCleanup();
+					dlg.setVisible(false);
+					dlg.dispose();
+				}
+				else {
+					dlg.setFormEditable( true );
+				}
 			}
-			dlg.setFormEditable( true );
 		} catch (SourceFileException e) {
 			String sCVINo = dlg.jtfCVINo.getText();
 			MessageDialog.showMessage(getDialog(), "Civet Error", "Failed to save Certificate number " + sCVINo);
 			logger.error(e);
 		}
-		// Processing returns in saveComplete() after thread completes.;
 	}
 	
 	private void setFileCompleteStatus() {
@@ -973,9 +979,8 @@ public final class CivetEditDialogController {
 	
 	private void doCleanup() {
 		saveQueue.flush();
-    	if( parent instanceof CivetInbox) {
-    		((CivetInbox)parent).inboxController.refreshTables();
-    	}
+		moveCompletedFiles();
+		CivetInboxController.getCivetInboxController().refreshTables();
 	}
 
 	public boolean isReopened() {
@@ -1717,8 +1722,9 @@ public final class CivetEditDialogController {
 	 * Navigate to the next page to edit
 	 * Here we ask for only incomplete pages.  (Nav bar steps through all pages and files).
 	 * TODO Decide if the next page MIGHT be part of the just saved CVI and offer correct choices.
+	 * @return boolean true if all files complete
 	 */
-	private void saveComplete() {
+	private boolean saveComplete() {
 		try {
 			// Only on multipage PDF do we page forward on save
 			if( currentFile.getSource().canSplit() && currentFile.morePagesForward(true) ) {
@@ -1732,18 +1738,14 @@ public final class CivetEditDialogController {
 			}
 			else {
 				openFileList.markFileComplete(currentFile);
-				saveQueue.flush();
-				moveCompletedFiles();
-				CivetInboxController.getCivetInboxController().refreshTables();
-				dlg.setVisible(false);
-				dlg.dispose();
-				return;
+				return true;
 			}
 			updateFilePage();
 		} catch (SourceFileException | PdfException e) {
 			// TODO Auto-generated catch block
 			logger.error(e);
 		}
+		return false;
 	}
 	
 	private void moveCompletedFiles() {

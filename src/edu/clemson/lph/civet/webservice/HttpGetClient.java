@@ -82,15 +82,11 @@ public class HttpGetClient {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
         	sURL = sURL + buildParams();
-        	System.out.println(sURL);
             HttpGet httpget = new HttpGet(sURL);
             
             for( BasicNameValuePair pair : lHeaders ) {
             	httpget.setHeader(pair.getName(),pair.getValue());
             }
-
-            System.out.println("Executing request " + httpget.getRequestLine());
-
             // Create a custom response handler
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
                 @Override

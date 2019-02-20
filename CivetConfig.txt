@@ -33,31 +33,31 @@ emailCopyTo=mkm1879@gmail.com
 maxAttachSize=5M
 
 #Folders
-InputDirPath=E:\\Documents\\CivetTest\\CivetInbox\\
-ToBeFiledDirPath=E:\\Documents\\CivetTest\\CivetToBeFiled\\
-EmailOutDirPath=E:\\Documents\\CivetTest\\CivetToBeMailedOut\\
-EmailErrorsDirPath=E:\\Documents\\CivetTest\\CivetToBeMailedErrors\\
-OutputDirPath=E:\\Documents\\CivetTest\\CivetOutbox\\
-vspsDirPath=E:\\Documents\\CivetTest\\VSPSData\\
+InputDirPath=.\\CivetInbox\\
+ToBeFiledDirPath=.\\CivetToBeFiled\\
+EmailOutDirPath=.\\CivetToBeMailedOut\\
+EmailErrorsDirPath=.\\CivetToBeMailedErrors\\
+OutputDirPath=.\\CivetOutbox\\
+vspsDirPath=.\\VSPSData\\
 EmailOnlyInputPath=
 EmailOnlySendPath=
 
 #Files
 CoKsXSLTFile=CO_KS_eCVI_to_Standard2.xsl
-StdSchema=E:\\EclipseJava\\Civet\\ecvi2.xsd
+StdSchema=.\\ecvi2.xsd
 acrobatPath=
-ExportEmailTemplate=E:\\Documents\\CivetTest\\CivetExportsEmailMessage.txt
-ImportErrorsEmailTemplate=E:\\Documents\\CivetTest\\CivetImportsErrorEmailMessage.txt
-ImportErrorsLetterTemplate=E:\\Documents\\CivetTest\\CivetImportsErrorLetterTemplate.txt
+ExportEmailTemplate=.\\CivetExportsEmailMessage.txt
+ImportErrorsEmailTemplate=.\\CivetImportsErrorEmailMessage.txt
+ImportErrorsLetterTemplate=.\\CivetImportsErrorLetterTemplate.txt
 EmailOnlyMessage=.\\EmailOnlyMessage.txt
 vetTableFile=.\\VetTable.csv
 sppTableFile=.\\SpeciesTable.csv
 errorTypeTableFile=.\\ErrorTypeTable.csv
 purposeTableFile=.\\PurposeTable.csv
 stateVetTableFile=.\\StateVetTable.csv
-zipcodeTableFile=E:\\Documents\\CivetTest\\ZipTable.csv
-countiesTableFile=E:\\Documents\\CivetTest\\CountyTable.csv
-countyAliasesTableFile=E:\\Documents\\CivetTest\\CountyAliasesTable.csv
+zipcodeTableFile=.\\ZipTable.csv
+countiesTableFile=.\\CountyTable.csv
+countyAliasesTableFile=.\\CountyAliasesTable.csv
 
 #Logging
 logLevel=INFO
