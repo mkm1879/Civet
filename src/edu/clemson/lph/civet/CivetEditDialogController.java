@@ -1737,7 +1737,7 @@ public final class CivetEditDialogController {
 				currentFile.viewFile();  // this is the slow step to thread if necessary
 			}
 			else {
-				openFileList.markFileComplete(currentFile);
+//				openFileList.markFileComplete(currentFile);
 				return true;
 			}
 			updateFilePage();

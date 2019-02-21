@@ -150,7 +150,10 @@ public class OpenFileList {
 	}
 	
 	public void markFileComplete( OpenFile completeFile ) {
-		aFilesComplete.add(completeFile);
+		if( aFilesComplete.contains(completeFile) ) 
+			logger.error("Repeat mark complete of file: " + completeFile.getSource().getFileName() );
+		else
+			aFilesComplete.add(completeFile);
 	}
 
 	

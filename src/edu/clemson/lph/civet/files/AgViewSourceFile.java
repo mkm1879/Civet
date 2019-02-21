@@ -128,11 +128,11 @@ public class AgViewSourceFile extends SourceFile {
 		boolean bRet = super.moveToDirectory(fDir);
 		File fNew = new File(fDir, fData.getName());
 		if( fNew.exists() ) {
-			logger.error(fNew.getName() + " already exists in " + fDir.getAbsolutePath() + " .\n" +
+			logger.error(fNew.getName() + " already exists in " + fDir.getAbsolutePath() + "\n" +
 						"Check that it really is a duplicate and manually delete.");
 			String sOutPath = fNew.getAbsolutePath();
 			sOutPath = FileUtils.incrementFileName(sOutPath);
-			logger.error(fNew.getName() + " already exists in " + fDir.getAbsolutePath() + " .\n" +
+			logger.error(fNew.getName() + " already exists in " + fDir.getAbsolutePath() + "\n" +
 					"Saving as " + sOutPath);
 			fNew = new File( sOutPath );
 		}

@@ -283,11 +283,6 @@
                     <xsl:attribute name="Quantity">
                         <xsl:value-of select="headCt"/>
                     </xsl:attribute>
-                    <xsl:attribute name="SpeciesCode">
-                        <xsl:call-template name="Species">
-                            <xsl:with-param name="species" select="spp"/>
-                        </xsl:call-template>
-                    </xsl:attribute>
                     <xsl:if test="./ageNum and ./ageNum != ''">
                         <xsl:attribute name="Age">
                             <xsl:call-template name="Age">
@@ -314,6 +309,9 @@
                     <xsl:attribute name="Description">
                         <xsl:value-of select="description"/>
                     </xsl:attribute>
+                    <xsl:call-template name="AnimalSpecies">
+                        <xsl:with-param name="item" select="."/>
+                    </xsl:call-template>
                 </xsl:element>
             </xsl:if>
         </xsl:for-each>
@@ -398,7 +396,21 @@
         <xsl:param name="item"/>
         <xsl:choose>
             <xsl:when
-                test="$item/spp = 'AQU' or $item/spp = 'BEF' or $item/spp = 'BIS' or $item/spp = 'BOV' or $item/spp = 'CAM' or $item/spp = 'CAN' or $item/spp = 'CAP' or $item/spp = 'CER' or $item/spp = 'CHI' or $item/spp = 'DAI' or $item/spp = 'EQU' or $item/spp = 'FEL' or $item/spp = 'OVI' or $item/spp = 'POR' or $item/spp = 'TUR'">
+                test="$item/spp = 'AQU' 
+                   or $item/spp = 'BEF' 
+                   or $item/spp = 'BIS' 
+                   or $item/spp = 'BOV' 
+                   or $item/spp = 'CAM' 
+                   or $item/spp = 'CAN' 
+                   or $item/spp = 'CAP' 
+                   or $item/spp = 'CER' 
+                   or $item/spp = 'CHI' 
+                   or $item/spp = 'DAI' 
+                   or $item/spp = 'EQU' 
+                   or $item/spp = 'FEL' 
+                   or $item/spp = 'OVI' 
+                   or $item/spp = 'POR' 
+                   or $item/spp = 'TUR'">
                 <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="SpeciesCode">
                     <xsl:attribute name="Code">
                         <xsl:call-template name="Species">
