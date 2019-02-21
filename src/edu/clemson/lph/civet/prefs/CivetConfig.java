@@ -533,62 +533,37 @@ public class CivetConfig {
 		return bRet;
 	}
 
-	
-	public static String getInputDirPath() {
-		String sRet = props.getProperty("InputDirPath");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("InputDirPath");
+	private static String getPath( String sProperty, String sDefault ) {
+		String sRet = props.getProperty(sProperty);
+		if( sRet == null || sRet.trim().length() == 0 ) {
+			if( sDefault != null )
+				sRet = sDefault;
+			else
+				exitError( sProperty );
+		}
 		File f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
 			logger.error( "InputDirPath " + sRet + " does not exist or is not a folder");
 			System.exit(1);
 		}
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
+		sRet = f.getAbsolutePath();
 		return sRet;
+	}
+	
+	public static String getInputDirPath() {
+		return getPath("InputDirPath", null);
 	}
 	
 	public static String getToFileDirPath() {
-		String sRet = props.getProperty("ToBeFiledDirPath");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("ToBeFiledDirPath");
-		File f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			logger.error( "ToBeFiledDirPath " + sRet + " does not exist or is not a folder");
-			System.exit(1);
-		}
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
-		return sRet;
+		return getPath("ToBeFiledDirPath", null);
 	}
-	
 
 	public static String getEmailOutDirPath() {
-		String sRet = props.getProperty("EmailOutDirPath");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("EmailOutDirPath");
-		File f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			logger.error( "EmailOutDirPath " + sRet + " does not exist or is not a folder");
-			System.exit(1);
-		}
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
-		return sRet;
+		return getPath("EmailOutDirPath", null);
 	}
 
 	public static String getEmailOnlySendPath() {
-		String sRet = props.getProperty("EmailOnlySendPath");
-		if( sRet == null || sRet.trim().length() == 0 ) {
-			File fOut = new File( getOutputDirPath() );
-			File fRoot = fOut.getParentFile();
-			sRet = fRoot.getAbsolutePath() + "\\EmailOnlySend\\";
-		}
-		File f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			logger.error( "EmailOnlySendPath " + sRet + " does not exist or is not a folder");
-			System.exit(1);
-		}
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
-		return sRet;
+		return getPath("EmailOnlySendPath", ".\\EmailOnlySend\\" );
 	}
 
 	public static String getEmailOnlyEmailTemplate() {
@@ -607,89 +582,27 @@ public class CivetConfig {
 	}
 
 	public static String getEmailOnlyPath() {
-		String sRet = props.getProperty("EmailOnlyInputPath");
-		if( sRet == null || sRet.trim().length() == 0 ) {
-			File fOut = new File( getOutputDirPath() );
-			File fRoot = fOut.getParentFile();
-			sRet = fRoot.getAbsolutePath() + "\\EmailOnlyIn\\";
-		}
-		File f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			logger.error( "EmailOnlyInputPath " + sRet + " does not exist or is not a folder");
-			System.exit(1);
-		}
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
-		return sRet;
+		return getPath("EmailOnlyInputPath", ".\\EmailOnlyIn\\");
 	}
 	
 	public static String getEmailErrorsDirPath() {
-		String sRet = props.getProperty("EmailErrorsDirPath");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("EmailErrorsDirPath");
-		File f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			logger.error( "EmailErrorsDirPath " + sRet + " does not exist or is not a folder");
-			System.exit(1);
-		}
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
-		return sRet;
+		return getPath("EmailErrorsDirPath", null);
 	}
 	
 	public static String getOutputDirPath() {
-		String sRet = props.getProperty("OutputDirPath");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("OutputDirPath");
-		File f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			logger.error( "OutputDirPath " + sRet + " does not exist or is not a folder");
-			System.exit(1);
-		}
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
-		return sRet;
+		return getPath("OutputDirPath", null);
 	}
 	
 	public static String getBulkLoadDirPath() {
-		String sRet = props.getProperty("bulkLoadDirPath");
-		if( sRet != null ) {
-			File f = new File( sRet );
-			if( !f.exists() || !f.isDirectory() ) {
-				logger.error( "bulkLoadDirPath " + sRet + " does not exist or is not a folder");
-				sRet = "./";
-			}
-		}
-			else sRet = "./";
-		return sRet;
+		return getPath("bulkLoadDirPath", ".\\BulkLoad\\");
 	}
 	
 	public static String getNineDashThreeLoadDirPath() {
-		String sRet = props.getProperty("nineDashThreeLoadDirPath");
-		if( sRet != null ) {
-			File f = new File( sRet );
-			if( !f.exists() || !f.isDirectory() ) {
-				logger.error( "nineDashThreeLoadDirPath " + sRet + " does not exist or is not a folder");
-				sRet = "./"; 
-			}
-		}
-		else 
-			sRet = "./"; 
-		return sRet;
+		return getPath("nineDashThreeLoadDirPath", ".\\NineDashThree\\");
 	}
 
 	public static String getVspsDirPath() {
-		String sRet = props.getProperty("vspsDirPath");
-		if( sRet == null || sRet.trim().length() == 0 ) {
-			logger.error( "vspsLoadDirPath not set.  Using install folder");
-			return "./";
-		}
-		File f = new File( sRet );
-		if( !f.exists() || !f.isDirectory() ) {
-			logger.error( "vspsLoadDirPath " + sRet + " does not exist or is not a folder");
-			sRet = "./";
-		}
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = "./"; 
-		return sRet;
+		return getPath("vspsDirPath", ".\\VSPSData\\");
 	}
 	
 	public static String getZipcodeTableFile() {

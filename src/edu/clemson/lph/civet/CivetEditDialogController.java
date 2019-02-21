@@ -1734,7 +1734,7 @@ public final class CivetEditDialogController {
 			// Backup to get skipped pages?  Not currently.
 			else if ( openFileList.moreFilesForward(true) || openFileList.moreFilesBack(true) ) {
 				currentFile = openFileList.nextFile(true);
-				currentFile.viewFile();
+				currentFile.viewFile();  // this is the slow step to thread if necessary
 			}
 			else {
 				openFileList.markFileComplete(currentFile);
