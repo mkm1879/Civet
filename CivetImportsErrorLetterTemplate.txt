@@ -1,4 +1,4 @@
-.himage.CULPHWordMark.jpg
+.himage.Logo.png
 .cb.South Carolina
 .cb.Department of Livestock
 .cb.Poultry Health Programs
@@ -19,7 +19,7 @@ Other information from Dr. Parr
 Boyd H. Parr, DVM
 State Veterinarian
 
-.fimage.ClemsonSeal.png
+.fimage.civet64.png
 .ci.DEPARTMENT OF LIVESTOCK POULTRY HEALTH PROGRAMS
 .csi.Animal Health Programs   PO Box 102406, Columbia, SC 29224-2406  (500 Clemson Road, Columbia, SC 29229) 
 .csi. 803.788.2260   FAX 803.736.0885    

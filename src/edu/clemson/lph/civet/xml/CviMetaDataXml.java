@@ -23,8 +23,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
@@ -36,7 +34,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.XMLUtility;
 
 public class CviMetaDataXml {
@@ -49,7 +46,6 @@ public class CviMetaDataXml {
 	private Document doc = null;
 	
 	public CviMetaDataXml() {
-//		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder;
 		try {
 			docBuilder = SafeDocBuilder.getSafeDocBuilder(); //docFactory.newDocumentBuilder();
@@ -59,15 +55,12 @@ public class CviMetaDataXml {
 			doc.appendChild(rootElement);
 		} catch (Exception e ) {
 			logger.error(e);
-//		} catch (ParserConfigurationException e) {
-//			logger.error(e);
 		}
 	}
 	
 	public CviMetaDataXml(String sBase64) {
 		byte[] bytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(sBase64);
 
-		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder;
 		try {
 			docBuilder = SafeDocBuilder.getSafeDocBuilder(); //docFactory.newDocumentBuilder();

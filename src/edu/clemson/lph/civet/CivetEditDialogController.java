@@ -42,7 +42,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.text.JTextComponent;
 
@@ -63,7 +62,6 @@ import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.lookup.VetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.threads.OpenFilesThread;
-import edu.clemson.lph.civet.threads.SaveCVIThread;
 import edu.clemson.lph.civet.webservice.PremisesSearchDialog;
 import edu.clemson.lph.civet.webservice.PremisesTableModel;
 import edu.clemson.lph.civet.webservice.UsaHerdsLookupPrems;
@@ -84,7 +82,6 @@ import edu.clemson.lph.dialogs.YesNoDialog;
 import edu.clemson.lph.pdfgen.PDFOpener;
 import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.CountyUtils;
-import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.PremCheckSum;
 
 

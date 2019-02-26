@@ -63,7 +63,12 @@ public class StdXMLFilesTableModel extends FilesTableModel {
 			aRow[3] = thisStd.getSpeciesCodes();
 			Veterinarian vet = thisStd.getVet();
 			if( vet != null )
-				aRow[4] = vet.person.name;
+				if( vet.person.name != null )
+					aRow[4] = vet.person.name;
+				else if( vet.person.nameParts != null )
+					aRow[4] = vet.person.nameParts.toString();
+				else 
+					aRow[4] = "";
 			else
 				aRow[4] = "";
 			aRow[5] = df.format(thisStd.getIssueDate());
