@@ -22,12 +22,13 @@ autoOpenPdf=yes
 checkAccreditationStatus=TRUE
 
 #Email
-smtpHost=smtp.zoho.com
+smtpHost=
+zohoKey=4356
 smtpPort=587
 smtpSecurity=STARTTLS
-smtpDomain=@mminformatics.com
-emailFrom=civet@mminformatics.com
-emailReplyTo=
+smtpDomain=
+emailFrom=
+emailReplyTo=mmarti5@clemson.edu
 emailTestTo=mkm1879@gmail.com
 emailCopyTo=mkm1879@gmail.com
 maxAttachSize=5M

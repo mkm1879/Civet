@@ -260,26 +260,62 @@ public class CivetConfig {
 	}
 
 	
-	public static String getSmtpHost() {
-		String sRet = props.getProperty("smtpHost");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("smtpHost");
+	public static String getZohoKey() {
+		String sRet = props.getProperty("zohoKey");
 		if( sRet != null && sRet.trim().length() == 0 ) 
 			sRet = null; 
+		return sRet;
+	}
+
+	public static String getZohoHost() {
+		return "smtp.zoho.com";
+	}
+
+	public static String getZohoPort() {
+		return "587";
+	}
+
+	public static String getZohoSecurity() {
+		return "STARTTLS";
+	}
+
+	public static String getZohoDomain() {
+		return "@mminformatics.com";
+	}
+
+	public static String getZohoFrom() {
+		return "civet@mminformatics.com";
+	}
+
+	public static String getZohoUser() {
+		return "civet@mminformatics.com";
+	}
+	public static String getZohoPass() {
+		return "I2nuHru*N7*G*J|FV&R+ES@" + getZohoKey();
+	}
+	
+	public static String getSmtpHost() {
+		String sRet = props.getProperty("smtpHost");
+		if( sRet != null && sRet.trim().length() == 0 ) {
+			sRet = null; // Do not provide default value so we can differentiate.
+		}
 		return sRet;
 	}
 	
 	public static String getSmtpPort() {
 		String sRet = props.getProperty("smtpPort");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("smtpPort");
-		if( sRet != null && sRet.trim().length() == 0 ) 
+		if( sRet == null || sRet.trim().length() == 0 ) 
+			sRet = getZohoPort();
+		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = null; 
 		return sRet;
 	}
 
 	public static String getSmtpSecurity() {
 		String sRet = props.getProperty("smtpSecurity");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("smtpSecurity");
-		if( sRet != null && sRet.trim().length() == 0 ) 
+		if( sRet == null || sRet.trim().length() == 0 ) 
+			sRet = getZohoSecurity();
+		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = null; 
 		return sRet;
 	}
@@ -287,7 +323,8 @@ public class CivetConfig {
 	public static int getSmtpPortInt() {
 		int iRet = -1;
 		String sRet = props.getProperty("smtpPort");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("smtpPorty");
+		if( sRet == null || sRet.trim().length() == 0 ) 
+			sRet = getZohoPort();
 		try {
 			iRet = Integer.parseInt(sRet);
 		} catch( NumberFormatException nfe ) {
@@ -300,8 +337,9 @@ public class CivetConfig {
 	
 	public static String getSmtpDomain() {
 		String sRet = props.getProperty("smtpDomain");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("smtpDomain");
-		if( sRet != null && sRet.trim().length() == 0 ) 
+		if( sRet == null || sRet.trim().length() == 0 ) 
+			sRet = getZohoDomain();
+		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = null; 
 		return sRet;
 	}
@@ -321,7 +359,9 @@ public class CivetConfig {
 	public static String getEmailFrom() {
 		String sRet = null;
 		sRet = props.getProperty("emailFrom");
-		if( sRet != null && sRet.trim().length() == 0 ) 
+		if( sRet == null || sRet.trim().length() == 0 ) 
+			sRet = getZohoFrom();
+		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = null; 
 		return sRet;
 	}
@@ -497,26 +537,41 @@ public class CivetConfig {
 	
 	public static boolean initEmail(boolean bLogin) {
 		boolean bRet = true;
-		String sUserID = MailMan.getDefaultUserID();
-		if( (MailMan.getDefaultUserID() == null || MailMan.getDefaultPassword() == null) && bLogin ) {
-			TwoLineQuestionDialog ask = new TwoLineQuestionDialog( "Civet Email Login:",
-					"Email UserID:", "Email Password:", true);
-			ask.setPassword(true);
-			ask.setVisible(true);
-			if( ask.isExitOK() ) {
-				sUserID = ask.getAnswerOne();
-				MailMan.setDefaultUserID(sUserID);
-				MailMan.setDefaultPassword(ask.getAnswerTwo());
-				bRet = true;
-			}
-			else {
-				bRet = false;
+		String sUserID = null;
+		String sZohoKey = getZohoKey();
+		String sSmtpHost = getSmtpHost();
+		if( sSmtpHost == null && sZohoKey == null ) {
+			logger.info("No email setup.  Either smtpHost or zohoKey is required to use email features.");
+			return false;
+		}
+		if( sSmtpHost != null ) {
+			MailMan.setDefaultHost(CivetConfig.getSmtpHost());
+			sUserID = MailMan.getDefaultUserID();
+			if( (MailMan.getDefaultUserID() == null || MailMan.getDefaultPassword() == null) && bLogin ) {
+				TwoLineQuestionDialog ask = new TwoLineQuestionDialog( "Civet Email Login:",
+						"Email UserID:", "Email Password:", true);
+				ask.setPassword(true);
+				ask.setVisible(true);
+				if( ask.isExitOK() ) {
+					sUserID = ask.getAnswerOne();
+					MailMan.setDefaultUserID(sUserID);
+					MailMan.setDefaultPassword(ask.getAnswerTwo());
+					bRet = true;
+				}
+				else {
+					bRet = false;
+				}
 			}
 		}
-		MailMan.setDefaultHost(CivetConfig.getSmtpHost());
+		else if( sZohoKey != null ) {
+			MailMan.setDefaultHost(CivetConfig.getZohoHost());
+			sUserID = CivetConfig.getZohoUser();
+			String sPassword = CivetConfig.getZohoPass();
+			MailMan.setDefaultUserID(sUserID);
+			MailMan.setDefaultPassword(sPassword);
+		}
 		MailMan.setDefaultPort(CivetConfig.getSmtpPortInt());
-		String sSecurity = CivetConfig.getSmtpSecurity();
-		MailMan.setSecurity(sSecurity);
+		MailMan.setSecurity(CivetConfig.getSmtpSecurity());
 		String sFrom = CivetConfig.getEmailFrom();
 		if( sFrom != null )
 			MailMan.setDefaultFrom(sFrom);
@@ -529,7 +584,6 @@ public class CivetConfig {
 		String sReplyTo = CivetConfig.getEmailReplyTo();
 		if( sReplyTo != null )
 			MailMan.setDefaultReplyTo(sReplyTo);
-
 		return bRet;
 	}
 
@@ -1093,16 +1147,6 @@ public class CivetConfig {
 		if( sRet == null || sRet.trim().length() == 0 ) return ("homeStateKey");
 		sRet = props.getProperty("cviValidDays");
 		if( sRet == null || sRet.trim().length() == 0 ) return ("cviValidDays");
-		sRet = props.getProperty("smtpHost");
-		if( sRet == null || sRet.trim().length() == 0 ) return ("smtpHost");
-		sRet = props.getProperty("smtpPort");
-		if( sRet == null || sRet.trim().length() == 0 ) return ("smtpPort");
-		sRet = props.getProperty("smtpSecurity");
-		if( sRet == null || sRet.trim().length() == 0 ) return ("smtpIsTls");
-		sRet = props.getProperty("smtpPort");
-		if( sRet == null || sRet.trim().length() == 0 ) return ("smtpPorty");
-		sRet = props.getProperty("smtpDomain");
-		if( sRet == null || sRet.trim().length() == 0 ) return ("smtpDomain");
 		sRet = props.getProperty("herdsWebServiceURL");
 		if( sRet == null || sRet.trim().length() == 0 ) return ("herdsWebServiceURL");
 		sRet = props.getProperty("InputDirPath");

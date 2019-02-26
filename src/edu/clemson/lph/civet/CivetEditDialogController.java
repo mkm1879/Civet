@@ -793,32 +793,6 @@ public final class CivetEditDialogController {
 		traversal.setFirstComponent("OtherState");
 		dlg.setFocusTraversalPolicy(traversal);
 	}
-
-	/**
-	 * Default save action for currently loaded model and form.
-	 */
-	private void doSave() {
-		try {
-			// If save() finds errors be sure form is editable so they can be corrected.
-			dlg.setFormEditable( false );
-			currentFile.setCurrentPagesDone();
-			setFileCompleteStatus();
-			if( save() ) {
-				if( pushFileComplete() ) {
-					doCleanup();
-					dlg.setVisible(false);
-					dlg.dispose();
-				}
-				else {
-					dlg.setFormEditable( true );
-				}
-			}
-		} catch (SourceFileException e) {
-			String sCVINo = dlg.jtfCVINo.getText();
-			MessageDialog.showMessage(getDialog(), "Civet Error", "Failed to save Certificate number " + sCVINo);
-			logger.error(e);
-		}
-	}
 	
 	private void setFileCompleteStatus() {
 		if( !currentFile.getSource().canSplit() // File goes as a whole
@@ -1631,13 +1605,37 @@ public final class CivetEditDialogController {
 		}
 	}
 
-	/** 
-	 * The NORMAL Save Mode is to save the model and current file.
-	 * @throws SourceFileException 
+	/**
+	 * Default save action for currently loaded model and form.
 	 */
-	private boolean save() throws SourceFileException {
-		return save(currentFile.cloneCurrentState());
+	private void doSave() {
+		try {
+			// If save() finds errors be sure form is editable so they can be corrected.
+			dlg.setFormEditable( false );
+			currentFile.setCurrentPagesDone();
+			setFileCompleteStatus();
+			OpenFile fileToSave = currentFile.cloneCurrentState();
+			if( save(fileToSave) ) {
+				if( pushFileComplete() ) {
+					doCleanup();
+					dlg.setVisible(false);
+					dlg.dispose();
+				}
+				else {
+					dlg.setFormEditable( true );
+				}
+			}
+			else {
+				dlg.setFormEditable(true);
+			}
+
+		} catch (SourceFileException e) {
+			String sCVINo = dlg.jtfCVINo.getText();
+			MessageDialog.showMessage(getDialog(), "Civet Error", "Failed to save Certificate number " + sCVINo);
+			logger.error(e);
+		}
 	}
+
 	/** 
 	 * Specify the OpenFile and model to save for use in split files.
 	 * @throws SourceFileException 
@@ -1647,11 +1645,13 @@ public final class CivetEditDialogController {
 			if( sCVINo.equalsIgnoreCase(sPrevCVINo) ) {
 				MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " hasn't changed since last save");
 				dlg.jtfCVINo.requestFocus();
+				dlg.setFormEditable(true);
 				return false;
 			}
 			if( CertificateNbrLookup.certficateNbrExists(dlg.jtfCVINo.getText()) ) {
 				MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " already exists");
 				dlg.jtfCVINo.requestFocus();
+				dlg.setFormEditable(true);
 				return false;
 			}
 		// Collect up all values needed
@@ -1695,6 +1695,7 @@ public final class CivetEditDialogController {
 		String sIssuedByName = dlg.jtfIssuedBy.getText();
 		if( !bInbound && (iIssuedByKey == null || iIssuedByKey == -1) ) {
 			MessageDialog.showMessage(dlg, "Civet Error", "Issuing Veterinarian is required");
+			dlg.setFormEditable(true);
 			return false;
 		}
 		updateSpeciesList(false);
@@ -1710,6 +1711,7 @@ public final class CivetEditDialogController {
 			if( dDateReceived == null ) 
 				sFields += " Date Received,";
 			MessageDialog.showMessage(dlg, "Civet Error", "One or more required fields:" + sFields + " are empty");
+			dlg.setFormEditable(true);
 			return false;
 		}
 
@@ -2036,7 +2038,7 @@ public final class CivetEditDialogController {
 		// Make sure spelling matches HERDS if possible
 		sOriginCounty = Counties.getHerdsCounty(sOriginStateCode, sOriginCounty);
 		sDestinationCounty = Counties.getHerdsCounty(sDestinationStateCode, sDestinationCounty); 
-		model.setCviNumber(sCVINo);
+		model.setCertificateNumber(sCVINo);
 		model.setIssueDate(dDateIssued);
 		if( !bIsDataFile ) {  // Don't override vet that signed XFA or mCVI or V2 document
 			if( bImport ) {
@@ -2109,10 +2111,9 @@ public final class CivetEditDialogController {
 //		Precondition model contains the current page or pages in the attachment
 //      Precondition model contains metadata for errors saved from the add errors dialog.
 		model.setDefaultAnimalInspectionDates(dDateIssued);
-		model.setCertificateNumber(sCVINo);
 		model.setBureauReceiptDate(dDateReceived);
 		String sCVINbrSource = CviMetaDataXml.CVI_SRC_CIVET;
-		model.setCVINumberSource(sCVINbrSource);
+		model.setCertificateNumberSource(sCVINbrSource);
 	}
 
 }

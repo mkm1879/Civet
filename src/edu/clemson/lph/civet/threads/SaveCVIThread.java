@@ -258,7 +258,7 @@ public class SaveCVIThread extends Thread {
 		// Make sure spelling matches HERDS if possible
 		sOriginCounty = Counties.getHerdsCounty(sOriginStateCode, sOriginCounty);
 		sDestinationCounty = Counties.getHerdsCounty(sDestinationStateCode, sDestinationCounty); 
-		model.setCviNumber(sCVINo);
+		model.setCertificateNumber(sCVINo);
 		model.setIssueDate(dDateIssued);
 		if( !bIsDataFile ) {  // Don't override vet that signed XFA or mCVI or V2 document
 			if( bImport ) {
@@ -333,7 +333,7 @@ public class SaveCVIThread extends Thread {
 		model.setDefaultAnimalInspectionDates(dDateIssued);
 		model.setCertificateNumber(sCVINo);
 		model.setBureauReceiptDate(dDateReceived);
-		model.setCVINumberSource(sCVINbrSource);
+		model.setCertificateNumberSource(sCVINbrSource);
 		return model.getXMLString();
 	}
 	

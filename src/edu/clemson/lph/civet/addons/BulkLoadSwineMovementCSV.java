@@ -153,7 +153,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 		String sLast = tok.nextToken();
 		VetLookup vetLookup = new VetLookup( sLast, sFirst );
 		String sCviNumber = getCVINumber(data);
-		xmlModel.setCviNumber(sCviNumber);
+		xmlModel.setCertificateNumber(sCviNumber);
 		xmlModel.setIssueDate(data.getDate());
 		if( data.getSourceState().equalsIgnoreCase(CivetConfig.getHomeStateAbbr()) && vetLookup != null ) {
 			NameParts parts = new NameParts(null, vetLookup.getFirstName(), null, vetLookup.getLastName(), null );

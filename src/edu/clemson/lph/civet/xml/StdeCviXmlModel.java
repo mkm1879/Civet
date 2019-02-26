@@ -149,10 +149,6 @@ public class StdeCviXmlModel {
 		}
 	}
 
-	public void setCviNumber( String sCVINo ) {
-		helper.setAttribute(helper.getRootElement(), "CviNumber", sCVINo);
-	}
-	
 	private boolean isValidDoc() {
 		return helper != null && helper.isInitialized();
 	}
@@ -1438,14 +1434,14 @@ public class StdeCviXmlModel {
 	
 	public String getCertificateNumber() {
 		String sRet = null;
-		String sPath = "/eCVI";
+		String sPath = ".";
 		String sAttr = "CviNumber";
 		sRet = helper.getAttributeByPath(sPath,sAttr);
 		return sRet;
 	}
 	
 	public void setCertificateNumber(String sCertificateNbr) {
-		String sPath = "/eCVI";
+		String sPath = ".";
 		String sAttr = "CviNumber";
 		helper.setAttributeByPath(sPath, sAttr, sCertificateNbr);
 		CviMetaDataXml meta = getMetaData();
@@ -1455,7 +1451,7 @@ public class StdeCviXmlModel {
 	
 	public java.util.Date getIssueDate() {
 		java.util.Date dRet = null;
-		String sPath = "/eCVI";
+		String sPath = ".";
 		String sAttr = "IssueDate";
 		String sDate = helper.getAttributeByPath(sPath,sAttr);
 		if( sDate != null && sDate.trim().length() > 0 )
@@ -1476,7 +1472,7 @@ public class StdeCviXmlModel {
 		return metaData;
 	}
 	
-	public void setCVINumberSource(String sCVINbrSource) {
+	public void setCertificateNumberSource(String sCVINbrSource) {
 		CviMetaDataXml meta = getMetaData();
 		meta.setCVINumberSource(sCVINbrSource);
 		binaries.addOrUpdateMetadata(meta);		

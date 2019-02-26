@@ -220,7 +220,7 @@ public class SubmitNineDashThreeThread extends Thread {
 		}
 		else if( sDestinationStateCode == null || sDestinationStateCode.trim().length() == 0 )
 			sDestinationStateCode = CivetConfig.getHomeStateAbbr();
-		xmlModel.setCviNumber(sCVINo);
+		xmlModel.setCertificateNumber(sCVINo);
 		xmlModel.setIssueDate(dDateIssued);
 		xmlModel.setVet("NPIP");
 		// Expiration date will be set automatically from getXML();

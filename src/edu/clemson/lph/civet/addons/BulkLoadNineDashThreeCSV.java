@@ -262,7 +262,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			}
 			else if( sConsigneeState == null || sConsigneeState.trim().length() == 0 )
 				sConsigneeState = CivetConfig.getHomeStateAbbr();
-			xmlModel.setCviNumber(sCVINumber);
+			xmlModel.setCertificateNumber(sCVINumber);
 			xmlModel.setIssueDate(data.getInspectionDate());
 			xmlModel.setVet("NPIP");
 			// Expiration date will be set automatically from getXML();
