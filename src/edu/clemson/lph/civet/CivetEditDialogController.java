@@ -127,6 +127,7 @@ public final class CivetEditDialogController {
 	private Component cStartingComponentFocus = null;
 
 	VetLookup vetLookup;
+	private boolean bInCleanup = false;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -137,7 +138,7 @@ public final class CivetEditDialogController {
 		this.dlg = dlg;
 		this.filesToOpen = files;
 		this.viewer = new PDFViewer();
-		this.saveQueue = new OpenFileSaveQueue();
+		this.saveQueue = new OpenFileSaveQueue(this);  // Queue needs reference for call-back from thread complete.
 		viewer.alterRotation(CivetConfig.getRotation());  // Not sure why inverted relative to acrobat.
 		// Run various initialization routines that are not dependent on current file
 		initializeActionHandlers();
@@ -803,7 +804,7 @@ public final class CivetEditDialogController {
 			currentFile.setCurrentPagesDone();
 			setFileCompleteStatus();
 			if( save() ) {
-				if( saveComplete() ) {
+				if( pushFileComplete() ) {
 					doCleanup();
 					dlg.setVisible(false);
 					dlg.dispose();
@@ -977,10 +978,26 @@ public final class CivetEditDialogController {
 		}
 	}
 	
+	/**
+	 * The queue saves files as they are pushed out of the top spot but also when we 
+	 * explicitly call flush() during cleanup.  Only do the post flush stuff when
+	 * in cleanup.
+	 */
 	private void doCleanup() {
+		bInCleanup = true;
 		saveQueue.flush();
-		moveCompletedFiles();
-		CivetInboxController.getCivetInboxController().refreshTables();
+	}
+	
+	/**
+	 * Called each time the Queue saves a file.  Only respond to the final save
+	 * to move the saved files and refresh the inbox.
+	 */
+	public void saveComplete() {
+		if( bInCleanup) {
+			moveCompletedFiles();
+			CivetInboxController.getCivetInboxController().refreshTables();
+			bInCleanup = false;
+		}
 	}
 
 	public boolean isReopened() {
@@ -1724,7 +1741,7 @@ public final class CivetEditDialogController {
 	 * TODO Decide if the next page MIGHT be part of the just saved CVI and offer correct choices.
 	 * @return boolean true if all files complete
 	 */
-	private boolean saveComplete() {
+	private boolean pushFileComplete() {
 		try {
 			// Only on multipage PDF do we page forward on save
 			if( currentFile.getSource().canSplit() && currentFile.morePagesForward(true) ) {
@@ -1748,7 +1765,7 @@ public final class CivetEditDialogController {
 		return false;
 	}
 	
-	private void moveCompletedFiles() {
+	public void moveCompletedFiles() {
 		int iFiles = openFileList.moveCompleteFiles();
 		String sDirOut = CivetConfig.getOutputDirPath();
     	if( iFiles > 0 )

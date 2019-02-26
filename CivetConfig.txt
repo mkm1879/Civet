@@ -22,11 +22,11 @@ autoOpenPdf=yes
 checkAccreditationStatus=TRUE
 
 #Email
-smtpHost=smtp.googlemail.com
+smtpHost=smtp.zoho.com
 smtpPort=587
 smtpSecurity=STARTTLS
-smtpDomain=@gmail.com
-emailFrom=whoever@gmail.com
+smtpDomain=@mminformatics.com
+emailFrom=civet@mminformatics.com
 emailReplyTo=
 emailTestTo=mkm1879@gmail.com
 emailCopyTo=mkm1879@gmail.com

@@ -1,9 +1,7 @@
 package edu.clemson.lph.civet.threads;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.swing.SwingUtilities;
@@ -11,7 +9,6 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetEditDialog;
 import edu.clemson.lph.civet.files.OpenFile;
 import edu.clemson.lph.civet.files.OpenFileSaveQueue;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -47,13 +44,12 @@ public class SaveCVIModelThread extends Thread {
 			logger.error(ex);
 		}
 	    finally {
-	    	
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					queue.saveComplete();
+				}
+			});
 	    }
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				queue.saveComplete();
-			}
-		});
 	}
 
 	
@@ -108,8 +104,10 @@ public class SaveCVIModelThread extends Thread {
 	
 	
 	private void saveXml(String sStdXml) {
-		final String sFilePath = CivetConfig.getToFileDirPath() + sXmlFileName;
-		final File fileOut = new File(sFilePath);
+		String sDirPath = CivetConfig.getToFileDirPath();
+		File fDir = new File(sDirPath);
+		final File fileOut = new File(fDir, sXmlFileName);
+		final String sFilePath = fileOut.getAbsolutePath();
 		try {
 			PrintWriter pw = new PrintWriter( new FileOutputStream( fileOut ) );
 			pw.print(sStdXml);
@@ -127,15 +125,22 @@ public class SaveCVIModelThread extends Thread {
 	}
 	
 	private void saveEmail(String sStdXml) {
+		File fileOut = null;
 		String sFilePath = null;
-		if( modelToSave.isExport() ) 
-			sFilePath = CivetConfig.getEmailOutDirPath() + sXmlFileName;
+		if( modelToSave.isExport() ) {
+			String sDirPath = CivetConfig.getEmailOutDirPath();
+			File fDir = new File(sDirPath);
+			fileOut = new File(fDir, sXmlFileName);
+			sFilePath = fileOut.getAbsolutePath();
+		}
 		else if( modelToSave.hasErrors() ) {
-			sFilePath = CivetConfig.getEmailErrorsDirPath() + sXmlFileName;
+			String sDirPath =  CivetConfig.getEmailErrorsDirPath();
+			File fDir = new File(sDirPath);
+			fileOut = new File(fDir, sXmlFileName);
+			sFilePath = fileOut.getAbsolutePath();
 		}
 		if( sFilePath == null ) 
 			return;
-		File fileOut = new File(sFilePath);
 		try {
 			PrintWriter pw = new PrintWriter( new FileOutputStream( fileOut ) );
 			pw.print(sStdXml);

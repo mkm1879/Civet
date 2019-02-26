@@ -3,6 +3,7 @@ package edu.clemson.lph.civet.files;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.CivetEditDialogController;
 import edu.clemson.lph.civet.threads.SaveCVIModelThread;
 
 /**
@@ -13,9 +14,10 @@ public class OpenFileSaveQueue {
 	private volatile boolean bInSave = false;
 	private OpenFile fileOut = null;
 	private OpenFile fileIn = null;
+	private CivetEditDialogController controller;
 
-	public OpenFileSaveQueue() {
-		// TODO Auto-generated constructor stub
+	public OpenFileSaveQueue(CivetEditDialogController controller ) {
+		this.controller = controller;
 	}
 	
 	@Override protected void finalize() throws Throwable {
@@ -58,6 +60,7 @@ public class OpenFileSaveQueue {
 	
 	public synchronized void saveComplete() {
 		bInSave = false;
+		controller.saveComplete();
 	}
 
 	private synchronized void save(OpenFile fileOut) {
