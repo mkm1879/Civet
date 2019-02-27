@@ -1221,6 +1221,32 @@ public final class CivetEditDialogController {
 			return false;
 		return sLid.startsWith(sThisStateCode);
 	}
+	
+	private boolean hasData() {
+		if( dlg.jtfCVINo.getText().trim().length() > 0 ) return true;
+		if( aSpecies.size() > 0 ) return true; 
+		if( dlg.cbOtherState.getSelectedIndex() > 0 ) return true;
+		if( dlg.jtfOtherName.getText().trim().length() > 0 ) return true;
+		if( dlg.jtfOtherAddress.getText().trim().length() > 0 ) return true;
+		if( dlg.jtfOtherCity.getText().trim().length() > 0 ) return true;
+		if( dlg.cbOtherCounty.getSelectedIndex() > 0 ) return true;
+		if( dlg.jtfOtherZip.getText().trim().length() > 0 ) return true;
+		if( dlg.jtfThisPIN.getText().trim().length() > 0 ) return true;
+		if( dlg.jtfThisName.getText().trim().length() > 0 ) return true;
+		if( dlg.jtfPhone.getText().trim().length() > 0 ) return true;
+		if( dlg.jtfAddress.getText().trim().length() > 0 ) return true;
+		if( dlg.jtfThisCity.getText().trim().length() > 0 ) return true;
+		if( dlg.cbThisCounty.getSelectedIndex() > 0  ) return true;
+		if( dlg.jtfZip.getText().trim().length() > 0 ) return true;
+		if( dlg.jtfDateInspected.getText().trim().length() > 0 ) return true;
+		if( dlg.jtfDateReceived.getText().trim().length() > 0 ) return true;
+		if( dlg.jtfCVINo.getText().trim().length() > 0 ) return true;
+		if( dlg.cbSpecies.getSelectedIndex() > 0  ) return true;
+		if( dlg.jtfNumber.getText().trim().length() > 0 ) return true;
+		if( dlg.cbIssuedBy.getSelectedIndex() > 0  ) return true;
+		if( dlg.jtfIssuedBy.getText().trim().length() > 0 ) return true;
+		return false;
+	}
 
 	/**
 	 * Clearing the form is complicated by various modes and settings.
@@ -1789,6 +1815,15 @@ public final class CivetEditDialogController {
 	}
 
 	void rbOutbound_actionPerformed(ActionEvent e) {
+		if( hasData() ) {
+			YesNoDialog yn = new YesNoDialog( dlg, "Civet: Reverse", "All data will be lost.\nDo you want to reverse direction?");
+			yn.setVisible(true);
+			boolean bOK = yn.getAnswer();
+			if( !bOK )
+				return;
+			clearForm();
+			currentFile.getModel().clear();
+		}
 		dlg.setImport( false );
 		dlg.cbOtherState.setSelectedIndex(0);
 		dlg.cbOtherState.setEnabled(true);
@@ -1798,16 +1833,33 @@ public final class CivetEditDialogController {
 	}
 
 	void rbInbound_actionPerformed(ActionEvent e) {
+		if( hasData() ) {
+			YesNoDialog yn = new YesNoDialog( dlg, "Civet: Reverse", "All data will be lost.\nDo you want to reverse direction?");
+			yn.setVisible(true);
+			boolean bOK = yn.getAnswer();
+			if( !bOK )
+				return;
+			clearForm();
+			currentFile.getModel().clear();
+		}
 		dlg.setImport( true );
 		dlg.cbOtherState.setSelectedIndex(0);
 		dlg.cbOtherState.setEnabled(true);
 		Component c = traversal.getComponentByName(traversal.getProperty("pFirstControl"));
 		if( c != null)
 			c.requestFocus();
-
 	}
 
 	void rbInState_actionPerformed(ActionEvent e) {
+		if( hasData() ) {
+			YesNoDialog yn = new YesNoDialog( dlg, "Civet: Reverse", "All data will be lost.\nDo you want to reverse direction?");
+			yn.setVisible(true);
+			boolean bOK = yn.getAnswer();
+			if( !bOK )
+				return;
+			clearForm();
+			currentFile.getModel().clear();
+		}
 		dlg.setImport( false );
 		dlg.cbOtherState.setSelectedValue(CivetConfig.getHomeState());
 		dlg.cbOtherState.setEnabled(false);

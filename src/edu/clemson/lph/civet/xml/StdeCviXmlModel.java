@@ -125,6 +125,19 @@ public class StdeCviXmlModel {
 		createModel(sXML);
 	}
 	
+	/**
+	 * Destroy all data and start clean!
+	 */
+	public void clear() {
+		DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		Document doc = db.newDocument();
+		doc.setXmlStandalone(true);
+		Element root = doc.createElementNS("http://www.usaha.org/xmlns/ecvi2", "eCVI");
+		doc.appendChild(root);
+		helper = new XMLDocHelper( doc, root );
+		binaries = new StdeCviBinaries( helper );
+		metaData = new CviMetaDataXml();
+	}
 
 	/** 
 	 * Create an XML document from the raw XML string.  
@@ -181,6 +194,9 @@ public class StdeCviXmlModel {
 	 * @return
 	 */
 	public Element setVet( String sName ) {
+		Element eVet = getVetElement();
+		if( eVet != null )
+			helper.removeElement(eVet);
 		Person vetPerson = new Person(sName, null, null);
 		Veterinarian vet = new Veterinarian(vetPerson, null, null, null, null );
 		return setVet(vet);
@@ -224,6 +240,13 @@ public class StdeCviXmlModel {
 				helper.setAttribute(phone, "Number", vet.person.phone);
 			}	
 		}
+		return eVet;
+	}
+	
+	
+	public Element getVetElement() {
+		Veterinarian vet = null;
+		Element eVet = helper.getElementByName("Veterinarian");
 		return eVet;
 	}
 	
