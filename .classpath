@@ -18,10 +18,8 @@
 	<classpathentry kind="lib" path="lib/itextpdf-5.5.4.jar"/>
 	<classpathentry kind="lib" path="lib/jai_codec.jar"/>
 	<classpathentry kind="lib" path="lib/jai_core.jar"/>
-	<classpathentry kind="lib" path="lib/jai-imageio_idrsolutionBuild.jar"/>
 	<classpathentry kind="lib" path="lib/javax.json-1.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/javax.json-api-1.0.jar"/>
-	<classpathentry kind="lib" path="lib/jpedal.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="lib/mail-1.4.7.jar"/>
 	<classpathentry kind="lib" path="lib/neethi-3.0.2.jar"/>
@@ -33,5 +31,8 @@
 	<classpathentry kind="lib" path="lib/httpcore-4.4.6.jar"/>
 	<classpathentry kind="lib" path="lib/httpmime-4.5.3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/jpedal.jar"/>
+	<classpathentry kind="lib" path="lib/jpedal_LGPL.jar"/>
+	<classpathentry kind="lib" path="lib/jai_imageio-1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

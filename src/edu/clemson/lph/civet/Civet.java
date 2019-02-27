@@ -69,8 +69,8 @@ public class Civet {
 		}
 		StdErrLog.tieSystemErrToLog();
 		CivetConfig.validateHerdsCredentials();
-		if( !CivetInbox.VERSION.contains("XFA") )
-			System.setProperty("org.jpedal.jai","true");
+//		if( !CivetInbox.VERSION.contains("XFA") )
+//			System.setProperty("org.jpedal.jai","true");
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {

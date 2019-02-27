@@ -7,6 +7,7 @@ import org.jpedal.objects.PdfPageData;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.QuestionDialog;
 
 /**
@@ -101,9 +102,17 @@ public class PDFViewer {
 				PDFOpener opener = new PDFOpener(null);
 				opener.openPDFContentInAcrobat(pdfBytes);
 		}
+		else if( bXFA && !CivetConfig.isJPedalXFA() ) {
+			MessageDialog.showMessage(null, "Civet: No XFA", "Civet cannot display CO/KS XFA PDFs without JPedal license");
+			closePdfFile();
+		}
 		else {
-			pdfDecoder.decodePage(iPageNo);
-			updatePdfDisplay();
+			try {
+				pdfDecoder.decodePage(iPageNo);
+				updatePdfDisplay();
+			} catch (Exception e) {
+				logger.error(e);
+			}
 		}
 	}
 

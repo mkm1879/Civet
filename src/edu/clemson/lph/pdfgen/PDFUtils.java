@@ -18,6 +18,7 @@ You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -71,7 +72,7 @@ public class PDFUtils {
 		}
 		return bRet;
 	}// End decode pages to new PDF
-	
+		
 	/**
 	 * Use iText 5.x to determine whether a PDF contains an XFA form.
 	 * @param pdfDataIn
