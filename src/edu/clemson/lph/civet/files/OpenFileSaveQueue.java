@@ -15,9 +15,11 @@ public class OpenFileSaveQueue {
 	private OpenFile fileOut = null;
 	private OpenFile fileIn = null;
 	private CivetEditDialogController controller;
+	private volatile int iThreads = 0;
 
 	public OpenFileSaveQueue(CivetEditDialogController controller ) {
 		this.controller = controller;
+		iThreads = 0;
 	}
 	
 	@Override protected void finalize() throws Throwable {
@@ -28,15 +30,7 @@ public class OpenFileSaveQueue {
 	public void push( OpenFile openFile ) {
 		if( fileIn != null ) {
 			fileOut = fileIn;
-			synchronized( this ) {
-				while( bInSave ) {
-					try {
-						wait(100);
-					} catch (InterruptedException e) {
-						// Just ignore
-					}
-				}
-			}
+			iThreads++;
 			save(fileOut);
 			fileOut = null;
 		}
@@ -53,17 +47,23 @@ public class OpenFileSaveQueue {
 		if( fileIn != null ) {
 			fileOut = fileIn;
 			fileIn = null;
+			iThreads++;
 			save( fileOut );
 			fileOut = null;
 		}
 	}
 	
-	public synchronized void saveComplete() {
+	public void saveComplete() {
 		bInSave = false;
-		controller.saveComplete();
+		iThreads--;
+		if( iThreads == 0 )
+			controller.saveComplete();
+		if( iThreads < 0 ) {
+			logger.error("Lost thread count");
+		}
 	}
 
-	private synchronized void save(OpenFile fileOut) {
+	private void save(OpenFile fileOut) {
 		bInSave = true;
 		SaveCVIModelThread saveThread = new SaveCVIModelThread( this, fileOut);
 		saveThread.start();

@@ -118,7 +118,6 @@ public class OpenFileList {
 		oRet = nextFileForward(bIncompleteOnly);
 		if( oRet == null )
 			oRet = nextFileBack(bIncompleteOnly);
-		aFilesComplete.add(oCurrent);
 		oCurrent = oRet;
 		return oRet;
 	}

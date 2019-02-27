@@ -1,5 +1,6 @@
 package edu.clemson.lph.civet.threads;
 
+import java.awt.Window;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -14,6 +15,7 @@ import edu.clemson.lph.civet.files.OpenFileSaveQueue;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.dialogs.MessageDialog;
+import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.FileUtils;
 
 public class SaveCVIModelThread extends Thread {

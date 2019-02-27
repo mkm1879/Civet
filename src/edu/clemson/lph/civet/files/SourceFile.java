@@ -212,8 +212,6 @@ public abstract class SourceFile {
 		boolean bRet = false;
 		File fNew = new File(fDir, getFileName());
 		if( fNew.exists() ) {
-			logger.error(fNew.getName() + " already exists in " + fDir.getAbsolutePath() + "\n" +
-						"Check that it really is a duplicate and manually delete.");
 			String sOutPath = fNew.getAbsolutePath();
 			sOutPath = FileUtils.incrementFileName(sOutPath);
 			logger.error(fNew.getName() + " already exists in " + fDir.getAbsolutePath() + "\n" +

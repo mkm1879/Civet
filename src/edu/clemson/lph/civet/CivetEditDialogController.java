@@ -78,6 +78,7 @@ import edu.clemson.lph.civet.xml.elements.SpeciesCode;
 import edu.clemson.lph.civet.xml.elements.Veterinarian;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.OneLineQuestionDialog;
+import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.dialogs.YesNoDialog;
 import edu.clemson.lph.pdfgen.PDFOpener;
 import edu.clemson.lph.pdfgen.PDFViewer;
@@ -806,11 +807,11 @@ public final class CivetEditDialogController {
 	private void doAddToPrevious() {
 		try {
 			int iCurrentPage = currentFile.getCurrentPageNo();
-			OpenFile prevFile = currentFile;
-			currentFile = saveQueue.pop();
-			openFileList.replaceFile(prevFile, currentFile);
-			populateFromStdXml( currentFile.getModel() );
-			currentFile.addPageToCurrent(iCurrentPage);
+			OpenFile prevFile = currentFile; // reference to file in OpenFileList
+			currentFile = saveQueue.pop();   // retrieve the previously "saved" file
+			openFileList.replaceFile(prevFile, currentFile); // put the saved version in the list
+			populateFromStdXml( currentFile.getModel() ); // populate the form
+			currentFile.addPageToCurrent(iCurrentPage); // add the new page.  Is the old page marked complete?
 			sPrevCVINo = null;  // Disable duplicate check because it will be the saved one.
 			viewer.viewPage(iCurrentPage); 
 			viewer.updatePdfDisplay();
@@ -969,6 +970,7 @@ public final class CivetEditDialogController {
 			CivetInboxController.getCivetInboxController().refreshTables();
 			bInCleanup = false;
 		}
+		prog.setVisible(false);
 	}
 
 	public boolean isReopened() {
@@ -1601,12 +1603,19 @@ public final class CivetEditDialogController {
 			setActiveSpecies( dlg.getSelectedSpecies() );
 		}
 	}
+	
+	private ProgressDialog prog = null;
 
 	/**
 	 * Default save action for currently loaded model and form.
 	 */
 	private void doSave() {
 		try {
+			if( prog == null ) {
+				// Note running on dispatch thread so won't update window contents, just frame.
+				prog = new ProgressDialog(dlg, "Civet: Saving Page", "Saving Page");  
+			}
+			prog.setVisible(true);
 			// If save() finds errors be sure form is editable so they can be corrected.
 			dlg.setFormEditable( false );
 			currentFile.setCurrentPagesDone();
@@ -1745,6 +1754,7 @@ public final class CivetEditDialogController {
 			// Only on multipage PDF do we page forward on save
 			if( currentFile.getSource().canSplit() && currentFile.morePagesForward(true) ) {
 				currentFile.pageForward(true);
+				currentFile.addPageToCurrent(currentFile.getCurrentPageNo());
 				viewer.viewPage(currentFile.getCurrentPageNo());
 			}
 			// Backup to get skipped pages?  Not currently.
@@ -1761,6 +1771,7 @@ public final class CivetEditDialogController {
 			// TODO Auto-generated catch block
 			logger.error(e);
 		}
+		prog.setVisible(false);
 		return false;
 	}
 	

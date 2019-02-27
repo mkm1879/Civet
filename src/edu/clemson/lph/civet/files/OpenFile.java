@@ -198,7 +198,8 @@ public class OpenFile {
 	public void addPageToCurrent(int iPage) throws SourceFileException {
 		if( source.canSplit() ) {
 			source.addPageToCurrent(iPage);
-			aPagesInCurrent.add(iPage);
+			if( !aPagesInCurrent.contains(iPage) )
+				aPagesInCurrent.add(iPage);
 		}
 		else {
 			throw new SourceFileException("addPageToCurrent called on non-splittable source");
@@ -214,7 +215,10 @@ public class OpenFile {
 	}
 	
 	public void setCurrentPagesDone() {
-		aPagesDone.addAll(aPagesInCurrent);
+		for( Integer iPage : aPagesInCurrent ) {
+			if( !aPagesDone.contains(iPage) )
+				aPagesDone.add(iPage);
+		}
 	}
 
 	
