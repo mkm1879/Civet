@@ -795,10 +795,11 @@ public final class CivetEditDialogController {
 	private void setFileCompleteStatus() {
 		if( !currentFile.getSource().canSplit() // File goes as a whole
 				|| (!currentFile.morePagesForward(true) && !currentFile.morePagesBack(true)) ) { // or no pages left
-			openFileList.markFileComplete(currentFile);
+			if( !isReopened() )
+				openFileList.markFileComplete(currentFile);
 		}
 	}
-	
+
 	
 	/**
 	 * Add the currently displayed page to model retained 
@@ -974,10 +975,12 @@ public final class CivetEditDialogController {
 	}
 
 	public boolean isReopened() {
-		String sCurrentPath = currentFile.getSource().getFilePath();
-		String sCurrentDir = sCurrentPath.substring(0,sCurrentPath.lastIndexOf('\\')+1);
-		// This is a huge kluge to detect that we are reopening a toBeFiled stdXML
-	    return( sCurrentDir.equalsIgnoreCase(CivetConfig.getToFileDirPath()) );
+		boolean bRet = false;
+		String sInDir = CivetConfig.getInputDirPath();
+		File fCurrentFile = currentFile.getSource().getSourceFile();
+		String sCurrentDir = fCurrentFile.getParent();
+		bRet = ( !sCurrentDir.equalsIgnoreCase(sInDir) );
+		return bRet;
 	}
 
 	void doPickPage( MouseEvent e ) {

@@ -9,6 +9,7 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.QuestionDialog;
+import edu.clemson.lph.utils.FileUtils;
 
 /**
  * This class will contain the viewer displayed in CivetEditDialog.  That viewer will contain the entire 
@@ -64,8 +65,6 @@ public class PDFViewer {
 	 * @param iRotationChange
 	 */
 	public void alterRotation( int iRotationChange ) { 
-		PdfPageData pd = pdfDecoder.getPdfPageData();
-		int iPageRotation = pd.getRotation(iPageNo);
 		this.iRotation = ( this.iRotation + iRotationChange ) % 360; 
 	}
 	
@@ -109,6 +108,7 @@ public class PDFViewer {
 		else {
 			try {
 				pdfDecoder.decodePage(iPageNo);
+		FileUtils.writeBinaryFile(pdfBytes, "Page.pdf");
 				updatePdfDisplay();
 			} catch (Exception e) {
 				logger.error(e);

@@ -69,7 +69,7 @@ public class Civet {
 		}
 		StdErrLog.tieSystemErrToLog();
 		CivetConfig.validateHerdsCredentials();
-//		if( !CivetInbox.VERSION.contains("XFA") )
+// Do I need to check for JPedal_LGPL and use this JAI or has the new JAI fixed it?
 //			System.setProperty("org.jpedal.jai","true");
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {

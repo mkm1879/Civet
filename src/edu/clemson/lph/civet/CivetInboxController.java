@@ -290,15 +290,13 @@ public class CivetInboxController {
 	}
 	
 	private void doSubmitAll() {
-		// TODO Implement with new logic
-		
-//		if( !inbox.currentModel.getAbsolutePath().equals(CivetConfig.getToFileDirPath()) )
-//			currentModel = new StdXMLFilesTableModel( new File( CivetConfig.getToFileDirPath() ) );
-//		List<File> aStdXmlFiles = currentModel.getAllFiles();
-//		if( validateCVIs( aStdXmlFiles ) ) {
-//			SubmitCVIsThread t = new SubmitCVIsThread( this, aStdXmlFiles );
-//			t.start();
-//		}
+		if( !inbox.currentModel.getAbsolutePath().equals(CivetConfig.getToFileDirPath()) )
+			inbox.currentModel = new StdXMLFilesTableModel( new File( CivetConfig.getToFileDirPath() ) );
+		List<File> aStdXmlFiles = inbox.currentModel.getAllFiles();
+		if( validateCVIs( aStdXmlFiles ) ) {
+			SubmitCVIsThread t = new SubmitCVIsThread( inbox, aStdXmlFiles );
+			t.start();
+		}
 	}
 	
 	private void doSubmitSelected() {
