@@ -1,11 +1,14 @@
 package edu.clemson.lph.civet.emailonly;
 
+import java.io.File;
+
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.FileUtils;
 
@@ -29,8 +32,20 @@ public class EmailOnlySaveFileThread extends Thread {
 	public void run() {
 		
 		try {
-			String sSendPath = CivetConfig.getEmailOnlySendPath() + sFileName;
-			FileUtils.writeBinaryFile(fileBytes, sSendPath);
+			String sSendPath = CivetConfig.getEmailOnlySendPath();
+			if( sSendPath == null || sSendPath.trim().length() == 0 ) {
+				MessageDialog.showMessage(dlg, "Civet Error", "Set EmailSendOnlyIn preference to use this feature");
+			}
+			else {
+				File fSendPath = new File( CivetConfig.getEmailOnlySendPath() );
+				if( fSendPath == null || !fSendPath.isDirectory() ) {
+					MessageDialog.showMessage(dlg, "Civet Error", "EmailSendOnlyIn folder " + sSendPath + " does not exist");
+				}
+				else {
+					File fSendFile = new File( fSendPath, sFileName );
+					FileUtils.writeBinaryFile(fileBytes, fSendFile.getAbsolutePath() );
+				}
+			}
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();

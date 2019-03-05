@@ -90,12 +90,9 @@ public class PdfSourceFile extends SourceFile {
 	public void addPageToCurrent( Integer iPage ) throws SourceFileException {
 		this.iPage = iPage;
 		byte pdfBytesCurrent[] = model.getPDFAttachmentBytes();
-		FileUtils.writeBinaryFile(pdfBytesCurrent, "CurrentPDF.pdf");
 		byte pdfPageBytes[] = getPDFBytes(iPage);  // extract pages from original full pdf
-		FileUtils.writeBinaryFile(pdfPageBytes, "PageBytes.pdf");
 		try {
 			byte pdfCombined[] = MergePDF.appendPDFtoPDF(pdfBytesCurrent, pdfPageBytes);
-			FileUtils.writeBinaryFile(pdfCombined, "Combined.pdf");
 			String sFileName = model.getPDFAttachmentFilename();
 			model.setOrUpdatePDFAttachment(pdfCombined, sFileName);
 		} catch (IOException e) {

@@ -14,6 +14,7 @@ import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.dialogs.MessageDialog;
 
 public class EmailOnlyFileController {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
@@ -89,8 +90,17 @@ public class EmailOnlyFileController {
 		}
 		else {
 			File prevFile = currentFile;
-			String newPath = CivetConfig.getOutputDirPath() + prevFile.getName();
-			File fNew = new File( newPath );
+			String sNewPath = CivetConfig.getOutputDirPath();
+			if( sNewPath == null || sNewPath.trim().length() == 0 ) {
+				MessageDialog.showMessage(dlg, "Civet Error", "Set EmailSendOutputDir preference to use this feature");
+				return false;
+			}
+			File fNewPath = new File(sNewPath);
+			if( fNewPath == null || !fNewPath.isDirectory() ) {
+				MessageDialog.showMessage(dlg, "Civet Error", "EmailSendOutputDir folder " + sNewPath + " does not exist");
+			}
+			String sNewName = prevFile.getName();
+			File fNew = new File( sNewPath, sNewName );
 			try {
 				prevFile.renameTo(fNew);
 			} catch( Exception e ) {

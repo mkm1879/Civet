@@ -23,7 +23,7 @@ checkAccreditationStatus=TRUE
 
 #Email
 smtpHost=
-zohoKey=4356
+zohoKey=
 smtpPort=587
 smtpSecurity=STARTTLS
 smtpDomain=

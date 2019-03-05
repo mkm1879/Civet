@@ -588,6 +588,10 @@ public class CivetConfig {
 	}
 
 	private static String getPath( String sProperty, String sDefault ) {
+		return getPath( sProperty, sDefault, true);
+	}
+		
+	private static String getPath( String sProperty, String sDefault, boolean bMandatory ) {
 		String sRet = props.getProperty(sProperty);
 		if( sRet == null || sRet.trim().length() == 0 ) {
 			if( sDefault != null )
@@ -597,8 +601,12 @@ public class CivetConfig {
 		}
 		File f = new File( sRet );
 		if( !f.exists() || !f.isDirectory() ) {
-			logger.error( "InputDirPath " + sRet + " does not exist or is not a folder");
-			System.exit(1);
+			if( bMandatory ) {
+				logger.error( "InputDirPath " + sRet + " does not exist or is not a folder");
+				System.exit(1);
+			}
+			else
+				return null;
 		}
 		sRet = f.getAbsolutePath();
 		return sRet;
@@ -617,7 +625,7 @@ public class CivetConfig {
 	}
 
 	public static String getEmailOnlySendPath() {
-		return getPath("EmailOnlySendPath", ".\\EmailOnlySend\\" );
+		return getPath("EmailOnlySendPath", ".\\EmailOnlySend\\", false );
 	}
 
 	public static String getEmailOnlyEmailTemplate() {
@@ -636,7 +644,7 @@ public class CivetConfig {
 	}
 
 	public static String getEmailOnlyPath() {
-		return getPath("EmailOnlyInputPath", ".\\EmailOnlyIn\\");
+		return getPath("EmailOnlyInputPath", ".\\EmailOnlyIn\\", false);
 	}
 	
 	public static String getEmailErrorsDirPath() {
