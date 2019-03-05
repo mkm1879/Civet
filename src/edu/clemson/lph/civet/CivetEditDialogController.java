@@ -2020,7 +2020,6 @@ public final class CivetEditDialogController {
 		if( dlgErrorDialog.isExitOK() ) {
 			sErrorNotes = dlgErrorDialog.getNotes();
 			currentFile.getModel().getMetaData().setErrorNote(sErrorNotes);
-			logger.info( "Error note: " + sErrorNotes);
 			for( String sError : aErrorKeys ) {
 				currentFile.getModel().getMetaData().addError(sError);
 			}

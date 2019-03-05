@@ -108,7 +108,6 @@ public class PDFViewer {
 		else {
 			try {
 				pdfDecoder.decodePage(iPageNo);
-		FileUtils.writeBinaryFile(pdfBytes, "Page.pdf");
 				updatePdfDisplay();
 			} catch (Exception e) {
 				logger.error(e);
