@@ -109,7 +109,6 @@ public class StdeCviXmlModel {
 	public StdeCviXmlModel( File fXML ) {
 		try {
 			String sXML = FileUtils.readTextFile(fXML);
-			FileUtils.writeTextFile(sXML, "FileRead.xml");
 			createModel(sXML);		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

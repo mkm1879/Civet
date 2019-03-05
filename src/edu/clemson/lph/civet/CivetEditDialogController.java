@@ -1783,7 +1783,7 @@ public final class CivetEditDialogController {
 			// Only on multipage PDF do we page forward on save
 			if( currentFile.getSource().canSplit() && currentFile.morePagesForward(true) ) {
 				currentFile.pageForward(true);
-				currentFile.addPageToCurrent(currentFile.getCurrentPageNo());
+//				currentFile.addPageToCurrent(currentFile.getCurrentPageNo());
 				viewer.viewPage(currentFile.getCurrentPageNo());
 			}
 			// Backup to get skipped pages?  Not currently.
@@ -2134,6 +2134,14 @@ public final class CivetEditDialogController {
 		// Use species list to calculate the number of unidentified animals and build groups accordingly.
 		// Precondition:  Individually identified animals were added when the AddIdentifiers dialog closed.
 		ArrayList<Animal> animals = model.getAnimals();
+		// We don't collect separate date inspected for manually entered IDs.
+		for( Animal animal : animals ) {
+			if(animal.inspectionDate == null || animal.inspectionDate.trim().length() == 0 ) {
+				String sDateIssued = StdeCviXmlModel.dateFormat.format(dDateIssued);
+				animal.inspectionDate = sDateIssued;
+				model.editAnimal(animal);
+			}
+		}
 		ArrayList<GroupLot> groups = model.getGroups();
 		for( SpeciesRecord sr : aSpecies ) {
 			// Only add group lot if not officially IDd so count ids and subtract

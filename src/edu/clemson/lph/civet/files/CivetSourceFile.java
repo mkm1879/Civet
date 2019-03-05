@@ -48,7 +48,6 @@ public class CivetSourceFile extends SourceFile {
 				if( isV1(sStdXml) ) {
 					sStdXml = makeV2( sStdXml );
 				}
-				FileUtils.writeTextFile(sStdXml, "convertedCivet.xml");
 				model = new StdeCviXmlModel(sStdXml);
 				pdfBytes = model.getPDFAttachmentBytes();
 				if( pdfBytes == null ) {

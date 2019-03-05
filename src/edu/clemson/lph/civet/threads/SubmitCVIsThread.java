@@ -84,7 +84,7 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 					continue;
 				}
 				if( CivetConfig.isSaveCopies() ) {
-					File fOut = new File( sOutPath + sName );
+					File fOut = new File( sOutPath, sName );
 	    			while( fOut.exists() ) {
 	    				String sOutPath = fOut.getAbsolutePath();
 	    				sOutPath = FileUtils.incrementFileName(sOutPath);

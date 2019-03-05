@@ -84,9 +84,7 @@ public abstract class SourceFile {
 		clone.pdfBytes = pdfBytes;
 		clone.type = null;
 		// model will hold the pdf as currently constructed.
-	FileUtils.writeTextFile(this.getDataModel().getXMLString(), "beforeClone.xml");
 		clone.model = new  StdeCviXmlModel( model.getXMLString() );  // Model is a deep copy.
-	FileUtils.writeTextFile(clone.getDataModel().getXMLString(), "afterClone.xml");
 		clone.iPage = iPage;
 		clone.viewer = viewer;
 		return clone;
