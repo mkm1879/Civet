@@ -345,15 +345,6 @@ public class SaveCVIThread extends Thread {
 			pw.print(sStdXml);
 			pw.flush();
 			pw.close();
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					controller.setLastSavedFile(fileOut);
-					CivetEditDialog dlgParent = controller.getDialogParent();
-					if( dlgParent != null ) {
-						dlgParent.getDialogController().setLastSavedFile(fileOut);
-					}
-				}
-			});
 		} catch (final FileNotFoundException e) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {

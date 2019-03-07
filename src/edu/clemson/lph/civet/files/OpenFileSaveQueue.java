@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetEditDialogController;
 import edu.clemson.lph.civet.threads.SaveCVIModelThread;
+import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 
 /**
  * this is a queue of exactly two items 

@@ -19,6 +19,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -62,8 +63,8 @@ public class AddAnimalsDialog extends JDialog {
 	ArrayList<SpeciesRecord> aSpecies;
 	private JComboBox<String> cbSpecies;
 	private JTextField jtfPrefix;
-	private int iDefaultWidth = 675;
-	private int iLongSpeciesLen = 7;
+	private int iDefaultWidth = 600;
+	private int iLongSpeciesLen = 50;
 
 
 	/**
@@ -75,35 +76,39 @@ public class AddAnimalsDialog extends JDialog {
 		ImageIcon appIcon = new ImageIcon(getClass().getResource("/edu/clemson/lph/civet/res/civet32.png"));
 		this.setIconImage(appIcon.getImage());
 		setTitle("Civet: Add Animal IDs");
-		setBounds(500, 400, iDefaultWidth, 400);
+		setBounds(600, 400, getCalculatedWidth(), 400);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
-			JPanel panel = new JPanel();
-			contentPanel.add(panel, BorderLayout.NORTH);
+			JPanel pInput = new JPanel();
+			JPanel pTop = new JPanel();
+			JPanel pBottom = new JPanel();
+			contentPanel.add(pInput, BorderLayout.NORTH);
+			GridLayout loInput = new GridLayout();
+			loInput.setColumns(1);
+			loInput.setRows(2);
+			pInput.setLayout(loInput);
+			pInput.add(pTop);
+			pInput.add(pBottom);
 			{
 				JLabel lblSpecies = new JLabel("Species");
-				panel.add(lblSpecies);
+				pTop.add(lblSpecies);
 			}
 			{
 				cbSpecies = new JComboBox<String>();
 				for( SpeciesRecord rSpecies : aSpecies ) {
 					String sSpeciesCode = rSpecies.sSpeciesCode;
 					String sSpeciesName = SpeciesLookup.getNameForCode(sSpeciesCode);
-					if( sSpeciesName.trim().length() > iLongSpeciesLen ) {
-						int iAdd = (sSpeciesName.trim().length() - iLongSpeciesLen) * 15;
-						setBounds(500, 400, iDefaultWidth + iAdd, 400);
-					}
 					cbSpecies.addItem(sSpeciesName);
 				}
-				panel.add(cbSpecies);
+				pTop.add(cbSpecies);
 			}
 			{
 				jtfPrefix = new JTextField();
 				jtfPrefix.setToolTipText("<html>ID prefix.  This value will not be erased between IDs.<br>If it is '840' or '982', 15 digit EID logic will be used to pad prefix + ID.</html>");
-				panel.add(jtfPrefix);
+				pTop.add(jtfPrefix);
 				jtfPrefix.setColumns(10);
 			}
 			{
@@ -126,12 +131,12 @@ public class AddAnimalsDialog extends JDialog {
 					}
 				});
 
-				panel.add(jtfNewId);
+				pTop.add(jtfNewId);
 				jtfNewId.setColumns(25);
 			}
 			{
 				JButton btnAdd = new JButton("Add");
-				panel.add(btnAdd);
+				pBottom.add(btnAdd);
 				btnAdd.addActionListener( new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
@@ -149,12 +154,12 @@ public class AddAnimalsDialog extends JDialog {
 						doEnter();
 					}
 				});
-				panel.add(jtfAddNum);
+				pBottom.add(jtfAddNum);
 				jtfAddNum.setColumns(2);
 			}
 			{
 				JButton btnAddNum = new JButton("Add #");
-				panel.add(btnAddNum);
+				pBottom.add(btnAddNum);
 				{
 					JButton btnPasteIds = new JButton("Paste IDs");
 					btnPasteIds.addActionListener(new ActionListener() {
@@ -163,7 +168,7 @@ public class AddAnimalsDialog extends JDialog {
 							pasteIDs();
 						}
 					});
-					panel.add(btnPasteIds);
+					pBottom.add(btnPasteIds);
 				}
 				btnAddNum.addActionListener( new ActionListener() {
 					@Override
@@ -231,6 +236,20 @@ public class AddAnimalsDialog extends JDialog {
 				});
 			}
 		}
+	}
+	
+	public int getCalculatedWidth() {
+		int iRet = iDefaultWidth;
+		for( SpeciesRecord rSpecies : aSpecies ) {
+			String sSpeciesCode = rSpecies.sSpeciesCode;
+			String sSpeciesName = SpeciesLookup.getNameForCode(sSpeciesCode);
+			if( sSpeciesName.trim().length() > iLongSpeciesLen ) {
+				int iWide = iDefaultWidth + (sSpeciesName.trim().length() - iLongSpeciesLen) * 15;
+				if( iWide > iRet )
+					iRet = iWide;
+			}
+		}
+		return iRet;
 	}
 	
 	public String getSelectedSpecies() {

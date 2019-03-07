@@ -24,6 +24,7 @@ import com.itextpdf.text.pdf.PdfCopy;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.dialogs.QuestionDialog;
 import edu.clemson.lph.pdfgen.MergePDF;
@@ -125,6 +126,17 @@ public class PdfSourceFile extends SourceFile {
 		}
 		return model;
 	}
+	
+	
+	/**
+	 * Overridden by file types (Plain PDF) that need default rotation set in config file
+	 * @return
+	 */
+	@Override
+	public int getRotation() {
+		return CivetConfig.getRotation();
+	}
+
 
 	@Override
 	public byte[] getPDFBytes() {

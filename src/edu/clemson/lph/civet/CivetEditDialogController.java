@@ -111,12 +111,12 @@ public final class CivetEditDialogController {
 	private boolean bSppEntered = false;
 	private boolean bInSppChangeByCode = false;
 	boolean bInSearch = false;
+	boolean bReOpened = false;
 	private FormEditListener formEditListener = null;
 	private ArrayList<File> filesToOpen = null;
 	private OpenFileList openFileList = null;
 	private OpenFile currentFile = null;
 	private OpenFileSaveQueue saveQueue = null;
-	private File fLastSaved = null;
 	private PDFViewer viewer = null;
 
 	private String sDefaultPurpose;
@@ -137,7 +137,6 @@ public final class CivetEditDialogController {
 		this.filesToOpen = files;
 		this.viewer = new PDFViewer();
 		this.saveQueue = new OpenFileSaveQueue(this);  // Queue needs reference for call-back from thread complete.
-		viewer.alterRotation(CivetConfig.getRotation());  // Not sure why inverted relative to acrobat.
 		// Run various initialization routines that are not dependent on current file
 		initializeActionHandlers();
 		initializeDBComponents();
@@ -191,6 +190,7 @@ public final class CivetEditDialogController {
 			updateCounterPanel();
 			viewer.viewPage(currentFile.getCurrentPageNo()); 
 			clearForm();
+			viewer.alterRotation(currentFile.getSource().getRotation());
 			viewer.updatePdfDisplay();
 			if( currentFile.getSource().isDataFile() )
 				populateFromStdXml(currentFile.getSource().getDataModel()) ;
@@ -867,27 +867,24 @@ public final class CivetEditDialogController {
 			}
 		}
 	}
-
-
-
-	void doEditLast() {
-		doEditLast( false );
-	}
 		
 	/**
-	 * Open a new dialog with the last saved file.
+	 * Move dialog to the last saved file.
 	 * Simple utility for quick corrections.
 	 * @param bLastPage
 	 * @throws SourceFileException 
 	 */
-	void doEditLast(boolean bLastPage) {
+	private void doEditLast() {
 		try {
-			ArrayList<File> aFiles = new ArrayList<File>();
-			aFiles.add(fLastSaved);
-			CivetEditDialog dlgLast = new CivetEditDialog( dlg, aFiles);
-			dlgLast.make90PercentShift();  // make it obvious that this is over the other.
-			dlgLast.setVisible(true);
-		} catch (SourceFileException e) {
+			bReOpened = true;
+			currentFile = saveQueue.pop();
+			StdeCviXmlModel model = currentFile.getModel();
+			viewer.setPdfBytes(model.getPDFAttachmentBytes(), false);
+			openFileList.markFileIncomplete(currentFile);
+			openFileList.setCurrentFile(currentFile);
+			updateFilePage();
+			populateFromStdXml(model);
+		} catch (Exception e) {
 			logger.error(e);
 		}
 	}
@@ -1260,8 +1257,6 @@ public final class CivetEditDialogController {
 		formEditListener.clear();
 		// Always start with a blank search box.
 		dlg.jtfThisPIN.getSearchDialog().clear(); 
-		// Don't save Certificate Number.  Highly error prone. Users may ask for this back!
-		dlg.jtfCVINo.setText("");
 		// Don't just clear() existing array because it has been passed by reference to saveThread.
 		aSpecies = new ArrayList<SpeciesRecord>(); 
 		// clear the form and select main map if the check box is not checked or we just did an XFA
@@ -1282,7 +1277,7 @@ public final class CivetEditDialogController {
 			dlg.jtfZip.setText("");
 			dlg.jtfDateInspected.setText("");
 			dlg.jtfDateReceived.setText("");
-			dlg.jtfCVINo.setText("");
+			dlg.jtfCVINo.setText("");  // Pam really wants this sticky!
 			String sSpDefault = CivetConfig.getDefaultSpecies();
 			if( sSpDefault != null )
 				dlg.cbSpecies.setSelectedValue(sSpDefault);
@@ -1650,6 +1645,7 @@ public final class CivetEditDialogController {
 			currentFile.setCurrentPagesDone();
 			setFileCompleteStatus();
 			OpenFile fileToSave = currentFile.cloneCurrentState();
+			
 			if( save(fileToSave) ) {
 				if( pushFileComplete() ) {
 					doCleanup();
@@ -1677,18 +1673,19 @@ public final class CivetEditDialogController {
 	 */
 	private boolean save( OpenFile fileToSave ) throws SourceFileException {
 		String sCVINo = dlg.jtfCVINo.getText();
-			if( sCVINo.equalsIgnoreCase(sPrevCVINo) ) {
-				MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " hasn't changed since last save");
-				dlg.jtfCVINo.requestFocus();
-				dlg.setFormEditable(true);
-				return false;
-			}
-			if( CertificateNbrLookup.certficateNbrExists(dlg.jtfCVINo.getText()) ) {
-				MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " already exists");
-				dlg.jtfCVINo.requestFocus();
-				dlg.setFormEditable(true);
-				return false;
-			}
+		if( !bReOpened && sCVINo.equalsIgnoreCase(sPrevCVINo) ) {
+			MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " hasn't changed since last save");
+			dlg.jtfCVINo.requestFocus();
+			dlg.setFormEditable(true);
+			return false;
+		}
+		if( !bReOpened && CertificateNbrLookup.certficateNbrExists(dlg.jtfCVINo.getText()) ) {
+			MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " already exists");
+			dlg.jtfCVINo.requestFocus();
+			dlg.setFormEditable(true);
+			return false;
+		}
+		bReOpened = false;
 		// Collect up all values needed
 		fileToSave.getModel().checkExpiration();  // Set expiration date if not in data file already.
 		dlg.setImport(dlg.rbImport.isSelected());
@@ -1762,14 +1759,6 @@ public final class CivetEditDialogController {
 		sPrevCVINo = sCVINo;
 		saveQueue.push(fileToSave);
 		return true;
-	}
-	
-	/**
-	 * Called by save thread to allow edit last, add page to last, etc.
-	 * @param fLast
-	 */
-	public void setLastSavedFile( File fLast ) {
-		this.fLastSaved = fLast;
 	}
 	
 	/**
@@ -1987,20 +1976,19 @@ public final class CivetEditDialogController {
 	 * @param sPreviousSpecies
 	 * @param sNewSpecies
 	 */
-	private void changeSpecies( String sPreviousCode, String sNewSpecies ) {
+	private void changeSpecies( String sPreviousSpecies, String sNewSpecies ) {
 		// Species has changed.  Change Previous to New where ever if exists.
+		String sOldCode = SpeciesLookup.getCodeForName(sPreviousSpecies);
 		String sNewCode = SpeciesLookup.getCodeForName(sNewSpecies);
-		System.out.println( "Old: " + sPreviousCode + " to " + sNewCode );
-		mSpeciesChanges.put(sPreviousCode, sNewCode);
+		mSpeciesChanges.put(sPreviousSpecies, sNewCode);
 		for( SpeciesRecord sr : aSpecies ) {
-			if(sPreviousCode.equals(sr.sSpeciesCode))
+			if(sOldCode.equals(sr.sSpeciesCode))
 				sr.sSpeciesCode = sNewCode;
 		}
 		for( AnimalIDRecord ar : idListModel.getRows() ) {
-			if(sPreviousCode.equals(ar.animal.speciesCode.code))
+			if(sPreviousSpecies.equals(ar.animal.speciesCode.code))
 				ar.animal.speciesCode = new SpeciesCode (sNewCode);
 		}
-
 	}
 
 
