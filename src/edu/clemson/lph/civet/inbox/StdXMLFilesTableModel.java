@@ -62,7 +62,7 @@ public class StdXMLFilesTableModel extends FilesTableModel {
 			aRow[2] = thisStd.getDestination().address.state;
 			aRow[3] = thisStd.getSpeciesCodes();
 			Veterinarian vet = thisStd.getVet();
-			if( vet != null )
+			if( vet != null && vet.person != null )
 				if( vet.person.name != null )
 					aRow[4] = vet.person.name;
 				else if( vet.person.nameParts != null )
@@ -81,7 +81,6 @@ public class StdXMLFilesTableModel extends FilesTableModel {
 				sErrors = "None";
 			aRow[7]= sErrors;
 			aRows.add(aRow);	
-			//			aRows.add(thisStd);
 		}
 	}
 	

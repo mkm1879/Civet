@@ -80,6 +80,10 @@ public class OpenFileList {
 		return oCurrent;
 	}
 	
+	public void setCurrentFile( OpenFile toFile ) {
+		oCurrent = toFile;
+	}
+	
 	public void replaceFile( OpenFile replaceFile, OpenFile withFile ) {
 		int iIndex = aOpenFiles.indexOf(replaceFile);
 		aOpenFiles.set(iIndex, withFile);
@@ -154,8 +158,17 @@ public class OpenFileList {
 		else
 			aFilesComplete.add(completeFile);
 	}
-
 	
+	public void markFileIncomplete( OpenFile inCompleteFile ) {
+		if( !aOpenFiles.contains(inCompleteFile) ) {
+			// This is a file created from pages of multi-page need to insert
+			aOpenFiles.add( getCurrentFileNo() - 1, inCompleteFile );
+		}
+		else if( !aFilesComplete.contains(inCompleteFile) ) 
+			logger.error("Mark incomplete of file not yet complete: " + inCompleteFile.getSource().getFileName() );
+		else
+			aFilesComplete.remove(inCompleteFile);
+	}
 	
 	/*
 	 * File navigation.  File numbers are ONE based

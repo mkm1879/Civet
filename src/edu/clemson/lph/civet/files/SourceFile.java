@@ -171,6 +171,14 @@ public abstract class SourceFile {
 		return iRet;
 	}
 	
+	/**
+	 * Overridden by file types (Plain PDF) that need default rotation set in config file
+	 * @return
+	 */
+	public int getRotation() {
+		return 0;
+	}
+	
 	public byte[] getPDFBytes() {
 		return pdfBytes;
 	}
