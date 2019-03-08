@@ -190,7 +190,7 @@ public final class CivetEditDialogController {
 			updateCounterPanel();
 			viewer.viewPage(currentFile.getCurrentPageNo()); 
 			clearForm();
-			viewer.alterRotation(currentFile.getSource().getRotation());
+			viewer.setRotation(currentFile.getSource().getRotation());
 			viewer.updatePdfDisplay();
 			if( currentFile.getSource().isDataFile() )
 				populateFromStdXml(currentFile.getSource().getDataModel()) ;
