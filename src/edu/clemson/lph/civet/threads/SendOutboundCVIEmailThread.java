@@ -218,7 +218,6 @@ public class SendOutboundCVIEmailThread extends Thread {
 			String sTestEmail = CivetConfig.getEmailTestTo();
 			if ( sTestEmail != null && sTestEmail.trim().length() > 0 )
 				sEmail = sTestEmail; 
-			
 			ArrayList<MIMEFile> aFiles = new ArrayList<MIMEFile>();
 			for( StdeCviXmlModel thisCVI : aCVIs) {
 				byte pdfBytes[] = thisCVI.getPDFAttachmentBytes();

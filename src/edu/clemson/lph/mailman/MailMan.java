@@ -42,6 +42,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import org.apache.log4j.Logger;
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 
 
 public class MailMan {
@@ -74,6 +75,9 @@ public class MailMan {
 		Properties props = setupProperties();
 		try
 		{
+			String sTestEmail = CivetConfig.getEmailTestTo();
+			if ( sTestEmail != null && sTestEmail.trim().length() > 0 )
+				sTo = sTestEmail; 
 			Authenticator auth = new Authenticator() {
 				public PasswordAuthentication getPasswordAuthentication()
 				{
@@ -146,6 +150,9 @@ public class MailMan {
 		Properties props = setupProperties();
 		try
 		{
+			String sTestEmail = CivetConfig.getEmailTestTo();
+			if ( sTestEmail != null && sTestEmail.trim().length() > 0 )
+				sTo = sTestEmail; 
 			Authenticator auth = new Authenticator() {
 				public PasswordAuthentication getPasswordAuthentication()
 				{
@@ -218,6 +225,9 @@ public class MailMan {
 		Properties props = setupProperties();
 		try
 		{
+			String sTestEmail = CivetConfig.getEmailTestTo();
+			if ( sTestEmail != null && sTestEmail.trim().length() > 0 )
+				sTo = sTestEmail; 
 			Authenticator auth = new Authenticator() {
 				public PasswordAuthentication getPasswordAuthentication()
 				{
