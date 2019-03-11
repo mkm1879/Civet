@@ -12,7 +12,7 @@ public class UsaHerdsWebServiceAuthentication {
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}
-	private static final String AUTH_URL = "/authenticate";
+	private static final String AUTH_URL = "authenticate";
 	private static long lAuthExpires;
 	private static String sToken = null;
 	private static String sTokenType = "bearer";
@@ -44,7 +44,8 @@ public class UsaHerdsWebServiceAuthentication {
 	 */
 	public static String getToken( String sURL, String sUserName, String sPassword ) throws WebServiceException {
 		long lNow = System.currentTimeMillis();
-		sURL = sURL + AUTH_URL;
+		String sSep = (sURL.endsWith("/") || sURL.endsWith("\\") ) ? "" : "/";
+		sURL = sURL + sSep + AUTH_URL;
 		if( sToken == null || lAuthExpires <= lNow ) {
 			// Reauthenticate
 			HttpPostClient auth = new HttpPostClient();
