@@ -171,6 +171,7 @@ public final class CivetEditDialogController {
 				dlg.setViewer(viewer);
 			}
 		} catch (PdfException e) {
+			MessageDialog.showMessage(dlg, "Civet Error: PDF Error", "Failed to open PDF\n" + e.getMessage() );
 			logger.error(e);
 		}
 		setupNewFilePage();
@@ -794,7 +795,8 @@ public final class CivetEditDialogController {
 	
 	private void setFileCompleteStatus() {
 		if( !currentFile.getSource().canSplit() // File goes as a whole
-				|| (!currentFile.morePagesForward(true) && !currentFile.morePagesBack(true)) ) { // or no pages left
+				|| (!currentFile.morePagesForward(true) ) ) { // or no pages left
+			// && !currentFile.morePagesBack(true) // if we don't want to ignore skipped pages
 			if( !isReopened() )
 				openFileList.markFileComplete(currentFile);
 		}
@@ -1730,6 +1732,9 @@ public final class CivetEditDialogController {
 			dlg.setFormEditable(true);
 			return false;
 		}
+		else if ( bInbound && ( sIssuedByName == null || sIssuedByName.trim().length() == 0 ) ) {
+			sIssuedByName = "Out of State Vet";
+		}
 		updateSpeciesList(false);
 		if( sOtherState == null || sOtherState.trim().length() == 0 || aSpecies.size() == 0 
 				|| dDateIssued == null || dDateReceived == null ) {
@@ -1797,7 +1802,8 @@ public final class CivetEditDialogController {
 		int iFiles = openFileList.moveCompleteFiles();
 		String sDirOut = CivetConfig.getOutputDirPath();
     	if( iFiles > 0 )
-    		MessageDialog.showMessage(dlg, "Civet Complete", iFiles + " files ready to submit to USAHERDS.\n Original files moved to " + sDirOut );
+    		MessageDialog.showMessage(dlg, "Civet Complete", iFiles + " original files moved to " + sDirOut +
+    				"Processed files ready to submit to USAHERDS.");
 	}
 
 	private void minimizeAll() {
