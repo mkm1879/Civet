@@ -5,15 +5,12 @@ import org.apache.log4j.Logger;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetEditDialogController;
 import edu.clemson.lph.civet.threads.SaveCVIModelThread;
-import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 
 /**
- * this is a queue of exactly two items 
+ * this is a queue of exactly one item
  */
 public class OpenFileSaveQueue {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private volatile boolean bInSave = false;
-	private OpenFile fileOut = null;
 	private OpenFile fileIn = null;
 	private CivetEditDialogController controller;
 	private volatile int iThreads = 0;
@@ -29,13 +26,11 @@ public class OpenFileSaveQueue {
 	}
 	
 	public void push( OpenFile openFile ) {
-		if( fileIn != null ) {
-			fileOut = fileIn;
-			iThreads++;
-			save(fileOut);
-			fileOut = null;
-		}
+		OpenFile fileToSave = fileIn;
 		fileIn = openFile;
+		if( fileToSave != null ) {
+			save(fileToSave);
+		}
 	}
 	
 	public OpenFile pop() {
@@ -45,17 +40,14 @@ public class OpenFileSaveQueue {
 	}
 	
 	public void flush() {
-		if( fileIn != null ) {
-			fileOut = fileIn;
-			fileIn = null;
-			iThreads++;
-			save( fileOut );
-			fileOut = null;
+		OpenFile fileToSave = fileIn;
+		fileIn = null;
+		if( fileToSave != null ) {
+			save( fileToSave );
 		}
 	}
 	
 	public void saveComplete() {
-		bInSave = false;
 		iThreads--;
 		if( iThreads == 0 )
 			controller.saveComplete();
@@ -64,9 +56,9 @@ public class OpenFileSaveQueue {
 		}
 	}
 
-	private void save(OpenFile fileOut) {
-		bInSave = true;
-		SaveCVIModelThread saveThread = new SaveCVIModelThread( this, fileOut);
+	private void save(OpenFile fileToSave) {
+		iThreads++;
+		SaveCVIModelThread saveThread = new SaveCVIModelThread( this, fileToSave);
 		saveThread.start();
 	}
 
