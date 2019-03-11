@@ -36,6 +36,7 @@ import javax.swing.UIManager;
 
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.civet.webservice.TrustCerts;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.StdErrLog;
 
@@ -62,6 +63,7 @@ public class Civet {
 		CivetConfig.checkAllConfig();
 		logger.setLevel(CivetConfig.getLogLevel());
 		CivetInbox.VERSION = readVersion();
+		TrustCerts.TrustAll();
 		logger.info("Civet running build: " + CivetInbox.VERSION);
 		if( args.length >= 2 ) {
 			CivetConfig.setHERDSUserName( args[0] );
