@@ -109,7 +109,7 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 	}
 	
 	public void addComponentOrder( Component cFrom, Component cTo ) {
-		System.out.println( "From " + cFrom.getClass().getName() + " to " + cTo.getClass().getName() );
+//		System.out.println( "From " + cFrom.getClass().getName() + " to " + cTo.getClass().getName() );
 		if( cFrom != cTo )
 			hMainMap.put(cFrom, cTo);
 	}

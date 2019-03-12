@@ -96,13 +96,11 @@ public class HttpGetClient {
             try {
 				builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
 				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-						builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+						builder.build());
 				httpclient = HttpClients.custom().setSSLSocketFactory(
 						sslsf).build();
-				logger.error("Successfully created Allow All Hostnames client");
 			} catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-				// TODO Auto-generated catch block
-				logger.error("Failed to build certificate handler", e);
+				logger.error("Failed to build trust all certificate handler", e);
 				return false;
 			}
         }
