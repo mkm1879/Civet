@@ -19,6 +19,9 @@ You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,16 +30,24 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
+
+import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 
 /**
  * This example demonstrates the use of the {@link ResponseHandler} to simplify
  * the process of processing the HTTP response and releasing associated resources.
  */
 public class HttpGetClient {
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private int status;
 	private String sBody;
 	private String sError;
@@ -79,7 +90,24 @@ public class HttpGetClient {
 	
     public final boolean getURL(String sURL) {
     	boolean bRet = true;
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+        CloseableHttpClient httpclient = null;
+        if( CivetConfig.trustAllCerts() ) {
+        	SSLContextBuilder builder = new SSLContextBuilder();
+            try {
+				builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+						builder.build());
+				httpclient = HttpClients.custom().setSSLSocketFactory(
+						sslsf).build();
+			} catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+				// TODO Auto-generated catch block
+				logger.error("Failed to build certificate handler", e);
+				return false;
+			}
+        }
+        else {
+        	httpclient = HttpClients.createDefault();
+        }
         try {
         	sURL = sURL + buildParams();
             HttpGet httpget = new HttpGet(sURL);

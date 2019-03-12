@@ -54,6 +54,7 @@ public class CivetConfig {
 	private static int iJPedalType = UNK;
 	private static String sHERDSUserName = null;
 	private static String sHERDSPassword = null;
+	private static Boolean bTrustAllCerts = null;
 	private static Boolean bStandAlone = null;
 	private static Boolean bDefaultReceivedDate = null;
 	private static Boolean bBrokenLIDs = null;
@@ -91,6 +92,20 @@ public class CivetConfig {
 			aRet[i] = lAddresses.get(i);
 		return aRet;
 	}
+	
+	public static boolean trustAllCerts() {
+		if( bTrustAllCerts == null ) {
+			String sVal = props.getProperty("trustAllCerts");
+			if( sVal == null ) sVal = "false";
+			if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bTrustAllCerts = true;
+			}
+			else {
+				bTrustAllCerts = false;
+			}
+		}
+		return bTrustAllCerts;
+	}	
 	
 	public static boolean isStandAlone() {
 		if( bStandAlone == null ) {
@@ -467,6 +482,7 @@ public class CivetConfig {
 						}
 					} catch( WebServiceException e ) {
 						MessageDialog.showMessage(null, "Civet Login Error", "Error logging into USAHERDS\n"+ e.getMessage());
+						logger.error("Error logging into USAHERDS", e);
 						bValid = false;
 					}
 				}
@@ -489,49 +505,6 @@ public class CivetConfig {
 			logger.error("Error running main program in event thread", e);
 		}
 		return bRet;
-		
-	}
-
-	public static void initWebServices() {
-		String sUser = null;
-		String sPass = null;
-		try {
-			if( CivetConfig.getHERDSUserName() == null || CivetConfig.getHERDSPassword() == null ) {
-				boolean bValid = false;
-				while( !bValid ) {
-					TwoLineQuestionDialog dlg = new TwoLineQuestionDialog( "USAHERDS Login: " + getHERDSWebServiceHost(), "UserID", "Password", true );
-					dlg.setIntro("USAHERDS Login Settings");
-					dlg.setPassword(true);
-					if( sUser != null )
-						dlg.setAnswerOne(sUser);
-					if( sPass != null )
-						dlg.setAnswerTwo(sPass);
-					dlg.setVisible(true);
-					if( !dlg.isExitOK() ) {
-						System.exit(1);
-					}
-					sUser = dlg.getAnswerOne();
-					sPass = dlg.getAnswerTwo();
-					dlg.dispose();
-					try {
-						CivetWebServices service = new CivetWebServices();
-						bValid = service.validUSAHERDSCredentials(sUser, sPass);
-						
-					} catch( WebServiceException e ) {
-						MessageDialog.showMessage(null, "Civet Login Error", "Error logging into USAHERDS\n"+ e.getMessage());
-						bValid = false;
-					}
-				}
-				setHERDSUserName( sUser );
-				setHERDSPassword( sPass );
-			}
-		} catch (Exception e) {
-			logger.error("Error running main program in event thread", e);
-		}
-		
-	}
-	
-	public static void initDB() {
 		
 	}
 	
@@ -986,8 +959,6 @@ public class CivetConfig {
 	 * @return
 	 */
 	public static String getDBUserName() {
-		if( sDBUserName == null || sDBPassword == null ) 
-			initDB();
 		return sDBUserName;
 	}
 	
@@ -996,8 +967,6 @@ public class CivetConfig {
 	 * @return
 	 */
 	public static String getDBPassword() {
-		if( sDBUserName == null || sDBPassword == null ) 
-			initDB();
 		return sDBPassword;
 	}
 	

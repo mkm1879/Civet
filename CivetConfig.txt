@@ -20,6 +20,7 @@ rotation=0
 defaultPurpose=Other
 autoOpenPdf=yes
 checkAccreditationStatus=TRUE
+trustAllCerts=TRUE
 
 #Email
 smtpHost=
