@@ -96,7 +96,7 @@ public class NineDashThreeDialog extends JFrame {
 			logger.setLevel(CivetConfig.getLogLevel());
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			try {
-				CivetConfig.initWebServices();
+				CivetConfig.validateHerdsCredentials();
 			} catch (Exception e) {
 				logger.error("Error running main program in event thread", e);
 			}
