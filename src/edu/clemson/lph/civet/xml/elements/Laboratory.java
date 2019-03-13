@@ -21,14 +21,14 @@ package edu.clemson.lph.civet.xml.elements;
 public class Laboratory {
 	public String labName;
 	public String premID;
-	public AddressBlock addressBlock;
+	public Address address;
 	public String accessionDate;
 	public String accessionNumber;
 	
-	Laboratory(String labName, String premID, AddressBlock addressBlock, String accessionDate, String accessionNumber) {
+	Laboratory(String labName, String premID, Address address, String accessionDate, String accessionNumber) {
 		this.labName = labName;
 		this.premID = premID;
-		this.addressBlock = addressBlock;
+		this.address = address;
 		this.accessionDate = accessionDate;
 		this.accessionNumber = accessionNumber;
 	}

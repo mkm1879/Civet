@@ -28,7 +28,6 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetEditDialog;
 import edu.clemson.lph.civet.CivetEditDialogController;
 import edu.clemson.lph.civet.SpeciesRecord;
 import edu.clemson.lph.civet.lookup.Counties;
@@ -267,10 +266,10 @@ public class SaveCVIThread extends Thread {
 			else {
 				VetLookup vetLookup = new VetLookup( iIssuedByKey );
 				NameParts parts = new NameParts(null, vetLookup.getFirstName(), null, vetLookup.getLastName(), null );
-				AddressBlock addr = new AddressBlock(vetLookup.getAddress(), null, vetLookup.getCity(), null, 
+				Address addr = new Address(vetLookup.getAddress(), null, vetLookup.getCity(), null, 
 						vetLookup.getState(), vetLookup.getZipCode(), null, null, null);
 				Person person = new Person(parts, vetLookup.getPhoneDigits(), null );
-				Veterinarian vet = new Veterinarian(person, addr.toString(), CivetConfig.getHomeStateAbbr(),
+				Veterinarian vet = new Veterinarian(person, addr, CivetConfig.getHomeStateAbbr(),
 						vetLookup.getLicenseNo(), vetLookup.getNAN());
 				model.setVet( vet );
 			}
