@@ -84,7 +84,7 @@
                     </xsl:element>
                 </xsl:if>
             </xsl:element>
-            <xsl:call-template name="BlockedAddress">
+            <xsl:call-template name="FullAddress">
                 <xsl:with-param name="address" select="certAddress"/>
                 <xsl:with-param name="city" select="certCity"/>
                 <xsl:with-param name="state" select="certState"/>
@@ -682,7 +682,7 @@
         </xsl:element>
     </xsl:template>
 
-    <xsl:template name="BlockedAddress">
+<!--    <xsl:template name="BlockedAddress">
         <xsl:param name="address"/>
         <xsl:param name="city"/>
         <xsl:param name="county"/>
@@ -721,6 +721,9 @@
             </xsl:choose>
         </xsl:element>
     </xsl:template>
+    
+    -->
+    
     <xsl:variable name="smallcase" select="'abcdefghijklmnopqrstuvwxyz'"/>
     <xsl:variable name="uppercase" select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"/>
 
