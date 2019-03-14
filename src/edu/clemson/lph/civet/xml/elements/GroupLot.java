@@ -21,7 +21,6 @@ package edu.clemson.lph.civet.xml.elements;
 
 import org.w3c.dom.Element;
 
-import edu.clemson.lph.civet.lookup.SpeciesLookup;
 
 public class GroupLot {
 	public Element eGroupLot;

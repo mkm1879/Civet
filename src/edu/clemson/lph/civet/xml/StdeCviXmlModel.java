@@ -244,7 +244,6 @@ public class StdeCviXmlModel {
 	
 	
 	public Element getVetElement() {
-		Veterinarian vet = null;
 		Element eVet = helper.getElementByName("Veterinarian");
 		return eVet;
 	}
@@ -787,7 +786,7 @@ public class StdeCviXmlModel {
 				if( eOtherName != null ) {
 					sOtherName = eOtherName.getTextContent();
 				}
-				NameParts nameParts = new NameParts( sBusinessName, sOtherName, sMiddleName, sLastName, sOtherName);
+				NameParts nameParts = new NameParts( sBusinessName, sFirstName, sMiddleName, sLastName, sOtherName);
 				person = new Person( nameParts, sPhone, sEmail );
 			}			
 		}
@@ -1373,18 +1372,6 @@ public class StdeCviXmlModel {
 	
 	public String getPDFAttachmentFilename() {
 		return binaries.getPDFAttachmentFilename();
-	}
-	
-	/**
-	 * Just make this logic a little clearer
-	 * @param sFileName
-	 * @return
-	 */
-	private boolean attachmentExists( String sFileName ) {
-		boolean bRet = false;
-		Element eAttach = binaries.getAttachment(sFileName);
-		bRet = ( eAttach != null );
-		return bRet;
 	}
 	
 	public void addOrUpdateMetadataAttachment( CviMetaDataXml metaData ) {

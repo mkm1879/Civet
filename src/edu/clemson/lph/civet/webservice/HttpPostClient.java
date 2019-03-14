@@ -20,9 +20,6 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,24 +29,21 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.prefs.CivetConfig;
 
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.ssl.SSLContextBuilder;
  
 /**
  * This example demonstrates the use of the {@link ResponseHandler} to simplify
  * the process of processing the HTTP response and releasing associated resources.
  */
 public class HttpPostClient {
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private int status;
 	private String sBody;
@@ -78,22 +72,7 @@ public class HttpPostClient {
     public final boolean getURL(String sURL) {
     	boolean bRet = true;
         CloseableHttpClient httpclient = null;
-        if( CivetConfig.trustAllCerts() ) {
-        	SSLContextBuilder builder = new SSLContextBuilder();
-            try {
-				builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-				SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-						builder.build());
-				httpclient = HttpClients.custom().setSSLSocketFactory(
-						sslsf).build();
-			} catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-				logger.error("Failed to build trust all certificate handler", e);
-				return false;
-			}
-        }
-        else {
-        	httpclient = HttpClients.createDefault();
-        }
+       	httpclient = HttpClients.createDefault();
         try {
             HttpPost httppost = new HttpPost(sURL);
             httppost.setEntity(new UrlEncodedFormEntity(lParameters));

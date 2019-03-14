@@ -46,12 +46,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 
 import javax.swing.*;
 
 import org.apache.log4j.*;
-import org.w3c.dom.Element;
 
 public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 	public static final Logger logger = Logger.getLogger(Civet.class.getName());
@@ -180,7 +178,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 							}
 						}
 						if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {
-							if( sRet.contains("99,Timeout expired")) {
+							if( sRet != null && sRet.contains("99,Timeout expired")) {
 								logger.info("Time out CVI Number: " + data.getCVINumber() );
 							}
 							else {

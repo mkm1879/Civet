@@ -37,7 +37,6 @@ public class ProgressDialog extends JDialog {
 	private JLabel lProgress = new JLabel();
 	private int iValue;
 	private int iMax = 9;
-	private int iClients = 0;
 	private boolean bAuto = false;
 	private boolean bCancel = false;
 	private String sMsg = "Working ...";

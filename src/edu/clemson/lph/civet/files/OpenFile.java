@@ -14,7 +14,6 @@
  */
 package edu.clemson.lph.civet.files;
 
-import java.awt.Window.Type;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

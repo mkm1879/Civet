@@ -55,7 +55,7 @@ public class AnimalIDRecord {
 			return false;
 		if( rOther.animal != null && this.animal == null)
 			return false;
-		if( rOther.animal == null && this.animal == null)
+		if( rOther.animal == null || this.animal == null)
 			return false;
 		if( rOther.animal.getFirstOfficialID() == null || this.animal.getFirstOfficialID() == null )
 			return false;

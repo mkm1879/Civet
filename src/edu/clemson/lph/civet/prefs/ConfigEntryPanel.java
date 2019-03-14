@@ -20,12 +20,16 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.log4j.Logger;
+
+import edu.clemson.lph.civet.Civet;
+
 @SuppressWarnings("serial")
 public class ConfigEntryPanel extends JPanel {
+	public static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private ConfigEntry entry = null;
 	private ConfigDialog dlgParent = null;
 	private JTextField jtfValue;
-	private List<String> aChoices = null;
 	private JComboBox<String> cbSelectValue;
 	private JCheckBox chkBoolValue;
 
@@ -36,7 +40,6 @@ public class ConfigEntryPanel extends JPanel {
 		this.entry = entry;
 		this.dlgParent = parent;
 		setLayout(null);
-		this.aChoices = aChoices;
 		
 		JLabel lblName = new JLabel(entry.sName);
 		lblName.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -115,8 +118,10 @@ public class ConfigEntryPanel extends JPanel {
 		else if( "Select".equalsIgnoreCase(entry.sType) ) {
 			cbSelectValue = new JComboBox<String>();
 			cbSelectValue.setToolTipText(entry.sHelp);
-			if( aChoices == null || aChoices.size() == 0 )
-				System.err.println(entry.sName + " needs choices");
+			if( aChoices == null || aChoices.size() == 0 ) {
+				logger.error(entry.sName + " needs choices");
+				return;
+			}
 			for( String sChoice : aChoices ) {
 				cbSelectValue.addItem(sChoice);
 			}
@@ -135,12 +140,12 @@ public class ConfigEntryPanel extends JPanel {
 	public boolean hasChanged() {
 		String sNewValue = jtfValue.getText();
 		String sOldValue = entry.sValue;
-		if( sNewValue == null && sOldValue == null )
-			return false;
 		if( sNewValue == null && sOldValue != null )
 			return true;
 		if( sNewValue != null && sOldValue == null )
 			return true;
+		if( sNewValue == null || sOldValue == null )
+			return false;
 		if( !sNewValue.equals(sOldValue) )
 			return true;
 		return false;

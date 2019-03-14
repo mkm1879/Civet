@@ -19,14 +19,9 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import edu.clemson.lph.civet.webservice.HttpGetClient;
 import edu.clemson.lph.dialogs.MessageDialog;
-
 import java.rmi.RemoteException;
-
-import javax.swing.SwingUtilities;
-
 import org.w3c.dom.Document;
 import org.apache.log4j.Logger;
-
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.XMLUtility;
