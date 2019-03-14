@@ -22,33 +22,33 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 public interface PremisesTableModel extends TableModel {
 
-	public abstract String getPremNameAt(int iRow);
-	public abstract String getPremIdAt(int iRow);
-	public abstract String getPhoneAt(int iRow);
-	public abstract String getAddressAt(int iRow);
-	public abstract String getCityAt(int iRow);
-	public abstract String getCountyAt(int iRow);
-	public abstract String getStateCodeAt(int iRow);
-	public abstract String getZipCodeAt(int iRow);
-	public abstract String getPremClassAt(int iRow);
+	public String getPremNameAt(int iRow);
+	public String getPremIdAt(int iRow);
+	public String getPhoneAt(int iRow);
+	public String getAddressAt(int iRow);
+	public String getCityAt(int iRow);
+	public String getCountyAt(int iRow);
+	public String getStateCodeAt(int iRow);
+	public String getZipCodeAt(int iRow);
+	public String getPremClassAt(int iRow);
 	
-	public abstract String getPremName();
-	public abstract String getPremId();
-	public abstract String getPhone();
-	public abstract String getAddress();
-	public abstract String getCity();
-	public abstract String getCounty();
-	public abstract String getStateCode();
-	public abstract String getZipCode();
-	public abstract String getPremClass();
+	public String getPremName();
+	public String getPremId();
+	public String getPhone();
+	public String getAddress();
+	public String getCity();
+	public String getCounty();
+	public String getStateCode();
+	public String getZipCode();
+	public String getPremClass();
 
-	public abstract void clear();
-	public abstract boolean first();
-	public abstract boolean next();
-	public abstract int getColumnCount();
-	public abstract String getColumnName(int columnIndex);
-	public abstract int getRowCount();
-	public abstract Object getValueAt(int rowIndex, int columnIndex);
-	public abstract boolean isCellEditable(int rowIndex, int columnIndex);
+	public void clear();
+	public boolean first();
+	public boolean next();
+	public int getColumnCount();
+	public String getColumnName(int columnIndex);
+	public int getRowCount();
+	public Object getValueAt(int rowIndex, int columnIndex);
+	public boolean isCellEditable(int rowIndex, int columnIndex);
 
 }

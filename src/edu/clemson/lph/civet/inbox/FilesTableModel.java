@@ -20,8 +20,6 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
@@ -62,10 +60,13 @@ public abstract class FilesTableModel extends AbstractTableModel {
 	}
 	
 	protected void readFiles() {
-		allFiles = new ArrayList<File>();
-		for( File f : fDir.listFiles(fileFilter) ) {
-			if( f.isFile() && !f.isHidden() ) 
-				allFiles.add(f);
+		File[] readFiles = fDir.listFiles(fileFilter);
+		if( readFiles != null ) {
+			allFiles = new ArrayList<File>();
+			for( File f : readFiles ) {
+				if( f.isFile() && !f.isHidden() ) 
+					allFiles.add(f);
+			}
 		}
 	}
 	

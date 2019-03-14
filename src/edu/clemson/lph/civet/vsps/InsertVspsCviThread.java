@@ -19,7 +19,6 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.awt.Window;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -121,6 +120,7 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 		StdeCviXmlModel xmlModel = new StdeCviXmlModel();
 		xmlModel.setCertificateNumber(cvi.getCVINumber());
 		xmlModel.setIssueDate(cvi.getInspectionDate());
+		@SuppressWarnings("unused")
 		Element eVet = null;
 		VetLookup vetLookup = new VetLookup( cvi.getVetLastName(), cvi.getVetFirstName() );
 		if( cvi.getOriginState().equalsIgnoreCase(CivetConfig.getHomeStateAbbr()) && vetLookup != null ) {
@@ -143,9 +143,11 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 		xmlModel.setPurpose(cvi.getStdPurpose());
 		// We don't enter the person name, normally  or add logic to tell prem name from person name.
 		VspsCviEntity origin = cvi.getOrigin();
+		@SuppressWarnings("unused")
 		Element eOrigin = xmlModel.setOrigin( origin.getPremisesId(), origin.getName(), origin.getPhoneDigits(), origin.getAddress1(), 
 				origin.getCity(), origin.getCounty(), origin.getState(), origin.getPostalCode() );
 		VspsCviEntity destination = cvi.getDestination();
+		@SuppressWarnings("unused")
 		Element eDestination = xmlModel.setDestination( destination.getPremisesId(), destination.getName(), destination.getPhoneDigits(), destination.getAddress1(), 
 				destination.getCity(), destination.getCounty(), destination.getState(), destination.getPostalCode() );
 

@@ -35,7 +35,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.webservice.UsaHerdsWebServiceAuthentication;
 import edu.clemson.lph.civet.webservice.WebServiceException;
 import edu.clemson.lph.dialogs.MessageDialog;
@@ -54,7 +53,6 @@ public class CivetConfig {
 	private static int iJPedalType = UNK;
 	private static String sHERDSUserName = null;
 	private static String sHERDSPassword = null;
-	private static Boolean bTrustAllCerts = null;
 	private static Boolean bStandAlone = null;
 	private static Boolean bDefaultReceivedDate = null;
 	private static Boolean bBrokenLIDs = null;
@@ -69,7 +67,7 @@ public class CivetConfig {
 	private static Boolean bCheckAccredStatus;
 	
 
-	public static Properties getProps() {
+	public synchronized static Properties getProps() {
 		return props;
 	}
 
@@ -77,7 +75,7 @@ public class CivetConfig {
 	 * Check to see if we are on LPH LAN.  Only used in local version.
 	 * @return
 	 */
-	public static String[] listLocalNetAddresses() {
+	public synchronized static String[] listLocalNetAddresses() {
 		String sAddresses = props.getProperty("localNetAddresses");
 		if( sAddresses == null || sAddresses.trim().length() == 0 ) {
 			sAddresses = "130.127.169.203";
@@ -93,21 +91,7 @@ public class CivetConfig {
 		return aRet;
 	}
 	
-	public static boolean trustAllCerts() {
-		if( bTrustAllCerts == null ) {
-			String sVal = props.getProperty("trustAllCerts");
-			if( sVal == null ) sVal = "false";
-			if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
-				bTrustAllCerts = true;
-			}
-			else {
-				bTrustAllCerts = false;
-			}
-		}
-		return bTrustAllCerts;
-	}	
-	
-	public static boolean isStandAlone() {
+	public synchronized static boolean isStandAlone() {
 		if( bStandAlone == null ) {
 			String sVal = props.getProperty("standAlone");
 			if( sVal == null ) exitError("standAlone");
@@ -121,7 +105,7 @@ public class CivetConfig {
 		return bStandAlone;
 	}	
 	
-	public static boolean isSmallScreen() {
+	public synchronized static boolean isSmallScreen() {
 		if( bSmall == null ) {
 			String sVal = props.getProperty("smallScreen");
 			if( sVal == null || sVal.trim().length() == 0 ) 
@@ -136,7 +120,7 @@ public class CivetConfig {
 		return bSmall;
 	}	
 	
-	public static boolean isDefaultReceivedDate() {
+	public synchronized static boolean isDefaultReceivedDate() {
 		if( bDefaultReceivedDate == null ) {
 			String sVal = props.getProperty("defaultReceivedDate");
 			if( sVal == null || sVal.trim().length() == 0 )
@@ -151,7 +135,7 @@ public class CivetConfig {
 		return bDefaultReceivedDate;
 	}	
 	
-	public static boolean isSaveCopies() {
+	public synchronized static boolean isSaveCopies() {
 		if( bSaveCopies  == null ) {
 			String sVal = props.getProperty("saveCopies");
 			if( sVal == null || sVal.trim().length() == 0 )
@@ -166,7 +150,7 @@ public class CivetConfig {
 		return bSaveCopies;
 	}	
 	
-	public static boolean isOpenAfterAdd() {
+	public synchronized static boolean isOpenAfterAdd() {
 		if( bOpenAfterAdd  == null ) {
 			String sVal = props.getProperty("openAfterAdd");
 			if( sVal == null || sVal.trim().length() == 0 )
@@ -181,7 +165,7 @@ public class CivetConfig {
 		return bOpenAfterAdd;
 	}	
 	
-	public static boolean hasBrokenLIDs() {
+	public synchronized static boolean hasBrokenLIDs() {
 		if( bBrokenLIDs == null ) {
 			String sVal = props.getProperty("brokenLIDs");
 			// default to true;
@@ -196,7 +180,7 @@ public class CivetConfig {
 	}	
 	
 	
-	public static boolean hasStateIDChecksum() {
+	public synchronized static boolean hasStateIDChecksum() {
 		if( bBrokenLIDs == null ) {
 			String sVal = props.getProperty("stateIDChecksum");
 			// default to true;
@@ -210,11 +194,11 @@ public class CivetConfig {
 		return bStateIDChecksum;
 	}	
 
-	public static void setStandAlone( boolean standAlone ) {
+	public synchronized static void setStandAlone( boolean standAlone ) {
 		bStandAlone = standAlone;
 	}
 	
-	public static Level getLogLevel() {
+	public synchronized static Level getLogLevel() {
 		Level lRet = Level.ERROR;
 		String sVal = props.getProperty("logLevel");
 		if( sVal != null && sVal.equalsIgnoreCase("info") )
@@ -222,7 +206,7 @@ public class CivetConfig {
 		return lRet;
 	}
 	
-	public static String getDefaultDirection() {
+	public synchronized static String getDefaultDirection() {
 		String sRet = props.getProperty("defaultDirection");
 		if( sRet == null || sRet.trim().length() == 0 ) exitError("defaultDirection");
 		if( sRet != null && sRet.trim().length() == 0 ) 
@@ -230,7 +214,7 @@ public class CivetConfig {
 		return sRet;
 	}
 
-	public static String getHomeStateAbbr() {
+	public synchronized static String getHomeStateAbbr() {
 		String sRet = props.getProperty("homeStateAbbr");
 		if( sRet == null || sRet.trim().length() == 0  ) exitError("homeStateAbbr");
 		if( sRet != null && sRet.trim().length() == 0 ) 
@@ -238,7 +222,7 @@ public class CivetConfig {
 		return sRet;
 	}
 
-	public static String getHomeState() {
+	public synchronized static String getHomeState() {
 		String sRet = props.getProperty("homeState");
 		if( sRet == null || sRet.trim().length() == 0 ) exitError("homeState");
 		if( sRet != null && sRet.trim().length() == 0 ) 
@@ -246,7 +230,7 @@ public class CivetConfig {
 		return sRet;
 	}
 	
-	public static int getHomeStateKey() {
+	public synchronized static int getHomeStateKey() {
 		int iRet = -1;
 		String sRet = props.getProperty("homeStateKey");
 		if( sRet == null ) exitError("homeStateKey");
@@ -260,7 +244,7 @@ public class CivetConfig {
 		return iRet;
 	}
 		
-	public static int getCviValidDays() {
+	public synchronized static int getCviValidDays() {
 		int iRet = -1;
 		String sRet = props.getProperty("cviValidDays");
 		if( sRet == null || sRet.trim().length() == 0 ) exitError("cviValidDays");
@@ -275,41 +259,41 @@ public class CivetConfig {
 	}
 
 	
-	public static String getZohoKey() {
+	public synchronized static String getZohoKey() {
 		String sRet = props.getProperty("zohoKey");
 		if( sRet != null && sRet.trim().length() == 0 ) 
 			sRet = null; 
 		return sRet;
 	}
 
-	public static String getZohoHost() {
+	public synchronized static String getZohoHost() {
 		return "smtp.zoho.com";
 	}
 
-	public static String getZohoPort() {
+	public synchronized static String getZohoPort() {
 		return "587";
 	}
 
-	public static String getZohoSecurity() {
+	public synchronized static String getZohoSecurity() {
 		return "STARTTLS";
 	}
 
-	public static String getZohoDomain() {
+	public synchronized static String getZohoDomain() {
 		return "@mminformatics.com";
 	}
 
-	public static String getZohoFrom() {
+	public synchronized static String getZohoFrom() {
 		return "civet@mminformatics.com";
 	}
 
-	public static String getZohoUser() {
+	public synchronized static String getZohoUser() {
 		return "civet@mminformatics.com";
 	}
-	public static String getZohoPass() {
+	public synchronized static String getZohoPass() {
 		return "I2nuHru*N7*G*J|FV&R+ES@" + getZohoKey();
 	}
 	
-	public static String getSmtpHost() {
+	public synchronized static String getSmtpHost() {
 		String sRet = props.getProperty("smtpHost");
 		if( sRet != null && sRet.trim().length() == 0 ) {
 			sRet = null; // Do not provide default value so we can differentiate.
@@ -317,7 +301,7 @@ public class CivetConfig {
 		return sRet;
 	}
 	
-	public static String getSmtpPort() {
+	public synchronized static String getSmtpPort() {
 		String sRet = props.getProperty("smtpPort");
 		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = getZohoPort();
@@ -326,7 +310,7 @@ public class CivetConfig {
 		return sRet;
 	}
 
-	public static String getSmtpSecurity() {
+	public synchronized static String getSmtpSecurity() {
 		String sRet = props.getProperty("smtpSecurity");
 		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = getZohoSecurity();
@@ -335,7 +319,7 @@ public class CivetConfig {
 		return sRet;
 	}
 	
-	public static int getSmtpPortInt() {
+	public synchronized static int getSmtpPortInt() {
 		int iRet = -1;
 		String sRet = props.getProperty("smtpPort");
 		if( sRet == null || sRet.trim().length() == 0 ) 
@@ -350,7 +334,7 @@ public class CivetConfig {
 		return iRet;
 	}
 	
-	public static String getSmtpDomain() {
+	public synchronized static String getSmtpDomain() {
 		String sRet = props.getProperty("smtpDomain");
 		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = getZohoDomain();
@@ -359,7 +343,7 @@ public class CivetConfig {
 		return sRet;
 	}
 	
-	public static String getEmailCopyTo() {
+	public synchronized static String getEmailCopyTo() {
 		String sRet = props.getProperty("emailCopyTo");
 		if( sRet != null && sRet.trim().length() == 0 ) 
 			sRet = null; 
@@ -371,7 +355,7 @@ public class CivetConfig {
 	 * to generate the From line (login containing @ or login + domain)
 	 * @return String with Email From or NULL
 	 */
-	public static String getEmailFrom() {
+	public synchronized static String getEmailFrom() {
 		String sRet = null;
 		sRet = props.getProperty("emailFrom");
 		if( sRet == null || sRet.trim().length() == 0 ) 
@@ -385,7 +369,7 @@ public class CivetConfig {
 	 * Optional configuration setting to provide a Reply-to different from From
 	 * @return String with Email From or NULL
 	 */
-	public static String getEmailReplyTo() {
+	public synchronized static String getEmailReplyTo() {
 		String sRet = null;
 		sRet = props.getProperty("emailReplyTo");
 		if( sRet != null && sRet.trim().length() == 0 ) 
@@ -398,7 +382,7 @@ public class CivetConfig {
 	 * This getter does not issue an error if not found because that is normal.
 	 * @return
 	 */
-	public static String getEmailTestTo() {
+	public synchronized static String getEmailTestTo() {
 		String sRet = props.getProperty("emailTestTo");
 		if( sRet != null && sRet.trim().length() == 0 ) 
 			sRet = null; 
@@ -409,7 +393,7 @@ public class CivetConfig {
 	 * Get the URL for USAHERDS web services
 	 * @return
 	 */
-	public static String getHERDSWebServiceURL() {
+	public synchronized static String getHERDSWebServiceURL() {
 		String sRet = props.getProperty("herdsWebServiceURL");
 		if( sRet == null || sRet.trim().length() == 0 ) exitError("herdsWebServiceURL");
 		if( sRet != null && sRet.trim().length() == 0 ) 
@@ -421,7 +405,7 @@ public class CivetConfig {
 	 * Get the URL for USAHERDS web services
 	 * @return
 	 */
-	public static String getHERDSWebServiceHost() {
+	public synchronized static String getHERDSWebServiceHost() {
 		String sRet = props.getProperty("herdsWebServiceURL");
 		if( sRet == null || sRet.trim().length() == 0 ) exitError("herdsWebServiceURL");
 		try {
@@ -441,7 +425,7 @@ public class CivetConfig {
 	 * Get the UserName USAHERDS web services
 	 * @return
 	 */
-	public static String getHERDSUserName() {
+	public synchronized static String getHERDSUserName() {
 		return sHERDSUserName;
 	}
 	
@@ -449,19 +433,19 @@ public class CivetConfig {
 	 * Get the Password USAHERDS web services
 	 * @return
 	 */
-	public static String getHERDSPassword() {
+	public synchronized static String getHERDSPassword() {
 		return sHERDSPassword;
 	}
 	
-	public static void setHERDSUserName( String sUser ) {
+	public synchronized static void setHERDSUserName( String sUser ) {
 		sHERDSUserName = sUser;
 	}
 	
-	public static void setHERDSPassword( String sPass ) {
+	public synchronized static void setHERDSPassword( String sPass ) {
 		sHERDSPassword = sPass;
 	}
 	
-	public static boolean validateHerdsCredentials() {
+	public synchronized static boolean validateHerdsCredentials() {
 		boolean bRet = false;
 		String sUser = CivetConfig.getHERDSUserName();
 		String sPass = CivetConfig.getHERDSPassword();
@@ -508,7 +492,7 @@ public class CivetConfig {
 		
 	}
 	
-	public static boolean initEmail(boolean bLogin) {
+	public synchronized static boolean initEmail(boolean bLogin) {
 		boolean bRet = true;
 		String sUserID = null;
 		String sZohoKey = getZohoKey();
@@ -585,23 +569,23 @@ public class CivetConfig {
 		return sRet;
 	}
 	
-	public static String getInputDirPath() {
+	public synchronized static String getInputDirPath() {
 		return getPath("InputDirPath", null);
 	}
 	
-	public static String getToFileDirPath() {
+	public synchronized static String getToFileDirPath() {
 		return getPath("ToBeFiledDirPath", null);
 	}
 
-	public static String getEmailOutDirPath() {
+	public synchronized static String getEmailOutDirPath() {
 		return getPath("EmailOutDirPath", null);
 	}
 
-	public static String getEmailOnlySendPath() {
+	public synchronized static String getEmailOnlySendPath() {
 		return getPath("EmailOnlySendPath", ".\\EmailOnlySend\\", false );
 	}
 
-	public static String getEmailOnlyEmailTemplate() {
+	public synchronized static String getEmailOnlyEmailTemplate() {
 		String sRet = props.getProperty("EmailOnlyMessage");
 		if( sRet == null || sRet.trim().length() == 0 ) {
 			sRet = "EmailOnlyMessage.txt";
@@ -616,31 +600,31 @@ public class CivetConfig {
 		return sRet;
 	}
 
-	public static String getEmailOnlyPath() {
+	public synchronized static String getEmailOnlyPath() {
 		return getPath("EmailOnlyInputPath", ".\\EmailOnlyIn\\", false);
 	}
 	
-	public static String getEmailErrorsDirPath() {
+	public synchronized static String getEmailErrorsDirPath() {
 		return getPath("EmailErrorsDirPath", null);
 	}
 	
-	public static String getOutputDirPath() {
+	public synchronized static String getOutputDirPath() {
 		return getPath("OutputDirPath", null);
 	}
 	
-	public static String getBulkLoadDirPath() {
+	public synchronized static String getBulkLoadDirPath() {
 		return getPath("bulkLoadDirPath", ".\\BulkLoad\\");
 	}
 	
-	public static String getNineDashThreeLoadDirPath() {
+	public synchronized static String getNineDashThreeLoadDirPath() {
 		return getPath("nineDashThreeLoadDirPath", ".\\NineDashThree\\");
 	}
 
-	public static String getVspsDirPath() {
+	public synchronized static String getVspsDirPath() {
 		return getPath("vspsDirPath", ".\\VSPSData\\");
 	}
 	
-	public static String getZipcodeTableFile() {
+	public synchronized static String getZipcodeTableFile() {
 		String sRet = props.getProperty("zipcodeTableFile");
 		if( sRet == null || sRet.trim().length() == 0 ) exitError("zipcodeTableFile");
 		if( sRet != null && sRet.trim().length() == 0 ) 
@@ -648,7 +632,7 @@ public class CivetConfig {
 		return sRet;
 	}
 	
-	public static String getCountiesTableFile() {
+	public synchronized static String getCountiesTableFile() {
 		String sRet = props.getProperty("countiesTableFile");
 		if( sRet == null || sRet.trim().length() == 0 ) exitError("countiesTableFile");
 		if( sRet != null && sRet.trim().length() == 0 ) 
@@ -656,7 +640,7 @@ public class CivetConfig {
 		return sRet;
 	}
 	
-	public static String getCountyAliasesTableFile() {
+	public synchronized static String getCountyAliasesTableFile() {
 		String sRet = props.getProperty("countyAliasesTableFile");
 		if( sRet == null || sRet.trim().length() == 0 ) exitError("countyAliasesTableFile");
 		if( sRet != null && sRet.trim().length() == 0 ) 
@@ -664,7 +648,7 @@ public class CivetConfig {
 		return sRet;
 	}
 	
-	public static String getVetTableFile() {
+	public synchronized static String getVetTableFile() {
 		String sRet = props.getProperty("vetTableFile");
 		if( sRet == null || sRet.trim().length() == 0 ) exitError("vetTableFile");
 		if( sRet != null && sRet.trim().length() == 0 ) 
@@ -672,7 +656,7 @@ public class CivetConfig {
 		return sRet;
 	}
 	
-	public static boolean isCheckAccredStatus() {
+	public synchronized static boolean isCheckAccredStatus() {
 		if( bCheckAccredStatus  == null ) {
 			String sVal = props.getProperty("checkAccreditationStatus");
 			if( sVal == null || sVal.trim().length() == 0 )
@@ -687,9 +671,12 @@ public class CivetConfig {
 		return bCheckAccredStatus;
 	}	
 
-	public static String getStateVetTableFile() {
+	public synchronized static String getStateVetTableFile() {
 		String sRet = props.getProperty("stateVetTableFile");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("stateVetTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) { 
+			exitError("stateVetTableFile");
+			return null;
+		}
 		File f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
 			logger.error( "stateVetTableFile " + sRet + " does not exist or is not a file");
@@ -700,25 +687,34 @@ public class CivetConfig {
 		return sRet;
 	}
 
-	public static String getSppTableFile() {
+	public synchronized static String getSppTableFile() {
 		String sRet = props.getProperty("sppTableFile");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("sppTableFile");
+		if( sRet == null || sRet.trim().length() == 0 ) { 
+			exitError("sppTableFile");
+			return null;
+		}
 		if( sRet != null && sRet.trim().length() == 0 ) 
 			sRet = null; 
 		return sRet;
 	}
 
-	public static String getErrorTypeTableFile() {
+	public synchronized static String getErrorTypeTableFile() {
 		String sRet = props.getProperty("errorTypeTableFile");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("errorTypeTableFile");
+		if( sRet == null || sRet.trim().length() == 0 )  { 
+			exitError("errorTypeTableFile");
+			return null;
+		}
 		if( sRet != null && sRet.trim().length() == 0 ) 
 			sRet = null; 
 		return sRet;
 	}
 	
-	public static String getExportMailTemplate() {
+	public synchronized static String getExportMailTemplate() {
 		String sRet = props.getProperty("ExportEmailTemplate");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("ExportEmailTemplate");
+		if( sRet == null || sRet.trim().length() == 0 )  { 
+			exitError("ExportEmailTemplate");
+			return null;
+		}
 		File f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
 			logger.error( "ExportEmailTemplate " + sRet + " does not exist or is not a file");
@@ -729,9 +725,12 @@ public class CivetConfig {
 		return sRet;
 	}
 	
-	public static String getImportErrorsEmailTemplate() {
+	public synchronized static String getImportErrorsEmailTemplate() {
 		String sRet = props.getProperty("ImportErrorsEmailTemplate");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("ImportErrorsEmailTemplate");
+		if( sRet == null || sRet.trim().length() == 0 )  { 
+			exitError("ImportErrorsEmailTemplate");
+			return null;
+		}
 		File f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
 			logger.error( "ImportErrorsEmailTemplate " + sRet + " does not exist or is not a file");
@@ -742,9 +741,12 @@ public class CivetConfig {
 		return sRet;
 	}
 
-	public static String getImportErrorsLetterTemplate() {
+	public synchronized static String getImportErrorsLetterTemplate() {
 		String sRet = props.getProperty("ImportErrorsLetterTemplate");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("ImportErrorsLetterTemplate");
+		if( sRet == null || sRet.trim().length() == 0 )  { 
+			exitError("ImportErrorsLetterTemplate");
+			return null;
+		}
 		File f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
 			logger.error( "ImportErrorsLetterTemplate " + sRet + " does not exist or is not a file");
@@ -756,9 +758,12 @@ public class CivetConfig {
 	}
 
 
-	public static String getCoKsXSLTFile() {
+	public synchronized static String getCoKsXSLTFile() {
 		String sRet = props.getProperty("CoKsXSLTFile");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("xsltFile");
+		if( sRet == null || sRet.trim().length() == 0 )  { 
+			exitError("xsltFile");
+			return null;
+		}
 		File f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
 			logger.error( "CoKsXSLTFile " + sRet + " does not exist or is not a file");
@@ -769,9 +774,12 @@ public class CivetConfig {
 		return sRet;
 	}
 
-	public static String getSchemaFile() {
+	public synchronized static String getSchemaFile() {
 		String sRet = props.getProperty("StdSchema");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("StdSchema");
+		if( sRet == null || sRet.trim().length() == 0 )  { 
+			exitError("StdSchema");
+			return null;
+		}
 		File f = new File( sRet );
 		if( !f.exists() || !f.isFile() ) {
 			logger.error( "StdSchema " + sRet + " does not exist or is not a file");
@@ -783,10 +791,12 @@ public class CivetConfig {
 	}
 
 	
-	public static int getRotation() {
+	public synchronized static int getRotation() {
 		int iRet = -1;
 		String sRet = props.getProperty("rotation");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("rotation");
+		if( sRet == null || sRet.trim().length() == 0 )  { 
+			exitError("rotation");
+		}
 		try {
 			iRet = Integer.parseInt(sRet);
 		} catch( NumberFormatException nfe ) {
@@ -797,11 +807,13 @@ public class CivetConfig {
 		return iRet;
 	}
 
-	public static long getMaxAttachSize() {
+	public synchronized static long getMaxAttachSize() {
 		long iRet = -1;
 		long iMulti = 1;
 		String sRet = props.getProperty("maxAttachSize");
-		if( sRet == null || sRet.trim().length() == 0 ) exitError("maxAttachSize");
+		if( sRet == null || sRet.trim().length() == 0 )  { 
+			exitError("maxAttachSize");
+		}
 		if( sRet.endsWith("K") ) iMulti = 1024;
 		else if( sRet.endsWith("M")) iMulti = 1024*1024;
 		if( !Character.isDigit(sRet.charAt(sRet.length()-1)) ) 
@@ -817,7 +829,7 @@ public class CivetConfig {
 		return iRet;
 	}
 	
-	public static long getWSTimeout() {
+	public synchronized static long getWSTimeout() {
 		long lTimeout = DEFAULT_WS_TIMEOUT; // Two minutes
 		String sRet = props.getProperty("wsTimeout");
 		if( sRet == null || sRet.trim().length() == 0 ) { 
@@ -834,7 +846,7 @@ public class CivetConfig {
 		return lTimeout;
 	}
 	
-	public static long getMaxAnimals() {
+	public synchronized static long getMaxAnimals() {
 		long iRet = -1;
 		String sRet = props.getProperty("maxAnimals");
 		if( sRet == null || sRet.trim().length() == 0 ) { 
@@ -854,7 +866,7 @@ public class CivetConfig {
 	 * get the string for the default purpose of movement but allow it to not exist.
 	 * @return
 	 */
-	public static String getDefaultPurpose() {
+	public synchronized static String getDefaultPurpose() {
 		String sRet = props.getProperty("defaultPurpose");
 		if( sRet != null && sRet.trim().length() == 0 ) 
 			sRet = null; 
@@ -865,14 +877,14 @@ public class CivetConfig {
 	 * get the string for the default species but allow it to not exist.
 	 * @return
 	 */
-	public static String getDefaultSpecies() {
+	public synchronized static String getDefaultSpecies() {
 		String sRet = props.getProperty("defaultSpecies");
 		if( sRet != null && sRet.trim().length() == 0 ) 
 			sRet = null; 
 		return sRet;
 	}
 	
-	public static boolean isJPedalXFA() {
+	public synchronized static boolean isJPedalXFA() {
 		boolean bRet = false;
 		if( iJPedalType == UNK ) {
 			final String xfaClassPath="org/jpedal/objects/acroforms/AcroRendererXFA.class";
@@ -891,7 +903,7 @@ public class CivetConfig {
 		return bRet;
 	}
 	
-	public static boolean isAutoOpenPdf() {
+	public synchronized static boolean isAutoOpenPdf() {
 		if( bAutoOpenPDF  == null ) {
 			String sVal = props.getProperty("autoOpenPdf");
 			if( sVal == null || sVal.trim().length() == 0 )
@@ -906,7 +918,7 @@ public class CivetConfig {
 		return bAutoOpenPDF;
 	}
 
-	public static String getAcrobatPath() {
+	public synchronized static String getAcrobatPath() {
 		String sRet = props.getProperty("acrobatPath");
 		if( sRet != null ) {
 			File f = new File( sRet );
@@ -922,30 +934,30 @@ public class CivetConfig {
 	
 
 	// These are only used by direct database "add ons" so don't start-up check but leave in.
-	public static String getDbServer() {
+	public synchronized static String getDbServer() {
 		String sRet = "LPHSQL"; 
 		return sRet;
 	}
 
-	public static int getDbPort() {
+	public synchronized static int getDbPort() {
 		int iRet = 1433;
 		return iRet;
 	}
 
 
-	public static String getDbDatabaseName() {
+	public synchronized static String getDbDatabaseName() {
 		String sRet = "USAHERDS"; 
 		return sRet;
 	}
 
-	public static String getDbHerdsSchemaName() {
+	public synchronized static String getDbHerdsSchemaName() {
 		String sRet = props.getProperty("dbHerdsSchemaName");
 		if( sRet != null && sRet.trim().length() == 0 ) 
 			sRet = null; 
 		return sRet;
 	}
 
-	public static String getDbCivetSchemaName() {
+	public synchronized static String getDbCivetSchemaName() {
 		String sRet = props.getProperty("dbCivetSchemaName");
 		if( sRet != null && sRet.trim().length() == 0 ) 
 			sRet = null; 
@@ -958,7 +970,7 @@ public class CivetConfig {
 	 * Get the Database UserName
 	 * @return
 	 */
-	public static String getDBUserName() {
+	public synchronized static String getDBUserName() {
 		return sDBUserName;
 	}
 	
@@ -966,15 +978,15 @@ public class CivetConfig {
 	 * Get the Database Password 
 	 * @return
 	 */
-	public static String getDBPassword() {
+	public synchronized static String getDBPassword() {
 		return sDBPassword;
 	}
 	
-	public static void setDBUserName( String sUser ) {
+	public synchronized static void setDBUserName( String sUser ) {
 		sDBUserName = sUser;
 	}
 	
-	public static void setDBPassword( String sPass ) {
+	public synchronized static void setDBPassword( String sPass ) {
 		sDBPassword = sPass;
 	}
 	
@@ -1024,7 +1036,7 @@ public class CivetConfig {
 		System.exit(1);
 	}
 	
-	public static boolean writeConfigFile( String sFileName ) {
+	public synchronized static boolean writeConfigFile( String sFileName ) {
 		boolean bRet = true;
 		ConfigCsv config = new ConfigCsv();
 		PrintWriter pw = null;
@@ -1058,7 +1070,7 @@ public class CivetConfig {
 		return bRet;
 	}
 	
-	public static void initConfig() {
+	public synchronized static void initConfig() {
 		if( props == null ) {
 			props = new Properties();
 			FileInputStream fis = null;
@@ -1067,6 +1079,7 @@ public class CivetConfig {
 				props.load(fis);
 			} catch (IOException e) {
 				exitErrorImmediate("Cannot read configuration file CivetConfig.txt");
+				return;
 			} finally {
 				if( fis != null )
 					try {
@@ -1078,7 +1091,7 @@ public class CivetConfig {
 		}
 	}
 	
-	public static void checkAllConfig() {
+	public synchronized static void checkAllConfig() {
 		String sErr = checkAllConfigImp();
 		int iFails = 1;
 		while( sErr != null ) {
@@ -1110,7 +1123,7 @@ public class CivetConfig {
 		 * NOTE: Only test those that are required by the external release, i.e., outside of addons
 		 * @return NULL if everything works or string with missing setting or file message
 		 */
-	public static String checkAllConfigImp() {
+	public synchronized static String checkAllConfigImp() {
 		initConfig();	
 		String sRet = props.getProperty("standAlone");
 		if( sRet == null || sRet.trim().length() == 0 ) return ("standAlone");

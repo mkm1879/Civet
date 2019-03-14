@@ -203,24 +203,6 @@ public class VspsCviAnimal {
 			return  aCols.get(iCol);
 	}
 
-	
-	private boolean isOfficialVSPSIdType( String sIdType ) {
-		boolean bRet = false;
-		if( sIdType == null || sIdType.trim().length() == 0 )
-			return false;
-		if( sIdType.trim().startsWith("Flock ID Eartag") )
-			return true;
-		if( sIdType.trim().startsWith("Off Scrapie") )
-			return true;
-		if( sIdType.trim().startsWith("Reg/SFCP") )
-			return true;
-		if( sIdType.trim().startsWith("USDA") )
-			return true;
-		if( sIdType.trim().startsWith("Registered Name") )
-			return true;
-		return bRet;
-	}
-
 	public ArrayList<AnimalTag> getTags() {
 		return aTags;
 	}

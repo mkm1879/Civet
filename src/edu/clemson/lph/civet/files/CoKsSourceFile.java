@@ -86,9 +86,10 @@ public class CoKsSourceFile extends SourceFile {
 	 */
 	public static boolean isCoKs( File fFile ) {
 		boolean bRet = false;
+		if( fFile == null ) return false;
 		String sName = fFile.getName();
 		if( sName.toLowerCase().endsWith(".pdf") ) {
-			if( fFile != null && fFile.exists() && fFile.isFile() ) {
+			if( fFile.exists() && fFile.isFile() ) {
 				String sTop;
 				try {
 					sTop = FileUtils.readTextFile( fFile, 4 );

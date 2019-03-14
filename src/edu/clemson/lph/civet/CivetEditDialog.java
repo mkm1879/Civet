@@ -48,8 +48,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.log4j.Logger;
-import org.jpedal.PdfDecoder;
-import org.jpedal.objects.PdfPageData;
 
 import edu.clemson.lph.civet.files.SourceFileException;
 import edu.clemson.lph.civet.prefs.CivetConfig;

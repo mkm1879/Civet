@@ -50,6 +50,8 @@
     </path>
     <target name="init">
         <mkdir dir="bin"/>
+		<copy file="src/edu/clemson/lph/civet/res/Version.txt" tofile="./Version.txt" overwrite="true"/>
+		<concat destfile="src/edu/clemson/lph/civet/res/Version.txt" append="true"> Local</concat>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
                 <exclude name="**/*.java"/>
@@ -69,6 +71,7 @@
             <classpath refid="Civet.classpath"/>
         </javac>
 		<antcall target="buildPackageJar"/>
+		<copy file="./Version.txt" tofile="src/edu/clemson/lph/civet/res/Version.txt" overwrite="true"/>
     </target>
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
     <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">

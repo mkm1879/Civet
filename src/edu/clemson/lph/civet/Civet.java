@@ -138,7 +138,8 @@ public class Civet {
 		String sRet = null;
 		try {
 			InputStream iVersion = Civet.class.getResourceAsStream("res/Version.txt");
-			try ( Scanner s = new Scanner(iVersion).useDelimiter("\\A") ) {
+			try ( @SuppressWarnings("resource")
+			Scanner s = new Scanner(iVersion).useDelimiter("\\A") ) {
 				sRet = s.hasNext() ? s.next() : "";
 				s.close();
 				iVersion.close();
@@ -146,7 +147,7 @@ public class Civet {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.error(e);
-		}
+		} 
 		return sRet;
 	}
 	

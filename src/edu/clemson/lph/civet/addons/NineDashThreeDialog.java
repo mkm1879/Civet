@@ -15,14 +15,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.AddAnimalsDialog;
-import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.AnimalIDListTableModel;
 import edu.clemson.lph.civet.AnimalIDRecord;
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.SpeciesRecord;
-import edu.clemson.lph.civet.lookup.Counties;
-import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
@@ -30,9 +26,6 @@ import edu.clemson.lph.controls.DBNumericField;
 import edu.clemson.lph.controls.DateField;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
 import edu.clemson.lph.dialogs.MessageDialog;
-import edu.clemson.lph.dialogs.ProgressDialog;
-import edu.clemson.lph.utils.CountyUtils;
-import edu.clemson.lph.utils.FileUtils;
 
 import java.awt.GridLayout;
 
@@ -46,7 +39,6 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.JTextComponent;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import java.awt.GridBagLayout;
@@ -57,9 +49,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 @SuppressWarnings("serial")
 public class NineDashThreeDialog extends JFrame {
