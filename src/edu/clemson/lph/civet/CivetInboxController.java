@@ -6,11 +6,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
@@ -18,7 +15,6 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.emailonly.EmailOnlyDialog;
 import edu.clemson.lph.civet.files.SourceFileException;
@@ -60,22 +56,6 @@ public class CivetInboxController {
 		return singleInstance;
 	}
 
-	/**
-	 * Testing only
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		PropertyConfigurator.configure("CivetConfig.txt");
-		// Fail now so config file and required files can be fixed before work is done.
-		CivetConfig.checkAllConfig();
-		logger.setLevel(CivetConfig.getLogLevel());
-		CivetInbox.VERSION = "Test Inbox Controller";
-		logger.info("Civet running build: " + CivetInbox.VERSION);
-		// TODO Auto-generated method stub
-		CivetInbox me = new CivetInbox();
-//		me.selectFiles();
-	}
-	
 	/**
 	 * Called from constructor to isolate all the add****Handler verbosity
 	 */
@@ -148,7 +128,7 @@ public class CivetInboxController {
 		inbox.menuItemAbout.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				String sMsg = "Civet: CVI Management Utility\nVersion: " + inbox.VERSION;
+				String sMsg = "Civet: CVI Management Utility\nVersion: " + CivetInbox.VERSION;
 				MessageDialog.showMessage(inbox, "About Civet", sMsg);
 			}
 		});
@@ -248,7 +228,9 @@ public class CivetInboxController {
 			ArrayList<File> files = new ArrayList<File>();
 			for( int i = 0; i < selectedFiles.length; i++ )
 				files.add(selectedFiles[i]);
+			@SuppressWarnings("unused")
 			CivetEditDialog dlg = new CivetEditDialog( inbox, files);
+			// Constructor calls setVisible when ready.
 		} catch( SourceFileException e ) {
 			logger.error("Failed to open files", e);
 			MessageDialog.showMessage(inbox, "Civet Error:", e.getMessage());
@@ -258,9 +240,11 @@ public class CivetInboxController {
 	private void doOpenFiles() {
 		try {
 			FilesTableModel model = (FilesTableModel)inbox.tblInBox.getModel();
-			boolean bView = ( model instanceof EmailFilesTableModel );
+//			boolean bView = ( model instanceof EmailFilesTableModel );
 			ArrayList<File> files = model.getSelectedFiles(inbox.tblInBox);
+			@SuppressWarnings("unused")
 			CivetEditDialog dlg = new CivetEditDialog(inbox, files);
+			// Constructor calls setVisible when ready.
 		} catch( SourceFileException e ) {
 			logger.error("Failed to open files", e);
 			MessageDialog.showMessage(inbox, "Civet Error:", e.getMessage());
@@ -280,9 +264,11 @@ public class CivetInboxController {
 	private void doOpenAll() {
 		try {
 			FilesTableModel model = (FilesTableModel)inbox.tblInBox.getModel();
-			boolean bView = (model instanceof EmailFilesTableModel );
+//			boolean bView = (model instanceof EmailFilesTableModel ); 
 			ArrayList<File> files = model.getAllFiles();
+			@SuppressWarnings("unused")
 			CivetEditDialog dlg = new CivetEditDialog(inbox, files);
+			// Constructor calls setVisible when ready.
 		} catch( SourceFileException e ) {
 			logger.error("Failed to open files", e);
 			MessageDialog.showMessage(inbox, "Civet Error:", e.getMessage());

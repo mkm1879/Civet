@@ -22,7 +22,6 @@ import org.w3c.dom.Element;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.dialogs.MessageDialog;
-import edu.clemson.lph.utils.FileUtils;
 
 /**
  * Just to get the complexity of Binaries and their references isolated.

@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Element;
 
-public class Animal {
+public class Animal implements java.lang.Cloneable {
 	public Element eAnimal;
 	public SpeciesCode speciesCode;
 	public ArrayList<AnimalTag> animalTags;

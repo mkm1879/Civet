@@ -21,7 +21,7 @@ public class CountyUtils {
 			System.out.println( CountyUtils.getCounty("29115-6909") );
 			ArrayList<String>aCounties = CountyUtils.listCounties("SC");
 			int i = 0;
-			for( String sCounty : aCounties ) {
+			for( @SuppressWarnings("unused") String sCounty : aCounties ) {
 //				System.out.println(sCounty);
 				i++;
 			}

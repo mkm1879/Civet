@@ -22,16 +22,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.util.List;
 
-import javax.mail.AuthenticationFailedException;
-import javax.mail.MessagingException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -47,22 +38,10 @@ import javax.swing.JToolBar;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.dialogs.*;
-import edu.clemson.lph.mailman.MailMan;
-import edu.clemson.lph.utils.Validator;
-import edu.clemson.lph.civet.emailonly.EmailOnlyDialog;
 import edu.clemson.lph.civet.inbox.DateCellRenderer;
-import edu.clemson.lph.civet.inbox.EmailFilesTableModel;
 import edu.clemson.lph.civet.inbox.FilesTableModel;
-import edu.clemson.lph.civet.inbox.SourceFilesTableModel;
-import edu.clemson.lph.civet.inbox.StdXMLFilesTableModel;
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
-import edu.clemson.lph.civet.lookup.StateVetTableEditDlg;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.prefs.ConfigDialog;
-import edu.clemson.lph.civet.threads.SendInboundErrorsEmailThread;
-import edu.clemson.lph.civet.threads.SendOutboundCVIEmailThread;
-import edu.clemson.lph.civet.threads.SubmitCVIsThread;
-import edu.clemson.lph.civet.vsps.VspsCviFile;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {

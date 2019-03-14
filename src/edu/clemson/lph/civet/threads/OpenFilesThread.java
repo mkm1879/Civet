@@ -41,7 +41,6 @@ public class OpenFilesThread extends Thread {
 	ArrayList<File> filesToOpen = null;
 	OpenFileList openFiles = null;
 	private File currentFile;
-	private String sFilePath;
 	
 	/**
 	 * Read a list of files and return list of OpenFile objects in call back.
@@ -79,13 +78,15 @@ public class OpenFilesThread extends Thread {
 			});
 			return;
 		}
+		String sCurrentFile = null;
 		try {
 			for( File f : filesToOpen ) {
+				sCurrentFile = f.getAbsolutePath();
 				prog.setMessage("Opening CVI File " + f.getName());
 				openFiles.openFile(f);
 			}
 		} catch(SourceFileException | PdfException e){
-			logger.error("\nError reading or decoding file " + sFilePath, e );
+			logger.error("\nError reading or decoding file " + sCurrentFile, e );
 		} finally {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {

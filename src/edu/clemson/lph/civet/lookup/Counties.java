@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.FileUtils;
@@ -142,24 +140,6 @@ public class Counties  {
 			aliasMap.put(key, sCounty);
 			row = parser.getNext();
 		}
-	}
-	
-	public static void main( String args[] ) {
-		PropertyConfigurator.configure("CivetConfig.txt");
-		CivetConfig.checkAllConfig();
-		Counties c = null;
-		try {
-			c = new Counties();
-		} catch (IOException e) {
-			logger.error(e);
-		}
-//		System.out.println(c.getHerdsCounty("FL", "MIAMI-DADE"));
-//		if( c != null ) {
-//			for( String sCounty : c.getCounties("SC") ) 
-//				System.out.println(sCounty);
-//			for( String sCounty : c.getCounties("AK") ) 
-//				System.out.println(sCounty);
-//		}
 	}
 
 	static class StatePlusAlias {

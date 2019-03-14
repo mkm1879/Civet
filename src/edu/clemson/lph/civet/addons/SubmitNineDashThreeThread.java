@@ -43,7 +43,6 @@ public class SubmitNineDashThreeThread extends Thread {
 	private java.util.Date dDateIssued;
 	private String sProduct;
 	private ArrayList<SpeciesRecord> aSpecies;
-	private ArrayList<AnimalIDRecord> aAnimalIDs;
 	private String sOriginStateCode;
 	private String sOriginPIN;
 	private String sOriginBusiness ;
@@ -97,7 +96,6 @@ public class SubmitNineDashThreeThread extends Thread {
 		this.dDateIssued = dDateIssued; 
 		this.sProduct = sProduct; 
 		this.aSpecies = aSpecies; 
-		this.aAnimalIDs = aAnimalIDs; 
 		this.sOriginStateCode = sOriginStateCode; 
 		this.sOriginPIN = sOriginPIN; 
 		this.sOriginBusiness  = sOriginBusiness; 
@@ -157,7 +155,7 @@ public class SubmitNineDashThreeThread extends Thread {
 				}
 			}
 			if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {
-				if( sRet.contains("99,Timeout expired")) {
+				if( sRet != null && sRet.contains("99,Timeout expired")) {
 					logger.info("Time out CVI Number: " + sCVINo );
 				}
 				else {

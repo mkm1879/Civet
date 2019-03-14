@@ -40,7 +40,6 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.lookup.ErrorTypeLookup;
 import edu.clemson.lph.civet.lookup.StateVetLookup;
-import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
@@ -78,21 +77,23 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 			}
 			// Go Through all Files and sort by destination state into map
 			File aEmailOutFiles[] = fEmailOutDir.listFiles();
-			for( File fNext : aEmailOutFiles ) {
-				if( fNext != null && fNext.exists() && fNext.isFile() ) {
-					String sName = fNext.getName();
-					if( sName.toLowerCase().endsWith(".cvi") ) {
-						String sParts[] = sName.split("\\_");
-						if( sParts.length < 4 )
-							throw new Exception(sName + " is not configured as email file.");
-						String sFromState = sParts[1];
-						ArrayList<File> aStatePdfs = mStateMap.get(sFromState);
-						if( aStatePdfs == null ) {
-							aStatePdfs = new ArrayList<File>();
-							mStateMap.put(sFromState, aStatePdfs);
+			if( aEmailOutFiles != null ) {
+				for( File fNext : aEmailOutFiles ) {
+					if( fNext != null && fNext.exists() && fNext.isFile() ) {
+						String sName = fNext.getName();
+						if( sName.toLowerCase().endsWith(".cvi") ) {
+							String sParts[] = sName.split("\\_");
+							if( sParts.length < 4 )
+								throw new Exception(sName + " is not configured as email file.");
+							String sFromState = sParts[1];
+							ArrayList<File> aStatePdfs = mStateMap.get(sFromState);
+							if( aStatePdfs == null ) {
+								aStatePdfs = new ArrayList<File>();
+								mStateMap.put(sFromState, aStatePdfs);
+							}
+							aStatePdfs.add(fNext);
+							iFiles++;
 						}
-						aStatePdfs.add(fNext);
-						iFiles++;
 					}
 				}
 			}

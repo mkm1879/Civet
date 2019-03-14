@@ -19,7 +19,6 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.utils.FileUtils;
 
 import java.awt.Window;
