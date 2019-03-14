@@ -9,7 +9,6 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.QuestionDialog;
-import edu.clemson.lph.utils.FileUtils;
 
 /**
  * This class will contain the viewer displayed in CivetEditDialog.  That viewer will contain the entire 

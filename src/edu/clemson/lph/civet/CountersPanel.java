@@ -24,14 +24,11 @@ import javax.swing.JPanel;
 
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.FlowLayout;
 
 @SuppressWarnings("serial")
 public class CountersPanel extends JPanel {
+	@SuppressWarnings("unused")
 	private CivetEditDialog parent;
 	 JPanel pCounters;
 	 JLabel fileCounter1;

@@ -14,15 +14,10 @@
  */
 package edu.clemson.lph.civet.xml;
 
-import java.io.IOException;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
-
 import edu.clemson.lph.civet.Civet;
 
 /**

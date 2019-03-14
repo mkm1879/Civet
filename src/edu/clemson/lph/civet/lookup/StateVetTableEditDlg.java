@@ -12,10 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 
 import javax.swing.JLabel;

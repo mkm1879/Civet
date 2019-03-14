@@ -47,7 +47,7 @@ public class OpenFileSaveQueue {
 		}
 	}
 	
-	public void saveComplete() {
+	public synchronized void saveComplete() {
 		iThreads--;
 		if( iThreads == 0 )
 			controller.saveComplete();
@@ -56,7 +56,7 @@ public class OpenFileSaveQueue {
 		}
 	}
 
-	private void save(OpenFile fileToSave) {
+	private synchronized void save(OpenFile fileToSave) {
 		iThreads++;
 		SaveCVIModelThread saveThread = new SaveCVIModelThread( this, fileToSave);
 		saveThread.start();

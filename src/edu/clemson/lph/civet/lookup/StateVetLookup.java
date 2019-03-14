@@ -347,14 +347,16 @@ public class StateVetLookup implements DBTableSource {
 					if( arg0 == null && arg1 == null ) return 0;
 					if( arg0 != null && arg1 == null ) return -1;
 					if( arg0 == null && arg1 != null ) return 1;
+					if( arg0 == null || arg1 == null ) return 0;
 					
 					String sState0 = (String)arg0.get(5);
 					String sState1 = (String)arg1.get(5);
 					
+					if( sState0 == null && sState1 == null ) return 0;
 					if( ( sState0 == null || sState0.trim().length() == 0 ) && ( sState1 == null || sState1.trim().length() == 0 ) ) return 0;
 					if( ( sState0 != null && sState0.trim().length() > 0 ) && ( sState1 == null || sState1.trim().length() == 0 ) ) return -1;
 					if( ( sState1 != null && sState1.trim().length() > 0 ) && ( sState0 == null || sState0.trim().length() == 0 ) ) return 1;
-					
+					if( sState0 == null || sState1 == null ) return 0;
 					return sState0.compareTo(sState1);
 				}
 			});
