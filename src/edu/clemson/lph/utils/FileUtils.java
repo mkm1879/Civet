@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 import edu.clemson.lph.civet.Civet;
 
 public class FileUtils {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	
 	public static java.util.Date getLastAccessedDate( File fIn ) throws IOException {
 		java.util.Date dAccessed = null;

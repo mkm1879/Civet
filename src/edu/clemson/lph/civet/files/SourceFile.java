@@ -32,7 +32,7 @@ import edu.clemson.lph.utils.FileUtils;
  * Common functionality of all source file types including ID of type.
  */
 public abstract class SourceFile {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	protected static final Logger logger = Logger.getLogger(Civet.class.getName());
 	public static enum Types {
 		PDF,
 		Image,
@@ -56,9 +56,9 @@ public abstract class SourceFile {
 	// model will hold the pdf as currently constructed.
 	protected StdeCviXmlModel model = null;
 	protected Integer iPage = null;
-	protected PDFViewer viewer = null;
+	private PDFViewer viewer = null;
 
-	public SourceFile cloneCurrentState() {
+	SourceFile cloneCurrentState() {
 		SourceFile sourceFile = null;
 		switch( type ) {
 		case PDF:
@@ -71,7 +71,7 @@ public abstract class SourceFile {
 		return sourceFile;
 	}
 	
-	public SourceFile clonePdfSource() {
+	private SourceFile clonePdfSource() {
 		SourceFile clone = new PdfSourceFile();
 		clone.sFilePath = sFilePath;
 		clone.sFileName = sFileName;
@@ -137,7 +137,7 @@ public abstract class SourceFile {
 		return iPage;
 	}
 	
-	public void viewFile() throws PdfException {
+	void viewFile() throws PdfException {
 		byte pdfBytes[] = getPDFBytes();
 		boolean bXFA = PDFUtils.isXFA(pdfBytes);
 		if( bXFA && !CivetConfig.isJPedalXFA() ) {
@@ -201,9 +201,6 @@ public abstract class SourceFile {
 	public boolean isDataFile() {
 		return false;
 	}
-	public StdeCviXmlModel split() throws SourceFileException {
-		throw new SourceFileException("Attempt to split unsplittable file.");
-	}
 	public String getFileName() {
 		return sFileName;
 	}
@@ -246,7 +243,7 @@ public abstract class SourceFile {
 	 * @param sPath Full path to the source file being "opened".
 	 * @return
 	 */
-	public static SourceFile readSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
+	static SourceFile readSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
 		SourceFile sourceFile = null;
 		SourceFile.Types type = SourceFile.getType(fFile);
 		switch( type ) {
@@ -283,7 +280,7 @@ public abstract class SourceFile {
 	 * @param sFilePath
 	 * @return
 	 */
-	public static Types getType( File fFile ) {
+	private static Types getType( File fFile ) {
 		Types type = SourceFile.Types.Unknown;
 		if( PdfSourceFile.isPDF(fFile) ) {
 			if( CoKsSourceFile.isCoKs(fFile) ) {

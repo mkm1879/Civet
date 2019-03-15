@@ -6,14 +6,14 @@ import java.awt.event.ItemListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public class FormEditListener implements ItemListener, DocumentListener {
+class FormEditListener implements ItemListener, DocumentListener {
 	private boolean bChanged = false;
 
 	public FormEditListener() {
 		bChanged = false;
 	}
 
-	public void clear( ) {
+	void clear( ) {
 		bChanged = false;
 	}
 	

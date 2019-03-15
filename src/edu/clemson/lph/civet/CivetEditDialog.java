@@ -74,10 +74,9 @@ import java.awt.Insets;
  */
 @SuppressWarnings("serial")
 public final class CivetEditDialog extends JFrame {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private Window parent;
 	private CivetEditDialog dialogParent;
-	static final String sFileCopyAddress = CivetConfig.getEmailCopyTo();
 	public static final int PDF_MODE = 0;
 	public static final int XML_MODE = 1;
 	public static final int VIEW_MODE = 2;
@@ -87,15 +86,14 @@ public final class CivetEditDialog extends JFrame {
 //	int iRotation = 180;  // 0 appears to be upside down relative to Acrobat ?!
 	boolean bImport = true;
 	int iMode;
-	int iFileNo = 0;
-	int iPageNo = 1;
+	private int iPageNo = 1;
 
 	boolean bMultiSpecies = false;
 
 	/** GUI components that need to be read or written outside of initialization **/
 	// NOTE Use of default visibility for controls that need to be accessed by the 
 	// invokeLater() methods of secondary threads.
-	ImageIcon appIcon;
+	private ImageIcon appIcon;
 	CountersPanel pCounters;
 	//	PinField jtfOtherPIN;
 	JComboBox<String> cbOtherCounty;
@@ -109,9 +107,9 @@ public final class CivetEditDialog extends JFrame {
 	DBNumericField jtfNumber;
 	DateField jtfDateInspected;
 	JTextField jtfCVINo;
-	ImageIcon iconPDF = null;
-	ImageIcon iconXML = null;
-	ImageIcon iconMAIL = null;
+	private ImageIcon iconPDF = null;
+	private ImageIcon iconXML = null;
+	private ImageIcon iconMAIL = null;
 	Icon iconPDFPage;
 	DBComboBox cbOtherState;
 	DBComboBox cbSpecies;
@@ -121,16 +119,16 @@ public final class CivetEditDialog extends JFrame {
 	JButton bAddSpecies;
 	JButton bSave;
 	JButton bError;
-	JLabel bMode;
-	JPanel pSpacer;
+	private JLabel bMode;
+	private JPanel pSpacer;
 	JButton bPDFView;
 	JButton bRotate;
 	JButton bBigger;
 	JButton bSmaller;
-	JScrollPane display;
+	private JScrollPane display;
 	JLabel lMultipleSpecies;
-	ButtonGroup rbGroup;
-	JPanel topBar;
+	private ButtonGroup rbGroup;
+	private JPanel topBar;
 	JLabel lError;
 	DBSearchComboBox cbIssuedBy;
 	JLabel lIssuedBy;
@@ -138,8 +136,8 @@ public final class CivetEditDialog extends JFrame {
 	JTextField jtfOtherCity;
 	DateField jtfDateReceived;
 	JCheckBox ckSticky;
-	JPanel altDisplay;
-	JPanel pView;
+	private JPanel altDisplay;
+	private JPanel pView;
 	JLabel lblCviNumber;
 	JLabel lblDateInspected;
 	JCheckBox ckAllVets;
@@ -148,26 +146,25 @@ public final class CivetEditDialog extends JFrame {
 	DBComboBox cbPurpose;
 	JTextField jtfOtherAddress;
 	JTextField jtfOtherZip;
-	TitledBorder tbOtherState;
-	TitledBorder tbThisState;
-	TitledBorder tbCVIDetails;
-	JPanel pOtherState;
-	JPanel pThisState;
-	JPanel pButtons;
-	TitledBorder tbButtons;
-	JPanel pEdit;
+	private TitledBorder tbOtherState;
+	private TitledBorder tbThisState;
+	private TitledBorder tbCVIDetails;
+	private JPanel pOtherState;
+	private JPanel pThisState;
+	private JPanel pButtons;
+	private TitledBorder tbButtons;
+	private JPanel pEdit;
 	JButton bAddToPrevious;
 	JButton bGotoPage;
 	JButton bAddIDs;
 	JButton bEditLast;
 	JButton bPDFViewFile;
-	boolean bPreview;
 	JLabel lThisCity;
 	JMenuItem mntmSave;
 	JMenuItem mntmClose;
 	JMenuItem mntmMinimizeAll;
 	JMenuItem mntmRefresh;
-	CivetEditDialogController controller;
+	private CivetEditDialogController controller;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -906,40 +903,12 @@ public final class CivetEditDialog extends JFrame {
 	    this.setSize(width,height);
 	    this.setLocation((screenSize.width - width) / 2, (screenSize.height - height) / 2);
 	}
-	
-	public void make90PercentShift() {
-	    // Center the window (will take effect when normalized)
-	    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-	    int height = (int)(screenSize.height * 0.90);
-	    int width = (int)(screenSize.width * 0.90);
-	    this.setSize(width,height);
-	    this.setLocation((int)((screenSize.width - width) / 1.5), (int)((screenSize.height - height) / 1.5));
-	}
 
 	/**
 	 * Get current page number in current file.  1 indexed.
 	 * @return
 	 */
 	public int getCurrentPageNo() { return iPageNo; }
-	
-	// Callbacks for Threads and Controller to set values in counter panel.
-	void setPage( int iPageNo ) {
-		this.iPageNo = iPageNo;
-		pCounters.setPage(iPageNo);
-	}
-
-	void setPages( int iPages ) {
-		pCounters.setPages(iPages);
-	}
-	
-	void setFile( int iFileNo ) {
-		this.iFileNo = iFileNo;
-		pCounters.setFile(iFileNo); // currentFiles is 0 indexed array
-	}
-
-	void setFiles( int iFiles ) {
-		pCounters.setFiles(iFiles);
-	}
 	
 	/**
 	 * Set the type of file and view-only nature of this dialog.

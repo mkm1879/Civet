@@ -41,11 +41,10 @@ import edu.clemson.lph.db.ThreadListener;
 
 
 @SuppressWarnings("serial")
-public class ListPickerDialog extends JDialog {
+class ListPickerDialog extends JDialog {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private int iKey = -1;
 	private DatabaseConnectionFactory factory = null;
-	private boolean bOK = false;
 	private boolean bHideCode = true;
 	private boolean bLink = false;
 	
@@ -67,7 +66,7 @@ public class ListPickerDialog extends JDialog {
 	private ProgressDialog prog;
 	private Runnable runOnSelect;
 	
-	public ListPickerDialog(Window parent, String title, boolean modal, DatabaseConnectionFactory factory, String sQuery) {
+	private ListPickerDialog(Window parent, String title, boolean modal, DatabaseConnectionFactory factory, String sQuery) {
 		super(parent);
 		setModal(modal);
 		setTitle(title);
@@ -92,7 +91,6 @@ public class ListPickerDialog extends JDialog {
 
 	public void setHideCode( boolean bHideCode ) { this.bHideCode = bHideCode; }
 
-	public boolean exitOK() { return bOK; }
 	public int getSelectedKey() { return iKey; }
 	public void setSelectedKey( int iKey ) { this.iKey = iKey; }
 
@@ -116,14 +114,6 @@ public class ListPickerDialog extends JDialog {
 		tblSearch.setQuery(sQuery);
 	}
 	
-	public void setQueryParameter( int iIndex, String sParam ) {
-		tblSearch.setQueryParameter(iIndex, sParam);		
-	}
-	
-	public void setQueryParameter( int iIndex, int iParam ) {
-		tblSearch.setQueryParameter(iIndex, iParam);		
-	}
-	
 	public void setRunOnSelect( Runnable runnable ) {
 		runOnSelect = runnable;
 	}
@@ -135,7 +125,6 @@ public class ListPickerDialog extends JDialog {
 		jbNone.setText("No Match, Use Existing");
 		jbNone.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				bOK = true;
 				bLink = false;
 				iKey = -1;
 				setVisible(false);
@@ -146,7 +135,6 @@ public class ListPickerDialog extends JDialog {
 		jbUse.setText("Use This");
 		jbUse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				bOK = true;
 				iKey = tblSearch.getSelectedKey();
 				runOnSelect.run();
 				setVisible(false);
@@ -157,7 +145,6 @@ public class ListPickerDialog extends JDialog {
 			public void mouseClicked(MouseEvent e) {
 				if( tblSearch.getSelectedKey() > 0 ) {
 					if( e.getClickCount() == 2 ) {
-						bOK = true;
 						bLink = false;
 						iKey = tblSearch.getSelectedKey();
 						runOnSelect.run();
@@ -183,7 +170,6 @@ public class ListPickerDialog extends JDialog {
 					ListPickerDialog.super.setVisible(true);
 				}
 				else {
-					bOK = false;
 					setVisible(false);
 				}
 			}

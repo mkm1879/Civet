@@ -55,12 +55,7 @@ public class MessageDialog extends JDialog {
 	public MessageDialog() {
 	}
 
-	public MessageDialog( String sTitle, String sMessage ) {
-		mTitle = sTitle;
-		mMessage = sMessage;
-	}
-
-	public MessageDialog( Window parent, String sTitle, String sMessage ) {
+	private MessageDialog( Window parent, String sTitle, String sMessage ) {
 		super( parent );
 		this.parent = parent;
 		mTitle = sTitle;
@@ -75,11 +70,6 @@ public class MessageDialog extends JDialog {
 		super.setVisible( bShow );
 	}
 
-	public void setDeltas( int deltaX, int deltaY ) {
-		this.deltaX = deltaX;
-		this.deltaY = deltaY;
-	}
-
 	public void setButtons( int iButtons ) {
 		this.iButtons = iButtons;
 	}
@@ -88,7 +78,7 @@ public class MessageDialog extends JDialog {
 		return bOK;
 	}
 
-	public void center() {
+	private void center() {
 		//Center the window
 		boolean bSmall = false;
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -108,10 +98,6 @@ public class MessageDialog extends JDialog {
 			setLocation( deltaX + (screenSize.width - frameSize.width) / 2,
 					deltaY + (screenSize.height - frameSize.height) / 2);
 		}
-	}
-	
-	public static void main( String args[]) {
-		MessageDialog.showMessage(null, "Test Message", "<Veterinarian LicenseNumber=6774 NationalAccreditationNumber=013531>\n<Person>\n<Name>ASHLEY ARMSTRONG, DVM</Name>\n<Phone Number=8122779500 Type=Unknown/>\n</Person>\n<Address>\n<Line1>1652 SPRINGVILLE-JUDAH RD</Line1>\n<Town>SPRINGVILLE</Town>\n<State>IN</State>\n<ZIP>47462</ZIP>\n<Country>USA</Country>\n</Address>\n</Veterinarian>\n<MovementPurposes>\n<MovementPurpose>pet</MovementPurpose>\n</MovementPurposes>\n<Origin>\n<PremName/>\n<Address>\n<Line1>591 DONICA CHURCH RD</Line1>\n<Town>BEDFORD</Town>\n<State>IN</State>\n<ZIP>47421</ZIP>\n<Country>USA</Country>\n</Address>\n<Person>\n<Name>NOBLES-FRALEY, PAULA</Name>\n<Phone Number=3523272877 Type=Unknown/>\n</Person>");
 	}
 
 	private void initGui() {
@@ -170,11 +156,33 @@ public class MessageDialog extends JDialog {
 		center();
 	}
 
+	/**
+	 * Show this message as soon as possible either in event dispatch thread or using 
+	 * SwingUtilities to message and wait.
+	 * @param parent
+	 * @param sTitle
+	 * @param sMessage
+	 */
 	public static void showMessage( Window parent, String sTitle, String sMessage ) {
 		showMessage( parent, sTitle, sMessage, BOTH_BUTTONS );
 	}	
 
+	/**
+	 * Show this message as soon as possible either in event dispatch thread or using 
+	 * SwingUtilities to message and wait.
+	 * @param parent
+	 * @param sTitle
+	 * @param sMessage
+	 * @param iButtons
+	 */
 	public static void showMessage( Window parent, String sTitle, String sMessage, int iButtons ) {
+		if( SwingUtilities.isEventDispatchThread() )
+			showMessageNow( parent, sTitle, sMessage, iButtons );
+		else
+			messageWait( parent, sTitle, sMessage, iButtons );
+	}	
+
+	private static void showMessageNow( Window parent, String sTitle, String sMessage, int iButtons ) {
 		MessageDialog me = new MessageDialog( parent, sTitle, sMessage );
 		me.setButtons(iButtons);
 		me.setModal(true);
@@ -182,10 +190,23 @@ public class MessageDialog extends JDialog {
 		me.requestFocus();
 	}
 
+	/**
+	 * Explicitly display this message after the current thread returns to the event dispatch thread.
+	 * @param parent
+	 * @param sTitle
+	 * @param sMessage
+	 */
 	public static void messageLater( Window parent, String sTitle, String sMessage ) {
 		messageLater( parent, sTitle, sMessage, BOTH_BUTTONS );
 	}	
 
+	/**
+	 * Explicitly display this message after the current thread returns to the event dispatch thread.
+	 * @param parent
+	 * @param sTitle
+	 * @param sMessage
+	 * @param iButtons
+	 */
 	public static void messageLater( Window parent, String sTitle, String sMessage, int iButtons ) {
 		final Window fParent = parent;
 		final String fTitle = sTitle;
@@ -202,11 +223,7 @@ public class MessageDialog extends JDialog {
 		});
 	}
 
-	public static void messageWait( Window parent, String sTitle, String sMessage ) {
-		messageWait( parent, sTitle, sMessage, BOTH_BUTTONS );
-	}	
-
-	public static void messageWait( Window parent, String sTitle, String sMessage, int iButtons ) {
+	private static void messageWait( Window parent, String sTitle, String sMessage, int iButtons ) {
 		final Window fParent = parent;
 		final String fTitle = sTitle;
 		final String fMessage = sMessage;

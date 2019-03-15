@@ -26,20 +26,20 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
 import edu.clemson.lph.dialogs.TwoLineQuestionDialog;
 
-public class InitAddOns {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
-	public static SCDatabaseConnectionFactory myFactory = null;
+class InitAddOns {
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static SCDatabaseConnectionFactory myFactory = null;
 
 	public InitAddOns() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public static DatabaseConnectionFactory getFactory() {
+	static DatabaseConnectionFactory getFactory() {
 		initAddOns();
 		return myFactory;
 	}
 	
-	public synchronized static void initAddOns() {
+	private synchronized static void initAddOns() {
 		if( myFactory == null ) {
 			String sUserName = null;
 			String sPassword = null;

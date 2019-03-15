@@ -28,7 +28,7 @@ import edu.clemson.lph.pdfgen.PDFViewer;
  * the CivetDialog.  It handles the logic around navigating between files.
  */
 public class OpenFileList {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private ArrayList<OpenFile> aOpenFiles = null;
 	private ArrayList<OpenFile> aFilesComplete = null;
 	private OpenFile oCurrent;

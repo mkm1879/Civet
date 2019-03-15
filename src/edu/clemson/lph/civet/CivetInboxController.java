@@ -36,7 +36,7 @@ import edu.clemson.lph.mailman.MailMan;
 import edu.clemson.lph.utils.Validator;
 
 public class CivetInboxController {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private CivetInbox inbox = null;
 	private static CivetInboxController singleInstance;
 

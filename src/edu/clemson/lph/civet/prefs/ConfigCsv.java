@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
-public class ConfigCsv {
+class ConfigCsv {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private LabeledCSVParser parser;
 	private List<List<List<String>>> tabs;
@@ -20,7 +20,7 @@ public class ConfigCsv {
 	private int iTab = -1;
 	private int iRow = -1;
 
-	public ConfigCsv() {
+	ConfigCsv() {
 		InputStream isConfigCsv = this.getClass().getResourceAsStream("/edu/clemson/lph/civet/res/CivetConfig.csv");
 		try {
 			parser = new LabeledCSVParser( isConfigCsv );

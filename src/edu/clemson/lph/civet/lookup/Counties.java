@@ -142,10 +142,10 @@ public class Counties  {
 		}
 	}
 
-	static class StatePlusAlias {
-		public String sState;
-		public String sAlias;
-		public StatePlusAlias( String sState, String sAlias ) {
+	private static class StatePlusAlias {
+		private String sState;
+		private String sAlias;
+		private StatePlusAlias( String sState, String sAlias ) {
 			this.sState = sState;
 			this.sAlias = sAlias;
 		}

@@ -52,30 +52,30 @@ import java.awt.event.FocusListener;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
-public class NineDashThreeDialog extends JFrame {
+class NineDashThreeDialog extends JFrame {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 
-	DatabaseConnectionFactory factory = null;
-	JTextField jtfCVINo;
-	DateField jtfDate;
-	JComboBox<String> cbSpecies = new JComboBox<String>();
-	JComboBox<String> cbProduct = new JComboBox<String>();
+	private DatabaseConnectionFactory factory = null;
+	private JTextField jtfCVINo;
+	private DateField jtfDate;
+	private JComboBox<String> cbSpecies = new JComboBox<String>();
+	private JComboBox<String> cbProduct = new JComboBox<String>();
 	
-	StdeCviXmlModel xmlModel = null;
-	AnimalIDListTableModel idModel = null;
-	JTable tblIDs;
-	JList<String> lbSpecies;
-	ArrayList<SpeciesRecord> aSpecies = new ArrayList<SpeciesRecord>();
+	private StdeCviXmlModel xmlModel = null;
+	private AnimalIDListTableModel idModel = null;
+	private JTable tblIDs;
+	private JList<String> lbSpecies;
+	private ArrayList<SpeciesRecord> aSpecies = new ArrayList<SpeciesRecord>();
 	// maintaining this hashmap is redundant but done to match the signature 
 	// of the AddAnimalsDialog borrowed from the main Civet code base.
-	DefaultListModel<String> mSpListModel = new DefaultListModel<String>();
-	ManualOrderFocusTraversalPolicy policy = new ManualOrderFocusTraversalPolicy();
+	private DefaultListModel<String> mSpListModel = new DefaultListModel<String>();
+	private ManualOrderFocusTraversalPolicy policy = new ManualOrderFocusTraversalPolicy();
 
-	ParticipantPanel pConsignor = new ParticipantPanel("Consignor (Shipper)");
-	ParticipantPanel pConsignee = new ParticipantPanel("Consignee (Purchaser)");
+	private ParticipantPanel pConsignor = new ParticipantPanel("Consignor (Shipper)");
+	private ParticipantPanel pConsignee = new ParticipantPanel("Consignee (Purchaser)");
 	
-	JButton okButton;
-	DBNumericField jtfNumber;
+	private JButton okButton;
+	private DBNumericField jtfNumber;
 	/**
 	 * Launch the application.  Just for testing.
 	 */

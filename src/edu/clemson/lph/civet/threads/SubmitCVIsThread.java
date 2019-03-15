@@ -35,19 +35,19 @@ import edu.clemson.lph.dialogs.ThreadCancelListener;
 import edu.clemson.lph.utils.FileUtils;
 
 public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
-	protected static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}
 	private CivetWebServices service = null;
-	protected List<File> allFiles = null;
-	protected String sCurrentFilePath = "";
-	protected ProgressDialog prog;
-	protected String sProgTitle = "Civet: Processing File";
-	protected String sProgPrompt = "File: ";
-	protected String sOutPath;
-	CivetInbox parent = null;
-	volatile boolean bCanceled = false;
+	private List<File> allFiles = null;
+	private String sCurrentFilePath = "";
+	private ProgressDialog prog;
+	private String sProgTitle = "Civet: Processing File";
+	private String sProgPrompt = "File: ";
+	private String sOutPath;
+	private CivetInbox parent = null;
+	private volatile boolean bCanceled = false;
 	
 	public SubmitCVIsThread(CivetInbox parent, List<File> files) {
 		this.parent = parent;
@@ -88,12 +88,12 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 	    				String sOutPath = fOut.getAbsolutePath();
 	    				sOutPath = FileUtils.incrementFileName(sOutPath);
 	    				fOut = new File( sOutPath );
-	    				MessageDialog.messageLater(parent, "Civet Error", fOut.getAbsolutePath() + " already exists in OutBox.\n" +
+	    				MessageDialog.showMessage(parent, "Civet Error", fOut.getAbsolutePath() + " already exists in OutBox.\n" +
 	    						"Saving as " + sOutPath);
 	    			}
     				boolean success = fThis.renameTo(fOut);
     				if (!success) {
-    					MessageDialog.messageLater(parent, "Civet Error", "Could not move " + fThis.getAbsolutePath() + " to " + fOut.getAbsolutePath() );
+    					MessageDialog.showMessage(parent, "Civet Error", "Could not move " + fThis.getAbsolutePath() + " to " + fOut.getAbsolutePath() );
 	    			}
 				}
 				else {
@@ -125,7 +125,7 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 			final String sCertNbr = getCertNbr( sXML );
 			// Check but don't add yet.
 			if( CertificateNbrLookup.certficateNbrExists(sCertNbr) ) {
-				MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " already exists.\n" +
+				MessageDialog.showMessage(parent, "Civet Error", "Certificate Number " + sCertNbr + " already exists.\n" +
 						"Resolve conflict and try again.");
 				return false;
 			}
@@ -141,12 +141,12 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 			if( sRet != null && !sRet.toLowerCase().contains("error") && sRet.contains(service.getSuccessMessage() ) ) {
 				bRet = true;
 				if( !CertificateNbrLookup.addCertificateNbr(sCertNbr) ) {
-					MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " Added twice.\n" +
+					MessageDialog.showMessage(parent, "Civet Error", "Certificate Number " + sCertNbr + " Added twice.\n" +
 							"Please report to developer.");
 				}
 			}
 			else {  // Should have thrown an exception but just in case.
-				MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " failed to upload.\n See Civet.log");
+				MessageDialog.showMessage(parent, "Civet Error", "Certificate Number " + sCertNbr + " failed to upload.\n See Civet.log");
 				bRet = false;
 			}
 		} catch (final Exception e) {

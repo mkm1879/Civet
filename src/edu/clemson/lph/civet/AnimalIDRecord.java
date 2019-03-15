@@ -30,9 +30,9 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 public class AnimalIDRecord {
-	static int iMaxID = 0;
-	public int iRowID;
-	public Animal animal;
+	private static int iMaxID = 0;
+	int iRowID;
+	Animal animal;
 	
 	public AnimalIDRecord( String sSpeciesCode, String sSpecies, String sTag ) {
 		this.iRowID = iMaxID++;

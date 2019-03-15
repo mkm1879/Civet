@@ -156,7 +156,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 					iPdf++;
 					if( aCVIsOut.size() >= 5 || lAttachmentsSize > CivetConfig.getMaxAttachSize() || iPdf >= aCVIsIn.size() ) {					
 						if( sCurrentEmail == null || !sCurrentEmail.contains("@") ) {
-							MessageDialog.messageWait(prog.getWindowParent(), "Civet: Email", "No email address for state " +
+							MessageDialog.showMessage(prog.getWindowParent(), "Civet: Email", "No email address for state " +
 									sState + " be sure to mail physical copies");
 							aSentCVIFiles.addAll(aCVIFilesOut);
 							iUnsent += aCVIFilesOut.size();
@@ -169,7 +169,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 								else {
 									String sAddress = CivetConfig.getEmailTestTo();
 									if( sAddress == null ) sAddress = sCurrentEmail;
-									MessageDialog.messageWait(prog.getWindowParent(), "Civet: Message Failed",
+									MessageDialog.showMessage(prog.getWindowParent(), "Civet: Message Failed",
 											"EMail Failed to " + sState + " at " + sAddress + "\n" + sCurrentEmailError);
 									sCurrentEmailError = "";
 									iUnsent += aCVIFilesOut.size();
@@ -244,7 +244,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 					sInBoundCVIErrorMessage, aFiles);
 		} catch (AuthenticationFailedException e1) {
 			sCurrentEmailError = e1.getMessage();
-			MessageDialog.messageWait( prog.getWindowParent(), "Civet: Invalid UserID/Password", 
+			MessageDialog.showMessage( prog.getWindowParent(), "Civet: Invalid UserID/Password", 
 					"Authentication failure to Email system:\n" + CivetConfig.getSmtpHost());
 			MailMan.setDefaultUserID( null );
 			MailMan.setDefaultPassword( null );
