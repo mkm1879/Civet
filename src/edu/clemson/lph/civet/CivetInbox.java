@@ -50,33 +50,32 @@ public class CivetInbox extends JFrame {
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}
-	JPanel contentPane;
-	JMenuBar menuBar1 = new JMenuBar();
-	ImageIcon appIcon;
+	private JPanel contentPane;
+	private JMenuBar menuBar1 = new JMenuBar();
+	private ImageIcon appIcon;
 	// Empty for now, this label holds the place for future messages and makes the bar the right dimensions
-	JLabel statusBar = new JLabel();
-	BorderLayout borderLayout1 = new BorderLayout();
-	JPanel mainPanel = new JPanel();
-	JPanel statusPanel = new JPanel();
-	BorderLayout borderLayout2 = new BorderLayout();
+	private JLabel statusBar = new JLabel();
+	private BorderLayout borderLayout1 = new BorderLayout();
+	private JPanel mainPanel = new JPanel();
+	private JPanel statusPanel = new JPanel();
+	private BorderLayout borderLayout2 = new BorderLayout();
 	JTable tblInBox = new JTable();
 	FilesTableModel currentModel = null;
-	final JScrollPane scrollPane = new JScrollPane();
+	private final JScrollPane scrollPane = new JScrollPane();
 	String sTitleBase = "Civet: Certificate of Veterinary Inspection Document Management System for USAHERDS -- ";
 
-	JPanel jpCount = new JPanel();
+	private JPanel jpCount = new JPanel();
 
-	JToolBar pButtons = new JToolBar();
+	private JToolBar pButtons = new JToolBar();
 	JButton bOpen = new JButton();
 	JButton bOpenAll = new JButton();
-	JMenu menuFile = new JMenu();
+	private JMenu menuFile = new JMenu();
 	JMenuItem menuItemEditPrefs = new JMenuItem();
 	JMenuItem menuItemEditStateVets = new JMenuItem();
 	JMenuItem menuItemFileOpen = new JMenuItem();
 	JMenuItem menuItemFileOpenAll = new JMenuItem();
 	JMenuItem menuItemFileExit = new JMenuItem();
-	FlowLayout flowLayout1 = new FlowLayout();
-	JMenu menuView = new JMenu();
+	private JMenu menuView = new JMenu();
 	JMenuItem menuItemViewNew = new JMenuItem();
 	JMenuItem menuItemViewOutbound = new JMenuItem();
 	JMenuItem menuItemViewInbound = new JMenuItem();
@@ -84,20 +83,19 @@ public class CivetInbox extends JFrame {
 	JMenuItem menuItemViewUnsentInboundErrors = new JMenuItem();
 	JMenuItem menuItemViewToBeFiled = new JMenuItem();
 	JMenuItem menuItemViewRefresh = new JMenuItem();
-	JMenuItem menuItemEditUnsend = new JMenuItem();
-	JMenu mnSend;
+	private JMenu mnSend;
 	JMenuItem menuItemSubmitSelectedCVIs;
 	JMenuItem menuItemSubmitAllCVIs;
 	JMenuItem menuItemSendOutboundCVIs;
 	JMenuItem menuItemSendInboundErrors;
-	JMenu menuExperimental = new JMenu();
-	JMenu menuAddOns = new JMenu();
+	private JMenu menuExperimental = new JMenu();
+	private JMenu menuAddOns = new JMenu();
 	JMenuItem menuItemVSPS = new JMenuItem();
-	JMenu menuHelp = new JMenu();
+	private JMenu menuHelp = new JMenu();
 	JMenuItem menuItemAbout = new JMenuItem();
 	JMenuItem menuItemSendLog;
 	JMenuItem menuEmailOnly;
-	CivetInboxController inboxController;
+	private CivetInboxController inboxController;
 
 
 	// for design time only remove before distribution

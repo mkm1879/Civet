@@ -50,7 +50,7 @@ import edu.clemson.lph.utils.XMLUtility;
  *
  */
 public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, PremisesTableModel {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 		// BasicConfigurator replaced with PropertyConfigurator.
 	     PropertyConfigurator.configure("CivetConfig.txt");

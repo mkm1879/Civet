@@ -2,9 +2,9 @@ package edu.clemson.lph.civet.inbox;
 
 import java.util.Comparator;
 
-public class DateCellComparator implements Comparator<java.util.Date> {
+class DateCellComparator implements Comparator<java.util.Date> {
 
-	public DateCellComparator() {
+	DateCellComparator() {
 		// TODO Auto-generated constructor stub
 	}
 

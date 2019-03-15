@@ -34,7 +34,7 @@ import edu.clemson.lph.civet.lookup.StateVetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.dialogs.*;
 
-public class EmailOnlySendFilesThread extends Thread {
+class EmailOnlySendFilesThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private ProgressDialog prog;
 	private EmailOnlyDialog parent;
@@ -44,7 +44,7 @@ public class EmailOnlySendFilesThread extends Thread {
 	private ArrayList<File> aSentCVIFiles = new ArrayList<File>();
 	private String sCurrentEmailError = "";
 	
-	public EmailOnlySendFilesThread( EmailOnlyDialog parent, ProgressDialog prog ) {
+	EmailOnlySendFilesThread( EmailOnlyDialog parent, ProgressDialog prog ) {
 		this.parent = parent;
 		this.prog = prog;
 		mStateMap = new HashMap<String, ArrayList<File>>();
@@ -67,7 +67,7 @@ public class EmailOnlySendFilesThread extends Thread {
 						String sName = fNext.getName();
 						String sParts[] = sName.split("\\_");
 						if( sParts.length < 4 ) {
-							MessageDialog.messageWait(parent, "Civet: Email only error", sName + " is not configured as email only file.");
+							MessageDialog.showMessage(parent, "Civet: Email only error", sName + " is not configured as email only file.");
 							continue;
 						}
 						String sToState = sParts[2];
@@ -111,7 +111,7 @@ public class EmailOnlySendFilesThread extends Thread {
 					iPdf++;
 					if( aCVIFilesOut.size() >= 5 || lAttachmentsSize > CivetConfig.getMaxAttachSize() || iPdf >= aCVIsIn.size() ) {					
 						if( sCurrentEmail == null || !sCurrentEmail.contains("@") ) {
-							MessageDialog.messageWait(prog.getWindowParent(), "Civet: Email", "No email address for state " +
+							MessageDialog.showMessage(prog.getWindowParent(), "Civet: Email", "No email address for state " +
 									sState + " be sure to mail physical copies");
 							aSentCVIFiles.addAll(aCVIFilesOut);
 							iUnsent += aCVIFilesOut.size();
@@ -124,7 +124,7 @@ public class EmailOnlySendFilesThread extends Thread {
 								else {
 									String sAddress = CivetConfig.getEmailTestTo();
 									if( sAddress == null ) sAddress = sCurrentEmail;
-									MessageDialog.messageWait(prog.getWindowParent(), "Civet: Message Failed",
+									MessageDialog.showMessage(prog.getWindowParent(), "Civet: Message Failed",
 											"EMail Failed to " + sState + " at " + sAddress + "\n" + sCurrentEmailError);
 									sCurrentEmailError = "";
 									// How to bail out gracefully on fatal error?
@@ -146,7 +146,7 @@ public class EmailOnlySendFilesThread extends Thread {
 				}
 				String sStateList = sb.toString();
 				sStateList = sStateList.substring(0, sStateList.length() -2 );
-				MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
+				MessageDialog.showMessage( prog.getWindowParent(), "Civet: Messages Sent", 
 						"Successfully sent " + (aSentCVIFiles.size() - iUnsent) + " CVIs to\n"
 								+ sStateList );
 			}
@@ -173,7 +173,7 @@ public class EmailOnlySendFilesThread extends Thread {
 				File fIn = new File( CivetConfig.getEmailOnlyEmailTemplate() );
 				sEmailOnlyMessage = FileUtils.readTextFile( fIn );
 			} catch (FileNotFoundException fnf) {
-				MessageDialog.messageLater(prog.getWindowParent(), "Civet: Template File Missing",
+				MessageDialog.showMessage(prog.getWindowParent(), "Civet: Template File Missing",
                                        "Cannot find template file " + CivetConfig.getEmailOnlyEmailTemplate());
 				return false;
 			}
@@ -198,7 +198,7 @@ public class EmailOnlySendFilesThread extends Thread {
 					sEmailOnlyMessage, aFiles);
 		} catch (AuthenticationFailedException e1) {
 			sCurrentEmailError = e1.getMessage();
-			MessageDialog.messageWait( prog.getWindowParent(), "Civet: Invalid UserID/Password", 
+			MessageDialog.showMessage( prog.getWindowParent(), "Civet: Invalid UserID/Password", 
 					"Authentication failure to Email system:\n" + CivetConfig.getSmtpHost());
 			MailMan.setDefaultUserID( null );
 			MailMan.setDefaultPassword( null );

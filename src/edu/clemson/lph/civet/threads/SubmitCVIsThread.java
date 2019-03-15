@@ -88,12 +88,12 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 	    				String sOutPath = fOut.getAbsolutePath();
 	    				sOutPath = FileUtils.incrementFileName(sOutPath);
 	    				fOut = new File( sOutPath );
-	    				MessageDialog.messageLater(parent, "Civet Error", fOut.getAbsolutePath() + " already exists in OutBox.\n" +
+	    				MessageDialog.showMessage(parent, "Civet Error", fOut.getAbsolutePath() + " already exists in OutBox.\n" +
 	    						"Saving as " + sOutPath);
 	    			}
     				boolean success = fThis.renameTo(fOut);
     				if (!success) {
-    					MessageDialog.messageLater(parent, "Civet Error", "Could not move " + fThis.getAbsolutePath() + " to " + fOut.getAbsolutePath() );
+    					MessageDialog.showMessage(parent, "Civet Error", "Could not move " + fThis.getAbsolutePath() + " to " + fOut.getAbsolutePath() );
 	    			}
 				}
 				else {
@@ -125,7 +125,7 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 			final String sCertNbr = getCertNbr( sXML );
 			// Check but don't add yet.
 			if( CertificateNbrLookup.certficateNbrExists(sCertNbr) ) {
-				MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " already exists.\n" +
+				MessageDialog.showMessage(parent, "Civet Error", "Certificate Number " + sCertNbr + " already exists.\n" +
 						"Resolve conflict and try again.");
 				return false;
 			}
@@ -141,12 +141,12 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 			if( sRet != null && !sRet.toLowerCase().contains("error") && sRet.contains(service.getSuccessMessage() ) ) {
 				bRet = true;
 				if( !CertificateNbrLookup.addCertificateNbr(sCertNbr) ) {
-					MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " Added twice.\n" +
+					MessageDialog.showMessage(parent, "Civet Error", "Certificate Number " + sCertNbr + " Added twice.\n" +
 							"Please report to developer.");
 				}
 			}
 			else {  // Should have thrown an exception but just in case.
-				MessageDialog.messageLater(parent, "Civet Error", "Certificate Number " + sCertNbr + " failed to upload.\n See Civet.log");
+				MessageDialog.showMessage(parent, "Civet Error", "Certificate Number " + sCertNbr + " failed to upload.\n See Civet.log");
 				bRet = false;
 			}
 		} catch (final Exception e) {

@@ -8,7 +8,7 @@ import java.awt.Dimension;
 import javax.swing.ScrollPaneConstants;
 
 @SuppressWarnings("serial")
-public class ConfigTabPanel extends JPanel {
+class ConfigTabPanel extends JPanel {
 	private JPanel pRows;
 	private int iYPosition = 5;
 	private JScrollPane spPrefs;
@@ -16,7 +16,7 @@ public class ConfigTabPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public ConfigTabPanel() {
+	ConfigTabPanel() {
 		setLayout(new BorderLayout(0, 0));
 		spPrefs = new JScrollPane();
 		spPrefs.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -26,7 +26,7 @@ public class ConfigTabPanel extends JPanel {
 		spPrefs.setViewportView(pRows);
 	}
 	
-	public void addEntry( ConfigEntryPanel panel ) {
+	void addEntry( ConfigEntryPanel panel ) {
 		panel.setBounds( 2, iYPosition, 600, 25 );
 		iYPosition += 27;
 		pRows.add(panel);

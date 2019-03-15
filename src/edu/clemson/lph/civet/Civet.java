@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 public class Civet {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 		// BasicConfigurator replaced with PropertyConfigurator.
 	     PropertyConfigurator.configure("CivetConfig.txt");

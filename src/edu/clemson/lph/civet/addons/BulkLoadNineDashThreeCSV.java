@@ -52,7 +52,7 @@ import javax.swing.*;
 import org.apache.log4j.*;
 
 public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_9dash3;
 	private static final String sProgMsg = "Loading 9-3: ";
 	private static final OpenOption[] CREATE_OR_APPEND = new OpenOption[] { StandardOpenOption.APPEND, StandardOpenOption.CREATE };
@@ -90,16 +90,16 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 	}
 
 	// Also create TWorkAddSpecies and TWorkAddPage
-	class TWork93CSV extends Thread implements ThreadCancelListener {
-		String sFilePath;
-		ProgressDialog prog;
-		Window parent;
-		CivetWebServices service;
-		DatabaseConnectionFactory factory;
-		volatile boolean bCanceled = false;
+	private class TWork93CSV extends Thread implements ThreadCancelListener {
+		private String sFilePath;
+		private ProgressDialog prog;
+		private Window parent;
+		private CivetWebServices service;
+		private DatabaseConnectionFactory factory;
+		private volatile boolean bCanceled = false;
 
 		
-		public TWork93CSV( ProgressDialog prog, DatabaseConnectionFactory factory, String sFilePath, Window parent ) {
+		private TWork93CSV( ProgressDialog prog, DatabaseConnectionFactory factory, String sFilePath, Window parent ) {
 			this.prog = prog;
 			this.sFilePath = sFilePath;
 			this.parent = parent;
@@ -186,7 +186,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 								logger.error( sRet, new Exception("Error submitting NPIP 9-3 spreadsheet CVI to USAHERDS: " +
 										data.getCVINumber() ) );
 								logger.error(sXML);
-								MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting to USAHERDS: " + 
+								MessageDialog.showMessage(parent, "Civet WS Error", "Error submitting to USAHERDS: " + 
 										data.getCVINumber() + "\n" + sRet);
 							}
 						}

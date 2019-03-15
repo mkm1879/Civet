@@ -38,7 +38,7 @@ import edu.clemson.lph.utils.XMLUtility;
  *
  */
 public class CivetWebServices {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}
@@ -127,7 +127,7 @@ public class CivetWebServices {
 		String sToken = UsaHerdsWebServiceAuthentication.getToken(sURL, sUserName, sPassword);
 		bRet = (sToken != null);
 		if( !bRet )
-			MessageDialog.messageWait(null, "Civet: USAHERDS Password Error", "Invalid Username/Password");
+			MessageDialog.showMessage(null, "Civet: USAHERDS Password Error", "Invalid Username/Password");
 		return bRet;
 	}
 	

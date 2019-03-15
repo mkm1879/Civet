@@ -39,7 +39,7 @@ import edu.clemson.lph.civet.Civet;
  * This example demonstrates the use of the {@link ResponseHandler} to simplify
  * the process of processing the HTTP response and releasing associated resources.
  */
-public class HttpGetClient {
+class HttpGetClient {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private int status;
@@ -52,18 +52,14 @@ public class HttpGetClient {
 		
 	}
 	
-	public void authenticate() throws WebServiceException {
+	void authenticate() throws WebServiceException {
 		String sType = UsaHerdsWebServiceAuthentication.getTokenType();
 		String sToken = UsaHerdsWebServiceAuthentication.getToken();
 		addHeader("authorization", sType + " " + sToken );
 	}
 	
-	public void addHeader( String sName, String sValue ) {
+	private void addHeader( String sName, String sValue ) {
 		lHeaders.add(new BasicNameValuePair(sName, sValue));
-	}
-
-	public void addParameter( String sName, String sValue ) {
-		lParameters.add(new BasicNameValuePair(sName, sValue));
 	}
 	
 	private String buildParams() {
@@ -82,7 +78,7 @@ public class HttpGetClient {
 		return sb.toString();
 	}
 	
-    public final boolean getURL(String sURL) {
+    final boolean getURL(String sURL) {
     	boolean bRet = true;
         CloseableHttpClient httpclient = null;
        	httpclient = HttpClients.createDefault();

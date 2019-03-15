@@ -15,7 +15,7 @@ import edu.clemson.lph.dialogs.QuestionDialog;
  * pdf for the current OpenFile.  Paging consists of setting at least setPage() and calling updatePdfDisplay().
  */
 public class PDFViewer {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	/** Data behind the GUI **/
 	/**the actual JPanel/decoder object*/
 	PdfDecoder pdfDecoder;

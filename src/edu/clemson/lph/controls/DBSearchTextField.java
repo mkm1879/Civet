@@ -18,7 +18,6 @@ You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import javax.swing.JTextField;
-import javax.swing.text.Document;
 
 import java.awt.event.*;
 import java.util.*;
@@ -30,7 +29,7 @@ import java.awt.*;
 
 
 @SuppressWarnings("serial")
-public class DBSearchTextField extends JTextField {
+class DBSearchTextField extends JTextField {
 //	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 //	private String sQuery = null;
 	private String sSearchQuery;
@@ -48,26 +47,6 @@ public class DBSearchTextField extends JTextField {
 	private DBSearchTextFieldModel model;
 
 	public DBSearchTextField() {
-		init();
-	}
-
-	public DBSearchTextField(int p0) {
-		super(p0);
-		init();
-	}
-
-	public DBSearchTextField(String p0) {
-		super(p0);
-		init();
-	}
-
-	public DBSearchTextField(String p0, int p1) {
-		super(p0, p1);
-		init();
-	}
-
-	public DBSearchTextField(Document p0, String p1, int p2) {
-		super(p0, p1, p2);
 		init();
 	}
 
@@ -127,20 +106,6 @@ public class DBSearchTextField extends JTextField {
 	public void setSearchTitle( String sSearchTitle ) { this.sSearchTitle = sSearchTitle; }
 	public void setHideCode( boolean bHideCode ) { this.bHideCode = bHideCode; }
 	public boolean isInSearch() { return bInSearch; }
-	public void setDeltas( int deltaX, int deltaY ) {
-		this.deltaX = deltaX;
-		this.deltaY = deltaY;
-	}
-
-	public void addListener( DBSearchTextFieldListener listener ) {
-		if( lListeners == null ) lListeners = new ArrayList<DBSearchTextFieldListener>();
-		lListeners.add( listener );
-	}
-
-	/** Refill the text with the same value.  Used after underlying data may have changed without changing key **/
-	public void refresh() {
-		setText( sValue );
-	}
 
 	// This method ensures that only valid values can populate this field
 	@Override
@@ -188,7 +153,7 @@ public class DBSearchTextField extends JTextField {
 		return iValue;
 	}
 
-	void this_keyPressed(KeyEvent e) {
+	private void this_keyPressed(KeyEvent e) {
 		// Could just look for numerical value of code == 70 but that might be less readable.
 		if( ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0) && "F".equals(KeyEvent.getKeyText(e.getKeyCode())) ) {
 			// Search is just to complicated to generically outsource to the model.  

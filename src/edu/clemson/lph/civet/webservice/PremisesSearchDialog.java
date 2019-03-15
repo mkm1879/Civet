@@ -45,7 +45,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.SearchDialog;
@@ -142,10 +141,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 		clear();
 		bSearchNow = true;
 		jtfPhone.setText(sPhone);
-		if( CivetConfig.isStandAlone() )
-			model = new LocalPremisesTableModel( sPhone );
-		else
-			model = new UsaHerdsLookupPrems( sPhone );
+		model = new UsaHerdsLookupPrems( sPhone );
 		tblResults.setModel(model);
 		if( model.getRowCount() == 1 ) {
 			bOK = true;
@@ -177,10 +173,7 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			sStateCode = CivetConfig.getHomeStateAbbr();
 		jtfState.setText(sStateCode);
 		jtfZip.setText(sZipCode);
-		if( CivetConfig.isStandAlone() )
-			model = new LocalPremisesTableModel( sAddress, sCity, sStateCode, sZipCode, null );
-		else
-			model = new UsaHerdsLookupPrems( sAddress, sCity, sStateCode, sZipCode );
+		model = new UsaHerdsLookupPrems( sAddress, sCity, sStateCode, sZipCode );
 		tblResults.setModel(model);
 		if( model.getRowCount() == 1 ) {
 			bOK = true;
@@ -231,17 +224,11 @@ public class PremisesSearchDialog extends JDialog implements SearchDialog<String
 			model = new UsaHerdsLookupPrems(null, null, 
 					sAddress1, sCity, sStateCode, sZipCode, 
 					sCounty, null, sPhone, null);
-			if( CivetConfig.isStandAlone() )
-				model = new LocalPremisesTableModel(sAddress1, sCity, sStateCode, sZipCode, sPhone);
-			else
-				model = new UsaHerdsLookupPrems(null, null, 
-						sAddress1, sCity, sStateCode, sZipCode, 
-						sCounty, null, sPhone, null);
 			tblResults.setModel( model );
 		}
 	}
 	
-	public String stringOrNull( String sIn ) {
+	private String stringOrNull( String sIn ) {
 		String sOut = sIn;
 		if( sOut != null && sOut.trim().length() == 0 ) sOut = null;
 		return sOut;

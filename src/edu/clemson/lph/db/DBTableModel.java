@@ -141,7 +141,7 @@ public class DBTableModel extends AbstractTableModel implements ThreadListener {
 		private void doReadDatabase() {
 			Connection conn = mFactory.makeDBConnection();
 			if( conn == null ) {
-				MessageDialog.messageLater(parent, "SQL Error", "Cannot conncet to database on " + mFactory.getDatabaseServerName() );
+				MessageDialog.showMessage(parent, "SQL Error", "Cannot conncet to database on " + mFactory.getDatabaseServerName() );
 				return;
 			}
 			aNewRows.clear();
@@ -171,7 +171,7 @@ public class DBTableModel extends AbstractTableModel implements ThreadListener {
 				}
 			} catch (SQLException e) {
 				logger.error("Error in query\n" + e.getMessage() + "\n" + sQuery);
-				MessageDialog.messageLater(parent, "SQL Error", "Error in query\n" + e.getMessage() + "\n" + sQuery );
+				MessageDialog.showMessage(parent, "SQL Error", "Error in query\n" + e.getMessage() + "\n" + sQuery );
 			}
 			finally {
 				try {

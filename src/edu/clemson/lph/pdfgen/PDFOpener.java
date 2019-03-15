@@ -121,10 +121,10 @@ public class PDFOpener {
 		t.start();
 	}
 
-	static class OpenPageInAcrobat extends Thread {
-		String sFileName;
-		int iPageNo;
-		public OpenPageInAcrobat(String sFileName, int iPageNo ) {
+	private static class OpenPageInAcrobat extends Thread {
+		private String sFileName;
+		private int iPageNo;
+		private OpenPageInAcrobat(String sFileName, int iPageNo ) {
 			this.sFileName = sFileName;
 			this.iPageNo = iPageNo;
 		}
@@ -155,7 +155,7 @@ public class PDFOpener {
 			}
 		}
 
-		String extractPageToTempPDF(String sFilePath, int iPage) {
+		private String extractPageToTempPDF(String sFilePath, int iPage) {
 			String sFileOut = null;
 			File fOut = null;
 			PdfReader reader = null;

@@ -8,7 +8,7 @@ import edu.clemson.lph.civet.webservice.HttpPostClient;
 import edu.clemson.lph.utils.JSONParser;
 
 public class UsaHerdsWebServiceAuthentication {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}

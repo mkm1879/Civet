@@ -42,7 +42,7 @@ import org.apache.http.message.BasicNameValuePair;
  * This example demonstrates the use of the {@link ResponseHandler} to simplify
  * the process of processing the HTTP response and releasing associated resources.
  */
-public class HttpPostClient {
+class HttpPostClient {
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private int status;
@@ -55,21 +55,21 @@ public class HttpPostClient {
 		
 	}
 	
-	public void authenticate() throws WebServiceException {
+	void authenticate() throws WebServiceException {
 		String sType = UsaHerdsWebServiceAuthentication.getTokenType();
 		String sToken = UsaHerdsWebServiceAuthentication.getToken();
 		addHeader("authorization", sType + " " + sToken );
 	}
 	
-	public void addHeader( String sName, String sValue ) {
+	private void addHeader( String sName, String sValue ) {
 		lHeaders.add(new BasicNameValuePair(sName, sValue));
 	}
 
-	public void addParameter( String sName, String sValue ) {
+	void addParameter( String sName, String sValue ) {
 		lParameters.add(new BasicNameValuePair(sName, sValue));
 	}
 
-    public final boolean getURL(String sURL) {
+    final boolean getURL(String sURL) {
     	boolean bRet = true;
         CloseableHttpClient httpclient = null;
        	httpclient = HttpClients.createDefault();

@@ -32,7 +32,7 @@ import edu.clemson.lph.utils.PremCheckSum;
 
 
 public class VspsCviEntity {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private String[] aEntityNames = {"Origin","Destination","Consignee","Consignor","Carrier"};
 	public List<String> lEntityNames = Arrays.asList(aEntityNames);
 	static {

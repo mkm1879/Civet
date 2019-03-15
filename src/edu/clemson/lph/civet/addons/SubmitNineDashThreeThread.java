@@ -31,7 +31,7 @@ import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.PremCheckSum;
 
 public class SubmitNineDashThreeThread extends Thread {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private static final OpenOption[] CREATE_OR_APPEND = new OpenOption[] { StandardOpenOption.APPEND, StandardOpenOption.CREATE };
 //	private static final String sProgMsg = "Loading 9-3: ";
 	
@@ -163,7 +163,7 @@ public class SubmitNineDashThreeThread extends Thread {
 					logger.error( sRet, new Exception("Error submitting NPIP 9-3 spreadsheet CVI to USAHERDS: " +
 							sCVINo ) );
 					logger.error(sXML);
-					MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting to USAHERDS: " + 
+					MessageDialog.showMessage(parent, "Civet WS Error", "Error submitting to USAHERDS: " + 
 							sCVINo + "\n" + sRet);
 				}
 			}

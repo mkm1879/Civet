@@ -55,12 +55,7 @@ public class MessageDialog extends JDialog {
 	public MessageDialog() {
 	}
 
-	public MessageDialog( String sTitle, String sMessage ) {
-		mTitle = sTitle;
-		mMessage = sMessage;
-	}
-
-	public MessageDialog( Window parent, String sTitle, String sMessage ) {
+	private MessageDialog( Window parent, String sTitle, String sMessage ) {
 		super( parent );
 		this.parent = parent;
 		mTitle = sTitle;
@@ -75,11 +70,6 @@ public class MessageDialog extends JDialog {
 		super.setVisible( bShow );
 	}
 
-	public void setDeltas( int deltaX, int deltaY ) {
-		this.deltaX = deltaX;
-		this.deltaY = deltaY;
-	}
-
 	public void setButtons( int iButtons ) {
 		this.iButtons = iButtons;
 	}
@@ -88,7 +78,7 @@ public class MessageDialog extends JDialog {
 		return bOK;
 	}
 
-	public void center() {
+	private void center() {
 		//Center the window
 		boolean bSmall = false;
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -182,11 +172,11 @@ public class MessageDialog extends JDialog {
 		me.requestFocus();
 	}
 
-	public static void messageLater( Window parent, String sTitle, String sMessage ) {
+	private static void messageLater( Window parent, String sTitle, String sMessage ) {
 		messageLater( parent, sTitle, sMessage, BOTH_BUTTONS );
 	}	
 
-	public static void messageLater( Window parent, String sTitle, String sMessage, int iButtons ) {
+	private static void messageLater( Window parent, String sTitle, String sMessage, int iButtons ) {
 		final Window fParent = parent;
 		final String fTitle = sTitle;
 		final String fMessage = sMessage;
@@ -202,11 +192,11 @@ public class MessageDialog extends JDialog {
 		});
 	}
 
-	public static void messageWait( Window parent, String sTitle, String sMessage ) {
+	private static void messageWait( Window parent, String sTitle, String sMessage ) {
 		messageWait( parent, sTitle, sMessage, BOTH_BUTTONS );
 	}	
 
-	public static void messageWait( Window parent, String sTitle, String sMessage, int iButtons ) {
+	private static void messageWait( Window parent, String sTitle, String sMessage, int iButtons ) {
 		final Window fParent = parent;
 		final String fTitle = sTitle;
 		final String fMessage = sMessage;

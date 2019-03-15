@@ -47,12 +47,12 @@ import edu.clemson.lph.controls.DBComboBox;
  *
  */
 @SuppressWarnings("serial")
-public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalPolicy {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
-	public static final int PRIMARY_MAP = 1;
-	public static final int ALTERNATE_MAP = 2;
-	public static final String PRIMARY_FILE = "CivetTabOrderMap.txt";
-	public static final String ALTERNATE_FILE = "CivetAltTabOrderMap.txt";
+class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalPolicy {
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final int PRIMARY_MAP = 1;
+	private static final int ALTERNATE_MAP = 2;
+	private static final String PRIMARY_FILE = "CivetTabOrderMap.txt";
+	private static final String ALTERNATE_FILE = "CivetAltTabOrderMap.txt";
 	private ArrayList<Component> aComponents = new ArrayList<Component>();
 	private HashMap<String, Integer> hComponentIndexes = new HashMap<String, Integer>();
 	private HashMap<Component, Component> hMap = null; // Will point to one of the following
@@ -68,7 +68,7 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 	private Properties mainProps;
 	private Properties altProps;
 
-	public CivetEditOrderTraversalPolicy( Container parent ) {
+	CivetEditOrderTraversalPolicy( Container parent ) {
 		synchronized( parent.getTreeLock() ) {
 //			int i = 0;
 			for( Component c : getAllComponents(parent) ) {
@@ -95,30 +95,18 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 //			System.out.println( "Component i=" + i + " is a " + aComponents.get(i).getClass().getName() );
 	}
 	
-	public void loadComponentOrderMaps() {
+	void loadComponentOrderMaps() {
 		loadComponentOrderMap( PRIMARY_MAP );
 		loadFirstComponent( PRIMARY_MAP );
 		loadComponentOrderMap( ALTERNATE_MAP );
 		loadFirstComponent( ALTERNATE_MAP );
 	}
 	
-
-	public void resetComponentOrder() {
-		hMainMap.clear();
-		hAltMap.clear();
-	}
-	
-	public void addComponentOrder( Component cFrom, Component cTo ) {
-//		System.out.println( "From " + cFrom.getClass().getName() + " to " + cTo.getClass().getName() );
-		if( cFrom != cTo )
-			hMainMap.put(cFrom, cTo);
-	}
-	
 	public void setFirstComponent( Component cFirst ) {
 		this.cMainFirst = cFirst;
 	}
 	
-	public void addComponentOrder( String sFrom, String sTo ) {
+	private void addComponentOrder( String sFrom, String sTo ) {
 		Integer iFrom =  hComponentIndexes.get(sFrom);
 		if( iFrom == null )
 			logger.error("Non existent control name used in addComponentOrder From: " + sFrom);
@@ -143,17 +131,11 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 		}
 	}
 	
-	
-	public void addAltComponentOrder( Component cFrom, Component cTo ) {
-		if( cFrom != cTo )
-			hAltMap.put(cFrom, cTo);
-	}
-	
 	public void setAltFirstComponent( Component cFirst ) {
 		this.cAltFirst = cFirst;
 	}
 	
-	public void addAltComponentOrder( String sFrom, String sTo ) {
+	private void addAltComponentOrder( String sFrom, String sTo ) {
 		Integer iFrom =  hComponentIndexes.get(sFrom);
 		if( iFrom == null )
 			logger.error("Non existent control name used in addComponentOrder From: " + sFrom);
@@ -178,38 +160,27 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 		}
 	}
 	
-	public void selectMainMap() {
+	void selectMainMap() {
 		hMap = hMainMap;
 		cFirst = cMainFirst;
 		props = mainProps;
 	}
 	
-	public void selectAltMap() {
+	void selectAltMap() {
 		hMap = hAltMap;
 		cFirst = cAltFirst;
 		props = altProps;
 	}
 	
-	public String getProperty( String sKey ) {
+	String getProperty( String sKey ) {
 		if( props == null ) return null;
 		return props.getProperty(sKey);
 	}
 	
-	public Component getComponentByName( String sName ) {
+	Component getComponentByName( String sName ) {
 		if( sName == null || sName.trim().length() == 0 ) return null;
 		int iIndex = hComponentIndexes.get(sName);
 		return aComponents.get(iIndex);
-	}
-	
-	/** 
-	 * Explicitly get altProperty  ?Need explicitely get main property?
-	 * @param sKey
-	 * @return
-	 */
-	public String getAltProperty( String sKey ) {
-		if( altProps == null && props == null ) return null;
-		else if ( altProps == null ) return props.getProperty(sKey);
-		else return altProps.getProperty(sKey);
 	}
 	
 	/**
@@ -245,35 +216,6 @@ public class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalP
 		}
 	}
 	
-	
-	/**
-	 * This version explicitly uses the alternate tab mapping
-	 * Returns the Component that should receive the focus after aComponent.
-	 */
-	public Component getAltComponentAfter(Container aContainer, Component aComponent) {
-		Component cNext = hAltMap.get(aComponent);
-		if( cNext != null )
-			return cNext;
-		else {
-			int iIndex = aComponents.indexOf(aComponent);
-			// Note: above returns -1 if not found so increments to zero or first component.  A logical failsafe.
-			iIndex++;
-			iIndex = iIndex % aComponents.size();
-			cNext = aComponents.get(iIndex);
-			while( !cNext.isVisible() || !cNext.isEnabled() ) {
-				if( cNext == aComponent ) {
-					logger.info("getComponentAfter() looped around to itself");
-					return null;  // This should never happen means we looped.
-				}
-				iIndex++;
-				iIndex = iIndex % aComponents.size();
-				cNext = aComponents.get(iIndex);				
-				if( cNext == aComponent )
-					cNext = super.getComponentAfter(aContainer, aComponent);
-			}
-			return cNext;
-		}
-	}
 
 	
 	/** 

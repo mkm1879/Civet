@@ -21,14 +21,14 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
 
-public class DialogHelper {
+class DialogHelper {
 
 	
-	  public static void center( Window window ) {
+	  static void center( Window window ) {
 		  center( window, 0, 0 );
 	  }
 		 
-	  public static void center( Window window, int deltaX, int deltaY ) {
+	  private static void center( Window window, int deltaX, int deltaY ) {
 		    //Center the window
 			boolean bSmall = false;
 		    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

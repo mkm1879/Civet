@@ -38,7 +38,7 @@ import edu.clemson.lph.db.*;
 
 
 @SuppressWarnings("serial")
-public class CVIReportModel extends AbstractTableModel implements ThreadListener {
+class CVIReportModel extends AbstractTableModel implements ThreadListener {
 	private DatabaseConnectionFactory factory;
 	private ArrayList<String> aColNames;
 	private ArrayList<ArrayList<String>> aRows;
@@ -48,7 +48,7 @@ public class CVIReportModel extends AbstractTableModel implements ThreadListener
 	private ArrayList<ThreadListener> aListeners = new ArrayList<ThreadListener>();
 	private  static final Logger logger = Logger.getLogger(Civet.class.getName());
 	
-	public CVIReportModel( DatabaseConnectionFactory factory, java.util.Date dStart, java.util.Date dEnd ) {
+	CVIReportModel( DatabaseConnectionFactory factory, java.util.Date dStart, java.util.Date dEnd ) {
 		this.factory = factory;
 		this.dStart = new java.sql.Date(dStart.getTime());
 		this.dEnd = new java.sql.Date(dEnd.getTime());
@@ -92,7 +92,7 @@ public class CVIReportModel extends AbstractTableModel implements ThreadListener
 		return iRet;
 	}
 	
-	public void addThreadListener( ThreadListener threadListener ) {
+	void addThreadListener( ThreadListener threadListener ) {
 		aListeners.add( threadListener );
 	}
 
@@ -103,7 +103,7 @@ public class CVIReportModel extends AbstractTableModel implements ThreadListener
 			sRet = aRows.get(arg0).get(arg1);
 		return sRet;
 	}
-	javax.swing.table.TableModel mod;
+
 	public String getColumnName( int iColIndex ) {
 		String sRet = "";
 		if( iColIndex >= 0 && iColIndex < aColNames.size() )
@@ -111,13 +111,13 @@ public class CVIReportModel extends AbstractTableModel implements ThreadListener
 		return sRet;
 	}
 	
-	public Thread refresh() {
+	Thread refresh() {
 		DoWork work = new DoWork();
 		work.start();
 		return work;
 	}
 	
-	class DoWork extends Thread {
+	private class DoWork extends Thread {
 		@Override
 		public void run() {
 			String sQuery = null;
@@ -255,8 +255,8 @@ public class CVIReportModel extends AbstractTableModel implements ThreadListener
 		}
 	}
 
-	  File csvFile = null;
-	  public String exportCSV( File csvFile ) {
+	  private File csvFile = null;
+	  String exportCSV( File csvFile ) {
 	    String sRet = "Exporting file " + csvFile.getPath();
 	    this.csvFile = csvFile;
 	    Thread t = new Thread( new Runnable() {
@@ -268,7 +268,7 @@ public class CVIReportModel extends AbstractTableModel implements ThreadListener
 	    return sRet;
 	  }
 
-	  public void runExport() {
+	  private void runExport() {
 	    StringBuffer sb = new StringBuffer();
 	    try {
 	        BufferedWriter bw = new BufferedWriter(new FileWriter(csvFile));

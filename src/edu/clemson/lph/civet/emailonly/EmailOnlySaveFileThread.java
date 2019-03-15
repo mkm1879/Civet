@@ -12,14 +12,14 @@ import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.FileUtils;
 
-public class EmailOnlySaveFileThread extends Thread {
+class EmailOnlySaveFileThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private byte[] fileBytes;
 	private String sFileName;
 	private EmailOnlyDialog dlg;
 	private ProgressDialog prog;
 
-	public EmailOnlySaveFileThread( EmailOnlyDialog parent, byte[] fileBytes, String sFileName ) {
+	EmailOnlySaveFileThread( EmailOnlyDialog parent, byte[] fileBytes, String sFileName ) {
 		dlg = parent;
 		this.fileBytes = fileBytes;
 		this.sFileName = sFileName;
