@@ -39,10 +39,10 @@ import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
-public class CVIErrorDialog extends JDialog {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+class CVIErrorDialog extends JDialog {
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private ArrayList<String> aErrorKeys;
-	boolean bExitOK = false;
+	private boolean bExitOK = false;
 
 	private final JPanel contentPanel = new JPanel();
 	private HashMap<String, String> hErrorTypes;
@@ -53,7 +53,7 @@ public class CVIErrorDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public CVIErrorDialog( Window parent, ArrayList<String> aErrorKeys, String sNotes ) {
+	CVIErrorDialog( Window parent, ArrayList<String> aErrorKeys, String sNotes ) {
 		super( parent );
 		super.setModal(true);
 		this.aErrorKeys = aErrorKeys;

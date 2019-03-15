@@ -19,7 +19,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.util.ArrayList;
 
-public class IdListGen {
+class IdListGen {
 	
 	public static ArrayList<String> getIds( String sPrefix, String sFirstID, int iNum ) throws Exception {
 		if( "840".equals(sPrefix) || "982".equals(sPrefix) ) {
@@ -56,7 +56,7 @@ public class IdListGen {
 		}
 	}
 	
-	public static ArrayList<String> get840Ids( String sPrefix, String sFirstID, int iNum ) throws Exception {
+	private static ArrayList<String> get840Ids( String sPrefix, String sFirstID, int iNum ) throws Exception {
 		ArrayList<String> lList = new ArrayList<String>();
 		lList.add( AddAnimalsDialog.padTag(sPrefix, sFirstID, 15) );
 		Long iLast = null;
@@ -88,7 +88,7 @@ public class IdListGen {
 		private String sFirstPart = null;
 		private Long iLastPart = null;
 		
-		public SplitID( String sID ) {
+		private SplitID( String sID ) {
 			try {
 				int iLen = sID.length();
 				long iFullID = Long.parseLong(sID);

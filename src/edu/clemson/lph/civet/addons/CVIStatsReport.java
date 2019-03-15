@@ -28,7 +28,7 @@ import edu.clemson.lph.db.DatabaseConnectionFactory;
 import edu.clemson.lph.dialogs.TwoLineQuestionDialog;
 
 public class CVIStatsReport implements AddOn {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private DatabaseConnectionFactory factory;
 
 	public CVIStatsReport() {

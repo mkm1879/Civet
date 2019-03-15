@@ -33,7 +33,7 @@ import edu.clemson.lph.utils.FileUtils;
 /**
  * 
  */
-public class PdfSourceFile extends SourceFile {
+class PdfSourceFile extends SourceFile {
 	
 	/**
 	 * Used only in cloneCurrentState
@@ -42,7 +42,7 @@ public class PdfSourceFile extends SourceFile {
 		
 	}
 	
-	public PdfSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
+	PdfSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
 		super(fFile, viewer);
 		type = Types.PDF;
 		try {
@@ -61,7 +61,7 @@ public class PdfSourceFile extends SourceFile {
 	 * @param sPath
 	 * @return
 	 */
-	public static boolean isPDF( File fFile ) {
+	static boolean isPDF( File fFile ) {
 		boolean bRet = false;
 		String sName = fFile.getName();
 		if( sName.toLowerCase().endsWith(".pdf") ) {

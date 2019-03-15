@@ -10,10 +10,10 @@ import edu.clemson.lph.civet.threads.SaveCVIModelThread;
  * this is a queue of exactly one item
  */
 public class OpenFileSaveQueue {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private OpenFile fileIn = null;
 	private CivetEditDialogController controller;
-	private volatile int iThreads = 0;
+	private int iThreads = 0;
 
 	public OpenFileSaveQueue(CivetEditDialogController controller ) {
 		this.controller = controller;

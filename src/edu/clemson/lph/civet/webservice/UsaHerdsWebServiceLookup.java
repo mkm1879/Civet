@@ -44,7 +44,7 @@ import edu.clemson.lph.utils.XMLUtility;
  *
  */
 public class UsaHerdsWebServiceLookup {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}

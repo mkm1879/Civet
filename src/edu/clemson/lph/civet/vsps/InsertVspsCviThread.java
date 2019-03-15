@@ -48,17 +48,17 @@ import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.dialogs.ThreadCancelListener;
 import edu.clemson.lph.utils.FileUtils;
 
-public class InsertVspsCviThread extends Thread implements ThreadCancelListener {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
-	Window parent;
-	VspsCviFile cviFile;
-	ProgressDialog prog;
+class InsertVspsCviThread extends Thread implements ThreadCancelListener {
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private Window parent;
+	private VspsCviFile cviFile;
+	private ProgressDialog prog;
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_VSPS;
 	private CivetWebServices service = null;
 	private String sProgMsg = "Processing VSPS CVI: ";
-	volatile boolean bCanceled = false;
+	private volatile boolean bCanceled = false;
 
-	public InsertVspsCviThread(Window parent, VspsCviFile cviFile ) {
+	InsertVspsCviThread(Window parent, VspsCviFile cviFile ) {
 		this.parent = parent;
 		this.cviFile = cviFile;
 		prog = new ProgressDialog(parent, "Civet: VSPS Import", sProgMsg);
@@ -96,7 +96,7 @@ public class InsertVspsCviThread extends Thread implements ThreadCancelListener 
 					String sCVINbr = cvi.getCVINumber();
 					logger.error( new Exception("Error submitting VSPS spreadsheet CVI " + sCVINbr + " to USAHERDS: ") );
 					FileUtils.writeTextFile(sXML, sCVINbr + "_Error.xml");
-					MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting CVI " + sCVINbr + " to USAHERDS: " + sRet);
+					MessageDialog.showMessage(parent, "Civet WS Error", "Error submitting CVI " + sCVINbr + " to USAHERDS: " + sRet);
 				}
 			}
 		} catch (IOException e) {

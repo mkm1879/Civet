@@ -45,7 +45,7 @@ import java.awt.event.*;
  */
 
 @SuppressWarnings("serial")
-public class CVIReportView extends JDialog implements TableModelListener {
+class CVIReportView extends JDialog implements TableModelListener {
 	private JPanel panel1 = new JPanel();
 	private BorderLayout borderLayout1 = new BorderLayout();
 	private JPanel jpMain = new JPanel();
@@ -60,10 +60,10 @@ public class CVIReportView extends JDialog implements TableModelListener {
 	private java.util.Date dStart;
 	private java.util.Date dEnd;
 	private ProgressDialog prog;
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 
 
-	public CVIReportView(DatabaseConnectionFactory factory, String title, java.util.Date dStart, java.util.Date dEnd ) {
+	CVIReportView(DatabaseConnectionFactory factory, String title, java.util.Date dStart, java.util.Date dEnd ) {
 		this.factory = factory;
 		this.dStart = dStart;
 		String sStart = DateField.dateToText(dStart);
@@ -162,23 +162,9 @@ public class CVIReportView extends JDialog implements TableModelListener {
 		setLocation( 250, 250 );
 	}
 
-	public void setPanelSize( int iWidth, int iHeight ) {
-		panel1.setPreferredSize(new Dimension( iWidth, iHeight ) );
-	}
-
 	public void setPanelWidth( int iWidth ) {
 		int iHeight = panel1.getPreferredSize().height;
 		panel1.setPreferredSize(new Dimension( iWidth, iHeight ) );
-	}
-
-	public void increasePanelWidth( double dMulti ) {
-		int iHeight = panel1.getPreferredSize().height;
-		int iWidth = (int)( (panel1.getPreferredSize().getWidth() * dMulti) );
-		panel1.setPreferredSize(new Dimension( iWidth, iHeight ) );
-	}
-
-	void jbCancel_actionPerformed(ActionEvent e) {
-		setVisible( false );
 	}
 
 	@Override

@@ -12,8 +12,8 @@ import org.apache.log4j.Logger;
 import edu.clemson.lph.civet.Civet;
 
 @SuppressWarnings("serial")
-public class ManualOrderFocusTraversalPolicy extends ContainerOrderFocusTraversalPolicy {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+class ManualOrderFocusTraversalPolicy extends ContainerOrderFocusTraversalPolicy {
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private ArrayList<Component> aComponents = new ArrayList<Component>();
 
 	public ManualOrderFocusTraversalPolicy() {
@@ -21,7 +21,7 @@ public class ManualOrderFocusTraversalPolicy extends ContainerOrderFocusTraversa
 	}
 	
 	// Add controls to list manually in tab order.
-	public void addControl( Component control ) {
+	void addControl( Component control ) {
 		aComponents.add(control);
 	}
 

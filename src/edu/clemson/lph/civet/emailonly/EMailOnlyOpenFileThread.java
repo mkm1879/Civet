@@ -22,7 +22,7 @@ import edu.clemson.lph.utils.FileUtils;
  * @author mmarti5
  *
  */
-public class EMailOnlyOpenFileThread extends Thread {
+class EMailOnlyOpenFileThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private ProgressDialog prog;
 	private EmailOnlyDialog dlg;
@@ -37,7 +37,7 @@ public class EMailOnlyOpenFileThread extends Thread {
 	 * @param dlg EmailOnlyDialog that owns this thread
 	 * @param currentFilePath
 	 */
-	public EMailOnlyOpenFileThread(EmailOnlyDialog dlg, String currentFilePath) {
+	EMailOnlyOpenFileThread(EmailOnlyDialog dlg, String currentFilePath) {
 		this.dlg = dlg;
 		this.currentFile = new File(currentFilePath);
 		this.sFilePath = currentFilePath;
@@ -53,7 +53,7 @@ public class EMailOnlyOpenFileThread extends Thread {
 	 * @param dlg EmailOnlyDialog that owns this thread
 	 * @param fCurrentFile
 	 */
-	public EMailOnlyOpenFileThread(EmailOnlyDialog dlg, File fCurrentFile) {
+	EMailOnlyOpenFileThread(EmailOnlyDialog dlg, File fCurrentFile) {
 		this.dlg = dlg;
 		this.currentFile = fCurrentFile;
 		this.sFilePath = fCurrentFile.getAbsolutePath();
@@ -79,7 +79,7 @@ public class EMailOnlyOpenFileThread extends Thread {
 				pdfDecoder.openPdfArray(rawPdfBytes);
 				if(!checkEncryption()){
 					logger.error("Unable to open encrypted pdf file: " + currentFile.getAbsolutePath() );
-					MessageDialog.messageLater(dlg, "PDF Error", "Unable to open encrypted pdf file: " + currentFile.getAbsolutePath());
+					MessageDialog.showMessage(dlg, "PDF Error", "Unable to open encrypted pdf file: " + currentFile.getAbsolutePath());
 					prog.setVisible(false);
 					prog.dispose();
 					return;

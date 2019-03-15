@@ -32,7 +32,7 @@ import edu.clemson.lph.civet.xml.elements.EquineDescription;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
 public class VspsCviAnimal {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private List<String> aCols;
 	private LabeledCSVParser parser;
 	private DateFormat df = new SimpleDateFormat( "dd-MMM-yy");

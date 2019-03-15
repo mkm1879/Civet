@@ -55,7 +55,6 @@ import edu.clemson.lph.civet.files.SourceFileException;
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.lookup.Counties;
 import edu.clemson.lph.civet.lookup.ErrorTypeLookup;
-import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
 import edu.clemson.lph.civet.lookup.PurposeLookup;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.lookup.States;
@@ -87,7 +86,7 @@ import edu.clemson.lph.utils.PremCheckSum;
 
 
 public final class CivetEditDialogController {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private CivetEditDialog dlg;
 	private String viewerTitle="Civet: ";
 	private Window parent = null;
@@ -1108,10 +1107,7 @@ public final class CivetEditDialogController {
 				// Note, this route is broken until search logic gets refined.
 				PremisesTableModel model;
 				try {
-					if( CivetConfig.isStandAlone() )
-						model = new LocalPremisesTableModel( sStatePremisesId, sFedPremisesId );
-					else
-						model = new UsaHerdsLookupPrems( sStatePremisesId, sFedPremisesId );
+					model = new UsaHerdsLookupPrems( sStatePremisesId, sFedPremisesId );
 					if( model.getRowCount() == 1 ) {
 						if( model.next() ) {
 							dlg.jtfThisPIN.setText(sThisPremId);

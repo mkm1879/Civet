@@ -37,8 +37,8 @@ import javax.swing.JMenuItem;
 
 import org.apache.log4j.Logger;
 
-public class AddOnLoader {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+class AddOnLoader {
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	
 	private AddOnLoader() {
 	}
@@ -48,7 +48,7 @@ public class AddOnLoader {
 	 * @param wParent
 	 * @param menuAddOns
 	 */
-	public static void populateMenu( Window wParent, JMenu menuAddOns ) {
+	static void populateMenu( Window wParent, JMenu menuAddOns ) {
 		ArrayList<Class<AddOn>> addOnClasses = listAddonClasses();
 		final Window parent = wParent;
 		menuAddOns.setEnabled(false);

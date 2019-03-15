@@ -16,14 +16,14 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.dialogs.MessageDialog;
 
-public class EmailOnlyFileController {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+class EmailOnlyFileController {
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	
-	EmailOnlyDialog dlg;
+	private EmailOnlyDialog dlg;
 	/** Data defining PDF and Index state **/
 	/**name of current PDF file*/
-	String currentFilePath = null;
-	String currentFileName = null;
+	private String currentFilePath = null;
+	private String currentFileName = null;
 	private File currentFile = null;
 	private File currentFiles[] = null;
 	/** File and Page Numbers are 1 based.  PageNo used as is in pdfDecoder.decodePage()
@@ -34,7 +34,7 @@ public class EmailOnlyFileController {
 	private int iPages = 0;
 	private byte rawPdfBytes[];
 
-	public EmailOnlyFileController(EmailOnlyDialog parent) {
+	EmailOnlyFileController(EmailOnlyDialog parent) {
 		dlg = parent;
 	}
 	
@@ -73,7 +73,7 @@ public class EmailOnlyFileController {
 	/**
 	 * Move forward one page
 	 */
-	public boolean pageForward() {
+	boolean pageForward() {
 		if( iPageNo < iPages ) {
 			iPageNo++;
 			try {
@@ -124,7 +124,7 @@ public class EmailOnlyFileController {
 	/**
 	 * Callback from open file thread.
 	 */
-	public void setupFile() {
+	void setupFile() {
 		PdfDecoder pdfDecoder = dlg.getPdfDecoder();
 		try {
 			pdfDecoder.decodePage(iPageNo);
@@ -146,7 +146,7 @@ public class EmailOnlyFileController {
 	 * @param aPages int[]
 	 * @return byte[]
 	 */
-	public byte[] extractPagesToNewPDF() {
+	byte[] extractPagesToNewPDF() {
 		ByteArrayOutputStream baOut = new ByteArrayOutputStream();
 		try {
 			byte[] pdfDataIn = rawPdfBytes;

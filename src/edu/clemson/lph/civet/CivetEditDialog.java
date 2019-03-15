@@ -74,7 +74,7 @@ import java.awt.Insets;
  */
 @SuppressWarnings("serial")
 public final class CivetEditDialog extends JFrame {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private Window parent;
 	private CivetEditDialog dialogParent;
 	static final String sFileCopyAddress = CivetConfig.getEmailCopyTo();
