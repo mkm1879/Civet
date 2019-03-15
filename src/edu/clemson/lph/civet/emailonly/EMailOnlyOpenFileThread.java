@@ -79,7 +79,7 @@ class EMailOnlyOpenFileThread extends Thread {
 				pdfDecoder.openPdfArray(rawPdfBytes);
 				if(!checkEncryption()){
 					logger.error("Unable to open encrypted pdf file: " + currentFile.getAbsolutePath() );
-					MessageDialog.showMessage(dlg, "PDF Error", "Unable to open encrypted pdf file: " + currentFile.getAbsolutePath());
+					MessageDialog.messageLater(dlg, "PDF Error", "Unable to open encrypted pdf file: " + currentFile.getAbsolutePath());
 					prog.setVisible(false);
 					prog.dispose();
 					return;

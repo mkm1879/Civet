@@ -96,7 +96,7 @@ class InsertVspsCviThread extends Thread implements ThreadCancelListener {
 					String sCVINbr = cvi.getCVINumber();
 					logger.error( new Exception("Error submitting VSPS spreadsheet CVI " + sCVINbr + " to USAHERDS: ") );
 					FileUtils.writeTextFile(sXML, sCVINbr + "_Error.xml");
-					MessageDialog.showMessage(parent, "Civet WS Error", "Error submitting CVI " + sCVINbr + " to USAHERDS: " + sRet);
+					MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting CVI " + sCVINbr + " to USAHERDS: " + sRet);
 				}
 			}
 		} catch (IOException e) {

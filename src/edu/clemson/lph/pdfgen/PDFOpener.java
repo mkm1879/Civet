@@ -76,10 +76,9 @@ public class PDFOpener {
 		return sFileOut;
 	}// End decode pages to new PDF
 
-	static class OpenRecordInAcrobat extends Thread {
-		String sFileName;
-		int iPageNo;
-		public OpenRecordInAcrobat( String sFileName ) {
+	private static class OpenRecordInAcrobat extends Thread {
+		private String sFileName;
+		private OpenRecordInAcrobat( String sFileName ) {
 			this.sFileName = sFileName;
 		}
 

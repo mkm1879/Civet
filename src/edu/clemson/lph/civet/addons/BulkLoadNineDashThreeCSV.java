@@ -186,7 +186,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 								logger.error( sRet, new Exception("Error submitting NPIP 9-3 spreadsheet CVI to USAHERDS: " +
 										data.getCVINumber() ) );
 								logger.error(sXML);
-								MessageDialog.showMessage(parent, "Civet WS Error", "Error submitting to USAHERDS: " + 
+								MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting to USAHERDS: " + 
 										data.getCVINumber() + "\n" + sRet);
 							}
 						}

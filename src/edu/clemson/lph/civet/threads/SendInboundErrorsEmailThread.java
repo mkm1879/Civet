@@ -188,7 +188,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 					sbCVICounts.append("\n     " + (aSentCVIFiles.size() - iUnsent) + " CVIs to " + sState);
 				}
 			} // end for each state
-			MessageDialog.showMessage( prog.getWindowParent(), "Civet: Messages Sent", 
+			MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
 					"Successfully sent: " + sbCVICounts.toString() );
 		} catch (AuthenticationFailedException e) {
 			logger.error(e.getMessage() + "\nEmail Authentication Error");
@@ -217,7 +217,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 				File fIn = new File( CivetConfig.getImportErrorsEmailTemplate() );
 				sInBoundCVIErrorMessage = FileUtils.readTextFile( fIn );
 			} catch (FileNotFoundException fnf) {
-				MessageDialog.showMessage(prog.getWindowParent(), "Civet: Template File Missing",
+				MessageDialog.messageLater(prog.getWindowParent(), "Civet: Template File Missing",
                                        "Cannot find template file " + CivetConfig.getImportErrorsEmailTemplate());
 				return false;
 			}
