@@ -32,7 +32,7 @@ import edu.clemson.lph.civet.xml.elements.Veterinarian;
 
 @SuppressWarnings("serial")
 public class StdXMLFilesTableModel extends FilesTableModel {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 //	private ArrayList<StdeCviXml> aRows = new ArrayList<StdeCviXml>();
 	private ArrayList<String[]> aRows = new ArrayList<String[]>();
 	private SimpleDateFormat df = new SimpleDateFormat( "MMM d, yyyy");

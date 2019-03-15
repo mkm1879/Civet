@@ -118,7 +118,7 @@ public class CSVWriter {
 		return iRet;
 	}
 	
-	public int write( OutputStream strOut ) {
+	private int write( OutputStream strOut ) {
 		int iWritten = 0;
 		PrintWriter pw = new PrintWriter( strOut );
 		for( String sRow : aRows ) {

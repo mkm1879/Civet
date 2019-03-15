@@ -17,7 +17,7 @@ import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.FileUtils;
 
 public class SaveCVIModelThread extends Thread {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private OpenFileSaveQueue queue;
 	private OpenFile fileToSave;
 	StdeCviXmlModel modelToSave;

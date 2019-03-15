@@ -35,7 +35,7 @@ import com.itextpdf.text.pdf.XfaForm;
 import edu.clemson.lph.civet.Civet;
 
 public class PDFUtils {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 
 	public PDFUtils() {
 		// TODO Auto-generated constructor stub

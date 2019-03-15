@@ -45,7 +45,7 @@ import javax.swing.*;
 import org.apache.log4j.*;
 
 public class BulkLoadSwineMovementCSV implements AddOn {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	JFrame fParent = null;
 	private static final boolean bRequireBothPINs = true;
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_SWINE;
@@ -87,14 +87,14 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 	}
 
 	// Also create TWorkAddSpecies and TWorkAddPage
-	class TWorkCSV extends Thread implements ThreadCancelListener {
-		String sFilePath;
-		ProgressDialog prog;
-		JFrame fParent;
-		CivetWebServices service;
-		volatile boolean bCanceled = false;
+	private class TWorkCSV extends Thread implements ThreadCancelListener {
+		private String sFilePath;
+		private ProgressDialog prog;
+		private JFrame fParent;
+		private CivetWebServices service;
+		private volatile boolean bCanceled = false;
 		
-		public TWorkCSV( ProgressDialog prog, String sFilePath, JFrame fParent ) {
+		private TWorkCSV( ProgressDialog prog, String sFilePath, JFrame fParent ) {
 			this.prog = prog;
 			this.sFilePath = sFilePath;
 			this.fParent = fParent;

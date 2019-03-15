@@ -31,7 +31,7 @@ import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.PremCheckSum;
 
 public class SubmitNineDashThreeThread extends Thread {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private static final OpenOption[] CREATE_OR_APPEND = new OpenOption[] { StandardOpenOption.APPEND, StandardOpenOption.CREATE };
 //	private static final String sProgMsg = "Loading 9-3: ";
 	

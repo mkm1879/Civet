@@ -28,7 +28,7 @@ import edu.clemson.lph.civet.Civet;
 
 @SuppressWarnings("serial")
 public class EmailFilesTableModel extends FilesTableModel {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 
 	public EmailFilesTableModel(File fDirectory) {
 		super(fDirectory, new FileFilter() {

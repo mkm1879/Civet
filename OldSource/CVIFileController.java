@@ -46,7 +46,7 @@ import edu.clemson.lph.pdfgen.PDFUtils;
  *
  */
 public class CVIFileController {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	
 	CivetEditDialogController dlgController;
 	/** Data defining PDF and Index state **/

@@ -27,10 +27,10 @@ import java.awt.Insets;
 import java.awt.FlowLayout;
 
 @SuppressWarnings("serial")
-public class CountersPanel extends JPanel {
+class CountersPanel extends JPanel {
 	@SuppressWarnings("unused")
 	private CivetEditDialog parent;
-	 JPanel pCounters;
+	private JPanel pCounters;
 	 JLabel fileCounter1;
 	 JLabel fileCounter2;
 	 JLabel pageCounter1;
@@ -43,7 +43,7 @@ public class CountersPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public CountersPanel(CivetEditDialog parent) {
+	CountersPanel(CivetEditDialog parent) {
 		this.parent = parent;
 		setLayout( new FlowLayout() );
 		

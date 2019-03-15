@@ -30,7 +30,7 @@ import edu.clemson.lph.civet.Civet;
 
 @SuppressWarnings("serial")
 public abstract class FilesTableModel extends AbstractTableModel {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	protected boolean bMulti = true;
 	protected File fDir;
 	protected FileFilter fileFilter = null;

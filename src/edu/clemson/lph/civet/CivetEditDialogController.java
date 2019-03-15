@@ -55,7 +55,6 @@ import edu.clemson.lph.civet.files.SourceFileException;
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.lookup.Counties;
 import edu.clemson.lph.civet.lookup.ErrorTypeLookup;
-import edu.clemson.lph.civet.lookup.LocalPremisesTableModel;
 import edu.clemson.lph.civet.lookup.PurposeLookup;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.lookup.States;
@@ -87,16 +86,16 @@ import edu.clemson.lph.utils.PremCheckSum;
 
 
 public final class CivetEditDialogController {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private CivetEditDialog dlg;
 	private String viewerTitle="Civet: ";
 	private Window parent = null;
 
-	ArrayList<SpeciesRecord> aSpecies = new ArrayList<SpeciesRecord>();
-	HashMap<String,String> mSpeciesChanges;
-	AnimalIDListTableModel idListModel = null; //new AnimalIDListTableModel();
-	ArrayList<String> aErrorKeys;
-	String sErrorNotes;
+	private ArrayList<SpeciesRecord> aSpecies = new ArrayList<SpeciesRecord>();
+	private HashMap<String,String> mSpeciesChanges;
+	private AnimalIDListTableModel idListModel = null; //new AnimalIDListTableModel();
+	private ArrayList<String> aErrorKeys;
+	private String sErrorNotes;
 	
 	private String sPriorPhone;
 	private String sPriorAddress;
@@ -105,13 +104,12 @@ public final class CivetEditDialogController {
 	
 	private PremisesSearchDialog premSearch = new PremisesSearchDialog();
 
-	boolean bGotoLast = false; // Flag to open thread to goto last page when finished loading.
 	private String sPrevCVINo;
 	private String sPreviousSpecies;
 	private boolean bSppEntered = false;
 	private boolean bInSppChangeByCode = false;
-	boolean bInSearch = false;
-	boolean bReOpened = false;
+	private boolean bInSearch = false;
+	private boolean bReOpened = false;
 	private FormEditListener formEditListener = null;
 	private ArrayList<File> filesToOpen = null;
 	private OpenFileList openFileList = null;
@@ -121,10 +119,10 @@ public final class CivetEditDialogController {
 
 	private String sDefaultPurpose;
 	
-	CivetEditOrderTraversalPolicy traversal;
+	private CivetEditOrderTraversalPolicy traversal;
 	private Component cStartingComponentFocus = null;
 
-	VetLookup vetLookup;
+	private VetLookup vetLookup;
 	private boolean bInCleanup = false;
 
 	/**
@@ -892,7 +890,7 @@ public final class CivetEditDialogController {
 	}
 	
 	
-	protected void checkZipcode(JTextField jtfZip) {
+	private void checkZipcode(JTextField jtfZip) {
 		if( jtfZip == null ) return;
 		String sZip = jtfZip.getText().trim();
 		if( sZip == null || sZip.trim().length() == 0 )
@@ -993,7 +991,7 @@ public final class CivetEditDialogController {
 	 * @param iPage Both page and file numbers are 1 based indexes they are converted to zero based
 	 * as needed inside each method.
 	 */
-	public void gotoPage( int iPage ) {
+	private void gotoPage( int iPage ) {
 		try {
 			currentFile.gotoPageNo(iPage);
 			updateFilePage();
@@ -1006,15 +1004,15 @@ public final class CivetEditDialogController {
 		dlg.pCounters.setPage(iPage);
 	}
 
-	void setPages( int iPages ) {
+	private void setPages( int iPages ) {
 		dlg.pCounters.setPages(iPages);
 	}
 	
-	void setFile( int iFileNo ) {
+	private void setFile( int iFileNo ) {
 		dlg.pCounters.setFile(iFileNo); // currentFiles is 0 indexed array
 	}
 
-	void setFiles( int iFiles ) {
+	private void setFiles( int iFiles ) {
 		dlg.pCounters.setFiles(iFiles);
 	}
 	
@@ -1043,7 +1041,7 @@ public final class CivetEditDialogController {
 		gotoPage(iPage);
 	}
 
-	void jtfThisPIN_focusLost(FocusEvent e) {
+	private void jtfThisPIN_focusLost(FocusEvent e) {
 		String sThisPremId = dlg.jtfThisPIN.getText();		
 		if( sThisPremId == null || sThisPremId.trim().length() == 0 ) return;
 		// Here we mimic the behavior of the PinField control.  We couldn't be both a SearchTextField
@@ -1108,10 +1106,7 @@ public final class CivetEditDialogController {
 				// Note, this route is broken until search logic gets refined.
 				PremisesTableModel model;
 				try {
-					if( CivetConfig.isStandAlone() )
-						model = new LocalPremisesTableModel( sStatePremisesId, sFedPremisesId );
-					else
-						model = new UsaHerdsLookupPrems( sStatePremisesId, sFedPremisesId );
+					model = new UsaHerdsLookupPrems( sStatePremisesId, sFedPremisesId );
 					if( model.getRowCount() == 1 ) {
 						if( model.next() ) {
 							dlg.jtfThisPIN.setText(sThisPremId);
@@ -1145,7 +1140,7 @@ public final class CivetEditDialogController {
 		bInSearch = false;
 	}
 
-	void jtfPhone_focusLost(FocusEvent e) {
+	private void jtfPhone_focusLost(FocusEvent e) {
 	String sPhone = dlg.jtfPhone.getText();
 		if( sPhone == null || sPhone.trim().length() == 0 || sPhone.equals(sPriorPhone) ) return;
 		PremisesSearchDialog dlgSearch = new PremisesSearchDialog();
@@ -1173,7 +1168,7 @@ public final class CivetEditDialogController {
 		}
 	}
 
-	void jtfAddrCity_focusLost(FocusEvent e) {
+	private void jtfAddrCity_focusLost(FocusEvent e) {
 		String sCity = dlg.jtfThisCity.getText();
 		String sAddress = dlg.jtfAddress.getText();
 		// don't bother if either address or city is blank or neither has changed.
@@ -1496,8 +1491,6 @@ public final class CivetEditDialogController {
 						else
 							dlg.jtfDateReceived.setText("");
 					}
-
-//TODO Fix this.
 					String sCompName = traversal.getProperty("pPDFLoaded");
 					Component c = traversal.getComponentByName(sCompName);
 					cStartingComponentFocus = c;
@@ -1679,12 +1672,18 @@ public final class CivetEditDialogController {
 			MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " hasn't changed since last save");
 			dlg.jtfCVINo.requestFocus();
 			dlg.setFormEditable(true);
+			if( prog != null ) {
+				prog.setVisible(false);
+			}
 			return false;
 		}
 		if( !bReOpened && CertificateNbrLookup.certficateNbrExists(dlg.jtfCVINo.getText()) ) {
 			MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " already exists");
 			dlg.jtfCVINo.requestFocus();
 			dlg.setFormEditable(true);
+			if( prog != null ) {
+				prog.setVisible(false);
+			}
 			return false;
 		}
 		bReOpened = false;
@@ -1730,6 +1729,9 @@ public final class CivetEditDialogController {
 		if( !bInbound && (iIssuedByKey == null || iIssuedByKey == -1) ) {
 			MessageDialog.showMessage(dlg, "Civet Error", "Issuing Veterinarian is required");
 			dlg.setFormEditable(true);
+			if( prog != null ) {
+				prog.setVisible(false);
+			}
 			return false;
 		}
 		else if ( bInbound && ( sIssuedByName == null || sIssuedByName.trim().length() == 0 ) ) {
@@ -1749,6 +1751,9 @@ public final class CivetEditDialogController {
 				sFields += " Date Received,";
 			MessageDialog.showMessage(dlg, "Civet Error", "One or more required fields:" + sFields + " are empty");
 			dlg.setFormEditable(true);
+			if( prog != null ) {
+				prog.setVisible(false);
+			}
 			return false;
 		}
 
@@ -1798,7 +1803,7 @@ public final class CivetEditDialogController {
 		return false;
 	}
 	
-	public void moveCompletedFiles() {
+	private void moveCompletedFiles() {
 		int iFiles = openFileList.moveCompleteFiles();
 		String sDirOut = CivetConfig.getOutputDirPath();
     	if( iFiles > 0 )
@@ -1812,7 +1817,7 @@ public final class CivetEditDialogController {
 			((Frame)parent).setExtendedState(Frame.ICONIFIED);
 	}
 
-	void rbOutbound_actionPerformed(ActionEvent e) {
+	private void rbOutbound_actionPerformed(ActionEvent e) {
 		if( hasData() ) {
 			YesNoDialog yn = new YesNoDialog( dlg, "Civet: Reverse", "All data will be lost.\nDo you want to reverse direction?");
 			yn.setVisible(true);
@@ -1830,7 +1835,7 @@ public final class CivetEditDialogController {
 			c.requestFocus();
 	}
 
-	void rbInbound_actionPerformed(ActionEvent e) {
+	private void rbInbound_actionPerformed(ActionEvent e) {
 		if( hasData() ) {
 			YesNoDialog yn = new YesNoDialog( dlg, "Civet: Reverse", "All data will be lost.\nDo you want to reverse direction?");
 			yn.setVisible(true);
@@ -1848,7 +1853,7 @@ public final class CivetEditDialogController {
 			c.requestFocus();
 	}
 
-	void rbInState_actionPerformed(ActionEvent e) {
+	private void rbInState_actionPerformed(ActionEvent e) {
 		if( hasData() ) {
 			YesNoDialog yn = new YesNoDialog( dlg, "Civet: Reverse", "All data will be lost.\nDo you want to reverse direction?");
 			yn.setVisible(true);
@@ -1869,7 +1874,7 @@ public final class CivetEditDialogController {
 			c.requestFocus();
 	}
 
-	void pdfView() {
+	private void pdfView() {
 		PDFOpener opener = new PDFOpener(dlg);
 		// If the file is really a PDF, open it from disk so even things like CO/KS open natively.
 		if( currentFile.getSource().canSplit() ) {
@@ -1882,13 +1887,13 @@ public final class CivetEditDialogController {
 	}
 	
 
-	void pdfView( byte pdfBytes[] ) {
+	private void pdfView( byte pdfBytes[] ) {
 		PDFOpener opener = new PDFOpener(dlg);
 		opener.openPDFContentInAcrobat(pdfBytes);
 	}
 
 	
-	protected void pdfViewFile() {
+	private void pdfViewFile() {
 		PDFOpener opener = new PDFOpener(dlg);
 		opener.openPDFContentInAcrobat(currentFile.getPDFBytes());
 	}

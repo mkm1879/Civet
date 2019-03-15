@@ -28,7 +28,7 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
-public class CSVNineDashThreeDataFile {
+class CSVNineDashThreeDataFile {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private ArrayList<HashMap<String,String>> aaValues = null;
 	private int iCurrentRow;
@@ -44,7 +44,7 @@ public class CSVNineDashThreeDataFile {
 	 * @throws FileNotFoundException If the file is not found
 	 * @throws IOException If the file cannot be parsed as a CSV file
 	 */
-	public CSVNineDashThreeDataFile( String sFileName ) throws FileNotFoundException, IOException {
+	CSVNineDashThreeDataFile( String sFileName ) throws FileNotFoundException, IOException {
 		sHomeState = CivetConfig.getHomeStateAbbr();
 		ArrayList<String> aKeys = new ArrayList<String>();
 		aaValues = new ArrayList<HashMap<String,String>>();
@@ -96,24 +96,13 @@ public class CSVNineDashThreeDataFile {
 	 * Read the next row of data if any
 	 * @return true if current pointer is on valid data
 	 */
-	public boolean nextRow() {
+	boolean nextRow() {
 		++iCurrentRow;
 		return iCurrentRow < iNumRows;
 	}
 	
-	public int size() {
+	int size() {
 		return aaValues.size();
-	}
-	
-	public String printRow() {
-		StringBuffer sb = new StringBuffer();
-		HashMap<String,String> aRow = aaValues.get(iCurrentRow);
-		for( String sKey : aRow.keySet() ) {
-			String sVal = aRow.get(sKey.toUpperCase());
-			if( sVal == null ) sVal = "";
-			sb.append( sKey + "=\"" + sVal + "\",");
-		}
-		return sb.toString();
 	}
 
 	/**
@@ -121,7 +110,7 @@ public class CSVNineDashThreeDataFile {
 	 * @param sKey
 	 * @return
 	 */
-	public String get( String sKey ) {
+	private String get( String sKey ) {
 		HashMap<String,String> aRow = aaValues.get(iCurrentRow);
 		String sRet = aRow.get(sKey.toUpperCase());
 		if( sRet != null && sRet.trim().length() == 0 ) sRet = null;
@@ -251,7 +240,7 @@ public class CSVNineDashThreeDataFile {
 		return get("Product");
 	}
 	
-	public boolean hasTags() {
+	boolean hasTags() {
 		String sTags = get("TagID");
 		if( sTags != null && sTags.trim().length() > 0 )
 			return true;
@@ -259,7 +248,7 @@ public class CSVNineDashThreeDataFile {
 			return false;	
 	}
 	
-	public List<String> listTagIds() {
+	List<String> listTagIds() {
 		ArrayList<String> tagList;
 		String sTags = get("TagID");
 		if( sTags != null && sTags.trim().length() > 0 ) {

@@ -43,12 +43,11 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 
 @SuppressWarnings("serial")
-public class ParticipantPanel extends JPanel {
+class ParticipantPanel extends JPanel {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}
-	String sLabel;
 	JCheckBox ckSticky;
 	SearchTextField jtfPIN;
 	private PremisesSearchDialog premSearch = new PremisesSearchDialog();
@@ -60,7 +59,7 @@ public class ParticipantPanel extends JPanel {
 	DBComboBox cbState;
 	JComboBox<String> cbCounty;
 	private boolean bInSearch = false;
-	NineDashThreeDialog myParent = null;
+	private NineDashThreeDialog myParent = null;
 
 	public void setParent( NineDashThreeDialog parent ) {
 		myParent = parent;
@@ -69,8 +68,7 @@ public class ParticipantPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public ParticipantPanel(String sLabel) {
-		this.sLabel = sLabel;
+	ParticipantPanel(String sLabel) {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {30, 50, 120, 90, 55, 5};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};

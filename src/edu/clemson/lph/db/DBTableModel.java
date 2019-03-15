@@ -130,7 +130,7 @@ public class DBTableModel extends AbstractTableModel implements ThreadListener {
 		return work;
 	}
 	
-	class DoWork extends Thread {
+	private class DoWork extends Thread {
 		private void doReadTableSource() {
 			aNewRows.clear();
 			aNewColNames.clear();

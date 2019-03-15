@@ -37,7 +37,7 @@ import edu.clemson.lph.utils.CSVParserWrapper;
  * Java Utilities CSVParserWrapper class.
  * Note: Company name must be first part of filename followed by an underscore character.
  */
-public class CSVDataFile {
+class CSVDataFile {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private ArrayList<HashMap<String,String>> aaValues = null;
 	private int iCurrentRow;
@@ -57,7 +57,7 @@ public class CSVDataFile {
 	 * @throws FileNotFoundException If the file is not found
 	 * @throws IOException If the file cannot be parsed as a CSV file
 	 */
-	public CSVDataFile( String sFileName ) throws FileNotFoundException, IOException {
+	CSVDataFile( String sFileName ) throws FileNotFoundException, IOException {
 		sHomeState = CivetConfig.getHomeStateAbbr();
 		ArrayList<String> aKeys = new ArrayList<String>();
 		aaValues = new ArrayList<HashMap<String,String>>();
@@ -114,7 +114,7 @@ public class CSVDataFile {
 	 * Read the next row of data if any
 	 * @return true if current pointer is on valid data
 	 */
-	public boolean nextRow() {
+	boolean nextRow() {
 		++iCurrentRow;
 		if( iCurrentRow < iNumRows ) {
 			bRowInbound = isInbound();
@@ -127,7 +127,7 @@ public class CSVDataFile {
 	 * @param sKey
 	 * @return
 	 */
-	public String get( String sKey ) {
+	private String get( String sKey ) {
 		HashMap<String,String> aRow = aaValues.get(iCurrentRow);
 		String sRet = aRow.get(sKey);
 		if( sRet != null && sRet.trim().length() == 0 ) sRet = null;

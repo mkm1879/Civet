@@ -33,7 +33,7 @@ import edu.clemson.lph.utils.FileUtils;
  *  perform the type-appropriate behaviors while hiding the type details (mostly).
  */
 public class OpenFile {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private SourceFile source = null;
 	private PDFViewer viewer = null;
 	private ArrayList<Integer> aPagesInCurrent = null;

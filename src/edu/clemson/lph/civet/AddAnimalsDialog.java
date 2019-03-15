@@ -54,7 +54,7 @@ import javax.swing.table.TableRowSorter;
 
 @SuppressWarnings("serial")
 public class AddAnimalsDialog extends JDialog {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private final JPanel contentPanel = new JPanel();
 	private JTextField jtfNewId;
 	private DBNumericField jtfAddNum;

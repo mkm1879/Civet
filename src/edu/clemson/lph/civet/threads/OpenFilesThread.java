@@ -38,8 +38,8 @@ public class OpenFilesThread extends Thread {
 	private ProgressDialog prog;
 	private CivetEditDialogController dlgController;
 	private CivetEditDialog dlg;
-	ArrayList<File> filesToOpen = null;
-	OpenFileList openFiles = null;
+	private ArrayList<File> filesToOpen = null;
+	private OpenFileList openFiles = null;
 	private File currentFile;
 	
 	/**

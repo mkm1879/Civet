@@ -32,7 +32,7 @@ import edu.clemson.lph.utils.LabeledCSVParser;
 
 
 public class VspsCvi {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private LabeledCSVParser parser = null;
 	private List<String> aCols;
 	private List<VspsCviAnimal> lAnimals;

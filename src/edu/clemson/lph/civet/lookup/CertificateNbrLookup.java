@@ -34,7 +34,7 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 
 public class CertificateNbrLookup {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private static HashSet<String> setCertNbrs = null;
 
 	/**

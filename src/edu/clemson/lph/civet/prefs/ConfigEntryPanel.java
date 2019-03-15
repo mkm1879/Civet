@@ -25,8 +25,8 @@ import org.apache.log4j.Logger;
 import edu.clemson.lph.civet.Civet;
 
 @SuppressWarnings("serial")
-public class ConfigEntryPanel extends JPanel {
-	public static final Logger logger = Logger.getLogger(Civet.class.getName());
+class ConfigEntryPanel extends JPanel {
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private ConfigEntry entry = null;
 	private ConfigDialog dlgParent = null;
 	private JTextField jtfValue;
@@ -36,7 +36,7 @@ public class ConfigEntryPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public ConfigEntryPanel(ConfigDialog parent, ConfigEntry entry, List<String> aChoices) {
+	ConfigEntryPanel(ConfigDialog parent, ConfigEntry entry, List<String> aChoices) {
 		this.entry = entry;
 		this.dlgParent = parent;
 		setLayout(null);
@@ -137,7 +137,7 @@ public class ConfigEntryPanel extends JPanel {
 		}
 	} // End Constructor for ConfigEntryPanel
 	
-	public boolean hasChanged() {
+	boolean hasChanged() {
 		String sNewValue = jtfValue.getText();
 		String sOldValue = entry.sValue;
 		if( sNewValue == null && sOldValue != null )
