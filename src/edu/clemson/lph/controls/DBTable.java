@@ -262,7 +262,7 @@ public class DBTable extends JTable implements ThreadListener {
 		}
 	}
 	
-	static class DateCellRenderer extends DefaultTableCellRenderer {
+	private static class DateCellRenderer extends DefaultTableCellRenderer {
         public DateCellRenderer() { super(); }
         public void setValue(Object value) {
             if ( value instanceof java.util.Date ) {

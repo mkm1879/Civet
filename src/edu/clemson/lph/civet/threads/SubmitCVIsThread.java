@@ -35,19 +35,19 @@ import edu.clemson.lph.dialogs.ThreadCancelListener;
 import edu.clemson.lph.utils.FileUtils;
 
 public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
-	protected static final Logger logger = Logger.getLogger(Civet.class.getName());
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}
 	private CivetWebServices service = null;
-	protected List<File> allFiles = null;
-	protected String sCurrentFilePath = "";
-	protected ProgressDialog prog;
-	protected String sProgTitle = "Civet: Processing File";
-	protected String sProgPrompt = "File: ";
-	protected String sOutPath;
-	CivetInbox parent = null;
-	volatile boolean bCanceled = false;
+	private List<File> allFiles = null;
+	private String sCurrentFilePath = "";
+	private ProgressDialog prog;
+	private String sProgTitle = "Civet: Processing File";
+	private String sProgPrompt = "File: ";
+	private String sOutPath;
+	private CivetInbox parent = null;
+	private volatile boolean bCanceled = false;
 	
 	public SubmitCVIsThread(CivetInbox parent, List<File> files) {
 		this.parent = parent;

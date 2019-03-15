@@ -173,7 +173,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 					sbCVICounts.append("\n     " + (aSentCVIFiles.size() - iUnsent) + " CVIs to " + sState);
 				}
 			} // end for each state
-			MessageDialog.showMessage( prog.getWindowParent(), "Civet: Messages Sent", 
+			MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
 					"Successfully sent: " + sbCVICounts.toString() );
 		} catch (AuthenticationFailedException e) {
 			logger.error(e.getMessage() + "\nEmail Authentication Error");
@@ -203,11 +203,11 @@ public class SendOutboundCVIEmailThread extends Thread {
 				File fIn = new File( sTemplateFile );
 				sOutBoundCVIMessage = FileUtils.readTextFile( fIn );
 			} catch (FileNotFoundException fnf) {
-				MessageDialog.showMessage(prog.getWindowParent(), "Civet: Template File Missing",
+				MessageDialog.messageLater(prog.getWindowParent(), "Civet: Template File Missing",
                                        "Cannot find template file " + sTemplateFile);
 				return false;
 			} catch (Exception e) {
-				MessageDialog.showMessage(prog.getWindowParent(), "Civet: Template File Error",
+				MessageDialog.messageLater(prog.getWindowParent(), "Civet: Template File Error",
                         "Cannot read template file " + sTemplateFile);
 				return false;
 			}

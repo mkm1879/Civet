@@ -146,7 +146,7 @@ class EmailOnlySendFilesThread extends Thread {
 				}
 				String sStateList = sb.toString();
 				sStateList = sStateList.substring(0, sStateList.length() -2 );
-				MessageDialog.showMessage( prog.getWindowParent(), "Civet: Messages Sent", 
+				MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
 						"Successfully sent " + (aSentCVIFiles.size() - iUnsent) + " CVIs to\n"
 								+ sStateList );
 			}
@@ -173,7 +173,7 @@ class EmailOnlySendFilesThread extends Thread {
 				File fIn = new File( CivetConfig.getEmailOnlyEmailTemplate() );
 				sEmailOnlyMessage = FileUtils.readTextFile( fIn );
 			} catch (FileNotFoundException fnf) {
-				MessageDialog.showMessage(prog.getWindowParent(), "Civet: Template File Missing",
+				MessageDialog.messageLater(prog.getWindowParent(), "Civet: Template File Missing",
                                        "Cannot find template file " + CivetConfig.getEmailOnlyEmailTemplate());
 				return false;
 			}

@@ -124,7 +124,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 					String sRet = service.sendCviXML(sXML);
 					if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {
 						logger.error( sRet, new Exception("Error submitting swine spreadsheet CVI to USAHERDS: ") );
-						MessageDialog.showMessage(fParent, "Civet WS Error", "Error submitting to USAHERDS: " + sRet);
+						MessageDialog.messageLater(fParent, "Civet WS Error", "Error submitting to USAHERDS: " + sRet);
 					}
 				} 
 			}catch (IOException e) {
@@ -217,7 +217,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 			sDestinationPIN = null;
 		}
 		if( !bValid && bRequireBothPINs ) {
-			MessageDialog.showMessage(fParent, "Civet: Missing PIN",
+			MessageDialog.messageLater(fParent, "Civet: Missing PIN",
 					"Both source and destination PINs are required for bulk shipment records.\n" +
 							"Source PIN = " + sSourcePIN + "\n" +
 							"Dest PIN = " + sDestinationPIN + "\n" +

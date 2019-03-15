@@ -84,7 +84,7 @@ class IdListGen {
 		return split.getLastPart();
 	}
 	
-	static class SplitID {
+	private static class SplitID {
 		private String sFirstPart = null;
 		private Long iLastPart = null;
 		

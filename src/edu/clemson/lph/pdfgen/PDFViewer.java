@@ -18,12 +18,12 @@ public class PDFViewer {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	/** Data behind the GUI **/
 	/**the actual JPanel/decoder object*/
-	PdfDecoder pdfDecoder;
-	byte pdfBytes[];
-	int iRotation = 0;
-	float scale = 1.0f;
-	int iPageNo = 1;
-	boolean bXFA = false;
+	private PdfDecoder pdfDecoder;
+	private byte pdfBytes[];
+	private int iRotation = 0;
+	private float scale = 1.0f;
+	private int iPageNo = 1;
+	private boolean bXFA = false;
 
 	public PDFViewer() {
 		pdfDecoder = new PdfDecoder();
