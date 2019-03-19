@@ -121,9 +121,6 @@ public class MailMan {
 			    msg.addRecipient(Message.RecipientType.CC, new InternetAddress(sCC));
 			Transport.send(msg);
 		}
-		catch( javax.mail.AuthenticationFailedException auth ) {
-			throw auth;
-		}
 		catch( javax.mail.MessagingException mex ) {
 			throw mex;
 		}
@@ -349,19 +346,19 @@ public class MailMan {
 		return props;
 	}
 
-	public static void setDefaultUserID(String sUserID) {
+	public static void setUserID(String sUserID) {
 		MailMan.sUserID = sUserID;
 	}
 
-	public static String getDefaultUserID() {
+	public static String getUserID() {
 		return sUserID;
 	}
 
-	public static void setDefaultPassword(String sPassword) {
+	public static void setPassword(String sPassword) {
 		MailMan.sPassword = sPassword;
 	}
 
-	public static String getDefaultPassword() {
+	public static String getPassword() {
 		return sPassword;
 	}
 

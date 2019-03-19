@@ -503,16 +503,16 @@ public class CivetConfig {
 		}
 		if( sSmtpHost != null ) {
 			MailMan.setDefaultHost(CivetConfig.getSmtpHost());
-			sUserID = MailMan.getDefaultUserID();
-			if( (MailMan.getDefaultUserID() == null || MailMan.getDefaultPassword() == null) && bLogin ) {
+			sUserID = MailMan.getUserID();
+			if( (MailMan.getUserID() == null || MailMan.getPassword() == null) && bLogin ) {
 				TwoLineQuestionDialog ask = new TwoLineQuestionDialog( "Civet Email Login:",
 						"Email UserID:", "Email Password:", true);
 				ask.setPassword(true);
 				ask.setVisible(true);
 				if( ask.isExitOK() ) {
 					sUserID = ask.getAnswerOne();
-					MailMan.setDefaultUserID(sUserID);
-					MailMan.setDefaultPassword(ask.getAnswerTwo());
+					MailMan.setUserID(sUserID);
+					MailMan.setPassword(ask.getAnswerTwo());
 					bRet = true;
 				}
 				else {
@@ -524,8 +524,8 @@ public class CivetConfig {
 			MailMan.setDefaultHost(CivetConfig.getZohoHost());
 			sUserID = CivetConfig.getZohoUser();
 			String sPassword = CivetConfig.getZohoPass();
-			MailMan.setDefaultUserID(sUserID);
-			MailMan.setDefaultPassword(sPassword);
+			MailMan.setUserID(sUserID);
+			MailMan.setPassword(sPassword);
 		}
 		MailMan.setDefaultPort(CivetConfig.getSmtpPortInt());
 		MailMan.setSecurity(CivetConfig.getSmtpSecurity());
