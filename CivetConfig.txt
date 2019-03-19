@@ -23,12 +23,12 @@ checkAccreditationStatus=TRUE
 trustAllCerts=TRUE
 
 #Email
-smtpHost=
+smtpHost=smtp.googlemail.com
 zohoKey=
 smtpPort=587
 smtpSecurity=STARTTLS
 smtpDomain=
-emailFrom=
+emailFrom=mkm1879@gmail.com
 emailReplyTo=mmarti5@clemson.edu
 emailTestTo=mkm1879@gmail.com
 emailCopyTo=mkm1879@gmail.com

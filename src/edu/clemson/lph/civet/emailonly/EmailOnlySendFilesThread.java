@@ -150,8 +150,12 @@ class EmailOnlySendFilesThread extends Thread {
 						"Successfully sent " + (aSentCVIFiles.size() - iUnsent) + " CVIs to\n"
 								+ sStateList );
 			}
-		} catch (AuthenticationFailedException e) {
-			logger.error(e.getMessage() + "\nEmail Authentication Error");
+		} catch (javax.mail.AuthenticationFailedException eAuth) {
+			MailMan.setUserID(null);
+			MailMan.setPassword(null);
+			logger.error(eAuth.getMessage() + "\nEmail Authentication Error");
+			MessageDialog.showMessage(prog.getWindowParent(), "Civet: Email Error", "Email server userID/password incorrect"
+					+ "\nEmail Host: " + CivetConfig.getSmtpHost() );
 		} catch (javax.mail.MessagingException e) {
 			logger.error(e.getMessage() + "\nEmail Connection Error");
 		} catch (Exception ex) {
@@ -197,12 +201,6 @@ class EmailOnlySendFilesThread extends Thread {
 					sSubject,
 					sEmailOnlyMessage, aFiles);
 		} catch (AuthenticationFailedException e1) {
-			sCurrentEmailError = e1.getMessage();
-			MessageDialog.showMessage( prog.getWindowParent(), "Civet: Invalid UserID/Password", 
-					"Authentication failure to Email system:\n" + CivetConfig.getSmtpHost());
-			MailMan.setDefaultUserID( null );
-			MailMan.setDefaultPassword( null );
-			// NOTE: This is still not 100% right.  If authentication fails part way through we will exit the enclosing try that catches this.
 			throw( e1 );
 		} catch (MailException me) {
 			sCurrentEmailError = me.getMessage();

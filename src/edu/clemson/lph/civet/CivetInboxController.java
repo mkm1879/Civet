@@ -405,11 +405,12 @@ public class CivetInboxController {
 				else {
 					MessageDialog.showMessage(inbox, "Civet Error:", "Failed to send Civet.log.  Please email manually.");
 				}
-			} catch (AuthenticationFailedException e) {
-				MessageDialog.showMessage(inbox, "Civet Error:", "Email login failed");
-				MailMan.setDefaultUserID( null );
-				MailMan.setDefaultPassword( null );
-				logger.error(e);
+			} catch (javax.mail.AuthenticationFailedException eAuth) {
+				MailMan.setUserID(null);
+				MailMan.setPassword(null);
+				logger.error(eAuth.getMessage() + "\nEmail Authentication Error");
+				MessageDialog.showMessage(inbox, "Civet: Email Error", "Email server userID/password incorrect"
+						+ "\nEmail Host: " + CivetConfig.getSmtpHost() );
 			} catch (MessagingException e) {
 				MessageDialog.showMessage(inbox, "Civet Error:", "Failed to send Civet.log.  Please email manually.");
 				logger.error(e);

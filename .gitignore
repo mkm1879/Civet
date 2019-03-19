@@ -96,5 +96,7 @@ CivetToBeFiled/
 CivetToBeMailedErrors/
 CivetToBeMailedOut/
 *.cvi
+*.launch
+
 
 
