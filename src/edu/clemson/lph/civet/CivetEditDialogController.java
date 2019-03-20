@@ -1699,6 +1699,7 @@ public final class CivetEditDialogController {
 		String sOtherCity = dlg.jtfOtherCity.getText();
 		String sOtherCounty = (String)dlg.cbOtherCounty.getSelectedItem();
 		String sOtherZipcode = dlg.jtfOtherZip.getText();
+		if(sOtherZipcode != null) sOtherZipcode = sOtherZipcode.trim();
 		String sOtherPIN = null; //dlg.jtfOtherPIN.getText();
 		String sThisPremisesId = dlg.jtfThisPIN.getText();
 		if( sThisPremisesId != null && sThisPremisesId.trim().length() != 7 && CivetConfig.hasBrokenLIDs() && !bLidFromHerds )
@@ -1708,6 +1709,7 @@ public final class CivetEditDialogController {
 		String sStreetAddress = dlg.jtfAddress.getText();
 		String sCity = dlg.jtfThisCity.getText();
 		String sZipcode = dlg.jtfZip.getText();
+		if( sZipcode != null ) sZipcode = sZipcode.trim();
 		String sThisState = dlg.jtfThisState.getText();
 		String sThisCounty = (String)dlg.cbThisCounty.getSelectedItem();
 		if( sThisCounty == null || sThisCounty.trim().length() < 3 ) {
