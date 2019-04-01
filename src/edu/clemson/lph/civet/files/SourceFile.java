@@ -125,6 +125,8 @@ public abstract class SourceFile {
 		return fData;
 	}
 	
+	public abstract String getSystem();
+	
 	public java.util.Date getSaveDate() {
 		java.util.Date dSaved = null;
 		dSaved = new java.util.Date(fSource.lastModified());

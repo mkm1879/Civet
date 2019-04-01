@@ -154,6 +154,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 		VetLookup vetLookup = new VetLookup( sLast, sFirst );
 		String sCviNumber = getCVINumber(data);
 		xmlModel.setCertificateNumber(sCviNumber);
+		xmlModel.setCertificateNumberSource("Swine Health Management Plan");
 		xmlModel.setIssueDate(data.getDate());
 		if( data.getSourceState().equalsIgnoreCase(CivetConfig.getHomeStateAbbr()) && vetLookup != null ) {
 			NameParts parts = new NameParts(null, vetLookup.getFirstName(), null, vetLookup.getLastName(), null );

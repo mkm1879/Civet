@@ -119,6 +119,7 @@ class InsertVspsCviThread extends Thread implements ThreadCancelListener {
 	private String buildXml( VspsCvi cvi ) throws IOException {
 		StdeCviXmlModel xmlModel = new StdeCviXmlModel();
 		xmlModel.setCertificateNumber(cvi.getCVINumber());
+		xmlModel.setCertificateNumberSource("VSPS");
 		xmlModel.setIssueDate(cvi.getInspectionDate());
 		@SuppressWarnings("unused")
 		Element eVet = null;

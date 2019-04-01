@@ -1482,6 +1482,11 @@ public class StdeCviXmlModel {
 	}
 	
 	public void setCertificateNumberSource(String sCVINbrSource) {
+		String sPath = ".";
+		String sAttr = "CviNumberIssuedBy";
+		String sExistingSource = helper.getAttributeByPath(sPath, sAttr);
+		if( sExistingSource == null || sExistingSource.trim().length() == 0 )
+			helper.setAttributeByPath(sPath, sAttr, sCVINbrSource);
 		CviMetaDataXml meta = getMetaData();
 		meta.setCVINumberSource(sCVINbrSource);
 		binaries.addOrUpdateMetadata(meta);		

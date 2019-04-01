@@ -245,4 +245,9 @@ public class MCviSourceFile extends SourceFile {
 		return sRet;
 	}
 
+	@Override
+	public String getSystem() {
+		return "mCVI";
+	}
+
 }

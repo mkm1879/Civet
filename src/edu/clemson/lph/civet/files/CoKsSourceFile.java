@@ -237,5 +237,10 @@ public class CoKsSourceFile extends SourceFile {
 			}
  		return sRet;
 	}
-	
+
+	@Override
+	public String getSystem() {
+		return "CO/KS eCVI";
+	}
+
 }
