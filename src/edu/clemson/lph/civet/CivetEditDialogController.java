@@ -1372,12 +1372,11 @@ public final class CivetEditDialogController {
 						String sOtherHerdsCounty = getHerdsCounty( sOtherStateCode, sOtherCountyIn, sOtherZip );
 						dlg.cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
 						dlg.jtfOtherZip.setText(sOtherZip);
-						dlg.jtfThisPIN.setText("");
 						String sThisName = xStd.getOrigin().premName;
 						if( sThisName == null || sThisName.trim().length() == 0 )
 							sThisName = xStd.getOrigin().personName;
-						dlg.jtfThisPIN.setText(xStd.getOrigin().premid);
 						dlg.jtfThisName.setText(sThisName);
+						dlg.jtfThisPIN.setText(xStd.getOrigin().premid);
 						dlg.jtfPhone.setText(xStd.getOrigin().personPhone);
 						dlg.jtfAddress.setText(xStd.getOrigin().address.line1);
 						dlg.jtfThisCity.setText(xStd.getOrigin().address.town);
@@ -1429,12 +1428,11 @@ public final class CivetEditDialogController {
 						String sOtherHerdsCounty = getHerdsCounty( sOtherStateCode, sOtherCountyIn, sOtherZip );
 						dlg.jtfOtherZip.setText(sOtherZip);
 						dlg.cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
-						dlg.jtfThisPIN.setText("");
 						String sThisName = xStd.getDestination().premName;
 						if( sThisName == null || sThisName.trim().length() == 0 )
 							sThisName = xStd.getDestination().personName;
-						dlg.jtfThisPIN.setText(xStd.getDestination().premid);
 						dlg.jtfThisName.setText(sThisName);
+						dlg.jtfThisPIN.setText(xStd.getDestination().premid);
 						dlg.jtfPhone.setText(xStd.getDestination().personPhone);
 						dlg.jtfAddress.setText(xStd.getDestination().address.line1);
 						dlg.jtfThisCity.setText(xStd.getDestination().address.town);
@@ -1700,10 +1698,10 @@ public final class CivetEditDialogController {
 		String sOtherCounty = (String)dlg.cbOtherCounty.getSelectedItem();
 		String sOtherZipcode = dlg.jtfOtherZip.getText();
 		if(sOtherZipcode != null) sOtherZipcode = sOtherZipcode.trim();
-		String sOtherPIN = null; //dlg.jtfOtherPIN.getText();
+//		String sOtherPIN = null; //dlg.jtfOtherPIN.getText();
 		String sThisPremisesId = dlg.jtfThisPIN.getText();
 		if( sThisPremisesId != null && sThisPremisesId.trim().length() != 7 && CivetConfig.hasBrokenLIDs() && !bLidFromHerds )
-			sOtherPIN = null;
+			sThisPremisesId = null;
 		String sPhone = dlg.jtfPhone.getText();
 		String sThisName = dlg.jtfThisName.getText();
 		String sStreetAddress = dlg.jtfAddress.getText();
@@ -1763,7 +1761,7 @@ public final class CivetEditDialogController {
 		// NOTE!!!!  model is not thread safe at this point.  
 		buildXml( fileToSave.getModel(), bInbound, bDataFile, 
 				aSpecies, sOtherStateCode,
-				sOtherName, sOtherAddress, sOtherCity, sOtherCounty, sOtherZipcode, sOtherPIN,
+				sOtherName, sOtherAddress, sOtherCity, sOtherCounty, sOtherZipcode, //sOtherPIN,
 				sThisPremisesId, sThisName, sPhone,
 				sStreetAddress, sCity, sThisCounty, sZipcode,
 				dDateIssued, dDateReceived, iIssuedByKey, sIssuedByName, sCVINo,
@@ -2037,13 +2035,13 @@ public final class CivetEditDialogController {
 	private void buildXml( StdeCviXmlModel model,  
 			boolean bImport, boolean bIsDataFile, ArrayList<SpeciesRecord> aSpecies, 
 			String sOtherStateCode, String sOtherName, String sOtherAddress, String sOtherCity, 
-			String sOtherCounty, String sOtherZipcode, String sOtherPIN,
+			String sOtherCounty, String sOtherZipcode, //String sOtherPIN,
 			String sThisPIN, String sThisName, String sPhone,
 			String sThisAddress, String sThisCity, String sThisCounty, String sZipcode,
 			java.util.Date dDateIssued, java.util.Date dDateReceived, Integer iIssuedByKey, String sIssuedByName, String sCVINo,
 			String sMovementPurpose) {
 		String sOriginStateCode;
-		String sOriginPIN;
+		String sOriginPIN = null;
 		String sOriginName ;
 		String sOriginAddress;
 		String sOriginCity;
@@ -2051,7 +2049,7 @@ public final class CivetEditDialogController {
 		String sOriginZipCode;
 		String sOriginPhone;
 		String sDestinationStateCode;
-		String sDestinationPIN;
+		String sDestinationPIN = null;
 		String sDestinationName;
 		String sDestinationAddress;
 		String sDestinationCity;
@@ -2063,15 +2061,16 @@ public final class CivetEditDialogController {
 		if( sStdPurpose == null || sStdPurpose.trim().length() == 0 )
 			sStdPurpose = "other";
 		if( bImport ) {
-			sOriginPIN = sOtherPIN;
+			sOriginPIN = null;
 			sOriginName = sOtherName;
 			sOriginAddress = sOtherAddress;
 			sOriginStateCode = sOtherStateCode;
 			sOriginCity = sOtherCity;
 			sOriginCounty = sOtherCounty;
 			sOriginZipCode = sOtherZipcode;
-			sOriginPhone = null;
-			sDestinationPIN = sThisPIN;
+			sOriginPhone = model.getOrigin().premid;
+			if( model != null && model.getOrigin() != null )
+				sDestinationPIN = sThisPIN;
 			sDestinationName = sThisName;
 			sDestinationAddress = sThisAddress;
 			sDestinationCity = sThisCity;
@@ -2089,7 +2088,8 @@ public final class CivetEditDialogController {
 			sOriginCounty = sThisCounty;
 			sOriginZipCode = sZipcode;
 			sOriginPhone = sPhone;
-			sDestinationPIN = sOtherPIN;
+			if( model != null && model.getDestination() != null )
+				sDestinationPIN = model.getDestination().premid;
 			sDestinationName = sOtherName;
 			sDestinationAddress = sOtherAddress;
 			sDestinationCity = sOtherCity;

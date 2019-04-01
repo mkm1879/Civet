@@ -72,12 +72,13 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 		logger.info("Civet running build: " + CivetInbox.VERSION);
 //		SpeciesLookup lu = new SpeciesLookup();
 		me = new SpeciesLookup();
-		Set<String> keys = text2code.keySet();
-		for( String s : keys ) {
-			String code = text2code.get(s);
-			Spp spp = sppCodeMap.get(code);
-			System.out.println( s + " : " + spp.sSppCode + " : " + spp.sSppName + " : " + spp.bStd ); //SpeciesLookup.isCodeStandard(spp.sSppCode) );
-		}
+		System.out.println("EQU is standard? " + me.isCodeStandard("EQU"));
+//		Set<String> keys = text2code.keySet();
+//		for( String s : keys ) {
+//			String code = text2code.get(s);
+//			Spp spp = sppCodeMap.get(code);
+//			System.out.println( s + " : " + spp.sSppCode + " : " + spp.sSppName + " : " + spp.bStd ); //SpeciesLookup.isCodeStandard(spp.sSppCode) );
+//		}
 	}
 	
 	
