@@ -155,4 +155,10 @@ public class CivetSourceFile extends SourceFile {
 		sRet = sRet.replaceAll(postPattern, "");
 		return sRet;
 	}
+
+	@Override
+	public String getSystem() {
+		return "CivetData";
+	}
+
 }

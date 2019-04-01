@@ -187,5 +187,10 @@ class PdfSourceFile extends SourceFile {
 		}
 		return bOut;
 	}
-	
+
+	@Override
+	public String getSystem() {
+		return "Paper";
+	}
+
 }

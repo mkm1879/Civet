@@ -147,4 +147,9 @@ public class AgViewSourceFile extends SourceFile {
 		// Never split XFA PDF
 		return false;
 	}
+
+	@Override
+	public String getSystem() {
+		return "AgView";
+	}
 }

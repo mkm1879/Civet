@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:v2="http://www.usaha.org/xmlns/ecvi2"
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+    xmlns:v2="http://www.usaha.org/xmlns/ecvi2"
     version="1.0">
     <!-- Copyright (C) 2018 Michael K Martin
         

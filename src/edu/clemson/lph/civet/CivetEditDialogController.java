@@ -1756,6 +1756,7 @@ public final class CivetEditDialogController {
 			}
 			return false;
 		}
+		String sCVINoSource = fileToSave.getSource().getSystem();
 
 		// Precondition: PDF, Animals and Errors already in model.
 		// NOTE!!!!  model is not thread safe at this point.  
@@ -1764,7 +1765,7 @@ public final class CivetEditDialogController {
 				sOtherName, sOtherAddress, sOtherCity, sOtherCounty, sOtherZipcode, //sOtherPIN,
 				sThisPremisesId, sThisName, sPhone,
 				sStreetAddress, sCity, sThisCounty, sZipcode,
-				dDateIssued, dDateReceived, iIssuedByKey, sIssuedByName, sCVINo,
+				dDateIssued, dDateReceived, iIssuedByKey, sIssuedByName, sCVINo, sCVINoSource,
 				sMovementPurpose);
 		sPrevCVINo = sCVINo;
 		saveQueue.push(fileToSave);
@@ -2038,7 +2039,8 @@ public final class CivetEditDialogController {
 			String sOtherCounty, String sOtherZipcode, //String sOtherPIN,
 			String sThisPIN, String sThisName, String sPhone,
 			String sThisAddress, String sThisCity, String sThisCounty, String sZipcode,
-			java.util.Date dDateIssued, java.util.Date dDateReceived, Integer iIssuedByKey, String sIssuedByName, String sCVINo,
+			java.util.Date dDateIssued, java.util.Date dDateReceived, 
+			Integer iIssuedByKey, String sIssuedByName, String sCVINo, String sCVINoSource,
 			String sMovementPurpose) {
 		String sOriginStateCode;
 		String sOriginPIN = null;
@@ -2173,7 +2175,7 @@ public final class CivetEditDialogController {
 					}
 				}
 			}
-			if( !bFound ) {
+			if( !bFound && iCountIds < iNumOfSpp ) {
 				Integer iNumUntagged = iNumOfSpp - iCountIds;
 				GroupLot group = new GroupLot(sSpeciesCode, iNumUntagged.doubleValue());
 				model.addOrEditGroupLot(group);
@@ -2183,8 +2185,9 @@ public final class CivetEditDialogController {
 //      Precondition model contains metadata for errors saved from the add errors dialog.
 		model.setDefaultAnimalInspectionDates(dDateIssued);
 		model.setBureauReceiptDate(dDateReceived);
-		String sCVINbrSource = CviMetaDataXml.CVI_SRC_CIVET;
-		model.setCertificateNumberSource(sCVINbrSource);
+		if( sCVINoSource != null && sCVINoSource.equals("Paper") )
+			sCVINoSource = sOriginStateCode + " Paper";
+		model.setCertificateNumberSource(sCVINoSource);
 	}
 
 }

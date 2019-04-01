@@ -98,4 +98,11 @@ public class ImageSourceFile extends SourceFile {
 		}
 		return rawPdfBytes;
 	}
+	
+
+	@Override
+	public String getSystem() {
+		return "Paper";
+	}
+
 }
