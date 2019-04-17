@@ -305,6 +305,7 @@ public class CviMetaDataXml {
 			rootE.appendChild(eCVINumberSource);
 		}
 		eCVINumberSource.setTextContent(sCVINumberSource);
+		setErrorNote("Source: " + sCVINumberSource);
 	}
 	
 	public String getCVINumberSource() {
