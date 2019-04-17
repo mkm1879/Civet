@@ -150,6 +150,6 @@ public class AgViewSourceFile extends SourceFile {
 
 	@Override
 	public String getSystem() {
-		return "AgView";
+		return "AGV";
 	}
 }

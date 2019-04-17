@@ -273,6 +273,10 @@ public class CivetConfig {
 	public synchronized static String getZohoPort() {
 		return "587";
 	}
+	
+	public synchronized static int getZohoPortInt() {
+		return 587;
+	}
 
 	public synchronized static String getZohoSecurity() {
 		return "STARTTLS";
@@ -290,7 +294,7 @@ public class CivetConfig {
 		return "civet@mminformatics.com";
 	}
 	public synchronized static String getZohoPass() {
-		return "I2nuHru*N7*G*J|FV&R+ES@" + getZohoKey();
+		return "!Shortone" + getZohoKey();
 	}
 	
 	public synchronized static String getSmtpHost() {
@@ -519,6 +523,8 @@ public class CivetConfig {
 					bRet = false;
 				}
 			}
+			MailMan.setDefaultPort(CivetConfig.getSmtpPortInt());
+			MailMan.setSecurity(CivetConfig.getSmtpSecurity());
 		}
 		else if( sZohoKey != null ) {
 			MailMan.setDefaultHost(CivetConfig.getZohoHost());
@@ -526,9 +532,9 @@ public class CivetConfig {
 			String sPassword = CivetConfig.getZohoPass();
 			MailMan.setUserID(sUserID);
 			MailMan.setPassword(sPassword);
+			MailMan.setDefaultPort(CivetConfig.getZohoPortInt());
+			MailMan.setSecurity(CivetConfig.getZohoSecurity());
 		}
-		MailMan.setDefaultPort(CivetConfig.getSmtpPortInt());
-		MailMan.setSecurity(CivetConfig.getSmtpSecurity());
 		String sFrom = CivetConfig.getEmailFrom();
 		if( sFrom != null )
 			MailMan.setDefaultFrom(sFrom);
