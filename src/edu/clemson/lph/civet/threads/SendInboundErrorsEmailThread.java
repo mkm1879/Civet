@@ -135,8 +135,10 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 					String sXml = FileUtils.readTextFile(fNext);
 					StdeCviXmlModel stdXml = new StdeCviXmlModel( sXml );
 					byte[] pdfBytes = stdXml.getPDFAttachmentBytes();
-					if( pdfBytes == null || pdfBytes.length < 1 )
-						throw new Exception("Missing CVI attachment in send errors");
+					if( pdfBytes == null || pdfBytes.length < 1 ) {
+						MessageDialog.showMessage(parent, "Civet Error: Missing Attachment", "Missing PDF Attachment");
+						throw new Exception("Missing CVI attachment in send email");
+					}
 					// Populate this for use in PdfGen/lookupCode
 					cviMetaData = stdXml.getMetaData();
 					sCurrentCVINumber = stdXml.getCertificateNumber();

@@ -1370,6 +1370,10 @@ public class StdeCviXmlModel {
 		return binaries.getPDFAttachmentBytes();
 	}
 	
+	public boolean hasPDFAttachment() {
+		return binaries.hasPDFAttachment();
+	}
+	
 	public String getPDFAttachmentFilename() {
 		return binaries.getPDFAttachmentFilename();
 	}
