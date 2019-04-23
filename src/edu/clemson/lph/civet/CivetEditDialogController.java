@@ -807,6 +807,7 @@ public final class CivetEditDialogController {
 	 */
 	private void doAddToPrevious() {
 		try {
+			dlg.bAddToPrevious.setVisible(false);
 			int iCurrentPage = currentFile.getCurrentPageNo();
 			OpenFile prevFile = currentFile; // reference to file in OpenFileList
 			currentFile = saveQueue.pop();   // retrieve the previously "saved" file
@@ -1637,6 +1638,7 @@ public final class CivetEditDialogController {
 			dlg.setFormEditable( false );
 			currentFile.setCurrentPagesDone();
 			setFileCompleteStatus();
+			cStartingComponentFocus = null;
 			OpenFile fileToSave = currentFile.cloneCurrentState();
 			
 			if( save(fileToSave) ) {

@@ -331,6 +331,16 @@ public class MailMan {
 		    props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 		    props.put("mail.smtp.socketFactory.fallback", "false");
 		}
+		else if( "ZOHO".equalsIgnoreCase(sSecurity)) {
+		       props.put("mail.smtp.ehlo", "true");
+		        props.put("mail.smtp.auth", "true");
+		        // props.put("mail.smtp.starttls.enable", "true");
+		        props.put("mail.smtp.ssl.enable", "true");
+		        props.put("mail.smtp.host", CivetConfig.getZohoHost());
+		        props.put("mail.smtp.port", "465");
+		        props.put("mail.debug", "true");
+		        props.put("mail.smtp.from", CivetConfig.getZohoUser());
+		}
 		// Works with open port 25! yikes
 		else {
 			props.put("mail.smtp.user", sUserID);

@@ -63,6 +63,15 @@ public class SaveCVIModelThread extends Thread {
 		sXmlFileName = FileUtils.replaceInvalidFileNameChars(sXmlFileName);	
 		String sOriginalFileName = fileToSave.getSource().getFileName();
 		checkExistingFiles( sOriginalFileName, sXmlFileName );
+		checkAttachment();
+	}
+	
+	private void checkAttachment() {
+		if( !modelToSave.hasPDFAttachment() ) {
+			String sCertificateNbr = modelToSave.getCertificateNumber();
+			MessageDialog.showMessage(null, "Civet Error: Empty Attachment", "PDF File Attachment Failed for CVI " + sCertificateNbr);
+			logger.error("PDF File Attachment Failed for CVI " + sCertificateNbr);
+		}
 	}
 	
 	/**

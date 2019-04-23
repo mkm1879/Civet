@@ -133,8 +133,10 @@ public class SendOutboundCVIEmailThread extends Thread {
 					String sXml = FileUtils.readTextFile(fNext);
 					StdeCviXmlModel stdXml = new StdeCviXmlModel( sXml );
 					byte[] pdfBytes = stdXml.getPDFAttachmentBytes();
-					if( pdfBytes == null || pdfBytes.length < 1 )
+					if( pdfBytes == null || pdfBytes.length < 1 ) {
+						MessageDialog.showMessage(parent, "Civet Error: Missing Attachment", "Missing PDF Attachment");
 						throw new Exception("Missing CVI attachment in send email");
+					}
 					aCVIsOut.add(stdXml);
 					aCVIFilesOut.add(fNext);
 					lPDFSize += pdfBytes.length;
