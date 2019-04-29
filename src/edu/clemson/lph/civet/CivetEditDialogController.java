@@ -1637,10 +1637,19 @@ public final class CivetEditDialogController {
 			// If save() finds errors be sure form is editable so they can be corrected.
 			dlg.setFormEditable( false );
 			currentFile.setCurrentPagesDone();
+			String sHadAttachment = "Had attachment before save";
+			if( !currentFile.getModel().hasPDFAttachment() )
+				sHadAttachment = "Did not have attachment before save";
 			setFileCompleteStatus();
 			cStartingComponentFocus = null;
 			OpenFile fileToSave = currentFile.cloneCurrentState();
-			
+			if( !fileToSave.getModel().hasPDFAttachment() ) {
+				MessageDialog.showMessage(dlg, "Civet Error: Missing Attachment", 
+						"Missing attachment for file " + fileToSave.getSource().getFileName() +
+						"\nNote exactly what you were just doing!\n" + sHadAttachment);
+				logger.error("Missing attachment for file " + fileToSave.getSource().getFileName() +
+						"\nNote exactly what you were just doing!\n" + sHadAttachment);
+			}
 			if( save(fileToSave) ) {
 				if( pushFileComplete() ) {
 					doCleanup();
@@ -2021,6 +2030,9 @@ public final class CivetEditDialogController {
 		dlgErrorDialog.setVisible(true);
 		if( dlgErrorDialog.isExitOK() ) {
 			sErrorNotes = dlgErrorDialog.getNotes();
+			if( sErrorNotes != null && sErrorNotes.trim().length() > 0 && aErrorKeys.size() == 0 ) {
+				MessageDialog.showMessage(dlg, "Civet Error: No Error Checked", "An error message was added by no code checked.");
+			}
 			currentFile.getModel().getMetaData().setErrorNote(sErrorNotes);
 			for( String sError : aErrorKeys ) {
 				currentFile.getModel().getMetaData().addError(sError);
