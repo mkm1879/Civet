@@ -64,6 +64,7 @@ import javax.swing.border.EtchedBorder;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.Point;
 
 /**
  * This is the View part of MVC for the VERY complex Edit dialog that makes up 
@@ -165,13 +166,35 @@ public final class CivetEditDialog extends JFrame {
 	JMenuItem mntmMinimizeAll;
 	JMenuItem mntmRefresh;
 	private CivetEditDialogController controller;
+	private int iShift;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
 	 * @throws SourceFileException 
 	 * @wbp.parser.constructor
 	 */
+	public CivetEditDialog( Window parent, ArrayList<File> files, int iShift ) throws SourceFileException {
+		this.iShift = iShift;
+		if( parent instanceof CivetEditDialog ) {
+			this.dialogParent = (CivetEditDialog)parent;
+			this.parent = dialogParent.parent;
+		}
+		else {
+			this.parent = parent;
+			this.dialogParent = null;
+		}
+		initializeDisplay();
+		controller = new CivetEditDialogController( this, files);
+		controller.openFiles();		
+	}
+	
+	/**
+	 * construct an empty pdf viewer and pop up the open window
+	 * @throws SourceFileException 
+	 * @wbp.parser.constructor
+	 */
 	public CivetEditDialog( Window parent, ArrayList<File> files ) throws SourceFileException{
+		this.iShift = 0;
 		if( parent instanceof CivetEditDialog ) {
 			this.dialogParent = (CivetEditDialog)parent;
 			this.parent = dialogParent.parent;
@@ -184,7 +207,7 @@ public final class CivetEditDialog extends JFrame {
 		controller = new CivetEditDialogController( this, files);
 		controller.openFiles();
 	}
-	
+
 	public void setViewer( PDFViewer viewer ) {
 		this.viewer = viewer;
 		// This is the magic.  We simply put the pdfDecoder in the viewport of the scroll pane.
@@ -901,7 +924,7 @@ public final class CivetEditDialog extends JFrame {
 	    int height = (int)(screenSize.height * 0.90);
 	    int width = (int)(screenSize.width * 0.90);
 	    this.setSize(width,height);
-	    this.setLocation((screenSize.width - width) / 2, (screenSize.height - height) / 2);
+	    this.setLocation(iShift + ((screenSize.width - width) / 2), ((screenSize.height - height) / 2)-iShift);
 	}
 
 	/**

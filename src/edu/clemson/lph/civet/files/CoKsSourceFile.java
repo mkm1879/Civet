@@ -95,8 +95,18 @@ public class CoKsSourceFile extends SourceFile {
 					sTop = FileUtils.readTextFile( fFile, 4 );
 					int iLoc = sTop.indexOf("<</Filter/FlateDecode");
 					int iLoc2 = sTop.indexOf("PDF-1.7");
-					if( iLoc >= 0 && iLoc2 >= 0 )
-						bRet = true;
+					if( iLoc >= 0 && iLoc2 >= 0 ) {
+						// is a fancy PDF but not sure it is XFA 
+						byte pdfBytes[] = FileUtils.readBinaryFile(fFile);
+						if( PDFUtils.isXFA(pdfBytes) ) {
+							// is XFA but is it CO/KS
+							Node nRoot = PDFUtils.getXFADataNode(pdfBytes);
+							String xmlString = nodeToString( nRoot, true );
+							int iLoc3 = xmlString.indexOf("eCVI");
+							if( iLoc3 > 0 )
+								bRet = true;
+						}
+					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					logger.error(e);
@@ -199,7 +209,7 @@ public class CoKsSourceFile extends SourceFile {
 		return sRet;
 	}
 	
-	private String nodeToString(Node node, boolean bOmitDeclaration) {
+	private static String nodeToString(Node node, boolean bOmitDeclaration) {
 		String sOmit = bOmitDeclaration ? "yes" : "no";
 		StringWriter sw = new StringWriter();
 		try {
@@ -213,7 +223,7 @@ public class CoKsSourceFile extends SourceFile {
 		return sw.toString();
 	}
 
-	private String toStdXMLString( String sAcrobatXml ) {
+	private static String toStdXMLString( String sAcrobatXml ) {
 		String sRet = null;
 		String sXSLT = CivetConfig.getCoKsXSLTFile();
 		try {

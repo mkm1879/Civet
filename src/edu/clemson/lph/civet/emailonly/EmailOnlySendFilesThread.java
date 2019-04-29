@@ -136,7 +136,7 @@ class EmailOnlySendFilesThread extends Thread {
 				} // end for each PDF
 			} // end for each state
 			for( File f : aSentCVIFiles ) {
-				f.delete();
+				f.delete();  // antivirus kills here somewhere
 			}
 			if( aSentCVIFiles.size() > 0 ) {
 				StringBuffer sb = new StringBuffer();
@@ -149,6 +149,10 @@ class EmailOnlySendFilesThread extends Thread {
 				MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
 						"Successfully sent " + (aSentCVIFiles.size() - iUnsent) + " CVIs to\n"
 								+ sStateList );
+			}
+			File aFilesLeft[] = fEmailOutDir.listFiles();
+			if( aFilesLeft.length > 0 ) {
+				MessageDialog.showMessage(parent, "Civet Error: Remaining Files", "Files remaining in " + sEmailOutDir);
 			}
 		} catch (javax.mail.AuthenticationFailedException eAuth) {
 			MailMan.setUserID(null);

@@ -84,6 +84,16 @@ public class PDFUtils {
 			reader = new PdfReader(pdfDataIn);
 			XfaForm form = new XfaForm(reader);
 			bRet = form.isXfaPresent();
+			if( bRet ) {
+				// Check again that this is really an XFA data file
+				Node xmlNode = form.getDatasetsNode();
+				if( "xfa:datasets".equals(xmlNode.getNodeName()) ) {
+					Node nData = xmlNode.getFirstChild();
+					if( !"xfa:data".equals(nData.getNodeName()) ) {
+						bRet = false;
+					}
+				}
+			}
 		} catch (IOException e) {
 			logger.error(e);
 			bRet = false;

@@ -125,6 +125,7 @@ public final class CivetEditDialogController {
 	private VetLookup vetLookup;
 	private boolean bInCleanup = false;
 	private boolean bInEditLast;
+	private String sLastSaved = null;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -879,7 +880,12 @@ public final class CivetEditDialogController {
 	private void doEditLast() {
 		try {
 			bInEditLast = true;
-			saveQueue.flush();
+			if( saveQueue.hasFileInQueue() )
+				saveQueue.flush();
+			else if (sLastSaved != null )
+				doEditLast2(sLastSaved);
+			else
+				MessageDialog.showMessage(dlg, "Civet Error: No File Saved", "No file found in save queue.");
 		} catch (Exception e) {
 			logger.error(e);
 		}
@@ -892,7 +898,7 @@ public final class CivetEditDialogController {
 			File fFile = new File( sFilePath );		
 			aFiles.add(fFile);
 			@SuppressWarnings("unused")
-			CivetEditDialog dlg2 = new CivetEditDialog( this.parent, aFiles );
+			CivetEditDialog dlg2 = new CivetEditDialog( this.parent, aFiles, 20 );
 		} catch (SourceFileException e) {
 			// TODO Auto-generated catch block
 			logger.error(e);
@@ -973,6 +979,7 @@ public final class CivetEditDialogController {
 	 * to move the saved files and refresh the inbox.
 	 */
 	public void saveComplete(String sFilePath) {
+		sLastSaved = sFilePath;
 		if( bInEditLast ) {
 			doEditLast2(sFilePath);
 		}
