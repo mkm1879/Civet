@@ -1491,9 +1491,6 @@ public class StdeCviXmlModel {
 		String sExistingSource = helper.getAttributeByPath(sPath, sAttr);
 		if( sExistingSource == null || sExistingSource.trim().length() == 0 )
 			helper.setAttributeByPath(sPath, sAttr, sCVINbrSource);
-		CviMetaDataXml meta = getMetaData();
-		meta.setCVINumberSource(sCVINbrSource);
-		binaries.addOrUpdateMetadata(meta);		
 	}
 	
 	public java.util.Date getBureauReceiptDate() {

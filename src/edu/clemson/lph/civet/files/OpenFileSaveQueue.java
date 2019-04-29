@@ -47,10 +47,10 @@ public class OpenFileSaveQueue {
 		}
 	}
 	
-	public synchronized void saveComplete() {
+	public synchronized void saveComplete(String sFilePath) {
 		iThreads--;
 		if( iThreads == 0 )
-			controller.saveComplete();
+			controller.saveComplete(sFilePath);
 		if( iThreads < 0 ) {
 			logger.error("Lost thread count");
 		}

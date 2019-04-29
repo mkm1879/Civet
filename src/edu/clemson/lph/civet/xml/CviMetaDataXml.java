@@ -319,9 +319,7 @@ public class CviMetaDataXml {
 			logger.error(new Exception("setCVINumberSource could not find document element"));		
 			return null;
 		}
-		Element eCVINumberSource = XMLUtility.findFirstChildElementByName(rootE, "cviNumberSource");
-		if( eCVINumberSource != null )
-			sRet = eCVINumberSource.getTextContent();
+		sRet = rootE.getAttribute("CviNumberIssuedBy");
 		return sRet;
 		
 	}

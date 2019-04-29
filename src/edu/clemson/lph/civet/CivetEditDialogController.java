@@ -124,6 +124,7 @@ public final class CivetEditDialogController {
 
 	private VetLookup vetLookup;
 	private boolean bInCleanup = false;
+	private boolean bInEditLast;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -877,15 +878,23 @@ public final class CivetEditDialogController {
 	 */
 	private void doEditLast() {
 		try {
-			bReOpened = true;
-			currentFile = saveQueue.pop();
-			StdeCviXmlModel model = currentFile.getModel();
-			viewer.setPdfBytes(model.getPDFAttachmentBytes(), false);
-			openFileList.markFileIncomplete(currentFile);
-			openFileList.setCurrentFile(currentFile);
-			updateFilePage();
-			populateFromStdXml(model);
+			bInEditLast = true;
+			saveQueue.flush();
 		} catch (Exception e) {
+			logger.error(e);
+		}
+	}
+	
+	private void doEditLast2 (String sFilePath) {
+		bInEditLast = false;
+		try {
+			ArrayList<File> aFiles = new ArrayList<File>();
+			File fFile = new File( sFilePath );		
+			aFiles.add(fFile);
+			@SuppressWarnings("unused")
+			CivetEditDialog dlg2 = new CivetEditDialog( this.parent, aFiles );
+		} catch (SourceFileException e) {
+			// TODO Auto-generated catch block
 			logger.error(e);
 		}
 	}
@@ -963,7 +972,10 @@ public final class CivetEditDialogController {
 	 * Called each time the Queue saves a file.  Only respond to the final save
 	 * to move the saved files and refresh the inbox.
 	 */
-	public void saveComplete() {
+	public void saveComplete(String sFilePath) {
+		if( bInEditLast ) {
+			doEditLast2(sFilePath);
+		}
 		if( bInCleanup) {
 			moveCompletedFiles();
 			CivetInboxController.getCivetInboxController().refreshTables();

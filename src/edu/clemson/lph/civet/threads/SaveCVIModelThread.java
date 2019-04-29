@@ -46,7 +46,9 @@ public class SaveCVIModelThread extends Thread {
 	    finally {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					queue.saveComplete();
+					String sToFileDir = CivetConfig.getToFileDirPath();
+					File toFile = new File( sToFileDir, sXmlFileName);
+					queue.saveComplete(toFile.getAbsolutePath());
 				}
 			});
 	    }
