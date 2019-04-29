@@ -161,29 +161,34 @@ class PdfSourceFile extends SourceFile {
 	@Override
 	public byte[] getPDFBytes(ArrayList<Integer> aPages) {
 		byte bOut[] = null;
-		if( pdfBytes != null ) {
-			ByteArrayOutputStream baOut = new ByteArrayOutputStream();
-			try {
-				PdfReader reader = new PdfReader(pdfBytes);
-				com.itextpdf.text.Document document = new com.itextpdf.text.Document();
-				PdfCopy writer = new PdfCopy(document, baOut);
-				document.open();
-				for( Integer iPage : aPages ) {
-					PdfImportedPage pip = writer.getImportedPage(reader, iPage);
-					writer.addPage(pip);
-				}
-				document.close();
-				bOut = baOut.toByteArray();
-				int iLen = bOut.length;
-				if( iLen ==  0 ) 
-					bOut = null;
-			} catch( IOException ioe ) {
-				logger.error(ioe.getMessage() + "\nIO error extracting pages to byte array\n");
-				bOut = null;
-			} catch( DocumentException de ) {
-				logger.error(de.getMessage() + "\nDocument error extracting pages to byte array");
-				bOut = null;
+		if( pdfBytes == null ) {
+			pdfBytes = getPDFBytes();
+			if( pdfBytes == null ) {
+				logger.error("Unable to page getPDFBytes for " + getFileName());
+				return null;
 			}
+		}
+		ByteArrayOutputStream baOut = new ByteArrayOutputStream();
+		try {
+			PdfReader reader = new PdfReader(pdfBytes);
+			com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+			PdfCopy writer = new PdfCopy(document, baOut);
+			document.open();
+			for( Integer iPage : aPages ) {
+				PdfImportedPage pip = writer.getImportedPage(reader, iPage);
+				writer.addPage(pip);
+			}
+			document.close();
+			bOut = baOut.toByteArray();
+			int iLen = bOut.length;
+			if( iLen ==  0 ) 
+				bOut = null;
+		} catch( IOException ioe ) {
+			logger.error(ioe.getMessage() + "\nIO error extracting pages to byte array\n");
+			bOut = null;
+		} catch( DocumentException de ) {
+			logger.error(de.getMessage() + "\nDocument error extracting pages to byte array");
+			bOut = null;
 		}
 		return bOut;
 	}
