@@ -47,6 +47,10 @@ public class OpenFileSaveQueue {
 		}
 	}
 	
+	public boolean hasFileInQueue() {
+		return (fileIn != null);
+	}
+	
 	public synchronized void saveComplete(String sFilePath) {
 		iThreads--;
 		if( iThreads == 0 )
