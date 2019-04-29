@@ -99,8 +99,10 @@ public class SaveCVIModelThread extends Thread {
 				logger.error("Could not delete file " + fEmailOut, e);
 			}
 			try { 
-				if( fEmailErrors.exists() && fEmailErrors.isFile() )
+				if( fEmailErrors.exists() && fEmailErrors.isFile() ) {
 					fEmailErrors.delete();
+			logger.error("deleting existing error email: " + sExisting );
+				}
 			} catch( Exception e ) {
 				logger.error("Could not delete file " + fEmailErrors, e);
 			}
@@ -149,6 +151,8 @@ public class SaveCVIModelThread extends Thread {
 			File fDir = new File(sDirPath);
 			fileOut = new File(fDir, sXmlFileName);
 			sFilePath = fileOut.getAbsolutePath();
+			MessageDialog.showMessage(null, "Civet Save Errors", "Saving file: " + sFilePath);
+			logger.error("Saving error file: " + sFilePath);
 		}
 		if( sFilePath == null ) 
 			return;

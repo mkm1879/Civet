@@ -1839,7 +1839,7 @@ public final class CivetEditDialogController {
 		String sDirOut = CivetConfig.getOutputDirPath();
     	if( iFiles > 0 )
     		MessageDialog.showMessage(dlg, "Civet Complete", iFiles + " original files moved to " + sDirOut +
-    				"Processed files ready to submit to USAHERDS.");
+    				"\nProcessed files ready to submit to USAHERDS.");
 	}
 
 	private void minimizeAll() {
