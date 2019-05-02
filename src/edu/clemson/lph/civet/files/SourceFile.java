@@ -84,7 +84,9 @@ public abstract class SourceFile {
 		clone.pdfBytes = pdfBytes;
 		clone.type = null;
 		// model will hold the pdf as currently constructed.
-		clone.model = new  StdeCviXmlModel( model.getXMLString() );  // Model is a deep copy.
+		clone.model = new  StdeCviXmlModel( model.getXMLString() );  // Model is a deep copy?
+		clone.model.setOrUpdatePDFAttachment(model.getPDFAttachmentBytes(), model.getPDFAttachmentFilename());
+		clone.model.addOrUpdateMetadataAttachment(model.getMetaData());
 		clone.iPage = iPage;
 		clone.viewer = viewer;
 		return clone;
