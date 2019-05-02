@@ -93,13 +93,13 @@ public class StdeCviXmlModel {
 	 * Create an XML document from the raw DOM object.  
 	 * @param doc
 	 */
-	public StdeCviXmlModel( Document doc ) {
-		doc.setXmlStandalone(true);
-		Element root = doc.getDocumentElement();
-		helper = new XMLDocHelper( doc, root );
-		binaries = new StdeCviBinaries( helper );
-		metaData = binaries.getMetaData();
-	}
+//	public StdeCviXmlModel( Document doc ) {
+//		doc.setXmlStandalone(true);
+//		Element root = doc.getDocumentElement();
+//		helper = new XMLDocHelper( doc, root );
+//		binaries = new StdeCviBinaries( helper );
+//		metaData = binaries.getMetaData();
+//	}
 	
 
 	/** 

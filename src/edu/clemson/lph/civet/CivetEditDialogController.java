@@ -94,7 +94,7 @@ public final class CivetEditDialogController {
 	private ArrayList<SpeciesRecord> aSpecies = new ArrayList<SpeciesRecord>();
 	private HashMap<String,String> mSpeciesChanges;
 	private AnimalIDListTableModel idListModel = null; //new AnimalIDListTableModel();
-	private ArrayList<String> aErrorKeys;
+	private ArrayList<String> aErrorKeys = new ArrayList<String>();
 	private String sErrorNotes;
 	
 	private String sPriorPhone;
@@ -1654,32 +1654,24 @@ public final class CivetEditDialogController {
 			}
 			prog.setVisible(true);
 			// If save() finds errors be sure form is editable so they can be corrected.
+			// Avoid stray input as we save.
 			dlg.setFormEditable( false );
 			currentFile.setCurrentPagesDone();
-			String sHadAttachment = "Had attachment before save";
-			if( !currentFile.getModel().hasPDFAttachment() )
-				sHadAttachment = "Did not have attachment before save";
 			setFileCompleteStatus();
 			cStartingComponentFocus = null;
+			// For multi-page PDF this creates a new OpenFile from the current pages.  All others just self.
 			OpenFile fileToSave = currentFile.cloneCurrentState();
-			if( !fileToSave.getModel().hasPDFAttachment() ) {
-				MessageDialog.showMessage(dlg, "Civet Error: Missing Attachment", 
-						"Missing attachment for file " + fileToSave.getSource().getFileName() +
-						"\nNote exactly what you were just doing!\n" + sHadAttachment);
-				logger.error("Missing attachment for file " + fileToSave.getSource().getFileName() +
-						"\nNote exactly what you were just doing!\n" + sHadAttachment);
-			}
-			if( save(fileToSave) ) {
-				if( pushFileComplete() ) {
+			if( save(fileToSave) ) {  // Saved, no errors that require changes on current page
+				if( navigateToNextPage() ) {  // Found another page to edit
+					dlg.setFormEditable( true );
+				}
+				else {  // No more pages to edit, we're done
 					doCleanup();
 					dlg.setVisible(false);
 					dlg.dispose();
 				}
-				else {
-					dlg.setFormEditable( true );
-				}
 			}
-			else {
+			else { // Release this page for further editing
 				dlg.setFormEditable(true);
 			}
 
@@ -1806,9 +1798,9 @@ public final class CivetEditDialogController {
 	 * Navigate to the next page to edit
 	 * Here we ask for only incomplete pages.  (Nav bar steps through all pages and files).
 	 * TODO Decide if the next page MIGHT be part of the just saved CVI and offer correct choices.
-	 * @return boolean true if all files complete
+	 * @return boolean true if incomplete page found
 	 */
-	private boolean pushFileComplete() {
+	private boolean navigateToNextPage() {
 		try {
 			// Only on multipage PDF do we page forward on save
 			if( currentFile.getSource().canSplit() && currentFile.morePagesForward(true) ) {
@@ -1823,7 +1815,7 @@ public final class CivetEditDialogController {
 			}
 			else {
 //				openFileList.markFileComplete(currentFile);
-				return true;
+				return false;
 			}
 			updateFilePage();
 		} catch (SourceFileException | PdfException e) {
@@ -1831,7 +1823,7 @@ public final class CivetEditDialogController {
 			logger.error(e);
 		}
 		prog.setVisible(false);
-		return false;
+		return true;
 	}
 	
 	private void moveCompletedFiles() {
@@ -2042,8 +2034,6 @@ public final class CivetEditDialogController {
 	}
 
 	private void runErrorDialog() {
-		if( aErrorKeys == null )
-			aErrorKeys = new ArrayList<String>();
 		CVIErrorDialog dlgErrorDialog = new CVIErrorDialog( dlg, aErrorKeys, sErrorNotes );
 		dlgErrorDialog.setModal(true);
 		dlgErrorDialog.setVisible(true);
@@ -2062,6 +2052,9 @@ public final class CivetEditDialogController {
 			}
 			else {
 				dlg.lError.setVisible(false);
+			}
+			if( aErrorKeys.size() > 0 && !currentFile.getModel().hasErrors() ) {
+				MessageDialog.showMessage(dlg, "Civet Error", "Failed to save errors to data model");
 			}
 		}
 	}
