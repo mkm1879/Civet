@@ -213,8 +213,11 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 							sCity = field.getTextContent();
 						else if( "stateCode".equals(field.getNodeName() ) )
 							sStateCode = field.getTextContent();
-						else if( "zipCode".equals(field.getNodeName() ) )
+						else if( "zipCode".equals(field.getNodeName() ) ) {
 							sZipCode = field.getTextContent();
+							if( sZipCode != null )
+								sZipCode = sZipCode.trim();
+						}
 						else if( "county".equals(field.getNodeName() ) )
 							sCounty = field.getTextContent();
 						else if( "country".equals(field.getNodeName() ) )

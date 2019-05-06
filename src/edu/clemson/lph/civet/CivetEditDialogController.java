@@ -502,6 +502,7 @@ public final class CivetEditDialogController {
 				checkZipcode( dlg.jtfOtherZip );
 				String sZip = dlg.jtfOtherZip.getText();
 				if( sZip != null && sZip.trim().length() > 0 ) {
+					sZip = sZip.trim();
 					try {
 						String sZipCounty = CountyUtils.getCounty(sZip);
 						String sHerdsCounty = Counties.getHerdsCounty(dlg.cbOtherState.getSelectedCode(), sZipCounty);
@@ -907,18 +908,20 @@ public final class CivetEditDialogController {
 	
 	
 	private void checkZipcode(JTextField jtfZip) {
-		if( jtfZip == null ) return;
+		if( jtfZip == null ) 
+			return;
 		String sZip = jtfZip.getText().trim();
 		if( sZip == null || sZip.trim().length() == 0 )
 			return;
-	      Pattern r = Pattern.compile("^\\d{5}(-?\\d{4})?$");
+		sZip = sZip.trim();
+		Pattern r = Pattern.compile("^\\d{5}(-?\\d{4})?$");
 
-	      // Now create matcher object.
-	      Matcher m = r.matcher(sZip);
-	      if( !m.find() ) {
-	    	  MessageDialog.showMessage(dlg, "Civet Error:", sZip + " is not a valid zipcode");
-	    	  jtfZip.requestFocus();
-	      }
+		// Now create matcher object.
+		Matcher m = r.matcher(sZip);
+		if( !m.find() ) {
+			MessageDialog.showMessage(dlg, "Civet Error:", sZip + " is not a valid zipcode");
+			jtfZip.requestFocus();
+		}
 	}
 
 	private void setActiveSpecies( String sSpecies ) {
@@ -1445,6 +1448,8 @@ public final class CivetEditDialogController {
 						String sOtherStateCode = dlg.cbOtherState.getSelectedCode();
 						String sOtherCountyIn = xStd.getOrigin().address.county;
 						String sOtherZip = xStd.getOrigin().address.zip;
+						if( sOtherZip != null )
+							sOtherZip = sOtherZip.trim();
 						String sOtherHerdsCounty = getHerdsCounty( sOtherStateCode, sOtherCountyIn, sOtherZip );
 						dlg.jtfOtherZip.setText(sOtherZip);
 						dlg.cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
@@ -1459,6 +1464,8 @@ public final class CivetEditDialogController {
 						String sThisState = CivetConfig.getHomeStateAbbr();
 						String sThisCountyIn = xStd.getDestination().address.county;
 						String sThisZip = xStd.getDestination().address.zip;
+						if( sThisZip != null )
+							sThisZip = sThisZip.trim();
 						String sThisHerdsCounty = getHerdsCounty( sThisState, sThisCountyIn, sThisZip);
 						dlg.cbThisCounty.setSelectedItem(sThisHerdsCounty);
 						dlg.jtfZip.setText(sThisZip);

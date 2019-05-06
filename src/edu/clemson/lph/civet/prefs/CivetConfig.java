@@ -619,7 +619,7 @@ public class CivetConfig {
 	}
 	
 	public synchronized static String getBulkLoadDirPath() {
-		return getPath("bulkLoadDirPath", ".\\BulkLoad\\");
+		return getPath("bulkLoadDirPath", ".\\Swine\\");
 	}
 	
 	public synchronized static String getNineDashThreeLoadDirPath() {

@@ -46,6 +46,7 @@ class CSVDataFile {
 	private String sHomeState;
 	private String sCompany = null;
 	private java.util.Date dSaved = null;
+	private CactusVets cactusVets = null;
 // Normal Column Order
 //	private final static String[] aColNames = { "Date", "SourceFarm", "SourcePIN", "SourceState", 
 //		                                     "Vet", "DestFarm", "DestPin", "DestState", "Number" };
@@ -58,6 +59,7 @@ class CSVDataFile {
 	 * @throws IOException If the file cannot be parsed as a CSV file
 	 */
 	CSVDataFile( String sFileName ) throws FileNotFoundException, IOException {
+		cactusVets = new CactusVets();
 		sHomeState = CivetConfig.getHomeStateAbbr();
 		ArrayList<String> aKeys = new ArrayList<String>();
 		aaValues = new ArrayList<HashMap<String,String>>();
@@ -265,7 +267,8 @@ class CSVDataFile {
 		String sRet = get( "Vet".toUpperCase() );
 		if( sRet == null ) sRet = get( "Veterinarian".toUpperCase() );
 		if( sRet == null ) sRet = get( "Vet".toUpperCase() );
-		if( sRet == null && getCompany().equals("Cactus") ) sRet = "Peter Schneider";
+		if( sRet == null && getCompany().equals("CACTUS") ) sRet = cactusVets.getVetNameForPin(getSourcePin());
+		if( sRet == null && getCompany().equals("CACTUS") ) sRet = "Peter Schneider";
 		if( sRet == null && getCompany().equals("CFF") ) sRet = "Peter Schneider";
 		return sRet;
 	}
