@@ -42,6 +42,7 @@ public class GroupLot {
 		this.speciesCode = speciesCode;
 		this.groupLotId = groupLotId;
 		this.quantity = quantity;
+		if( this.quantity == null ) this.quantity = 1.0;
 		this.unit = unit;
 		this.age = age;
 		this.breed = breed;

@@ -59,7 +59,7 @@ public class CviMetaDataXml {
 	}
 	
 	public CviMetaDataXml(String sBase64) {
-		byte[] bytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(sBase64);
+		byte[] bytes =  java.util.Base64.getDecoder().decode(sBase64);
 
 		DocumentBuilder docBuilder;
 		try {

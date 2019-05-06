@@ -44,6 +44,8 @@ public class Address {
 		county = tok.nextToken();
 		state = tok.nextToken(); 
 		zip = tok.nextToken(); 
+		if( zip != null )
+			zip = zip.trim();
 		country = tok.nextToken();
 		String sLatitude = tok.nextToken(); 
 		String sLongitude = tok.nextToken();
@@ -65,6 +67,8 @@ public class Address {
 		this.county = county;
 		this.state = state;
 		this.zip = zip;
+		if( this.zip != null )
+			this.zip = this.zip.trim();
 		this.country = country;
 		this.latitude = latitude;
 		this.longitude = longitude;

@@ -1052,7 +1052,13 @@ public class StdeCviXmlModel {
 				if( eGroupLotId != null )
 				 	groupLotId = eGroupLotId.getTextContent();
 				String sQuantity = eGroup.getAttribute("Quantity");
-				Double quantity = Double.parseDouble(sQuantity);
+				sQuantity = sQuantity.replaceAll(",","");  // Doesn't parse 1,100 etc.
+				Double quantity = null;
+				try {
+					quantity = Double.parseDouble(sQuantity);
+				} catch( NumberFormatException nfe ) {
+					logger.error("Could not parse " + sQuantity + " as a Double in CVI " + getCertificateNumber() );
+				}
 				String unit = eGroup.getAttribute("Unit");
 				String age = eGroup.getAttribute( "Age");
 				String breed = eGroup.getAttribute( "Breed");
