@@ -1052,12 +1052,12 @@ public class StdeCviXmlModel {
 				if( eGroupLotId != null )
 				 	groupLotId = eGroupLotId.getTextContent();
 				String sQuantity = eGroup.getAttribute("Quantity");
-				sQuantity = sQuantity.replaceAll(",","");  // Doesn't parse 1,100 etc.
 				Double quantity = null;
 				try {
 					quantity = Double.parseDouble(sQuantity);
 				} catch( NumberFormatException nfe ) {
 					logger.error("Could not parse " + sQuantity + " as a Double in CVI " + getCertificateNumber() );
+					quantity = 1.0;  // What other default makes sense?
 				}
 				String unit = eGroup.getAttribute("Unit");
 				String age = eGroup.getAttribute( "Age");
@@ -1333,7 +1333,7 @@ public class StdeCviXmlModel {
 		Double quantity = group.quantity;
 		if( quantity != null ) {
 			// Civet only deals with animals so no fraction part.  "200.0" would be confusing.
-			String sQuant = String.format("%1$,.0f", quantity); 
+			String sQuant = String.format("%1$.0f", quantity); 
 			helper.setAttribute(eGroupLot, "Quantity", sQuant);
 		}
 		String sUnit = group.unit;
@@ -1426,6 +1426,17 @@ public class StdeCviXmlModel {
 		if( bSet ) {
 			String sNewExp = dateFormat.format(dExp);
 			helper.setAttributeByPath("/eCVI", "ExpirationDate", sNewExp);
+		}
+	}
+	
+	public void checkQuantity() {
+		ArrayList<Element> aGroups = helper.getElementsByName("GroupLot");
+		for( Element eGroup : aGroups ) {
+			String sQuantity = eGroup.getAttribute("Quantity");
+			if( sQuantity.indexOf(',') >= 0 ) {
+				sQuantity = sQuantity.replace(",","");
+				eGroup.setAttribute("Quantity", sQuantity);
+			}
 		}
 	}
 	
