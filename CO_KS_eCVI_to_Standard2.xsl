@@ -281,7 +281,7 @@
             <xsl:if test="number($head) > 1 or not(./offID) or ./offID = ''">
                 <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="GroupLot">
                     <xsl:attribute name="Quantity">
-                        <xsl:value-of select="headCt"/>
+                        <xsl:value-of select="$head"/>
                     </xsl:attribute>
                     <xsl:if test="./ageNum and ./ageNum != ''">
                         <xsl:attribute name="Age">
@@ -370,7 +370,7 @@
                 <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="GroupLot">
                     <!-- CO/KS Small Animal Age is unstructured so not reliably translateable -->
                     <xsl:attribute name="Quantity">
-                        <xsl:value-of select="headCt"/>
+                        <xsl:value-of select="translate($head,',','')"/>
                     </xsl:attribute>
                     <xsl:if test="sex and not(sex = '')">
                         <xsl:attribute name="Sex">
@@ -520,6 +520,9 @@
                         <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Laboratory">
                             <xsl:attribute name="AccessionDate">
                                 <xsl:value-of select="./brucTestDate"/>
+                            </xsl:attribute>
+                            <xsl:attribute name="AccessionNumber">
+                                <xsl:text>Not provided</xsl:text>
                             </xsl:attribute>
                         </xsl:element>
                     </xsl:element>
