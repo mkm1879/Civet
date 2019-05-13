@@ -79,6 +79,7 @@ public class PDFUtils {
 	 */
 	public static boolean isXFA(byte[] pdfDataIn) {
 		boolean bRet = false;
+		if( pdfDataIn == null || pdfDataIn.length == 0 ) return false;
 		PdfReader reader;
 		try {
 			reader = new PdfReader(pdfDataIn);
