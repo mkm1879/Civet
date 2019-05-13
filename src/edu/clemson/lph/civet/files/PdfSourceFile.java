@@ -16,6 +16,8 @@ package edu.clemson.lph.civet.files;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -34,7 +36,7 @@ import edu.clemson.lph.utils.FileUtils;
  * 
  */
 class PdfSourceFile extends SourceFile {
-	
+
 	/**
 	 * Used only in cloneCurrentState
 	 */
@@ -42,17 +44,17 @@ class PdfSourceFile extends SourceFile {
 		
 	}
 	
-	PdfSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
-		super(fFile, viewer);
+	PdfSourceFile( File fFile ) throws SourceFileException {
+		super(fFile);
 		type = Types.PDF;
 		try {
 			pdfBytes = FileUtils.readBinaryFile(fSource);
+			iTextPdfReader = new PdfReader(pdfBytes);
 		} catch (Exception e) {
 			throw new SourceFileException(e);
 		}
 		model = new StdeCviXmlModel();
 		model.setOrUpdatePDFAttachment(getPDFBytes(iPage), fSource.getName());
-		viewer.alterRotation(180);  // Our scanned PDFs are off.
 	}
 	
 	/**
@@ -80,6 +82,27 @@ class PdfSourceFile extends SourceFile {
 		return true;
 	}
 	
+	@Override
+	SourceFile cloneCurrentState() {
+		SourceFile clone = new PdfSourceFile();
+		clone.sFilePath = sFilePath;
+		clone.sFileName = sFileName;
+		clone.sDataPath = sDataPath;
+		// fSource is the original PDF or image
+		clone.fSource = fSource;
+		// fData only populated for mCVI and AgView where there is a separate data file.
+		clone.fData = fData;
+		// pdfBytes is the whole file read from disk or converted from image.
+		clone.pdfBytes = pdfBytes;
+		clone.type = null;
+		// model will hold the pdf as currently constructed.
+		clone.model = new  StdeCviXmlModel( model.getXMLString() );  // Model is a deep copy?
+		clone.model.setOrUpdatePDFAttachment(model.getPDFAttachmentBytes(), model.getPDFAttachmentFilename());
+		clone.model.addOrUpdateMetadataAttachment(model.getMetaData());
+		clone.iPage = iPage;
+		return clone;
+	}
+	
 	/**
 	 * By convention, the data model holds only pages in the current PDF
 	 * For ordinary PDF files this is a subset of the whole file.
@@ -103,7 +126,6 @@ class PdfSourceFile extends SourceFile {
 	 * By convention, the data model holds only pages in the current PDF
 	 * For ordinary PDF files this is a subset of the whole file.
 	 */
-	@Override
 	public void gotoPageNo( Integer iPageNo ) {
 		this.iPage = iPageNo;
 		model = new StdeCviXmlModel();
@@ -170,16 +192,17 @@ class PdfSourceFile extends SourceFile {
 		}
 		ByteArrayOutputStream baOut = new ByteArrayOutputStream();
 		try {
-			PdfReader reader = new PdfReader(pdfBytes);
-			com.itextpdf.text.Document document = new com.itextpdf.text.Document();
-			PdfCopy writer = new PdfCopy(document, baOut);
-			document.open();
+//			PdfReader reader = new PdfReader(pdfBytes);
+			com.itextpdf.text.Document newDocument = new com.itextpdf.text.Document();
+			PdfCopy writer = new PdfCopy(newDocument, baOut);
+			newDocument.open();
 			for( Integer iPage : aPages ) {
-				PdfImportedPage pip = writer.getImportedPage(reader, iPage);
+				PdfImportedPage pip = writer.getImportedPage(iTextPdfReader, iPage);
 				writer.addPage(pip);
 			}
-			document.close();
+			newDocument.close();
 			bOut = baOut.toByteArray();
+			writer.close();
 			int iLen = bOut.length;
 			if( iLen ==  0 ) 
 				bOut = null;

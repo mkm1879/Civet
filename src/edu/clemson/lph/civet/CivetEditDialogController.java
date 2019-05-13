@@ -151,7 +151,7 @@ public final class CivetEditDialogController {
 	public void openFiles() {
 		// Encapsulation breaks down here.  Viewer is too resource intensive to 
 		// create anew when needed for metadata, etc.
-		openFileList = new OpenFileList(viewer);
+		openFileList = new OpenFileList();
 		OpenFilesThread t = new OpenFilesThread(this, filesToOpen, openFileList);
 		t.start();
 	}
@@ -189,6 +189,7 @@ public final class CivetEditDialogController {
 			setFiles(openFileList.getFileCount());
 			dlg.setFormEditable(dlg.iMode != CivetEditDialog.VIEW_MODE);
 			updateCounterPanel();
+			viewer.setPdfBytes(currentFile.getPDFBytes(), currentFile.isXFA() );
 			viewer.viewPage(currentFile.getCurrentPageNo()); 
 			clearForm();
 			viewer.setRotation(currentFile.getSource().getRotation());
@@ -393,6 +394,9 @@ public final class CivetEditDialogController {
 							openFileList.fileBackward(false);
 						}
 						updateCounterPanel();
+						OpenFile tempOpen = openFileList.getCurrentFile();
+						viewer.setPdfBytes(tempOpen.getPDFBytes(), tempOpen.isXFA());
+						viewer.viewPage(tempOpen.getCurrentPageNo());
 					} catch (PdfException e1) {
 						logger.error(e1);
 					}
@@ -411,6 +415,7 @@ public final class CivetEditDialogController {
 							logger.error("Attempt to move past first page");
 						}
 						updateCounterPanel();
+						viewer.viewPage(currentFile.getCurrentPageNo());
 					} catch (SourceFileException | PdfException e1) {
 						logger.error(e1);
 					}
@@ -449,6 +454,7 @@ public final class CivetEditDialogController {
 							logger.error("Attempt to move past last page");
 						}
 						updateCounterPanel();
+						viewer.viewPage(currentFile.getCurrentPageNo());
 					} catch (SourceFileException | PdfException e1) {
 						logger.error(e1);
 						e1.printStackTrace();
@@ -460,6 +466,9 @@ public final class CivetEditDialogController {
 					try {
 						openFileList.fileForward(false);
 						updateCounterPanel();
+						OpenFile tempOpen = openFileList.getCurrentFile();
+						viewer.setPdfBytes(tempOpen.getPDFBytes(), tempOpen.isXFA());
+						viewer.viewPage(tempOpen.getCurrentPageNo());
 					} catch (PdfException e1) {
 						logger.error(e1);
 					}
@@ -1819,14 +1828,14 @@ public final class CivetEditDialogController {
 			// Backup to get skipped pages?  Not currently.
 			else if ( openFileList.moreFilesForward(true) || openFileList.moreFilesBack(true) ) {
 				currentFile = openFileList.nextFile(true);
-				currentFile.viewFile();  // this is the slow step to thread if necessary
+//				currentFile.viewFile();  // this is the slow step to thread if necessary
 			}
 			else {
 //				openFileList.markFileComplete(currentFile);
 				return false;
 			}
 			updateFilePage();
-		} catch (SourceFileException | PdfException e) {
+		} catch (SourceFileException e) {
 			// TODO Auto-generated catch block
 			logger.error(e);
 		}
