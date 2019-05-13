@@ -35,8 +35,7 @@ public class OpenFileList {
 	private PDFViewer viewer;
 
 
-	public OpenFileList(PDFViewer viewer) {
-		this.viewer = viewer;
+	public OpenFileList() {
 		aOpenFiles = new ArrayList<OpenFile>();
 		aFilesComplete = new ArrayList<OpenFile>();		
 	}
@@ -51,7 +50,7 @@ public class OpenFileList {
 		aOpenFiles = new ArrayList<OpenFile>();
 		aFilesComplete = new ArrayList<OpenFile>();
 		for( File f : aFiles ) {
-			OpenFile openFile = new OpenFile(f, viewer);
+			OpenFile openFile = new OpenFile(f);
 			aOpenFiles.add(openFile);
 		}
 	}
@@ -67,7 +66,7 @@ public class OpenFileList {
 	 * 
 	 */
 	public void openFile( File f ) throws SourceFileException, PdfException {
-		OpenFile openFile = new OpenFile(f, viewer);
+		OpenFile openFile = new OpenFile(f);
 		aOpenFiles.add(openFile);
 		oCurrent = aOpenFiles.get(0);	
 	}
@@ -133,7 +132,6 @@ public class OpenFileList {
 	 */
 	public OpenFile firstFile() throws PdfException {
 		oCurrent = aOpenFiles.get(0);
-		oCurrent.viewFile();
 		return oCurrent;
 	}
 	
@@ -223,7 +221,6 @@ public class OpenFileList {
 	 */
 	public OpenFile fileForward(boolean bIncompleteOnly) throws PdfException {
 		oCurrent = nextFileForward(bIncompleteOnly);
-		oCurrent.viewFile();
 		return oCurrent;		
 	}
 
@@ -276,7 +273,6 @@ public class OpenFileList {
 	 */
 	public OpenFile fileBackward(boolean bIncompleteOnly) throws PdfException {
 		oCurrent = nextFileBack(bIncompleteOnly);
-		oCurrent.viewFile();
 		return oCurrent;
 	}
 

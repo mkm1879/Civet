@@ -15,10 +15,15 @@
 package edu.clemson.lph.civet.files;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.jpedal.exception.PdfException;
+
+import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -56,42 +61,32 @@ public abstract class SourceFile {
 	// model will hold the pdf as currently constructed.
 	protected StdeCviXmlModel model = null;
 	protected Integer iPage = null;
-	private PDFViewer viewer = null;
+	protected PdfReader iTextPdfReader;
 
 	SourceFile cloneCurrentState() {
-		SourceFile sourceFile = null;
-		switch( type ) {
-		case PDF:
-		case Image:
-			sourceFile = clonePdfSource();
-			break;
-		default:
-			sourceFile = this;
-		}
-		return sourceFile;
+		return this;
 	}
 	
-	private SourceFile clonePdfSource() {
-		SourceFile clone = new PdfSourceFile();
-		clone.sFilePath = sFilePath;
-		clone.sFileName = sFileName;
-		clone.sDataPath = sDataPath;
-		// fSource is the original PDF or image
-		clone.fSource = fSource;
-		// fData only populated for mCVI and AgView where there is a separate data file.
-		clone.fData = fData;
-		// pdfBytes is the whole file read from disk or converted from image.
-		clone.pdfBytes = pdfBytes;
-		clone.type = null;
-		// model will hold the pdf as currently constructed.
-		clone.model = new  StdeCviXmlModel( model.getXMLString() );  // Model is a deep copy?
-		clone.model.setOrUpdatePDFAttachment(model.getPDFAttachmentBytes(), model.getPDFAttachmentFilename());
-		clone.model.addOrUpdateMetadataAttachment(model.getMetaData());
-		clone.iPage = iPage;
-		clone.viewer = viewer;
-		return clone;
-	}
-
+//	private SourceFile clonePdfSource() {
+//		SourceFile clone = new PdfSourceFile();
+//		clone.sFilePath = sFilePath;
+//		clone.sFileName = sFileName;
+//		clone.sDataPath = sDataPath;
+//		// fSource is the original PDF or image
+//		clone.fSource = fSource;
+//		// fData only populated for mCVI and AgView where there is a separate data file.
+//		clone.fData = fData;
+//		// pdfBytes is the whole file read from disk or converted from image.
+//		clone.pdfBytes = pdfBytes;
+//		clone.type = null;
+//		// model will hold the pdf as currently constructed.
+//		clone.model = new  StdeCviXmlModel( model.getXMLString() );  // Model is a deep copy?
+//		clone.model.setOrUpdatePDFAttachment(model.getPDFAttachmentBytes(), model.getPDFAttachmentFilename());
+//		clone.model.addOrUpdateMetadataAttachment(model.getMetaData());
+//		clone.iPage = iPage;
+//		return clone;
+//	}
+//
 	/**
 	 * used only by PDFSource in Clone.
 	 */
@@ -99,12 +94,11 @@ public abstract class SourceFile {
 		
 	}
 	
-	protected SourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
+	protected SourceFile( File fFile ) throws SourceFileException {
 		if( fFile != null && fFile.exists() && fFile.isFile() ) {
 			sFileName = fFile.getName();
 			sFilePath = fFile.getAbsolutePath();
 			fSource = fFile;
-			this.viewer = viewer;
 			iPage = 1;
 		}
 		else {
@@ -141,23 +135,22 @@ public abstract class SourceFile {
 		return iPage;
 	}
 	
-	void viewFile() throws PdfException {
-		byte pdfBytes[] = getPDFBytes();
-		boolean bXFA = PDFUtils.isXFA(pdfBytes);
-		if( bXFA && !CivetConfig.isJPedalXFA() ) {
-			MessageDialog.showMessage(null, "Civet: No XFA", "Civet cannot display CO/KS XFA PDFs without JPedal license");
-			viewer.closePdfFile();
-		}
-		else {
-			viewer.setPdfBytes(pdfBytes, bXFA);
-			viewer.viewPage(iPage);
-		}
-	}
+//	void viewFile() throws PdfException {
+//		byte pdfBytes[] = getPDFBytes();
+//		boolean bXFA = PDFUtils.isXFA(pdfBytes);
+//		if( bXFA && !CivetConfig.isJPedalXFA() ) {
+//			MessageDialog.showMessage(null, "Civet: No XFA", "Civet cannot display CO/KS XFA PDFs without JPedal license");
+//			viewer.closePdfFile();
+//		}
+//		else {
+//			viewer.setPdfBytes(pdfBytes, bXFA);
+//			viewer.viewPage(iPage);
+//		}
+//	}
 	
 	public void gotoPageNo( Integer iPageNo ) {
-		this.iPage = iPageNo;
-		if( viewer != null && iPageNo >= 1 && iPageNo <= getPageCount() ) {
-			viewer.viewPage(iPageNo);
+		if( iTextPdfReader != null && iPageNo >= 1 && iPageNo <= getPageCount() ) {
+			this.iPage = iPageNo;
 		}
 		else {
 			logger.error("Attempt to view page " + iPageNo + " of " + getPageCount() + " pages");
@@ -166,8 +159,8 @@ public abstract class SourceFile {
 	
 	public Integer getPageCount() {
 		Integer iRet = null;
-		if( viewer != null ) {
-			iRet = viewer.getPageCount();
+		if( iTextPdfReader != null ) {
+			iRet = iTextPdfReader.getNumberOfPages();
 		}
 		else {
 			iRet = 1;
@@ -247,27 +240,27 @@ public abstract class SourceFile {
 	 * @param sPath Full path to the source file being "opened".
 	 * @return
 	 */
-	static SourceFile readSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
+	static SourceFile readSourceFile( File fFile ) throws SourceFileException {
 		SourceFile sourceFile = null;
 		SourceFile.Types type = SourceFile.getType(fFile);
 		switch( type ) {
 		case PDF:
-			sourceFile = new PdfSourceFile( fFile, viewer );
+			sourceFile = new PdfSourceFile( fFile );
 			break;
 		case Image:
-			sourceFile = new ImageSourceFile( fFile, viewer );
+			sourceFile = new ImageSourceFile( fFile );
 			break;			
 		case CO_KS_PDF:
-			sourceFile = new CoKsSourceFile( fFile, viewer );
+			sourceFile = new CoKsSourceFile( fFile );
 			break;
 		case mCVI:
-			sourceFile = new MCviSourceFile( fFile, viewer );
+			sourceFile = new MCviSourceFile( fFile );
 			break;
 		case AgView:
-			sourceFile = new AgViewSourceFile( fFile, viewer );
+			sourceFile = new AgViewSourceFile( fFile );
 			break;
 		case Civet:
-			sourceFile = new CivetSourceFile( fFile, viewer );
+			sourceFile = new CivetSourceFile( fFile );
 			break;
 		case Unknown:
 			logger.error("Unknown file type " + fFile);

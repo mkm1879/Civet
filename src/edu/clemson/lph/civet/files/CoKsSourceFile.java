@@ -41,6 +41,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.itextpdf.text.pdf.PdfReader;
+
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.SafeDocBuilder;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
@@ -58,14 +60,15 @@ public class CoKsSourceFile extends SourceFile {
 	     logger.setLevel(Level.INFO);
 	}
 	
-	public CoKsSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
-		super(fFile, viewer);
+	public CoKsSourceFile( File fFile ) throws SourceFileException {
+		super(fFile);
 		type = Types.CO_KS_PDF;
 		if( fSource == null || !fSource.exists() ) {
 			throw new SourceFileException("File " + sFilePath + " does not exist");
 		}
 		try {
 			pdfBytes = FileUtils.readBinaryFile(fFile);
+			iTextPdfReader = new PdfReader(pdfBytes);
 		} catch (Exception e) {
 			throw new SourceFileException(e);
 		}

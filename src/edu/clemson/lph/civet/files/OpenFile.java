@@ -15,10 +15,14 @@
 package edu.clemson.lph.civet.files;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.jpedal.exception.PdfException;
+
+import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
@@ -35,26 +39,28 @@ import edu.clemson.lph.utils.FileUtils;
 public class OpenFile {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private SourceFile source = null;
-	private PDFViewer viewer = null;
 	private ArrayList<Integer> aPagesInCurrent = null;
 	private ArrayList<Integer> aPagesDone = null;
 
 	private OpenFile() {
-		
 	}
 	
+	private int getPageCount( File fPdfFile ) {
+		int iPages = 0;
+		return iPages;
+	}
+
 	/**
 	 * Remove if we don't end up with a use
 	 * @throws SourceFileException 
 	 * 
 	 */
-	public OpenFile( String sFilePath, PDFViewer viewer ) throws SourceFileException {
-		this.viewer = viewer;
+	public OpenFile( String sFilePath ) throws SourceFileException {
 		File fFile = new File( sFilePath );
 		if( fFile != null && fFile.exists() && fFile.isFile() ) {
 			// Factory method will populate with correct file type.
 			// All variation in handling should be encapsulated in a SourceFile subclass.
-			source = SourceFile.readSourceFile(fFile, viewer);
+			source = SourceFile.readSourceFile(fFile);
 			// xmlModel may be split in case of multi-CVI PDF files 
 			// so don't just call source.getDataModel() directly
 			aPagesInCurrent = new ArrayList<Integer>();
@@ -71,12 +77,11 @@ public class OpenFile {
 	 * @throws SourceFileException 
 	 * 
 	 */
-	public OpenFile( File fFile, PDFViewer viewer ) throws SourceFileException {
-		this.viewer = viewer;
+	public OpenFile( File fFile ) throws SourceFileException {
 		if( fFile != null && fFile.exists() && fFile.isFile() ) {
 			// Factory method will populate with correct file type.
 			// All variation in handling should be encapsulated in a SourceFile subclass.
-			source = SourceFile.readSourceFile(fFile, viewer);
+			source = SourceFile.readSourceFile(fFile);
 			// xmlModel may be split in case of multi-CVI PDF files 
 			// so don't just call source.getDataModel() directly
 			aPagesInCurrent = new ArrayList<Integer>();
@@ -100,8 +105,6 @@ public class OpenFile {
 		OpenFile fileOut = this;
 		if( source.getType() == SourceFile.Types.PDF ) {
 			fileOut = new OpenFile();
-			// viewer is a singleton anyway.
-			fileOut.viewer = this.viewer;
 			// Deep copy source as needed.
 			fileOut.source = this.source.cloneCurrentState();
 			// Model was deep copied by source
@@ -121,10 +124,10 @@ public class OpenFile {
 			bRet = true;
 		return bRet;
 	}
-	
-	public void viewFile() throws PdfException {
-		source.viewFile();;
-	}
+//	
+//	public void viewFile() throws PdfException {
+//		source.viewFile();;
+//	}
 	
 	public SourceFile getSource() {
 		return source;
@@ -141,9 +144,9 @@ public class OpenFile {
 	 * the Open and Save threads.
 	 * @return
 	 */
-	public PDFViewer getViewer() {
-		return viewer;
-	}
+//	public PDFViewer getViewer() {
+//		return viewer;
+//	}
 	
 	public byte[] getPDFBytes() {
 		return source.getPDFBytes();
@@ -264,7 +267,7 @@ public class OpenFile {
 	 */
 	public Integer nextPageForward(boolean bIncompleteOnly) {
 		Integer iRet = null;
-		for( Integer i = getCurrentPageNo() + 1; i <= viewer.getPageCount(); i++ ) {
+		for( Integer i = getCurrentPageNo() + 1; i <= source.getPageCount(); i++ ) {
 			if( !bIncompleteOnly || !aPagesDone.contains(i) ) { //&& !aPagesInCurrent.contains(i) ) {
 				iRet = i;
 				break;
