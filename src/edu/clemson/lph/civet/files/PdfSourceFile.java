@@ -16,8 +16,6 @@ package edu.clemson.lph.civet.files;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -29,7 +27,6 @@ import com.itextpdf.text.pdf.PdfReader;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.pdfgen.MergePDF;
-import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -94,6 +91,11 @@ class PdfSourceFile extends SourceFile {
 		clone.fData = fData;
 		// pdfBytes is the whole file read from disk or converted from image.
 		clone.pdfBytes = pdfBytes;
+		try {
+			clone.iTextPdfReader = new PdfReader(pdfBytes);
+		} catch (IOException e) {
+			logger.error("Failure to clone page from " + sFileName, e);
+		}
 		clone.type = null;
 		// model will hold the pdf as currently constructed.
 		clone.model = new  StdeCviXmlModel( model.getXMLString() );  // Model is a deep copy?

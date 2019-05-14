@@ -15,22 +15,14 @@
 package edu.clemson.lph.civet.files;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
-import org.jpedal.exception.PdfException;
 
 import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
-import edu.clemson.lph.dialogs.MessageDialog;
-import edu.clemson.lph.pdfgen.PDFUtils;
-import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -134,19 +126,6 @@ public abstract class SourceFile {
 	public Integer getCurrentPageNo() {
 		return iPage;
 	}
-	
-//	void viewFile() throws PdfException {
-//		byte pdfBytes[] = getPDFBytes();
-//		boolean bXFA = PDFUtils.isXFA(pdfBytes);
-//		if( bXFA && !CivetConfig.isJPedalXFA() ) {
-//			MessageDialog.showMessage(null, "Civet: No XFA", "Civet cannot display CO/KS XFA PDFs without JPedal license");
-//			viewer.closePdfFile();
-//		}
-//		else {
-//			viewer.setPdfBytes(pdfBytes, bXFA);
-//			viewer.viewPage(iPage);
-//		}
-//	}
 	
 	public void gotoPageNo( Integer iPageNo ) {
 		if( iTextPdfReader != null && iPageNo >= 1 && iPageNo <= getPageCount() ) {

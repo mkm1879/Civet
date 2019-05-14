@@ -15,18 +15,11 @@
 package edu.clemson.lph.civet.files;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
-import org.jpedal.exception.PdfException;
-
-import com.itextpdf.text.pdf.PdfReader;
-
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
-import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -43,11 +36,6 @@ public class OpenFile {
 	private ArrayList<Integer> aPagesDone = null;
 
 	private OpenFile() {
-	}
-	
-	private int getPageCount( File fPdfFile ) {
-		int iPages = 0;
-		return iPages;
 	}
 
 	/**

@@ -1822,22 +1822,18 @@ public final class CivetEditDialogController {
 			// Only on multipage PDF do we page forward on save
 			if( currentFile.getSource().canSplit() && currentFile.morePagesForward(true) ) {
 				currentFile.pageForward(true);
-//				currentFile.addPageToCurrent(currentFile.getCurrentPageNo());
-				viewer.viewPage(currentFile.getCurrentPageNo());
 			}
 			// Backup to get skipped pages?  Not currently.
 			else if ( openFileList.moreFilesForward(true) || openFileList.moreFilesBack(true) ) {
 				currentFile = openFileList.nextFile(true);
-//				currentFile.viewFile();  // this is the slow step to thread if necessary
+				viewer.setPdfBytes(currentFile.getPDFBytes(), currentFile.isXFA());
 			}
 			else {
-//				openFileList.markFileComplete(currentFile);
 				return false;
 			}
-			updateFilePage();
-		} catch (SourceFileException e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
+			updateFilePage(); 
+		} catch (SourceFileException | PdfException e) {
+			logger.error("Failure to read file " + currentFile.getSource().getFileName(), e);
 		}
 		prog.setVisible(false);
 		return true;
@@ -1925,13 +1921,6 @@ public final class CivetEditDialogController {
 			opener.openPDFContentInAcrobat(currentFile.getModel().getPDFAttachmentBytes());
 		}
 	}
-	
-
-	private void pdfView( byte pdfBytes[] ) {
-		PDFOpener opener = new PDFOpener(dlg);
-		opener.openPDFContentInAcrobat(pdfBytes);
-	}
-
 	
 	private void pdfViewFile() {
 		PDFOpener opener = new PDFOpener(dlg);
