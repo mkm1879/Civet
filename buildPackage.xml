@@ -56,7 +56,8 @@
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
-    </target>
+ 		<copy file="./Version.txt" tofile="src/edu/clemson/lph/civet/res/Version.txt" overwrite="true"/>
+   </target>
     <target name="clean">
         <delete dir="bin"/>
     </target>

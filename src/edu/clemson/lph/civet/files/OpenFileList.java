@@ -21,7 +21,6 @@ import org.jpedal.exception.PdfException;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.pdfgen.PDFViewer;
 
 /**
  * This class represents the collection of files that have been selected to open in
@@ -32,7 +31,6 @@ public class OpenFileList {
 	private ArrayList<OpenFile> aOpenFiles = null;
 	private ArrayList<OpenFile> aFilesComplete = null;
 	private OpenFile oCurrent;
-	private PDFViewer viewer;
 
 
 	public OpenFileList() {

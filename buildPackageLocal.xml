@@ -51,7 +51,7 @@
     </path>
     <target name="init">
         <mkdir dir="bin"/>
-		<copy file="src/edu/clemson/lph/civet/res/Version.txt" tofile="./Version.txt" overwrite="true"/>
+		<copy file="./Version.txt" tofile="src/edu/clemson/lph/civet/res/Version.txt" overwrite="true"/>
 		<concat destfile="src/edu/clemson/lph/civet/res/Version.txt" append="true"> Local</concat>
         <copy includeemptydirs="false" todir="bin">
             <fileset dir="src">
