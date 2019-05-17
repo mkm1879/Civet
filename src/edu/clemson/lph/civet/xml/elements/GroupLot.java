@@ -52,7 +52,7 @@ public class GroupLot {
 		else {
 			String sSpecies = speciesCode.toString();
 			Long iQuant = (Long) Math.round(quantity); 
-			description = "Group of " + iQuant.toString() + " " + sSpecies;
+			this.description = "Group of " + iQuant.toString() + " " + sSpecies;
 		}
 	}
 
