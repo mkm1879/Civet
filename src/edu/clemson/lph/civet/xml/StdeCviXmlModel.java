@@ -46,7 +46,7 @@ import edu.clemson.lph.utils.XMLUtility;
 // TODO Refactor rename to StdXmlDataModel
 public class StdeCviXmlModel {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	public static final String sDateFormat = "yyyy-MM-dd";
 	private static final String allElements = "Veterinarian,MovementPurposes,Origin,Destination,Consignor,Consignee," +
 	                                   "Carrier,TransportMode,Accessions,Animal,GroupLot,Statements,Attachment," +
 			                           "MiscAttribute,Binary";
@@ -68,6 +68,10 @@ public class StdeCviXmlModel {
 		if( iIndex > 0 ) 
 			sRet = allElements.substring(iIndex);
 		return sRet;
+	}
+	
+	public static SimpleDateFormat getDateFormat() {
+		return new SimpleDateFormat( sDateFormat );
 	}
 	
 
@@ -173,14 +177,14 @@ public class StdeCviXmlModel {
 	 */
 	public void setIssueDate( java.util.Date dIssued ) {
 		if( isValidDoc() && dIssued != null) {
-			String sDate = dateFormat.format(dIssued);
+			String sDate = getDateFormat().format(dIssued);
 			int iValidDays = CivetConfig.getCviValidDays();
 			if( sDate !=  null && iValidDays > 0 ) {
 				helper.setAttribute(helper.getRootElement(), "IssueDate", sDate);		
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(dIssued);
 				cal.add(Calendar.DATE, iValidDays);
-				String sExp = dateFormat.format(cal.getTime());
+				String sExp = getDateFormat().format(cal.getTime());
 				if( sExp != null && sExp.trim().length() > 0 )
 					helper.setAttribute(helper.getRootElement(), "ExpirationDate", sExp);
 			}
@@ -889,7 +893,7 @@ public class StdeCviXmlModel {
 		if(sInsp == null ) {
 			java.util.Date dIssue = getIssueDate();
 			if( dIssue != null )
-				sInsp = dateFormat.format(getIssueDate());
+				sInsp = getDateFormat().format(getIssueDate());
 			// Still might be blank but will get set at save time.
 		}
 		helper.setAttribute(eAnimal, "InspectionDate", sInsp);
@@ -950,7 +954,7 @@ public class StdeCviXmlModel {
 		for( Animal animal : getAnimals() ) {
 			if( animal.inspectionDate == null ) {
 				Element eAnimal = animal.eAnimal;
-				String sInsp = dateFormat.format(dInsp);
+				String sInsp = getDateFormat().format(dInsp);
 				helper.setAttribute(eAnimal, "InspectionDate", sInsp);
 			}			
 		}
@@ -1398,7 +1402,7 @@ public class StdeCviXmlModel {
 		Calendar cal = Calendar.getInstance();
 		boolean bSet = false;
 		try {
-			dExp = dateFormat.parse(sExp);
+			dExp = getDateFormat().parse(sExp);
 			return;  // Already have valid expDate
 		} catch (ParseException e) {
 			dExp = null;
@@ -1408,7 +1412,7 @@ public class StdeCviXmlModel {
 			if( sInsp != null && sInsp.trim().length() > 0 ) {
 				java.util.Date dInsp = null;
 				try {
-					dInsp = dateFormat.parse(sInsp);
+					dInsp = getDateFormat().parse(sInsp);
 					if( dInsp != null ) {
 						cal.setTime(dInsp);
 						cal.add(Calendar.DATE, iValidDays);
@@ -1424,7 +1428,7 @@ public class StdeCviXmlModel {
 			}
 		}
 		if( bSet ) {
-			String sNewExp = dateFormat.format(dExp);
+			String sNewExp = getDateFormat().format(dExp);
 			helper.setAttributeByPath("/eCVI", "ExpirationDate", sNewExp);
 		}
 	}

@@ -164,7 +164,7 @@ class InsertVspsCviThread extends Thread implements ThreadCancelListener {
 			ArrayList<AnimalTag> aTags = vspsAnimal.getTags();
 			if( iCount == 1 && aTags.size() > 0 && iCount == 1 ) {
 				java.util.Date dInspDate = cvi.getInspectionDate();
-				String sInspDate = StdeCviXmlModel.dateFormat.format(dInspDate);
+				String sInspDate = StdeCviXmlModel.getDateFormat().format(dInspDate);
 				SpeciesCode scSpecies = new SpeciesCode(sSpecies);
 				Animal animal = new Animal(scSpecies, aTags, null, sBreed,
 						sGender, sInspDate);

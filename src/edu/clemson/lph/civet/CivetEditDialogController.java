@@ -132,8 +132,9 @@ public final class CivetEditDialogController {
 	 * @throws SourceFileException 
 	 * @wbp.parser.constructor
 	 */
-	public CivetEditDialogController( CivetEditDialog dlg, ArrayList<File> files ) throws SourceFileException{
+	public CivetEditDialogController( Window parent, CivetEditDialog dlg, ArrayList<File> files ) throws SourceFileException{
 		this.dlg = dlg;
+		this.parent = parent;
 		this.filesToOpen = files;
 		this.viewer = new PDFViewer();
 		this.saveQueue = new OpenFileSaveQueue(this);  // Queue needs reference for call-back from thread complete.
@@ -2074,6 +2075,10 @@ public final class CivetEditDialogController {
 			java.util.Date dDateIssued, java.util.Date dDateReceived, 
 			Integer iIssuedByKey, String sIssuedByName, String sCVINo, String sCVINoSource,
 			String sMovementPurpose) {
+		if( model == null ) {
+			logger.error("Null model in buildXML");
+			model = new StdeCviXmlModel();
+		}
 		String sOriginStateCode;
 		String sOriginPIN = null;
 		String sOriginName ;
@@ -2096,15 +2101,18 @@ public final class CivetEditDialogController {
 			sStdPurpose = "other";
 		if( bImport ) {
 			sOriginPIN = null;
+			sOriginPhone = null;
 			sOriginName = sOtherName;
 			sOriginAddress = sOtherAddress;
 			sOriginStateCode = sOtherStateCode;
 			sOriginCity = sOtherCity;
 			sOriginCounty = sOtherCounty;
 			sOriginZipCode = sOtherZipcode;
-			sOriginPhone = model.getOrigin().premid;
-			if( model != null && model.getOrigin() != null )
-				sDestinationPIN = sThisPIN;
+			if( model != null && model.getOrigin() != null ) {
+				sOriginPIN = model.getOrigin().premid;
+				sOriginPhone = model.getOrigin().personPhone;
+			}
+			sDestinationPIN = sThisPIN;
 			sDestinationName = sThisName;
 			sDestinationAddress = sThisAddress;
 			sDestinationCity = sThisCity;
@@ -2171,7 +2179,7 @@ public final class CivetEditDialogController {
 		// We don't collect separate date inspected for manually entered IDs.
 		for( Animal animal : animals ) {
 			if(animal.inspectionDate == null || animal.inspectionDate.trim().length() == 0 ) {
-				String sDateIssued = StdeCviXmlModel.dateFormat.format(dDateIssued);
+				String sDateIssued = StdeCviXmlModel.getDateFormat().format(dDateIssued);
 				animal.inspectionDate = sDateIssued;
 				model.editAnimal(animal);
 			}

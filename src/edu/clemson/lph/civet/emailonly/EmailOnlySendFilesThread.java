@@ -151,7 +151,7 @@ class EmailOnlySendFilesThread extends Thread {
 								+ sStateList );
 			}
 			File aFilesLeft[] = fEmailOutDir.listFiles();
-			if( aFilesLeft.length > 0 ) {
+			if( aFilesLeft != null && aFilesLeft.length > 0 ) {
 				MessageDialog.showMessage(parent, "Civet Error: Remaining Files", "Files remaining in " + sEmailOutDir);
 			}
 		} catch (javax.mail.AuthenticationFailedException eAuth) {

@@ -227,8 +227,7 @@ public class CivetInboxController {
 			ArrayList<File> files = new ArrayList<File>();
 			for( int i = 0; i < selectedFiles.length; i++ )
 				files.add(selectedFiles[i]);
-			@SuppressWarnings("unused")
-			CivetEditDialog dlg = new CivetEditDialog( inbox, files);
+			new CivetEditDialog( inbox, files);
 			// Constructor calls setVisible when ready.
 		} catch( SourceFileException e ) {
 			logger.error("Failed to open files", e);
@@ -241,8 +240,7 @@ public class CivetInboxController {
 			FilesTableModel model = (FilesTableModel)inbox.tblInBox.getModel();
 //			boolean bView = ( model instanceof EmailFilesTableModel );
 			ArrayList<File> files = model.getSelectedFiles(inbox.tblInBox);
-			@SuppressWarnings("unused")
-			CivetEditDialog dlg = new CivetEditDialog(inbox, files);
+			new CivetEditDialog(inbox, files);
 			// Constructor calls setVisible when ready.
 		} catch( SourceFileException e ) {
 			logger.error("Failed to open files", e);

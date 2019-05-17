@@ -184,7 +184,7 @@ public final class CivetEditDialog extends JFrame {
 			this.dialogParent = null;
 		}
 		initializeDisplay();
-		controller = new CivetEditDialogController( this, files);
+		controller = new CivetEditDialogController( parent, this, files);
 		controller.openFiles();		
 	}
 	
@@ -204,7 +204,7 @@ public final class CivetEditDialog extends JFrame {
 			this.dialogParent = null;
 		}
 		initializeDisplay();
-		controller = new CivetEditDialogController( this, files);
+		controller = new CivetEditDialogController( parent, this, files);
 		controller.openFiles();
 	}
 
