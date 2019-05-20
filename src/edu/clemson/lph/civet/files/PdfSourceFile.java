@@ -41,11 +41,19 @@ class PdfSourceFile extends SourceFile {
 		
 	}
 	
+	/**
+	 * Scanned paper PDF loaded with an empty data model with just the 
+	 * first page of the source PDF file as its attachemnt.
+	 * @param fFile
+	 * @throws SourceFileException
+	 */
 	PdfSourceFile( File fFile ) throws SourceFileException {
 		super(fFile);
+		// iPage = 1 from super 
 		type = Types.PDF;
 		try {
 			pdfBytes = FileUtils.readBinaryFile(fSource);
+			FileUtils.writeBinaryFile(pdfBytes, "Original_" + fSource.getName());
 			iTextPdfReader = new PdfReader(pdfBytes);
 		} catch (Exception e) {
 			throw new SourceFileException(e);
@@ -79,29 +87,52 @@ class PdfSourceFile extends SourceFile {
 		return true;
 	}
 	
+	/**
+	 * Create a shallow copy of this file set to current file's current page.
+	 */
 	@Override
-	SourceFile cloneCurrentState() {
-		SourceFile clone = new PdfSourceFile();
-		clone.sFilePath = sFilePath;
-		clone.sFileName = sFileName;
-		clone.sDataPath = sDataPath;
-		// fSource is the original PDF or image
-		clone.fSource = fSource;
-		// fData only populated for mCVI and AgView where there is a separate data file.
-		clone.fData = fData;
-		// pdfBytes is the whole file read from disk or converted from image.
-		clone.pdfBytes = pdfBytes;
+	SourceFile newSourceFromSameSourceFile() {
+		PdfSourceFile clone = null;
 		try {
-			clone.iTextPdfReader = new PdfReader(pdfBytes);
-		} catch (IOException e) {
-			logger.error("Failure to clone page from " + sFileName, e);
+			clone = new PdfSourceFile(fSource);
+			byte[] modelBytes = model.getPDFAttachmentBytes();
+			int iBytes = 0;
+			if( modelBytes != null ) iBytes = modelBytes.length;
+			logger.error( "Cloning page " + getCurrentPageNo() + " of " + getPageCount() + 
+					" Model has attachment of " + iBytes + " bytes");
+			byte[] cloneBytes = clone.model.getPDFAttachmentBytes();
+			iBytes = 0;
+			if( modelBytes != null ) iBytes = cloneBytes.length;
+			logger.error( "Cloned page " + getCurrentPageNo() + " of " + getPageCount() + 
+					" Model has attachment of " + iBytes + " bytes");
+		} catch( SourceFileException e ) {
+			logger.error(e);
 		}
-		clone.type = null;
-		// model will hold the pdf as currently constructed.
-		clone.model = new  StdeCviXmlModel( model.getXMLString() );  // Model is a deep copy?
-		clone.model.setOrUpdatePDFAttachment(model.getPDFAttachmentBytes(), model.getPDFAttachmentFilename());
-		clone.model.addOrUpdateMetadataAttachment(model.getMetaData());
-		clone.iPage = iPage;
+//		clone.sFilePath = sFilePath;
+//		clone.sFileName = sFileName;
+//		clone.sDataPath = sDataPath;
+//		// fSource is the original PDF or image
+//		clone.fSource = fSource;
+//		// fData only populated for mCVI and AgView where there is a separate data file.
+//		clone.fData = fData;
+//		// pdfBytes is the whole file read from disk or converted from image.
+//		clone.pdfBytes = pdfBytes;
+//		try {
+//			clone.iTextPdfReader = new PdfReader(pdfBytes);
+//		} catch (IOException e) {
+//			logger.error("Failure to clone page from " + sFileName, e);
+//		}
+//		clone.type = null;
+//		byte[] modelBytes = model.getPDFAttachmentBytes();
+//		int iBytes = 0;
+//		if( modelBytes != null ) iBytes = modelBytes.length;
+//		logger.error( "Cloning page " + getCurrentPageNo() + " of " + getPageCount() + 
+//				" Model has attachment of " + iBytes + " bytes");
+//		// model will hold the pdf as currently constructed.
+//		clone.model = new  StdeCviXmlModel( model.getXMLString() );  // Model is a deep copy?
+//		clone.model.setOrUpdatePDFAttachment(model.getPDFAttachmentBytes(), model.getPDFAttachmentFilename());
+//		clone.model.addOrUpdateMetadataAttachment(model.getMetaData());
+		clone.setPageNo(iPage);
 		return clone;
 	}
 	
@@ -117,11 +148,18 @@ class PdfSourceFile extends SourceFile {
 		byte pdfPageBytes[] = getPDFBytes(iPage);  // extract pages from original full pdf
 		try {
 			byte pdfCombined[] = MergePDF.appendPDFtoPDF(pdfBytesCurrent, pdfPageBytes);
+			if( pdfCombined == null ) {
+				logger.error("null pdfCombined in addPageToCurrent(" + iPage + ") of " + getPageCount() + " pages");
+			}
 			String sFileName = model.getPDFAttachmentFilename();
 			model.setOrUpdatePDFAttachment(pdfCombined, sFileName);
 		} catch (IOException e) {
 			logger.error(e);
 		}
+	}
+	
+	private void setPageNo( Integer iPageNo ) {
+		this.iPage = iPageNo;
 	}
 	
 	/**
@@ -132,6 +170,9 @@ class PdfSourceFile extends SourceFile {
 		this.iPage = iPageNo;
 		model = new StdeCviXmlModel();
 		byte pdfPageBytes[] = getPDFBytes(iPage);
+		if( pdfPageBytes == null ) {
+			logger.error("null page bytes in gotoPageNo(" + iPageNo + ") of " + getPageCount() + " pages");
+		}
 		model.setOrUpdatePDFAttachment(pdfPageBytes, fSource.getName());
 	}
 	
