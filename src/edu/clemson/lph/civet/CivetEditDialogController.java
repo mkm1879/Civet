@@ -213,7 +213,7 @@ public final class CivetEditDialogController {
 			clearForm();
 			if( currentFile.isDataFile() )
 				populateFromStdXml( currentFile.getModel() );
-			currentFile = openFileList.getCurrentFile();
+//			currentFile = openFileList.getCurrentFile();
 			idListModel = new AnimalIDListTableModel( currentFile.getModel() );
 			dlg.setTitle(getViewerTitle()+currentFile.getSource().getFileName());
 			setPage(currentFile.getCurrentPageNo());
@@ -1674,10 +1674,12 @@ public final class CivetEditDialogController {
 			// Avoid stray input as we save.
 			dlg.setFormEditable( false );
 			currentFile.setCurrentPagesDone();
-			setFileCompleteStatus();
 			cStartingComponentFocus = null;
 			// For multi-page PDF this creates a new OpenFile from the current pages.  All others just self.
-			OpenFile fileToSave = currentFile.cloneCurrentState();
+			OpenFile fileToSave = currentFile;
+			currentFile = fileToSave.newOpenFileFromSource();
+			openFileList.replaceFile( fileToSave, currentFile );
+			setFileCompleteStatus();
 			if( save(fileToSave) ) {  // Saved, no errors that require changes on current page
 				if( navigateToNextPage() ) {  // Found another page to edit
 					dlg.setFormEditable( true );

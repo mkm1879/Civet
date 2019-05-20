@@ -55,7 +55,8 @@ public abstract class SourceFile {
 	protected Integer iPage = null;
 	protected PdfReader iTextPdfReader;
 
-	SourceFile cloneCurrentState() {
+	// Default package scope because called by OpenFile wrapper of same name.
+	SourceFile newSourceFromSameSourceFile() {
 		return this;
 	}
 	

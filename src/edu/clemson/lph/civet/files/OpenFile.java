@@ -89,20 +89,15 @@ public class OpenFile {
 	 * it simply returns the original since no split file thread issues.
 	 * @return
 	 */
-	public OpenFile cloneCurrentState() {
+	public OpenFile newOpenFileFromSource() {
 		OpenFile fileOut = this;
 		if( source.getType() == SourceFile.Types.PDF ) {
 			fileOut = new OpenFile();
-			// Deep copy source as needed.
-			fileOut.source = this.source.cloneCurrentState();
-			// Model was deep copied by source
-			// State Arrays are deep copies
+			fileOut.source = this.source.newSourceFromSameSourceFile();
 			fileOut.aPagesInCurrent = new ArrayList<Integer>();
-			fileOut.aPagesInCurrent.addAll(this.aPagesInCurrent);
 			fileOut.aPagesDone = new ArrayList<Integer>();
 			fileOut.aPagesDone.addAll(this.aPagesDone);
 		}
-		this.aPagesInCurrent.clear();
 		return fileOut;
 	}
 	
