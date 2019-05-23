@@ -1678,7 +1678,7 @@ public final class CivetEditDialogController {
 			// For multi-page PDF this creates a new OpenFile from the current pages.  All others just self.
 			OpenFile fileToSave = currentFile;
 			currentFile = fileToSave.newOpenFileFromSource();
-			openFileList.replaceFile( fileToSave, currentFile );
+			openFileList.replaceFile( fileToSave, currentFile ); 
 			setFileCompleteStatus();
 			if( save(fileToSave) ) {  // Saved, no errors that require changes on current page
 				if( navigateToNextPage() ) {  // Found another page to edit
