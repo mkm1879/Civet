@@ -33,7 +33,7 @@ import edu.clemson.lph.utils.FileUtils;
  * 
  */
 class PdfSourceFile extends SourceFile {
-
+	private byte[] wholeFileBytes = null;
 	/**
 	 * Used only in cloneCurrentState
 	 */
@@ -52,8 +52,40 @@ class PdfSourceFile extends SourceFile {
 		// iPage = 1 from super 
 		type = Types.PDF;
 		try {
-			pdfBytes = FileUtils.readBinaryFile(fSource);
+			wholeFileBytes = FileUtils.readBinaryFile(fSource);
+			pdfBytes = wholeFileBytes;
 			FileUtils.writeBinaryFile(pdfBytes, "Original_" + fSource.getName());
+			iTextPdfReader = new PdfReader(pdfBytes);
+		} catch (Exception e) {
+			throw new SourceFileException(e);
+		}
+		model = new StdeCviXmlModel();
+		model.setOrUpdatePDFAttachment(getPDFBytes(iPage), fSource.getName());
+	}
+	
+	/**
+	 * Scanned paper PDF loaded with an empty data model with just the 
+	 * first page of the source PDF file as its attachemnt.
+	 * @param fFile
+	 * @throws SourceFileException
+	 */
+	PdfSourceFile( byte[] fileBytes, File fFile, Integer iPage ) throws SourceFileException {
+		super();
+		if( fFile != null && fFile.exists() && fFile.isFile() ) {
+			sFileName = fFile.getName();
+			sFilePath = fFile.getAbsolutePath();
+			fSource = fFile;
+			this.iPage = iPage;
+		}
+		else {
+			logger.error("Attempt to construct source file with no file");
+		}
+
+		// iPage = 1 from super 
+		type = Types.PDF;
+		try {
+			wholeFileBytes = fileBytes;
+			pdfBytes = wholeFileBytes;
 			iTextPdfReader = new PdfReader(pdfBytes);
 		} catch (Exception e) {
 			throw new SourceFileException(e);
@@ -88,51 +120,17 @@ class PdfSourceFile extends SourceFile {
 	}
 	
 	/**
-	 * Create a shallow copy of this file set to current file's current page.
+	 * Create another representation of the whole file set to the current page
+	 * ready to move on.
 	 */
 	@Override
 	SourceFile newSourceFromSameSourceFile() {
 		PdfSourceFile clone = null;
 		try {
-			clone = new PdfSourceFile(fSource);
-			byte[] modelBytes = model.getPDFAttachmentBytes();
-			int iBytes = 0;
-			if( modelBytes != null ) iBytes = modelBytes.length;
-			logger.error( "Cloning page " + getCurrentPageNo() + " of " + getPageCount() + 
-					" Model has attachment of " + iBytes + " bytes");
-			byte[] cloneBytes = clone.model.getPDFAttachmentBytes();
-			iBytes = 0;
-			if( modelBytes != null ) iBytes = cloneBytes.length;
-			logger.error( "Cloned page " + getCurrentPageNo() + " of " + getPageCount() + 
-					" Model has attachment of " + iBytes + " bytes");
+			clone = new PdfSourceFile(wholeFileBytes, fSource, iPage);
 		} catch( SourceFileException e ) {
 			logger.error(e);
 		}
-//		clone.sFilePath = sFilePath;
-//		clone.sFileName = sFileName;
-//		clone.sDataPath = sDataPath;
-//		// fSource is the original PDF or image
-//		clone.fSource = fSource;
-//		// fData only populated for mCVI and AgView where there is a separate data file.
-//		clone.fData = fData;
-//		// pdfBytes is the whole file read from disk or converted from image.
-//		clone.pdfBytes = pdfBytes;
-//		try {
-//			clone.iTextPdfReader = new PdfReader(pdfBytes);
-//		} catch (IOException e) {
-//			logger.error("Failure to clone page from " + sFileName, e);
-//		}
-//		clone.type = null;
-//		byte[] modelBytes = model.getPDFAttachmentBytes();
-//		int iBytes = 0;
-//		if( modelBytes != null ) iBytes = modelBytes.length;
-//		logger.error( "Cloning page " + getCurrentPageNo() + " of " + getPageCount() + 
-//				" Model has attachment of " + iBytes + " bytes");
-//		// model will hold the pdf as currently constructed.
-//		clone.model = new  StdeCviXmlModel( model.getXMLString() );  // Model is a deep copy?
-//		clone.model.setOrUpdatePDFAttachment(model.getPDFAttachmentBytes(), model.getPDFAttachmentFilename());
-//		clone.model.addOrUpdateMetadataAttachment(model.getMetaData());
-		clone.setPageNo(iPage);
 		return clone;
 	}
 	
@@ -156,10 +154,6 @@ class PdfSourceFile extends SourceFile {
 		} catch (IOException e) {
 			logger.error(e);
 		}
-	}
-	
-	private void setPageNo( Integer iPageNo ) {
-		this.iPage = iPageNo;
 	}
 	
 	/**
@@ -205,6 +199,7 @@ class PdfSourceFile extends SourceFile {
 	public byte[] getPDFBytes() {
 		if( pdfBytes == null ) {
 			try {
+				logger.info("Reading PDF file outside of constructor");
 				pdfBytes = FileUtils.readBinaryFile(fSource);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -235,7 +230,6 @@ class PdfSourceFile extends SourceFile {
 		}
 		ByteArrayOutputStream baOut = new ByteArrayOutputStream();
 		try {
-//			PdfReader reader = new PdfReader(pdfBytes);
 			com.itextpdf.text.Document newDocument = new com.itextpdf.text.Document();
 			PdfCopy writer = new PdfCopy(newDocument, baOut);
 			newDocument.open();
