@@ -155,7 +155,7 @@ class DBSearchTextField extends JTextField {
 
 	private void this_keyPressed(KeyEvent e) {
 		// Could just look for numerical value of code == 70 but that might be less readable.
-		if( ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0) && "F".equals(KeyEvent.getKeyText(e.getKeyCode())) ) {
+		if( ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) && "F".equals(KeyEvent.getKeyText(e.getKeyCode())) ) {
 			// Search is just to complicated to generically outsource to the model.  
 			// We assume a live db connection here.
 			if( sSearchQuery != null && factory != null ) {
@@ -179,7 +179,7 @@ class DBSearchTextField extends JTextField {
 				bInSearch = false;
 			}
 		}
-		else if( ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0) && "N".equals(KeyEvent.getKeyText(e.getKeyCode())) ) {
+		else if( ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) && "N".equals(KeyEvent.getKeyText(e.getKeyCode())) ) {
 			if( lListeners != null ) {
 				for( Iterator<DBSearchTextFieldListener> iter = lListeners.iterator(); iter.hasNext(); ) {
 					DBSearchTextFieldListener listener = iter.next();
@@ -187,7 +187,7 @@ class DBSearchTextField extends JTextField {
 				}
 			}
 		}
-		else if( ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0) && "E".equals(KeyEvent.getKeyText(e.getKeyCode())) ) {
+		else if( ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) && "E".equals(KeyEvent.getKeyText(e.getKeyCode())) ) {
 			if( lListeners != null ) {
 				for( Iterator<DBSearchTextFieldListener> iter = lListeners.iterator(); iter.hasNext(); ) {
 					DBSearchTextFieldListener listener = iter.next();

@@ -1422,7 +1422,13 @@ public final class CivetEditDialogController {
 						String sNAN = xStd.getVet().nationalAccreditationNumber;
 						if( sNAN != null && sNAN.trim().length() > 0 ) {
 							VetLookup vet = new VetLookup( sNAN );
-							dlg.cbIssuedBy.setSelectedKey(vet.getKey());
+							int iVetKey = vet.getKey();
+							if( vet != null ) {
+								if( !dlg.cbIssuedBy.hasKey( iVetKey ) ) { // Small animal vet?
+									doShowAllVets(false);  // this is a toggle false means it wasn't NOW checked.
+								}
+								dlg.cbIssuedBy.setSelectedKey( iVetKey );
+							}
 						}
 						else {
 							// May not be accredited.
@@ -1436,8 +1442,9 @@ public final class CivetEditDialogController {
 							if(tok.hasMoreTokens())
 								sVetFirstName = tok.nextToken();
 							VetLookup vet = new VetLookup( sVetLastName, sVetFirstName );
-							if( vet.isUniqueMatch() )
+							if( vet.isUniqueMatch() ) {
 								dlg.cbIssuedBy.setSelectedKey(vet.getKey());
+							}
 						}
 					}
 					else {

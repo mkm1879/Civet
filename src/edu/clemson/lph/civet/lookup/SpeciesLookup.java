@@ -21,13 +21,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.db.DBComboBoxModel;
 import edu.clemson.lph.db.DBTableSource;
@@ -62,25 +59,6 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 			readSppTable();		
 		me = this;
 	}
-	
-	public static void main( String sArgs[] ) {
-		PropertyConfigurator.configure("CivetConfig.txt");
-		// Fail now so config file and required files can be fixed before work is done.
-		CivetConfig.checkAllConfig();
-		logger.setLevel(CivetConfig.getLogLevel());
-		CivetInbox.VERSION = "Test Inbox Controller";
-		logger.info("Civet running build: " + CivetInbox.VERSION);
-//		SpeciesLookup lu = new SpeciesLookup();
-		me = new SpeciesLookup();
-		System.out.println("EQU is standard? " + me.isCodeStandard("EQU"));
-//		Set<String> keys = text2code.keySet();
-//		for( String s : keys ) {
-//			String code = text2code.get(s);
-//			Spp spp = sppCodeMap.get(code);
-//			System.out.println( s + " : " + spp.sSppCode + " : " + spp.sSppName + " : " + spp.bStd ); //SpeciesLookup.isCodeStandard(spp.sSppCode) );
-//		}
-	}
-	
 	
 	private void readSppTable() {
 		sppCodeMap = new HashMap<String, Spp>();

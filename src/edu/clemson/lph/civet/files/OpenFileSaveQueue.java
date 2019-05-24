@@ -19,11 +19,11 @@ public class OpenFileSaveQueue {
 		this.controller = controller;
 		iThreads = 0;
 	}
-	
-	@Override protected void finalize() throws Throwable {
-	    flush();
-	    super.finalize();
-	}
+//	
+//	@Override protected void finalize() throws Throwable {
+//	    flush();
+//	    super.finalize();
+//	}
 	
 	public void push( OpenFile openFile ) {
 		OpenFile fileToSave = fileIn;

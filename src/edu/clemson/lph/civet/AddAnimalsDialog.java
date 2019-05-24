@@ -124,8 +124,8 @@ public class AddAnimalsDialog extends JDialog {
 					@Override
 					public void keyPressed(KeyEvent e) {
 						if( e.getKeyCode() == KeyEvent.VK_V 
-								&& ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)
-								&& ((e.getModifiers() & KeyEvent.SHIFT_MASK) != 0)) {
+								&& ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)
+								&& ((e.getModifiersEx() & KeyEvent.SHIFT_DOWN_MASK) != 0)) {
 							pasteIDs();
 						}
 					}

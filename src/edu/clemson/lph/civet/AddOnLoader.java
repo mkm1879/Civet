@@ -52,9 +52,9 @@ class AddOnLoader {
 		ArrayList<Class<AddOn>> addOnClasses = listAddonClasses();
 		final Window parent = wParent;
 		menuAddOns.setEnabled(false);
-		for( Class<AddOn> clazz : addOnClasses ) {
+		for( Class<AddOn> addOnClass : addOnClasses ) {
 			try {
-				final AddOn thisAddOn = clazz.newInstance();
+				final AddOn thisAddOn = addOnClass.getConstructor().newInstance();
 				JMenuItem itemAddOn = new JMenuItem();
 				itemAddOn.setText( thisAddOn.getMenuText() );
 				itemAddOn.addActionListener(new ActionListener() {
@@ -64,10 +64,8 @@ class AddOnLoader {
 				});
 				menuAddOns.add(itemAddOn);
 				menuAddOns.setEnabled(true);
-			} catch (InstantiationException e) {
-				logger.error("Unable to instantiate AddOn " + clazz.getName(), e);
-			} catch (IllegalAccessException e) {
-				logger.error(e);
+			} catch (ReflectiveOperationException e) {
+				logger.error("Unable to instantiate AddOn " + addOnClass.getName(), e);
 			}
 		}
 	}
