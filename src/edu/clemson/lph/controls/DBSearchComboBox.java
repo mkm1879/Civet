@@ -80,6 +80,14 @@ public class DBSearchComboBox extends DBComboBox {
 		this.deltaX = deltaX;
 		this.deltaY = deltaY;
 	}
+	
+	public boolean hasKey(int iKey) {
+		boolean bRet = false;
+		String sValue = getValueForKey( iKey );
+		if( sValue != null && sValue.trim().length() > 0 )
+			bRet = true;
+		return bRet;
+	}
 
 	public String getSearchTitle() { return sSearchTitle; }
 	public void setHideCode( boolean bHideCode ) { this.bHideCode = bHideCode; }
@@ -95,7 +103,7 @@ public class DBSearchComboBox extends DBComboBox {
 			public void keyPressed( KeyEvent e ) {
 				try {
 					SearchDialog<Integer> dSearch = null;
-					if( ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0) && "F".equals(KeyEvent.getKeyText(e.getKeyCode())) ) {
+					if( ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) && "F".equals(KeyEvent.getKeyText(e.getKeyCode())) ) {
 						if( dSearchDialog != null ) {
 							dSearch = dSearchDialog;
 						}

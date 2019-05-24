@@ -64,7 +64,6 @@ import javax.swing.border.EtchedBorder;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import java.awt.Point;
 
 /**
  * This is the View part of MVC for the VERY complex Edit dialog that makes up 

@@ -176,7 +176,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 		Premises pDestination = new Premises(data.getDestPin(), data.getDestFarm(), data.getDestState());
 		xmlModel.setDestination(pDestination);
 
-		Double dNum = new Double(data.getNumber());  // null reference risk?
+		Double dNum = Double.valueOf(data.getNumber());  // null reference risk?
 		String sSpecies = "POR";
 		String sAge = data.getAge();
 		String sGender = data.getSex();

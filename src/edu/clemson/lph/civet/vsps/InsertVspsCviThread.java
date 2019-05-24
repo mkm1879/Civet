@@ -192,7 +192,7 @@ class InsertVspsCviThread extends Thread implements ThreadCancelListener {
 			String sGender = lKey.get(1);
 			String sBreed = lKey.get(2);
 			Integer iNum = entry.getValue();
-			GroupLot group = new GroupLot(sSpecies, sBreed, sGender, new Double(iNum) );
+			GroupLot group = new GroupLot(sSpecies, sBreed, sGender, Double.valueOf(iNum) );
 			xmlModel.addGroupLot(group);
 		}
 		CviMetaDataXml metaData = new CviMetaDataXml();

@@ -298,7 +298,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 				}
 			}
 			if( iNumTags < iNum ) {
-				Double dNum = new Double(iNum - iNumTags);
+				Double dNum = Double.valueOf(iNum - iNumTags);
 				GroupLot group = new GroupLot(sSpeciesCode, dNum);
 				group.sex = sGender;
 				group.description = "Poultry Lot Under NPIP 9-3";
