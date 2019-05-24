@@ -25,6 +25,7 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.CSVParserWrapper;
 
@@ -74,6 +75,9 @@ class CSVDataFile {
 		}
 		if( sCompany.toUpperCase().startsWith("SE HEALTH") ) {
 			sCompany = "CACTUS";
+		}
+		if( sCompany.equals("UN_") && f.getName().startsWith("IN") ) {
+			sCompany="TDM";
 		}
 		FileReader fr = new FileReader( f );
 		CSVParserWrapper parser = new CSVParserWrapper(fr);
@@ -196,6 +200,8 @@ class CSVDataFile {
 		if( sRet == null ) sRet = get( "Source State".toUpperCase() );
 		if( sRet == null ) sRet = get( "From State".toUpperCase() );
 		if( sRet == null ) sRet = get( "FromState".toUpperCase() );
+		if( sRet != null && sRet.trim().length() > 2 )
+			sRet = States.getStateCode(sRet);
 		return sRet;
 	}
 	
@@ -251,12 +257,15 @@ class CSVDataFile {
 		if( sRet == null ) sRet = get( "Destination State".toUpperCase() );
 		if( sRet == null ) sRet = get( "To State".toUpperCase() );
 		if( sRet == null ) sRet = get( "ToState".toUpperCase() );
+		if( sRet != null && sRet.trim().length() > 2 )
+			sRet = States.getStateCode(sRet);
 		return sRet;
 	}
 
 	public String getThisFarm() {
 		String sRet = get( "DestFarm".toUpperCase() );
 		if( sRet == null ) sRet = get( "Dest Farm".toUpperCase() );
+		if( sRet == null ) sRet = get( "To Farm".toUpperCase() );
 		if( sRet == null ) sRet = get( "Destination".toUpperCase() );
 		if( sRet == null ) sRet = get( "DestinationFarm".toUpperCase() );
 		if( sRet == null ) sRet = get( "Destination Farm".toUpperCase() );
@@ -350,14 +359,19 @@ class CSVDataFile {
 		if( sDate == null ) sDate = get( "Move Date".toUpperCase() );
 		if( sDate == null ) sDate = get( "Movement Date".toUpperCase() );
 		java.util.Date dRet = null;
-		String sYear = sDate.substring(sDate.lastIndexOf('/'));
+		if( sDate != null ) {
+			int iLastSlash = sDate.lastIndexOf('/');
+			if( iLastSlash >= 0 ) {
+				String sYear = sDate.substring(iLastSlash);
 		
-		SimpleDateFormat df = new SimpleDateFormat( "M/d/yy");
-		if( sYear.trim().length() > 2 ) df = new SimpleDateFormat( "M/d/yyyy");
-		try {
-			dRet = df.parse(sDate);
-		} catch (ParseException e) {
-			logger.error( "Cannot parse " + sDate + " as a date" );
+				SimpleDateFormat df = new SimpleDateFormat( "M/d/yy");
+				if( sYear.trim().length() > 2 ) df = new SimpleDateFormat( "M/d/yyyy");
+				try {
+					dRet = df.parse(sDate);
+				} catch (ParseException e) {
+					logger.error( "Cannot parse " + sDate + " as a date" );
+				}
+			}
 		}
 		return dRet;
 	}
