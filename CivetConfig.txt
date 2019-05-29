@@ -24,14 +24,14 @@ trustAllCerts=TRUE
 
 #Email
 smtpHost=
-zohoKey=6543
+zohoKey=
 smtpPort=465
 smtpSecurity=ZOHO
 smtpDomain=
 emailFrom=civet@mminformatics.com
-emailReplyTo=mmarti5@clemson.edu
-emailTestTo=mkm1879@gmail.com
-emailCopyTo=mkm1879@gmail.com
+emailReplyTo=who@what.com
+emailTestTo=who@what.com
+emailCopyTo=who@what.com
 maxAttachSize=5M
 
 #Folders
