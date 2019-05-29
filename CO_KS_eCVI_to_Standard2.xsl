@@ -419,7 +419,7 @@
             <xsl:variable name="first3" select="substring($last15,1,3)"/>
             <xsl:if test="string(number($last15)) != 'NaN' and (
                 (substring($first3,1,1) = '9' and $first3 != '999') or $first3 = '124' or $first3 = '484' )"> 
-                <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="mfrRFID">
+                <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="MfrRFID">
                     <xsl:attribute name="Number">
                         <xsl:value-of select="$last15"/>
                     </xsl:attribute>
