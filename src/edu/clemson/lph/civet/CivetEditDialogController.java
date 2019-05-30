@@ -484,12 +484,12 @@ public final class CivetEditDialogController {
 		});
 		dlg.rbImport.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				rbInbound_actionPerformed(e);
+				rbImport_actionPerformed(e);
 			}
 		});
 		dlg.rbExport.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				rbOutbound_actionPerformed(e);
+				rbExport_actionPerformed(e);
 			}
 		});
 		dlg.rbInState.addActionListener(new java.awt.event.ActionListener() {
@@ -1863,13 +1863,18 @@ public final class CivetEditDialogController {
 			((Frame)parent).setExtendedState(Frame.ICONIFIED);
 	}
 
-	private void rbOutbound_actionPerformed(ActionEvent e) {
+	private void rbExport_actionPerformed(ActionEvent e) {
 		if( hasData() ) {
 			YesNoDialog yn = new YesNoDialog( dlg, "Civet: Reverse", "All data will be lost.\nDo you want to reverse direction?");
 			yn.setVisible(true);
 			boolean bOK = yn.getAnswer();
-			if( !bOK )
+			if( !bOK ) {
+				if( isInbound() )
+					dlg.rbImport.setSelected(true);
+				else
+					dlg.rbInState.setSelected(true);
 				return;
+			}
 			clearForm();
 			currentFile.getModel().clear();
 		}
@@ -1881,13 +1886,20 @@ public final class CivetEditDialogController {
 			c.requestFocus();
 	}
 
-	private void rbInbound_actionPerformed(ActionEvent e) {
+	private void rbImport_actionPerformed(ActionEvent e) {
 		if( hasData() ) {
 			YesNoDialog yn = new YesNoDialog( dlg, "Civet: Reverse", "All data will be lost.\nDo you want to reverse direction?");
 			yn.setVisible(true);
 			boolean bOK = yn.getAnswer();
-			if( !bOK )
+			if( !bOK ) { 
+				String sOtherState = dlg.cbOtherState.getSelectedCode();
+				String sHomeState = CivetConfig.getHomeStateAbbr();
+				if( sHomeState.equals(sOtherState) )
+					dlg.rbInState.setSelected(true);
+				else
+					dlg.rbExport.setSelected(true);
 				return;
+			}
 			clearForm();
 			currentFile.getModel().clear();
 		}
@@ -1904,8 +1916,13 @@ public final class CivetEditDialogController {
 			YesNoDialog yn = new YesNoDialog( dlg, "Civet: Reverse", "All data will be lost.\nDo you want to reverse direction?");
 			yn.setVisible(true);
 			boolean bOK = yn.getAnswer();
-			if( !bOK )
+			if( !bOK ){
+				if( isInbound() )
+					dlg.rbImport.setSelected(true);
+				else
+					dlg.rbExport.setSelected(true);
 				return;
+			}
 			clearForm();
 			currentFile.getModel().clear();
 		}
