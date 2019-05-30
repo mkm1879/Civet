@@ -80,8 +80,6 @@ class PdfSourceFile extends SourceFile {
 		else {
 			logger.error("Attempt to construct source file with no file");
 		}
-
-		// iPage = 1 from super 
 		type = Types.PDF;
 		try {
 			wholeFileBytes = fileBytes;
@@ -241,8 +239,10 @@ class PdfSourceFile extends SourceFile {
 			bOut = baOut.toByteArray();
 			writer.close();
 			int iLen = bOut.length;
-			if( iLen ==  0 ) 
+			if( iLen ==  0 ) {
+				logger.error("No bytes from file " + getFileName() + " page " + iPage );
 				bOut = null;
+			}
 		} catch( IOException ioe ) {
 			logger.error(ioe.getMessage() + "\nIO error extracting pages to byte array\n");
 			bOut = null;
