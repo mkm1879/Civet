@@ -906,6 +906,7 @@ public class CivetConfig {
 		else {
 			bRet = ( iJPedalType == XFA );
 		}
+		logger.info("JPedal detected: " + bRet);
 		return bRet;
 	}
 	

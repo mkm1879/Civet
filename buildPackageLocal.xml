@@ -452,7 +452,7 @@
         <copy file="${dir.jarfile}/lib/jai_codec.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/jai_core.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/jai_imageio-1.1.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
-       <copy file="${dir.jarfile}/lib/jpedal_LGPL.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
+        <copy file="${dir.jarfile}/lib/jpedal_LGPL.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
     </target>
 
 </project>
