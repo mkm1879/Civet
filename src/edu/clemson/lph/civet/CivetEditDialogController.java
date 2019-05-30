@@ -458,7 +458,6 @@ public final class CivetEditDialogController {
 						viewer.viewPage(currentFile.getCurrentPageNo());
 					} catch (SourceFileException | PdfException e1) {
 						logger.error(e1);
-						e1.printStackTrace();
 					}
 				}
 			});
@@ -1684,7 +1683,9 @@ public final class CivetEditDialogController {
 			cStartingComponentFocus = null;
 			// For multi-page PDF this creates a new OpenFile from the current pages.  All others just self.
 			OpenFile fileToSave = currentFile;
+	logger.info("In doSave, fileToSave has attachment: " + fileToSave.getModel().hasPDFAttachment() );
 			currentFile = fileToSave.newOpenFileFromSource();
+	logger.info("In doSave, currentFile has attachment: " + currentFile.getModel().hasPDFAttachment() );
 			openFileList.replaceFile( fileToSave, currentFile ); 
 			setFileCompleteStatus();
 			if( save(fileToSave) ) {  // Saved, no errors that require changes on current page
