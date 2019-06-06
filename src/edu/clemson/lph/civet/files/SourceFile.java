@@ -159,16 +159,16 @@ public abstract class SourceFile {
 	public byte[] getPDFBytes() {
 		return pdfBytes;
 	}
-	
-	public byte[] getPDFBytes( int iPageNo ) {
-		logger.error("getPDFBytes(iPage) called on non-splitable source " + sFilePath);
-		return getPDFBytes();  // just send it all
-	}
-	
-	public byte[] getPDFBytes(ArrayList<Integer> aPages) {
-		logger.error("getPDFBytes(Array) called on non-splitable source " + sFilePath);
-		return getPDFBytes();  // just send it all
-	}
+//	
+//	public byte[] getPDFBytes( int iPageNo ) {
+//		logger.error("getPDFBytes(iPage) called on non-splitable source " + sFilePath);
+//		return getPDFBytes();  // just send it all
+//	}
+//	
+//	public byte[] getPDFBytes(ArrayList<Integer> aPages) {
+//		logger.error("getPDFBytes(Array) called on non-splitable source " + sFilePath);
+//		return getPDFBytes();  // just send it all
+//	}
 	
 	public abstract boolean canSplit();
 	

@@ -102,6 +102,7 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 				 Spp spp = new Spp(sSppCode, sSppName, bStd, bHerds);
 				 code2Spp.put(sSppCode, spp);
 				 name2Spp.put(sSppName, spp);
+				 name2Spp.put(sStdName, spp);
 				 // These two Hashmaps are used by GUI components.
 				 hValuesCodes.put(sSppName, sSppCode);
 				 hCodesValues.put(sSppCode, sSppName);
@@ -158,7 +159,7 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 	
 	public static String getCodeForName( String sSppName ) {
 		if( me == null ) me = new SpeciesLookup();
-		Spp spp = code2Spp.get(sSppName);
+		Spp spp = name2Spp.get(sSppName);
 		if( spp != null ) return spp.sSppCode;
 		else return null;
 	}
