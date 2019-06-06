@@ -126,7 +126,9 @@
 
     <xsl:template name="OriginDestination">
         <xsl:param name="data"/>
-        <xsl:if test="$data/lid != ''">
+        <xsl:variable name="alphanumeric" select="'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'"/>
+        <xsl:if test="$data/lid != '' and string-length($data/lid) &gt; 5 and string-length($data/lid) &lt; 9
+            and string-length(translate($data/lid, $alphanumeric, '')) = 0 ">
             <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="PremId">
                 <xsl:value-of select="$data/lid"/>
             </xsl:element>
