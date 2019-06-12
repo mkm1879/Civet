@@ -294,7 +294,7 @@ public class CivetConfig {
 		return "civet@mminformatics.com";
 	}
 	public synchronized static String getZohoPass() {
-		return "!Shortone" + getZohoKey();
+		return "$newOne" + getZohoKey();
 	}
 	
 	public synchronized static String getSmtpHost() {
