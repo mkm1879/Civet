@@ -191,8 +191,10 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 					sbCVICounts.append("\n     " + (aSentCVIFiles.size() - iUnsent) + " CVIs to " + sState);
 				}
 			} // end for each state
-			MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
-					"Successfully sent: " + sbCVICounts.toString() );
+			if( sbCVICounts != null && sbCVICounts.toString().trim().length() > 0 ) {
+				MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
+						"Successfully sent: " + sbCVICounts.toString() );
+			}
 		} catch (javax.mail.AuthenticationFailedException eAuth) {
 			MailMan.setUserID(null);
 			MailMan.setPassword(null);
