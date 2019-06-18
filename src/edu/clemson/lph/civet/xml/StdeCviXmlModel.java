@@ -130,8 +130,11 @@ public class StdeCviXmlModel {
 	
 	/**
 	 * Destroy all data and start clean!
+	 * But leave attachment.  
 	 */
 	public void clear() {
+		byte[] pdfBytes = getPDFAttachmentBytes();
+		String sFileName = getPDFAttachmentFilename();
 		DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document doc = db.newDocument();
 		doc.setXmlStandalone(true);
@@ -139,6 +142,7 @@ public class StdeCviXmlModel {
 		doc.appendChild(root);
 		helper = new XMLDocHelper( doc, root );
 		binaries = new StdeCviBinaries( helper );
+		binaries.setOrUpdatePDFAttachment(pdfBytes, sFileName);
 		metaData = new CviMetaDataXml();
 	}
 

@@ -516,6 +516,7 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object oRet = null;
 		WebServicePremisesRow row = rows.get(rowIndex);
+	System.err.println("Row from " + row.sStatePremID +" : " + row.sFedPremID );
 		switch( columnIndex ) {
 		case 0: oRet =  row.sStatePremID; break;
 		case 1: oRet =  row.sFedPremID; break;
