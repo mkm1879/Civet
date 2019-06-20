@@ -60,7 +60,7 @@ public class UsaHerdsWebServiceAuthentication {
 			}
 			else {
 				sToken = null;
-				throw new WebServiceException("Error in authorization at URL: " + sURL + '\n' + auth.getError());
+				throw new WebServiceException("Error in authorization at URL: " + sURL);
 			}
 		}
 		return sToken;
