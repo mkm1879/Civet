@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.addons;
+package edu.clemson.lph.civet.addons.swinehealthplans;
 
 import java.util.HashMap;
 

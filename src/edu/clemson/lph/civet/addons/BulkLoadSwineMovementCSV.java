@@ -33,6 +33,8 @@ import edu.clemson.lph.civet.xml.elements.Premises;
 import edu.clemson.lph.civet.xml.elements.Veterinarian;
 import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.utils.PremCheckSum;
+import edu.clemson.lph.civet.addons.swinehealthplans.*;
+
 
 import java.awt.Window;
 import java.io.File;
