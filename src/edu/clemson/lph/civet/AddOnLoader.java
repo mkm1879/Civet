@@ -82,6 +82,8 @@ class AddOnLoader {
 			  for( String sItem: aAllClasses ) {
 				  if( sItem != null && sItem.trim().length() > 0 && !sItem.contains("$") ) {
 					  int iIndexOfName = sItem.lastIndexOf('.');
+					  if( iIndexOfName < 0 )
+						  continue;
 					  sItem = "edu.clemson.lph.civet.addons." + sItem.substring(0,iIndexOfName);
 					  try {
 						  @SuppressWarnings("rawtypes")
