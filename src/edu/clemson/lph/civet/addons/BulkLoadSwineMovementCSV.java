@@ -130,6 +130,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 					}
 				} 
 			}catch (IOException e) {
+				MessageDialog.showMessage(fParent, "Civet Error", e.getMessage() );
 				logger.error(e);
 			}
 			catch (Exception ex) {

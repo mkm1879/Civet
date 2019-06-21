@@ -18,13 +18,16 @@ public class SHPColumnMaps {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	HashMap<String, ArrayList<String>> hMaps = null;
 
-	public SHPColumnMaps() {
+	public SHPColumnMaps() throws IOException {
 		if( hMaps == null )
 			readFile();
 	}
 	
-	private void readFile() {
+	private void readFile() throws IOException {
 		File fMap = new File("SwineHealthPlanColumnMaps.csv");
+		if( !fMap.exists() ) {
+			throw new FileNotFoundException("File SwineHealthPlanColumnMaps.csv not found.");
+		}
 		hMaps = new HashMap<String, ArrayList<String>>();
 		FileReader fr = null;
 		try {
@@ -50,12 +53,6 @@ public class SHPColumnMaps {
 				iCol++;
 				parser.reset();
 			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			logger.error("File SwineHealthPlanColumnMaps.csv not found\n", e);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error("Error reading SwineHealthPlanColumnMaps.csv\n", e);
 		} finally {
 			try {
 				if( fr != null )

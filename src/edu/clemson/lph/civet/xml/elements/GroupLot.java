@@ -67,7 +67,7 @@ public class GroupLot {
 		this.sex = null;
 		String sSpecies = "OTH";
 		if( speciesCode != null )
-			speciesCode.toString();
+			sSpecies = speciesCode.toString();
 		Integer iQuant = quantity.intValue(); 
 		description = "Group of " + iQuant.toString() + " " + sSpecies;
 	}
@@ -83,7 +83,7 @@ public class GroupLot {
 		this.sex = sGender;
 		String sSpecies = "OTH";
 		if( speciesCode != null )
-			speciesCode.toString();
+			sSpecies = speciesCode.toString();
 		Integer iQuant = quantity.intValue(); 
 		description = "Group of " + iQuant.toString() + " " + sSpecies;
 	}

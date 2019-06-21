@@ -77,11 +77,18 @@ public class CSVDataFile {
 		else {
 			sCompany = "UN_";
 		}
-		if( sCompany.toUpperCase().startsWith("SE HEALTH") ) {
+		// Exception case
+		if( sCompany.equals("UN_") && sFileName.toUpperCase().contains("SE HEALTH") ) {
 			sCompany = "CACTUS";
 		}
-		if( sCompany.equals("UN_") && f.getName().startsWith("IN") ) {
+		if( sCompany.equals("UN_") && sFileName.startsWith("IN") ) {
 			sCompany="TDM";
+		}
+		if( sCompany.equals("Murphy Brown") ) {
+			sCompany="MB";
+		}
+		if( sCompany.equals("Prestage") ) {
+			sCompany="PR";
 		}
 		FileReader fr = new FileReader( f );
 		CSVParserWrapper parser = new CSVParserWrapper(fr);
