@@ -53,9 +53,19 @@ public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
 	 * 
 	 */
 	public SpeciesLookup() {
-		if( code2Spp == null || name2Spp == null )
+		if( code2Spp == null || name2Spp == null ) {
 			readSppTable();		
+//			for( String sCode : code2Spp.keySet() ) {
+//				Spp species = code2Spp.get(sCode);
+//				System.out.println(sCode + ": " + species.sSppName + ", " + species.bStd );
+//			}
+//			for( String sName : name2Spp.keySet() ) {
+//				Spp species = name2Spp.get(sName);
+//				System.out.println(sName + ": " + species.sSppCode + ", " + species.bStd );
+//			}
+		}
 		me = this;
+		
 	}
 	
 	private void readSppTable() {
