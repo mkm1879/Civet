@@ -507,24 +507,26 @@ public class CivetConfig {
 		}
 		if( sSmtpHost != null ) {
 			MailMan.setDefaultHost(CivetConfig.getSmtpHost());
-			sUserID = MailMan.getUserID();
-			if( (MailMan.getUserID() == null || MailMan.getPassword() == null) && bLogin ) {
-				TwoLineQuestionDialog ask = new TwoLineQuestionDialog( "Civet Email Login:",
-						"Email UserID:", "Email Password:", true);
-				ask.setPassword(true);
-				ask.setVisible(true);
-				if( ask.isExitOK() ) {
-					sUserID = ask.getAnswerOne();
-					MailMan.setUserID(sUserID);
-					MailMan.setPassword(ask.getAnswerTwo());
-					bRet = true;
-				}
-				else {
-					bRet = false;
-				}
-			}
 			MailMan.setDefaultPort(CivetConfig.getSmtpPortInt());
 			MailMan.setSecurity(CivetConfig.getSmtpSecurity());
+			sUserID = MailMan.getUserID();
+			MailMan.setUserID(sUserID);
+			if( !"NONE".equalsIgnoreCase(CivetConfig.getSmtpSecurity()) ) {
+				if( (MailMan.getUserID() == null || MailMan.getPassword() == null) && bLogin ) {
+					TwoLineQuestionDialog ask = new TwoLineQuestionDialog( "Civet Email Login:",
+							"Email UserID:", "Email Password:", true);
+					ask.setPassword(true);
+					ask.setVisible(true);
+					if( ask.isExitOK() ) {
+						sUserID = ask.getAnswerOne();
+						MailMan.setPassword(ask.getAnswerTwo());
+						bRet = true;
+					}
+					else {
+						bRet = false;
+					}
+				}
+			}
 		}
 		else if( sZohoKey != null ) {
 			MailMan.setDefaultHost(CivetConfig.getZohoHost());

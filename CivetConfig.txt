@@ -20,14 +20,14 @@ defaultPurpose=Other
 autoOpenPdf=yes
 
 #Email
-smtpHost=mail.clemson.edu
-smtpPort=465
-smtpSecurity=ZOHO
+smtpHost=smtp-out.clemson.edu
+smtpPort=25
+smtpSecurity=NONE
 smtpDomain=@gmail.com
-emailFrom=civet@mminformatics.com
-emailReplyTo=who@what.com
-emailTestTo=who@what.com
-emailCopyTo=who@what.com
+emailFrom=mmarti5@clemson.edu
+emailReplyTo=civet@mminformatics.com
+emailTestTo=
+emailCopyTo=
 maxAttachSize=5M
 
 #Folders
