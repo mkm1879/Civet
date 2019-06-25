@@ -19,16 +19,16 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 
 package edu.clemson.lph.civet.xml.elements;
 public class Veterinarian {
-	public String addressBlock;
+	public Address address;
 	public Person person;
 	public String licenseState;
 	public String licenseNumber;
 	public String nationalAccreditationNumber;
 	
-	public Veterinarian( Person person, String addressBlock, 
+	public Veterinarian( Person person, Address address, 
 			      String licenseState, String licenseNumber, String nationalAccreditationNumber ) {
 		this.person = person;
-		this.addressBlock = addressBlock;
+		this.address = address;
 		this.licenseState = licenseState;
 		this.licenseNumber = licenseNumber;
 		this.nationalAccreditationNumber = nationalAccreditationNumber;

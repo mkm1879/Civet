@@ -260,16 +260,16 @@ public class StdeCviXmlModel {
 		Veterinarian vet = null;
 		Element eVet = helper.getElementByName("Veterinarian");
 		if( eVet != null ) {
-			String sAddress = null;
-			Element eAddressBlock = helper.getChildElementByName(eVet, "AddressBlock");
-			if( eAddressBlock != null ) {
-				sAddress = eAddressBlock.getTextContent();
+			Address address = null;
+			Element eAddress = helper.getChildElementByName(eVet, "Address");
+			if( eAddress != null ) {
+				address = getAddress(eAddress);
 			}
 			String sLicenseState = eVet.getAttribute("LicenseState");
 			String sLicenseNumber = eVet.getAttribute("LicenseNumber");
 			String sNationalAccreditationNumber = eVet.getAttribute("NationalAccreditationNumber");
 			Person vetPerson = getPerson(eVet);
-			vet = new Veterinarian( vetPerson, sAddress, 
+			vet = new Veterinarian( vetPerson, address, 
 							sLicenseState, sLicenseNumber, sNationalAccreditationNumber);
 		}
 		return vet;
@@ -559,38 +559,38 @@ public class StdeCviXmlModel {
 		return prem;
 	}
 	
-	private Address getAddress( Element ePremises ) {
+	private Address getAddress( Element eAddress ) {
 		String line1 = null;
-		Element eLine1 = helper.getChildElementByName(ePremises, "Line1");
+		Element eLine1 = helper.getChildElementByName(eAddress, "Line1");
 		if( eLine1 != null)
 			line1 = eLine1.getTextContent();
 		String line2 = null;
-		Element eLine2 = helper.getChildElementByName(ePremises, "Line2");
+		Element eLine2 = helper.getChildElementByName(eAddress, "Line2");
 		if( eLine2 != null )
 			line2 = eLine2.getTextContent();
 		String town = null;
-		Element eTown = helper.getChildElementByName(ePremises, "Town");
+		Element eTown = helper.getChildElementByName(eAddress, "Town");
 		if( eTown != null )
 			town = eTown.getTextContent();
 		String county = null;
-		Element eCounty = helper.getChildElementByName(ePremises, "County");
+		Element eCounty = helper.getChildElementByName(eAddress, "County");
 		if( eCounty != null )
 			county = eCounty.getTextContent();
 		String state = null;
-		Element eState = helper.getChildElementByName(ePremises, "State");
+		Element eState = helper.getChildElementByName(eAddress, "State");
 		if( eState != null )
 			state = eState.getTextContent();
 		String zip = null;
-		Element eZIP = helper.getChildElementByName(ePremises, "ZIP");
+		Element eZIP = helper.getChildElementByName(eAddress, "ZIP");
 		if( eZIP != null )
 			zip = eZIP.getTextContent();
 		String country = null;
-		Element eCountry = helper.getChildElementByName(ePremises, "Country");
+		Element eCountry = helper.getChildElementByName(eAddress, "Country");
 		if( eCountry != null )
 			country = eCountry.getTextContent();
 		Double latitude = null;
 		Double longitude = null;
-		Element eGeoPoint = helper.getChildElementByName(ePremises, "GeoPoint");
+		Element eGeoPoint = helper.getChildElementByName(eAddress, "GeoPoint");
 		if( eGeoPoint != null ) {
 			String sLatitude = eGeoPoint.getAttribute("Latitude");
 			latitude = Double.parseDouble(sLatitude);
@@ -670,11 +670,11 @@ public class StdeCviXmlModel {
 			return null;
 		String sAfter = ("Consignee".equals(sElementName)?getFollowingElementList("Carrier"):getFollowingElementList("Consignee") );
 		Element eContact = helper.getOrInsertElementBefore(sElementName, sAfter);
-		if( cont.addressBlock  != null && cont.addressBlock.trim().length() > 0 ) {
+		if( cont.address  != null ) {
 			sAfter = "Person";
-			Element pin = helper.getOrInsertElementBefore(eContact, "AddressBlock", sAfter);
-			eContact.appendChild(pin);
-			pin.setTextContent(cont.addressBlock);
+			Element address = helper.getOrInsertElementBefore(eContact, "Address", sAfter);
+			eContact.appendChild(address);
+			setAddress(address, cont.address);
 		}
 		Element ePerson = helper.getOrAppendChild(eContact,"PremName");
 		sAfter = "Phone,Email";
@@ -737,13 +737,13 @@ public class StdeCviXmlModel {
 		Contact contact = null;
 		Element eContact = helper.getElementByName( sElementName );
 		if( eContact != null ) {
-			String sAddressBlock = null;
-			Element eAddressBlock = helper.getChildElementByName(eContact, "AddressBlock");
-			if( eAddressBlock != null ) {
-				sAddressBlock = eAddressBlock.getTextContent();
+			Address address = null;
+			Element eAddress = helper.getChildElementByName(eContact, "Address");
+			if( eAddress != null ) {
+				address = getAddress(eAddress);
 			}
 			Person person = getPerson( eContact );
-			contact = new Contact( sAddressBlock, person );
+			contact = new Contact( address, person );
 		}
 		return contact;
 	}
