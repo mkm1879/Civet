@@ -19,8 +19,6 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 
 package edu.clemson.lph.civet.xml.elements;
 
-import java.util.StringTokenizer;
-
 public class Address {
 	public String line1; 
 	public String line2; 
@@ -32,6 +30,7 @@ public class Address {
 	public Double latitude; 
 	public Double longitude;
 	
+
 //	/**
 //	 * Convert from AddressBlock to Address.  Only works if each field is , delimited.  Needs work.
 //	 * @param addressBlock
@@ -56,6 +55,7 @@ public class Address {
 //		}
 //
 //	}
+
 	
 	public Address(String line1, String line2, String town, String county, String state, String zip, String country,
 			Double latitude, Double longitude) {
@@ -65,6 +65,8 @@ public class Address {
 		this.county = county;
 		this.state = state;
 		this.zip = zip;
+		if( this.zip != null )
+			this.zip = this.zip.trim();
 		this.country = country;
 		this.latitude = latitude;
 		this.longitude = longitude;

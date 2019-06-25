@@ -42,6 +42,7 @@ public class GroupLot {
 		this.speciesCode = speciesCode;
 		this.groupLotId = groupLotId;
 		this.quantity = quantity;
+		if( this.quantity == null ) this.quantity = 1.0;
 		this.unit = unit;
 		this.age = age;
 		this.breed = breed;
@@ -51,7 +52,7 @@ public class GroupLot {
 		else {
 			String sSpecies = speciesCode.toString();
 			Long iQuant = (Long) Math.round(quantity); 
-			description = "Group of " + iQuant.toString() + " " + sSpecies;
+			this.description = "Group of " + iQuant.toString() + " " + sSpecies;
 		}
 	}
 
@@ -66,7 +67,7 @@ public class GroupLot {
 		this.sex = null;
 		String sSpecies = "OTH";
 		if( speciesCode != null )
-			speciesCode.toString();
+			sSpecies = speciesCode.toString();
 		Integer iQuant = quantity.intValue(); 
 		description = "Group of " + iQuant.toString() + " " + sSpecies;
 	}
@@ -82,7 +83,7 @@ public class GroupLot {
 		this.sex = sGender;
 		String sSpecies = "OTH";
 		if( speciesCode != null )
-			speciesCode.toString();
+			sSpecies = speciesCode.toString();
 		Integer iQuant = quantity.intValue(); 
 		description = "Group of " + iQuant.toString() + " " + sSpecies;
 	}

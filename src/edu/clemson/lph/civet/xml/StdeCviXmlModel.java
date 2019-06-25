@@ -46,7 +46,7 @@ import edu.clemson.lph.utils.XMLUtility;
 // TODO Refactor rename to StdXmlDataModel
 public class StdeCviXmlModel {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	public static final String sDateFormat = "yyyy-MM-dd";
 	private static final String allElements = "Veterinarian,MovementPurposes,Origin,Destination,Consignor,Consignee," +
 	                                   "Carrier,TransportMode,Accessions,Animal,GroupLot,Statements,Attachment," +
 			                           "MiscAttribute,Binary";
@@ -68,6 +68,10 @@ public class StdeCviXmlModel {
 		if( iIndex > 0 ) 
 			sRet = allElements.substring(iIndex);
 		return sRet;
+	}
+	
+	public static SimpleDateFormat getDateFormat() {
+		return new SimpleDateFormat( sDateFormat );
 	}
 	
 
@@ -93,13 +97,13 @@ public class StdeCviXmlModel {
 	 * Create an XML document from the raw DOM object.  
 	 * @param doc
 	 */
-	public StdeCviXmlModel( Document doc ) {
-		doc.setXmlStandalone(true);
-		Element root = doc.getDocumentElement();
-		helper = new XMLDocHelper( doc, root );
-		binaries = new StdeCviBinaries( helper );
-		metaData = binaries.getMetaData();
-	}
+//	public StdeCviXmlModel( Document doc ) {
+//		doc.setXmlStandalone(true);
+//		Element root = doc.getDocumentElement();
+//		helper = new XMLDocHelper( doc, root );
+//		binaries = new StdeCviBinaries( helper );
+//		metaData = binaries.getMetaData();
+//	}
 	
 
 	/** 
@@ -126,8 +130,11 @@ public class StdeCviXmlModel {
 	
 	/**
 	 * Destroy all data and start clean!
+	 * But leave attachment.  
 	 */
 	public void clear() {
+		byte[] pdfBytes = getPDFAttachmentBytes();
+		String sFileName = getPDFAttachmentFilename();
 		DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document doc = db.newDocument();
 		doc.setXmlStandalone(true);
@@ -135,6 +142,7 @@ public class StdeCviXmlModel {
 		doc.appendChild(root);
 		helper = new XMLDocHelper( doc, root );
 		binaries = new StdeCviBinaries( helper );
+		binaries.setOrUpdatePDFAttachment(pdfBytes, sFileName);
 		metaData = new CviMetaDataXml();
 	}
 
@@ -173,14 +181,14 @@ public class StdeCviXmlModel {
 	 */
 	public void setIssueDate( java.util.Date dIssued ) {
 		if( isValidDoc() && dIssued != null) {
-			String sDate = dateFormat.format(dIssued);
+			String sDate = getDateFormat().format(dIssued);
 			int iValidDays = CivetConfig.getCviValidDays();
 			if( sDate !=  null && iValidDays > 0 ) {
 				helper.setAttribute(helper.getRootElement(), "IssueDate", sDate);		
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(dIssued);
 				cal.add(Calendar.DATE, iValidDays);
-				String sExp = dateFormat.format(cal.getTime());
+				String sExp = getDateFormat().format(cal.getTime());
 				if( sExp != null && sExp.trim().length() > 0 )
 					helper.setAttribute(helper.getRootElement(), "ExpirationDate", sExp);
 			}
@@ -889,7 +897,7 @@ public class StdeCviXmlModel {
 		if(sInsp == null ) {
 			java.util.Date dIssue = getIssueDate();
 			if( dIssue != null )
-				sInsp = dateFormat.format(getIssueDate());
+				sInsp = getDateFormat().format(getIssueDate());
 			// Still might be blank but will get set at save time.
 		}
 		helper.setAttribute(eAnimal, "InspectionDate", sInsp);
@@ -950,7 +958,7 @@ public class StdeCviXmlModel {
 		for( Animal animal : getAnimals() ) {
 			if( animal.inspectionDate == null ) {
 				Element eAnimal = animal.eAnimal;
-				String sInsp = dateFormat.format(dInsp);
+				String sInsp = getDateFormat().format(dInsp);
 				helper.setAttribute(eAnimal, "InspectionDate", sInsp);
 			}			
 		}
@@ -1052,7 +1060,13 @@ public class StdeCviXmlModel {
 				if( eGroupLotId != null )
 				 	groupLotId = eGroupLotId.getTextContent();
 				String sQuantity = eGroup.getAttribute("Quantity");
-				Double quantity = Double.parseDouble(sQuantity);
+				Double quantity = null;
+				try {
+					quantity = Double.parseDouble(sQuantity);
+				} catch( NumberFormatException nfe ) {
+					logger.error("Could not parse " + sQuantity + " as a Double in CVI " + getCertificateNumber() );
+					quantity = 1.0;  // What other default makes sense?
+				}
 				String unit = eGroup.getAttribute("Unit");
 				String age = eGroup.getAttribute( "Age");
 				String breed = eGroup.getAttribute( "Breed");
@@ -1327,7 +1341,7 @@ public class StdeCviXmlModel {
 		Double quantity = group.quantity;
 		if( quantity != null ) {
 			// Civet only deals with animals so no fraction part.  "200.0" would be confusing.
-			String sQuant = String.format("%1$,.0f", quantity); 
+			String sQuant = String.format("%1$.0f", quantity); 
 			helper.setAttribute(eGroupLot, "Quantity", sQuant);
 		}
 		String sUnit = group.unit;
@@ -1370,6 +1384,10 @@ public class StdeCviXmlModel {
 		return binaries.getPDFAttachmentBytes();
 	}
 	
+	public boolean hasPDFAttachment() {
+		return binaries.hasPDFAttachment();
+	}
+	
 	public String getPDFAttachmentFilename() {
 		return binaries.getPDFAttachmentFilename();
 	}
@@ -1388,7 +1406,7 @@ public class StdeCviXmlModel {
 		Calendar cal = Calendar.getInstance();
 		boolean bSet = false;
 		try {
-			dExp = dateFormat.parse(sExp);
+			dExp = getDateFormat().parse(sExp);
 			return;  // Already have valid expDate
 		} catch (ParseException e) {
 			dExp = null;
@@ -1398,7 +1416,7 @@ public class StdeCviXmlModel {
 			if( sInsp != null && sInsp.trim().length() > 0 ) {
 				java.util.Date dInsp = null;
 				try {
-					dInsp = dateFormat.parse(sInsp);
+					dInsp = getDateFormat().parse(sInsp);
 					if( dInsp != null ) {
 						cal.setTime(dInsp);
 						cal.add(Calendar.DATE, iValidDays);
@@ -1414,8 +1432,19 @@ public class StdeCviXmlModel {
 			}
 		}
 		if( bSet ) {
-			String sNewExp = dateFormat.format(dExp);
+			String sNewExp = getDateFormat().format(dExp);
 			helper.setAttributeByPath("/eCVI", "ExpirationDate", sNewExp);
+		}
+	}
+	
+	public void checkQuantity() {
+		ArrayList<Element> aGroups = helper.getElementsByName("GroupLot");
+		for( Element eGroup : aGroups ) {
+			String sQuantity = eGroup.getAttribute("Quantity");
+			if( sQuantity.indexOf(',') >= 0 ) {
+				sQuantity = sQuantity.replace(",","");
+				eGroup.setAttribute("Quantity", sQuantity);
+			}
 		}
 	}
 	
@@ -1482,9 +1511,11 @@ public class StdeCviXmlModel {
 	}
 	
 	public void setCertificateNumberSource(String sCVINbrSource) {
-		CviMetaDataXml meta = getMetaData();
-		meta.setCVINumberSource(sCVINbrSource);
-		binaries.addOrUpdateMetadata(meta);		
+		String sPath = ".";
+		String sAttr = "CviNumberIssuedBy";
+		String sExistingSource = helper.getAttributeByPath(sPath, sAttr);
+		if( sExistingSource == null || sExistingSource.trim().length() == 0 )
+			helper.setAttributeByPath(sPath, sAttr, sCVINbrSource);
 	}
 	
 	public java.util.Date getBureauReceiptDate() {

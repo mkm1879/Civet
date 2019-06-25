@@ -119,6 +119,7 @@ class InsertVspsCviThread extends Thread implements ThreadCancelListener {
 	private String buildXml( VspsCvi cvi ) throws IOException {
 		StdeCviXmlModel xmlModel = new StdeCviXmlModel();
 		xmlModel.setCertificateNumber(cvi.getCVINumber());
+		xmlModel.setCertificateNumberSource("VSPS");
 		xmlModel.setIssueDate(cvi.getInspectionDate());
 		@SuppressWarnings("unused")
 		Element eVet = null;
@@ -162,7 +163,7 @@ class InsertVspsCviThread extends Thread implements ThreadCancelListener {
 			ArrayList<AnimalTag> aTags = vspsAnimal.getTags();
 			if( iCount == 1 && aTags.size() > 0 && iCount == 1 ) {
 				java.util.Date dInspDate = cvi.getInspectionDate();
-				String sInspDate = StdeCviXmlModel.dateFormat.format(dInspDate);
+				String sInspDate = StdeCviXmlModel.getDateFormat().format(dInspDate);
 				SpeciesCode scSpecies = new SpeciesCode(sSpecies);
 				Animal animal = new Animal(scSpecies, aTags, null, sBreed,
 						sGender, sInspDate);
@@ -190,7 +191,7 @@ class InsertVspsCviThread extends Thread implements ThreadCancelListener {
 			String sGender = lKey.get(1);
 			String sBreed = lKey.get(2);
 			Integer iNum = entry.getValue();
-			GroupLot group = new GroupLot(sSpecies, sBreed, sGender, new Double(iNum) );
+			GroupLot group = new GroupLot(sSpecies, sBreed, sGender, Double.valueOf(iNum) );
 			xmlModel.addGroupLot(group);
 		}
 		CviMetaDataXml metaData = new CviMetaDataXml();

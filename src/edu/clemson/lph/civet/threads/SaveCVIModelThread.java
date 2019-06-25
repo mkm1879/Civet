@@ -20,7 +20,8 @@ public class SaveCVIModelThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private OpenFileSaveQueue queue;
 	private OpenFile fileToSave;
-	StdeCviXmlModel modelToSave;
+	private String sXml;
+	StdeCviXmlModel model;
 	
 	private String sXmlFileName;
 
@@ -28,14 +29,19 @@ public class SaveCVIModelThread extends Thread {
 	public SaveCVIModelThread( OpenFileSaveQueue q, OpenFile fileToSave ) {
 		this.queue = q;
 		this.fileToSave = fileToSave;
-		this.modelToSave = fileToSave.getModel();
+		StdeCviXmlModel modelToSave = fileToSave.getModel();
+		if( !fileToSave.getModel().hasPDFAttachment() ) {
+			MessageDialog.showMessage(null, "Civet Error", "No attachment to save for " + modelToSave.getCertificateNumber() );
+			logger.error("No attachment to save for " + modelToSave.getCertificateNumber() );
+		}
+		sXml = modelToSave.getXMLString();  // Don't pass model across thread boundary!
 	}
 	
 	@Override
 	public void run() {
 		try {
+			model = new StdeCviXmlModel( sXml );
 			setUpFileNamesAndContent();
-			String sXml = modelToSave.getXMLString();
 			saveXml( sXml );
 			saveEmail( sXml );
 		}
@@ -46,7 +52,9 @@ public class SaveCVIModelThread extends Thread {
 	    finally {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					queue.saveComplete();
+					String sToFileDir = CivetConfig.getToFileDirPath();
+					File toFile = new File( sToFileDir, sXmlFileName);
+					queue.saveComplete(toFile.getAbsolutePath());
 				}
 			});
 	    }
@@ -57,12 +65,21 @@ public class SaveCVIModelThread extends Thread {
 	 * This is much simplified by new model.
 	 */
 	private void setUpFileNamesAndContent() {
-		sXmlFileName = "CVI_" + modelToSave.getOriginStateCode() 
-			+ "_To_" + modelToSave.getDestinationStateCode() + "_" 
-			+ modelToSave.getCertificateNumber() + ".cvi";
+		sXmlFileName = "CVI_" + model.getOriginStateCode() 
+			+ "_To_" + model.getDestinationStateCode() + "_" 
+			+ model.getCertificateNumber() + ".cvi";
 		sXmlFileName = FileUtils.replaceInvalidFileNameChars(sXmlFileName);	
 		String sOriginalFileName = fileToSave.getSource().getFileName();
 		checkExistingFiles( sOriginalFileName, sXmlFileName );
+		checkAttachment();
+	}
+	
+	private void checkAttachment() {
+		if( !model.hasPDFAttachment() ) {
+			String sCertificateNbr = model.getCertificateNumber();
+			MessageDialog.showMessage(null, "Civet Error: Empty Attachment", "PDF File Attachment Failed for CVI " + sCertificateNbr);
+			logger.error("PDF File Attachment Failed for CVI " + sCertificateNbr);
+		}
 	}
 	
 	/**
@@ -88,8 +105,10 @@ public class SaveCVIModelThread extends Thread {
 				logger.error("Could not delete file " + fEmailOut, e);
 			}
 			try { 
-				if( fEmailErrors.exists() && fEmailErrors.isFile() )
+				if( fEmailErrors.exists() && fEmailErrors.isFile() ) {
 					fEmailErrors.delete();
+			logger.error("deleting existing error email: " + sExisting );
+				}
 			} catch( Exception e ) {
 				logger.error("Could not delete file " + fEmailErrors, e);
 			}
@@ -127,17 +146,19 @@ public class SaveCVIModelThread extends Thread {
 	private void saveEmail(String sStdXml) {
 		File fileOut = null;
 		String sFilePath = null;
-		if( modelToSave.isExport() ) {
+		if( model.isExport() ) {
 			String sDirPath = CivetConfig.getEmailOutDirPath();
 			File fDir = new File(sDirPath);
 			fileOut = new File(fDir, sXmlFileName);
 			sFilePath = fileOut.getAbsolutePath();
 		}
-		else if( modelToSave.hasErrors() ) {
+		else if( model.hasErrors() ) {
 			String sDirPath =  CivetConfig.getEmailErrorsDirPath();
 			File fDir = new File(sDirPath);
 			fileOut = new File(fDir, sXmlFileName);
 			sFilePath = fileOut.getAbsolutePath();
+			MessageDialog.showMessage(null, "Civet Save Errors", "Saving file: " + sFilePath);
+			logger.error("Saving error file: " + sFilePath);
 		}
 		if( sFilePath == null ) 
 			return;

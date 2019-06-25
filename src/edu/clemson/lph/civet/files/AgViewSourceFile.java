@@ -15,9 +15,8 @@
 package edu.clemson.lph.civet.files;
 
 import java.io.File;
-
+import com.itextpdf.text.pdf.PdfReader;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
-import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -25,8 +24,8 @@ import edu.clemson.lph.utils.FileUtils;
  */
 public class AgViewSourceFile extends SourceFile {
 	
-	public AgViewSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
-		super(fFile, viewer);
+	public AgViewSourceFile( File fFile ) throws SourceFileException {
+		super(fFile);
 		type = Types.AgView;
 		if( fSource == null || !fSource.exists() )
 			logger.error("File " + sFilePath + " does not exist");
@@ -37,6 +36,7 @@ public class AgViewSourceFile extends SourceFile {
 		}
 		try {
 			pdfBytes = FileUtils.readBinaryFile(fSource);
+			iTextPdfReader = new PdfReader(pdfBytes);
 			String sStdXML = FileUtils.readTextFile(fData);
 			model = new StdeCviXmlModel(sStdXML);
 			model.setOrUpdatePDFAttachment(getPDFBytes(), fSource.getName());
@@ -146,5 +146,10 @@ public class AgViewSourceFile extends SourceFile {
 	public boolean canSplit() {
 		// Never split XFA PDF
 		return false;
+	}
+
+	@Override
+	public String getSystem() {
+		return "AGV";
 	}
 }

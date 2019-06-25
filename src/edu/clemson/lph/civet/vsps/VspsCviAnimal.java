@@ -79,7 +79,7 @@ public class VspsCviAnimal {
 					}
 				}
 				else if( "Registered Name of Animal".equalsIgnoreCase(sIdType) ) {
-					EquineDescription ed = new EquineDescription( sId, null );
+					EquineDescription ed = new EquineDescription( sId, sId );
 					tag = new AnimalTag( ed );
 				}
 				else if( "Tattoo".equalsIgnoreCase(sIdType) ) {

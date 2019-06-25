@@ -41,11 +41,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.itextpdf.text.pdf.PdfReader;
+
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.SafeDocBuilder;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.pdfgen.PDFUtils;
-import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -58,14 +59,15 @@ public class CoKsSourceFile extends SourceFile {
 	     logger.setLevel(Level.INFO);
 	}
 	
-	public CoKsSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
-		super(fFile, viewer);
+	public CoKsSourceFile( File fFile ) throws SourceFileException {
+		super(fFile);
 		type = Types.CO_KS_PDF;
 		if( fSource == null || !fSource.exists() ) {
 			throw new SourceFileException("File " + sFilePath + " does not exist");
 		}
 		try {
 			pdfBytes = FileUtils.readBinaryFile(fFile);
+			iTextPdfReader = new PdfReader(pdfBytes);
 		} catch (Exception e) {
 			throw new SourceFileException(e);
 		}
@@ -95,8 +97,18 @@ public class CoKsSourceFile extends SourceFile {
 					sTop = FileUtils.readTextFile( fFile, 4 );
 					int iLoc = sTop.indexOf("<</Filter/FlateDecode");
 					int iLoc2 = sTop.indexOf("PDF-1.7");
-					if( iLoc >= 0 && iLoc2 >= 0 )
-						bRet = true;
+					if( iLoc >= 0 && iLoc2 >= 0 ) {
+						// is a fancy PDF but not sure it is XFA 
+						byte pdfBytes[] = FileUtils.readBinaryFile(fFile);
+						if( PDFUtils.isXFA(pdfBytes) ) {
+							// is XFA but is it CO/KS
+							Node nRoot = PDFUtils.getXFADataNode(pdfBytes);
+							String xmlString = nodeToString( nRoot, true );
+							int iLoc3 = xmlString.indexOf("eCVI");
+							if( iLoc3 > 0 )
+								bRet = true;
+						}
+					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					logger.error(e);
@@ -199,7 +211,7 @@ public class CoKsSourceFile extends SourceFile {
 		return sRet;
 	}
 	
-	private String nodeToString(Node node, boolean bOmitDeclaration) {
+	private static String nodeToString(Node node, boolean bOmitDeclaration) {
 		String sOmit = bOmitDeclaration ? "yes" : "no";
 		StringWriter sw = new StringWriter();
 		try {
@@ -213,7 +225,7 @@ public class CoKsSourceFile extends SourceFile {
 		return sw.toString();
 	}
 
-	private String toStdXMLString( String sAcrobatXml ) {
+	private static String toStdXMLString( String sAcrobatXml ) {
 		String sRet = null;
 		String sXSLT = CivetConfig.getCoKsXSLTFile();
 		try {
@@ -237,5 +249,10 @@ public class CoKsSourceFile extends SourceFile {
 			}
  		return sRet;
 	}
-	
+
+	@Override
+	public String getSystem() {
+		return "CO/KS eCVI";
+	}
+
 }

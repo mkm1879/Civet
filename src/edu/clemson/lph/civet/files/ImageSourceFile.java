@@ -15,9 +15,12 @@
 package edu.clemson.lph.civet.files;
 
 import java.io.File;
+import java.io.IOException;
+
+import com.itextpdf.text.pdf.PdfReader;
+
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.pdfgen.MergePDF;
-import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -25,11 +28,16 @@ import edu.clemson.lph.utils.FileUtils;
  */
 public class ImageSourceFile extends SourceFile {
 	
-	public ImageSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
-		super(fFile, viewer);
+	public ImageSourceFile( File fFile ) throws SourceFileException {
+		super(fFile);
 		type = Types.Image;
 		if( fSource != null && fSource.exists() && fSource.isFile() ) {
 			pdfBytes = makePdf();
+			try {
+				iTextPdfReader = new PdfReader(pdfBytes);
+			} catch (IOException e) {
+				throw new SourceFileException("File " + sFilePath + " cannot convert to pdf");
+			}
 			model = new StdeCviXmlModel();
 			model.setOrUpdatePDFAttachment(getPDFBytes(), fSource.getName() + ".pdf");			
 		}
@@ -98,4 +106,11 @@ public class ImageSourceFile extends SourceFile {
 		}
 		return rawPdfBytes;
 	}
+	
+
+	@Override
+	public String getSystem() {
+		return "Paper";
+	}
+
 }

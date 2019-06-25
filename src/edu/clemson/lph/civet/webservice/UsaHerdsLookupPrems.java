@@ -30,6 +30,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.XMLUtility;
 
 /**
@@ -213,8 +214,11 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 							sCity = field.getTextContent();
 						else if( "stateCode".equals(field.getNodeName() ) )
 							sStateCode = field.getTextContent();
-						else if( "zipCode".equals(field.getNodeName() ) )
+						else if( "zipCode".equals(field.getNodeName() ) ) {
 							sZipCode = field.getTextContent();
+							if( sZipCode != null )
+								sZipCode = sZipCode.trim();
+						}
 						else if( "county".equals(field.getNodeName() ) )
 							sCounty = field.getTextContent();
 						else if( "country".equals(field.getNodeName() ) )
@@ -512,32 +516,45 @@ public class UsaHerdsLookupPrems implements javax.swing.table.TableModel, Premis
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object oRet = null;
-		WebServicePremisesRow row = rows.get(rowIndex);
-		switch( columnIndex ) {
-		case 0: oRet =  row.sStatePremID; break;
-		case 1: oRet =  row.sFedPremID; break;
-		case 2: oRet =  row.sPremName; break;
-		case 3: oRet =  row.sAddress; break;
-		case 4: oRet =  row.sCity; break;
-		case 5: oRet =  row.sCounty; break;
-		case 6: oRet =  row.sClassType; break;
-		default: logger.error("Index out of bounds: " + columnIndex);
+		if( rows.size() == 0 )
+			return oRet;
+		try {
+			WebServicePremisesRow row = rows.get(rowIndex);
+			switch( columnIndex ) {
+			case 0: oRet =  row.sStatePremID; break;
+			case 1: oRet =  row.sFedPremID; break;
+			case 2: oRet =  row.sPremName; break;
+			case 3: oRet =  row.sAddress; break;
+			case 4: oRet =  row.sCity; break;
+			case 5: oRet =  row.sCounty; break;
+			case 6: oRet =  row.sClassType; break;
+			default: logger.error("Index out of bounds: " + columnIndex);
+			}
+		} catch( IndexOutOfBoundsException e ) {
+//			MessageDialog.showMessage(null, "Civet Error: Silent Bug", "Please make a note of what you just did.  It will help find the source of a silent bug.");
+			logger.error("Index out of bounds: " + columnIndex, e);
 		}
 		return oRet;
 	}
 
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		WebServicePremisesRow row = rows.get(rowIndex);
-		switch( columnIndex ) {
-		case 0: row.sStatePremID = (String)aValue; break;
-		case 1: row.sFedPremID = (String)aValue; break;
-		case 2: row.sPremName = (String)aValue; break;
-		case 3: row.sAddress = (String)aValue; break;
-		case 4: row.sCity = (String)aValue; break;
-		case 5: row.sCounty = (String)aValue; break;
-		case 6: row.sClassType = (String)aValue; break;
-		default: logger.error("Index out of bounds: " + columnIndex);
+		if( rows.size() == 0 )
+			return;
+		try {
+			WebServicePremisesRow row = rows.get(rowIndex);
+			switch( columnIndex ) {
+			case 0: row.sStatePremID = (String)aValue; break;
+			case 1: row.sFedPremID = (String)aValue; break;
+			case 2: row.sPremName = (String)aValue; break;
+			case 3: row.sAddress = (String)aValue; break;
+			case 4: row.sCity = (String)aValue; break;
+			case 5: row.sCounty = (String)aValue; break;
+			case 6: row.sClassType = (String)aValue; break;
+			default: logger.error("Index out of bounds: " + columnIndex);
+			}
+		} catch( IndexOutOfBoundsException e ) {
+			logger.error("Index out of bounds: " + columnIndex, e);
 		}
 	}
 

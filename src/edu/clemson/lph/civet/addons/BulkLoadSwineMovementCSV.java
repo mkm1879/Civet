@@ -33,6 +33,8 @@ import edu.clemson.lph.civet.xml.elements.Premises;
 import edu.clemson.lph.civet.xml.elements.Veterinarian;
 import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.utils.PremCheckSum;
+import edu.clemson.lph.civet.addons.swinehealthplans.*;
+
 
 import java.awt.Window;
 import java.io.File;
@@ -128,6 +130,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 					}
 				} 
 			}catch (IOException e) {
+				MessageDialog.showMessage(fParent, "Civet Error", e.getMessage() );
 				logger.error(e);
 			}
 			catch (Exception ex) {
@@ -154,6 +157,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 		VetLookup vetLookup = new VetLookup( sLast, sFirst );
 		String sCviNumber = getCVINumber(data);
 		xmlModel.setCertificateNumber(sCviNumber);
+		xmlModel.setCertificateNumberSource("Swine Health Management Plan");
 		xmlModel.setIssueDate(data.getDate());
 		if( data.getSourceState().equalsIgnoreCase(CivetConfig.getHomeStateAbbr()) && vetLookup != null ) {
 			NameParts parts = new NameParts(null, vetLookup.getFirstName(), null, vetLookup.getLastName(), null );
@@ -175,7 +179,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 		Premises pDestination = new Premises(data.getDestPin(), data.getDestFarm(), data.getDestState());
 		xmlModel.setDestination(pDestination);
 
-		Double dNum = new Double(data.getNumber());  // null reference risk?
+		Double dNum = Double.valueOf(data.getNumber());  // null reference risk?
 		String sSpecies = "POR";
 		String sAge = data.getAge();
 		String sGender = data.getSex();
