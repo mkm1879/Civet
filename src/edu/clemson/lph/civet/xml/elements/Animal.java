@@ -161,6 +161,23 @@ public class Animal implements java.lang.Cloneable {
 		return bRet;
 	}
 	
+	/**
+	 * So hashCode will match equals above.  Not used that I know of.
+	 */
+	@Override
+	public int hashCode() {
+		int iRet = 1;
+			if( speciesCode != null )
+				iRet = iRet * speciesCode.hashCode();
+			if( animalTags != null ) {
+				for( AnimalTag tag : animalTags ) {
+					String sTag = tag.value;
+					iRet = iRet * sTag.hashCode();
+				} // End for each of my tags
+			} // End if they both have tags
+		return iRet;
+	}
+	
 	public String getFirstOfficialID() {
 		String sRet = null;
 		for( AnimalTag tag : animalTags ) {

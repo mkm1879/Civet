@@ -32,11 +32,12 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import com.itextpdf.text.pdf.PdfReader;
+
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.SafeDocBuilder;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.civet.xml.XMLDocHelper;
-import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -44,8 +45,8 @@ import edu.clemson.lph.utils.FileUtils;
  */
 public class MCviSourceFile extends SourceFile {
 	
-	public MCviSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
-		super(fFile, viewer);
+	public MCviSourceFile( File fFile ) throws SourceFileException {
+		super(fFile);
 		type = Types.mCVI;
 		if( fSource == null || !fSource.exists() )
 			logger.error("File " + sFilePath + " does not exist");
@@ -53,6 +54,7 @@ public class MCviSourceFile extends SourceFile {
 		fData = new File( sDataPath );
 		try {
 			pdfBytes = FileUtils.readBinaryFile(fSource);
+			iTextPdfReader = new PdfReader(pdfBytes);
 			String sAcrobatXML = FileUtils.readTextFile(fData);
 			String sStdXML = toStdXMLString( sAcrobatXML );
 			model = new StdeCviXmlModel(sStdXML);
@@ -243,6 +245,11 @@ public class MCviSourceFile extends SourceFile {
 		sRet = sRet.replaceAll(prePattern2, "</");
 		sRet = sRet.replaceAll(postPattern, "");
 		return sRet;
+	}
+
+	@Override
+	public String getSystem() {
+		return "mCVI";
 	}
 
 }

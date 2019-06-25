@@ -17,7 +17,6 @@ package edu.clemson.lph.civet.files;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfCopy;
@@ -27,32 +26,59 @@ import com.itextpdf.text.pdf.PdfReader;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.pdfgen.MergePDF;
-import edu.clemson.lph.pdfgen.PDFViewer;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
  * 
  */
 class PdfSourceFile extends SourceFile {
+	private byte[] wholePdfBytes;
 	
 	/**
-	 * Used only in cloneCurrentState
+	 * Scanned paper PDF loaded with an empty data model with just the 
+	 * first page of the source PDF file as its attachemnt.
+	 * @param fFile
+	 * @throws SourceFileException
 	 */
-	protected PdfSourceFile() {
-		
-	}
-	
-	PdfSourceFile( File fFile, PDFViewer viewer ) throws SourceFileException {
-		super(fFile, viewer);
+	PdfSourceFile( File fFile ) throws SourceFileException {
+		super(fFile);
+		// iPage = 1 from super 
 		type = Types.PDF;
 		try {
 			pdfBytes = FileUtils.readBinaryFile(fSource);
+			wholePdfBytes = pdfBytes;
+//			FileUtils.writeBinaryFile(pdfBytes, "Original_" + fSource.getName());
+			iTextPdfReader = new PdfReader(pdfBytes);
 		} catch (Exception e) {
 			throw new SourceFileException(e);
 		}
 		model = new StdeCviXmlModel();
-		model.setOrUpdatePDFAttachment(getPDFBytes(iPage), fSource.getName());
-		viewer.alterRotation(180);  // Our scanned PDFs are off.
+		byte[] pageBytes = getPageBytes(iPage);
+		if( pageBytes == null || pageBytes.length == 0 )
+			logger.error("Attempt to read file " + sFileName + " page " + iPage + " gives no data");
+		model.setOrUpdatePDFAttachment(pageBytes, sFileName);
+	}
+	
+	/**
+	 * Scanned paper PDF loaded with an empty data model with just the 
+	 * first page of the source PDF file as its attachemnt.
+	 * @param fFile
+	 * @throws SourceFileException
+	 */
+	PdfSourceFile( PdfReader iTextReader, File fFile, Integer iPage ) throws SourceFileException {
+		super( fFile );
+		this.iPage = iPage;
+		type = Types.PDF;
+		try {
+			iTextPdfReader = iTextReader;
+		} catch (Exception e) {
+			throw new SourceFileException(e);
+		}
+		model = new StdeCviXmlModel();
+		byte[] pageBytes = getPageBytes(iPage);
+		if( pageBytes == null || pageBytes.length == 0 )
+			logger.error("Attempt to read file " + sFileName + " page " + iPage + " gives no data");
+		model.setOrUpdatePDFAttachment(pageBytes, sFileName);
 	}
 	
 	/**
@@ -81,6 +107,22 @@ class PdfSourceFile extends SourceFile {
 	}
 	
 	/**
+	 * Create another representation of the whole file set to the current page
+	 * ready to move on.
+	 */
+	@Override
+	SourceFile newSourceFromSameSourceFile() {
+		PdfSourceFile clone = null;
+		try {
+			clone = new PdfSourceFile(iTextPdfReader, fSource, iPage);
+			clone.wholePdfBytes = this.wholePdfBytes;
+		} catch( SourceFileException e ) {
+			logger.error(e);
+		}
+		return clone;
+	}
+	
+	/**
 	 * By convention, the data model holds only pages in the current PDF
 	 * For ordinary PDF files this is a subset of the whole file.
 	 * Here we add a new page to the data model from the source.
@@ -89,9 +131,12 @@ class PdfSourceFile extends SourceFile {
 	public void addPageToCurrent( Integer iPage ) throws SourceFileException {
 		this.iPage = iPage;
 		byte pdfBytesCurrent[] = model.getPDFAttachmentBytes();
-		byte pdfPageBytes[] = getPDFBytes(iPage);  // extract pages from original full pdf
+		byte pdfPageBytes[] = getPageBytes(iPage);  // extract pages from original full pdf
 		try {
 			byte pdfCombined[] = MergePDF.appendPDFtoPDF(pdfBytesCurrent, pdfPageBytes);
+			if( pdfCombined == null ) {
+				logger.error("null pdfCombined in addPageToCurrent(" + iPage + ") of " + getPageCount() + " pages");
+			}
 			String sFileName = model.getPDFAttachmentFilename();
 			model.setOrUpdatePDFAttachment(pdfCombined, sFileName);
 		} catch (IOException e) {
@@ -103,11 +148,13 @@ class PdfSourceFile extends SourceFile {
 	 * By convention, the data model holds only pages in the current PDF
 	 * For ordinary PDF files this is a subset of the whole file.
 	 */
-	@Override
 	public void gotoPageNo( Integer iPageNo ) {
 		this.iPage = iPageNo;
 		model = new StdeCviXmlModel();
-		byte pdfPageBytes[] = getPDFBytes(iPage);
+		byte pdfPageBytes[] = getPageBytes(iPage);
+		if( pdfPageBytes == null ) {
+			logger.error("null page bytes in gotoPageNo(" + iPageNo + ") of " + getPageCount() + " pages");
+		}
 		model.setOrUpdatePDFAttachment(pdfPageBytes, fSource.getName());
 	}
 	
@@ -119,7 +166,7 @@ class PdfSourceFile extends SourceFile {
 	public StdeCviXmlModel getDataModel() {
 		if( model == null ) {
 			model = new StdeCviXmlModel();
-			byte pageBytes[] = getPDFBytes(1);
+			byte pageBytes[] = getPageBytes(1);
 			model.setOrUpdatePDFAttachment(pageBytes, fSource.getName());
 		}
 		return model;
@@ -140,7 +187,8 @@ class PdfSourceFile extends SourceFile {
 	public byte[] getPDFBytes() {
 		if( pdfBytes == null ) {
 			try {
-				pdfBytes = FileUtils.readBinaryFile(fSource);
+				logger.info("Reading PDF file outside of constructor");
+				pdfBytes = wholePdfBytes;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				logger.error("Failed to read file " + sFilePath, e);
@@ -148,44 +196,83 @@ class PdfSourceFile extends SourceFile {
 		}
 		return pdfBytes;
 	}
-
-	@Override
-	public byte[] getPDFBytes(int iPageNo) {
+	
+	private byte[] getPageBytes(int iPage) {
 		byte bOut[] = null;
-		ArrayList<Integer> aPages = new ArrayList<Integer>();
-		aPages.add(iPageNo);
-		bOut = getPDFBytes(aPages);
-		return bOut;
-	}
-
-	@Override
-	public byte[] getPDFBytes(ArrayList<Integer> aPages) {
-		byte bOut[] = null;
-		if( pdfBytes != null ) {
-			ByteArrayOutputStream baOut = new ByteArrayOutputStream();
-			try {
-				PdfReader reader = new PdfReader(pdfBytes);
-				com.itextpdf.text.Document document = new com.itextpdf.text.Document();
-				PdfCopy writer = new PdfCopy(document, baOut);
-				document.open();
-				for( Integer iPage : aPages ) {
-					PdfImportedPage pip = writer.getImportedPage(reader, iPage);
-					writer.addPage(pip);
-				}
-				document.close();
-				bOut = baOut.toByteArray();
-				int iLen = bOut.length;
-				if( iLen ==  0 ) 
-					bOut = null;
-			} catch( IOException ioe ) {
-				logger.error(ioe.getMessage() + "\nIO error extracting pages to byte array\n");
-				bOut = null;
-			} catch( DocumentException de ) {
-				logger.error(de.getMessage() + "\nDocument error extracting pages to byte array");
+		ByteArrayOutputStream baOut = new ByteArrayOutputStream();
+		try {
+			com.itextpdf.text.Document newDocument = new com.itextpdf.text.Document();
+			PdfCopy writer = new PdfCopy(newDocument, baOut);
+			newDocument.open();
+			// iTextPdfReader contains the full pdf source
+			PdfImportedPage pip = writer.getImportedPage(iTextPdfReader, iPage);
+			writer.addPage(pip);
+			newDocument.close();
+			bOut = baOut.toByteArray();
+			writer.close();
+			int iLen = bOut.length;
+			if( iLen ==  0 ) {
+				logger.error("No bytes from file " + getFileName() + " page " + iPage );
 				bOut = null;
 			}
+		} catch( IOException ioe ) {
+			logger.error(ioe.getMessage() + "\nIO error extracting pages to byte array\n");
+			bOut = null;
+		} catch( DocumentException de ) {
+			logger.error(de.getMessage() + "\nDocument error extracting pages to byte array");
+			bOut = null;
 		}
 		return bOut;
 	}
-	
+
+
+//	private byte[] getPDFBytes(int iPageNo) {
+//		byte bOut[] = null;
+//		ArrayList<Integer> aPages = new ArrayList<Integer>();
+//		aPages.add(iPageNo);
+//		bOut = getPDFBytes(aPages);
+//		return bOut;
+//	}
+//
+//	private byte[] getPDFBytes(ArrayList<Integer> aPages) {
+//		byte bOut[] = null;
+//		if( pdfBytes == null ) {
+//			pdfBytes = getPDFBytes();
+//			if( pdfBytes == null ) {
+//				logger.error("Unable to page getPDFBytes for " + getFileName());
+//				return null;
+//			}
+//		}
+//		ByteArrayOutputStream baOut = new ByteArrayOutputStream();
+//		try {
+//			com.itextpdf.text.Document newDocument = new com.itextpdf.text.Document();
+//			PdfCopy writer = new PdfCopy(newDocument, baOut);
+//			newDocument.open();
+//			for( Integer iPage : aPages ) {
+//				PdfImportedPage pip = writer.getImportedPage(iTextPdfReader, iPage);
+//				writer.addPage(pip);
+//			}
+//			newDocument.close();
+//			bOut = baOut.toByteArray();
+//			writer.close();
+//			int iLen = bOut.length;
+//			if( iLen ==  0 ) {
+//				logger.error("No bytes from file " + getFileName() + " page " + iPage );
+//				bOut = null;
+//			}
+//		} catch( IOException ioe ) {
+//			logger.error(ioe.getMessage() + "\nIO error extracting pages to byte array\n");
+//			bOut = null;
+//		} catch( DocumentException de ) {
+//			logger.error(de.getMessage() + "\nDocument error extracting pages to byte array");
+//			bOut = null;
+//		}
+//		return bOut;
+//	}
+
+	@Override
+	public String getSystem() {
+		return "Paper";
+	}
+
 }

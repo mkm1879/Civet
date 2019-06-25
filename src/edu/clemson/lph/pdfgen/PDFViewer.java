@@ -96,11 +96,12 @@ public class PDFViewer {
 	
 	public void viewPage( int iPageNo ) {
 		setPage(iPageNo);
-		if( bXFA && !CivetConfig.isJPedalXFA() && CivetConfig.isAutoOpenPdf() ) {
+		boolean bJPedal = CivetConfig.isJPedalXFA();
+		if( bXFA && !bJPedal && CivetConfig.isAutoOpenPdf() ) {
 				PDFOpener opener = new PDFOpener(null);
 				opener.openPDFContentInAcrobat(pdfBytes);
 		}
-		else if( bXFA && !CivetConfig.isJPedalXFA() ) {
+		else if( bXFA && !bJPedal ) {
 			MessageDialog.showMessage(null, "Civet: No XFA", "Civet cannot display CO/KS XFA PDFs without JPedal license");
 			closePdfFile();
 		}

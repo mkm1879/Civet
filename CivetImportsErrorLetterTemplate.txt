@@ -4,17 +4,23 @@
 .cb.Poultry Health Programs
 .cb.Office (803) 788-2260
 .cb.Fax (803) 736-0885
+{{{Date}}}
 
-This is a test of new software.  If I accidentally send it for real, I'm very sorry to bother you.  You should have already received these in the regular mail.  Mike Martin.
+{{{OtherStateVet}}}
+{{{StateName}}} State Veterinarian
+{{{Address}}}
+{{{City}}}, {{{StateCode}}}  {{{ZipCode}}}
 
-TO  
-   {{{OtherStateVet}}}
-   {{{Address}}}
-   {{{City}}}, {{{StateCode}}}  {{{ZipCode}}}
+Dear Dr. {{{StateVetLName}}}:
 
-Enclosed are copies of Certificates of Veterinary Inspection  {{{StateName}}} bound for South Carolina that include errors.  Specific errors are listed on a cover page for each CVI.  
+The certificate number {{{CVINumber}}} is marked "Not Approved" for the following reason(s):
 
-Other information from Dr. Parr
+.list.{{{Errors}}}
+
+It is the responsibility of the licensed and accredited veterinarian who issues the interstate health certificate to insure that the requirements of the state of destination have been met.  
+.b.We are providing this information for you to take whatever action you feel is appropriate.  
+
+Note: If the reason list includes "Certificate out of date" the logic applied was that the ADT rule allows 5 working days from the issuing veterinarian to the origin state veterinarian and another five working days to forward to the destination state veterinarian.  To allow a margin of error, at this time we only mark these "out of date" if received 30 days or more after issuance.
 
 Boyd H. Parr, DVM
 State Veterinarian

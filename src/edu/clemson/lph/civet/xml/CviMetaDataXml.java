@@ -59,7 +59,7 @@ public class CviMetaDataXml {
 	}
 	
 	public CviMetaDataXml(String sBase64) {
-		byte[] bytes = javax.xml.bind.DatatypeConverter.parseBase64Binary(sBase64);
+		byte[] bytes =  java.util.Base64.getDecoder().decode(sBase64);
 
 		DocumentBuilder docBuilder;
 		try {
@@ -305,6 +305,7 @@ public class CviMetaDataXml {
 			rootE.appendChild(eCVINumberSource);
 		}
 		eCVINumberSource.setTextContent(sCVINumberSource);
+		setErrorNote("Source: " + sCVINumberSource);
 	}
 	
 	public String getCVINumberSource() {
@@ -318,9 +319,7 @@ public class CviMetaDataXml {
 			logger.error(new Exception("setCVINumberSource could not find document element"));		
 			return null;
 		}
-		Element eCVINumberSource = XMLUtility.findFirstChildElementByName(rootE, "cviNumberSource");
-		if( eCVINumberSource != null )
-			sRet = eCVINumberSource.getTextContent();
+		sRet = rootE.getAttribute("CviNumberIssuedBy");
 		return sRet;
 		
 	}

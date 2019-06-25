@@ -133,8 +133,10 @@ public class SendOutboundCVIEmailThread extends Thread {
 					String sXml = FileUtils.readTextFile(fNext);
 					StdeCviXmlModel stdXml = new StdeCviXmlModel( sXml );
 					byte[] pdfBytes = stdXml.getPDFAttachmentBytes();
-					if( pdfBytes == null || pdfBytes.length < 1 )
+					if( pdfBytes == null || pdfBytes.length < 1 ) {
+						MessageDialog.showMessage(parent, "Civet Error: Missing Attachment", "Missing PDF Attachment");
 						throw new Exception("Missing CVI attachment in send email");
+					}
 					aCVIsOut.add(stdXml);
 					aCVIFilesOut.add(fNext);
 					lPDFSize += pdfBytes.length;
@@ -173,24 +175,29 @@ public class SendOutboundCVIEmailThread extends Thread {
 					sbCVICounts.append("\n     " + (aSentCVIFiles.size() - iUnsent) + " CVIs to " + sState);
 				}
 			} // end for each state
-			MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
-					"Successfully sent: " + sbCVICounts.toString() );
-		} catch (AuthenticationFailedException e) {
-			logger.error(e.getMessage() + "\nEmail Authentication Error");
-			MailMan.setDefaultPassword(null);
-			MailMan.setDefaultUserID(null);
+			if( sbCVICounts != null && sbCVICounts.toString().trim().length() > 0 ) {
+				MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
+						"Successfully sent: " + sbCVICounts.toString() );
+			}
+		} catch (javax.mail.AuthenticationFailedException eAuth) {
+			MailMan.setUserID(null);
+			MailMan.setPassword(null);
+			logger.error(eAuth.getMessage() + "\nEmail Authentication Error");
+			MessageDialog.showMessage(prog.getWindowParent(), "Civet: Email Error", "Email server userID/password incorrect"
+					+ "\nEmail Host: " + CivetConfig.getSmtpHost() );
 		} catch (javax.mail.MessagingException e) {
 			logger.error(e.getMessage() + "\nEmail Connection Error");
 		} catch (Exception ex) {
 			logger.error("Error Sending Email", ex );
-		} 
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				parent.refreshTables();
-				prog.setVisible(false);
-				prog.dispose();
-			}
-		});
+		} finally {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					parent.refreshTables();
+					prog.setVisible(false);
+					prog.dispose();
+				}
+			});
+		}
 	}
 
 	private boolean sendOutboundCVIPackage( String sEmail, String sState, 
@@ -236,23 +243,16 @@ public class SendOutboundCVIEmailThread extends Thread {
 			bRet = MailMan.sendIt(sEmail, sFileCopyAddress,
 					 "CVIs From " + sHomeState + " to " + sState + (iPart>1?" Part " + iPart:""),
 					sOutBoundCVIMessage, aFiles);
-		} catch (AuthenticationFailedException e1) {
-			sCurrentEmailError = e1.getMessage();
-			MessageDialog.showMessage( prog.getWindowParent(), "Civet: Invalid UserID/Password", 
-					"Authentication failure to Email system:\n" + CivetConfig.getSmtpHost());
-			MailMan.setDefaultUserID( null );
-			MailMan.setDefaultPassword( null );
-			// NOTE: This is still not 100% right.  If an authentication error happens AFTER some have been sent
-			// those won't be handled before this except exists the enclosing try.
-			throw( e1 );
+		} catch (javax.mail.AuthenticationFailedException eAuth) {
+			throw eAuth;
 		} catch (MailException me) {
 			logger.error(me.getMessage() + "\nInvalid MIMEFile Specification" );
 			sCurrentEmailError = me.getMessage();
 			bRet = false;
 		} catch (MessagingException e) {
 			logger.error("Could not connect to email server", e);
-			e.printStackTrace();
 			sCurrentEmailError = e.getMessage();
+			e.printStackTrace();
 			bRet = false;
 		} catch (Exception e) {
 			logger.error("Could not send file " + sFileName, e);

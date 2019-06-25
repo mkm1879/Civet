@@ -192,6 +192,13 @@ public class CSVParserWrapper {
 			return false;
 	}
 	
+	public void reset() {
+		if(iRows >= 1)
+			iCurrent = 1;
+		else 
+			iCurrent = 0;
+	}
+	
 	/**
 	 * Better version of getting next row
 	 * @return

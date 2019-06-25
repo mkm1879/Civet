@@ -237,7 +237,7 @@ public class SubmitNineDashThreeThread extends Thread {
 		
 		ArrayList<Animal> animals = xmlModel.getAnimals();
 		for( Animal animal : animals ) {
-			String sDateIssued = StdeCviXmlModel.dateFormat.format(dDateIssued);
+			String sDateIssued = StdeCviXmlModel.getDateFormat().format(dDateIssued);
 			animal.inspectionDate = sDateIssued;
 			xmlModel.editAnimal(animal);
 		}
@@ -315,8 +315,8 @@ public class SubmitNineDashThreeThread extends Thread {
 //			for( String sID : data.listTagIds() ) {
 //				Animal animal = new Animal(sSpeciesCode, sID);
 //				animal.sex = sGender;
-//				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//				animal.inspectionDate = dateFormat.format(data.getInspectionDate());
+//				SimpleDateFormat getDateFormat() = new SimpleDateFormat("yyyy-MM-dd");
+//				animal.inspectionDate = getDateFormat().format(data.getInspectionDate());
 //				xmlModel.addAnimal(animal);
 //				iNumTags++;
 //			}

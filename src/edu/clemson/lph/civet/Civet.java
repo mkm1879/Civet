@@ -50,6 +50,7 @@ public class Civet {
 	     PropertyConfigurator.configure("CivetConfig.txt");
 	     logger.setLevel(Level.INFO);
 	}
+	
 	private static ProgressDialog prog;
 
 	/**

@@ -103,8 +103,8 @@ public class SearchTextField extends JTextField {
 
 	void this_keyPressed(KeyEvent e) {
 		// Could just look for numerical value of code == 70 but that might be less readable.
-		if( ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0) && "F".equals(KeyEvent.getKeyText(e.getKeyCode())) ) {
-			// Search is just to complicated to generically outsource to the model.  
+		if( ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) && "F".equals(KeyEvent.getKeyText(e.getKeyCode())) ) {
+			// Search is just to complicated too generically outsource to the model.  
 			// We assume a live db connection here.
 			if( searchDialog != null ) {
 				searchDialog.setDeltas(deltaX, deltaY);

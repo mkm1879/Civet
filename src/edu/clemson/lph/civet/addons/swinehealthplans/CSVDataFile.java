@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.addons;
+package edu.clemson.lph.civet.addons.swinehealthplans;
 /*
 Copyright 2014 Michael K Martin
 
@@ -25,7 +25,9 @@ import java.util.*;
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.CSVParserWrapper;
 
 
@@ -37,7 +39,7 @@ import edu.clemson.lph.utils.CSVParserWrapper;
  * Java Utilities CSVParserWrapper class.
  * Note: Company name must be first part of filename followed by an underscore character.
  */
-class CSVDataFile {
+public class CSVDataFile {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private ArrayList<HashMap<String,String>> aaValues = null;
 	private int iCurrentRow;
@@ -46,6 +48,9 @@ class CSVDataFile {
 	private String sHomeState;
 	private String sCompany = null;
 	private java.util.Date dSaved = null;
+	private CactusVets cactusVets = null;
+	private SHPColumnMaps colMaps = null;
+
 // Normal Column Order
 //	private final static String[] aColNames = { "Date", "SourceFarm", "SourcePIN", "SourceState", 
 //		                                     "Vet", "DestFarm", "DestPin", "DestState", "Number" };
@@ -57,7 +62,9 @@ class CSVDataFile {
 	 * @throws FileNotFoundException If the file is not found
 	 * @throws IOException If the file cannot be parsed as a CSV file
 	 */
-	CSVDataFile( String sFileName ) throws FileNotFoundException, IOException {
+	public CSVDataFile( String sFileName ) throws FileNotFoundException, IOException {
+		colMaps = new SHPColumnMaps();
+		cactusVets = new CactusVets();
 		sHomeState = CivetConfig.getHomeStateAbbr();
 		ArrayList<String> aKeys = new ArrayList<String>();
 		aaValues = new ArrayList<HashMap<String,String>>();
@@ -70,8 +77,18 @@ class CSVDataFile {
 		else {
 			sCompany = "UN_";
 		}
-		if( sCompany.toUpperCase().startsWith("SE HEALTH") ) {
+		// Exception case
+		if( sCompany.equals("UN_") && sFileName.toUpperCase().contains("SE HEALTH") ) {
 			sCompany = "CACTUS";
+		}
+		if( sCompany.equals("UN_") && sFileName.startsWith("IN") ) {
+			sCompany="TDM";
+		}
+		if( sCompany.equals("Murphy Brown") ) {
+			sCompany="MB";
+		}
+		if( sCompany.equals("Prestage") ) {
+			sCompany="PR";
 		}
 		FileReader fr = new FileReader( f );
 		CSVParserWrapper parser = new CSVParserWrapper(fr);
@@ -114,7 +131,7 @@ class CSVDataFile {
 	 * Read the next row of data if any
 	 * @return true if current pointer is on valid data
 	 */
-	boolean nextRow() {
+	public boolean nextRow() {
 		++iCurrentRow;
 		if( iCurrentRow < iNumRows ) {
 			bRowInbound = isInbound();
@@ -127,11 +144,24 @@ class CSVDataFile {
 	 * @param sKey
 	 * @return
 	 */
-	private String get( String sKey ) {
+	private String get( String sField ) {
+		ArrayList<String> aKeys = colMaps.getMappedHeaders(sField.toUpperCase());
+		if( aKeys == null ) {
+			logger.error( "Column " + sField + " not found in SwineHealthPlanColumnMaps.csv");
+			return null;
+		}
 		HashMap<String,String> aRow = aaValues.get(iCurrentRow);
-		String sRet = aRow.get(sKey);
-		if( sRet != null && sRet.trim().length() == 0 ) sRet = null;
-		return aRow.get(sKey);
+		String sRet = null;
+		for( String sKey : aKeys ) {
+			sRet = aRow.get(sKey);
+			if( sRet != null ) {
+				if( sRet.trim().length() == 0 )
+					sRet = null;
+				else
+					break;
+			}
+		}
+		return sRet;
 	}
 	
 	public java.util.Date getSavedDate() {
@@ -190,89 +220,49 @@ class CSVDataFile {
 	// Tweak these getters to match source files.
 
 	public String getSourceState() {
-		String sRet = get( "SourceState".toUpperCase() );
-		if( sRet == null ) sRet = get( "Source State".toUpperCase() );
-		if( sRet == null ) sRet = get( "From State".toUpperCase() );
-		if( sRet == null ) sRet = get( "FromState".toUpperCase() );
+		String sRet = get( "SourceState" );
+		if( sRet != null && sRet.trim().length() > 2 )
+			sRet = States.getStateCode(sRet);
 		return sRet;
 	}
 	
 	public String getSourcePin() {
-		String sRet = get( "SourcePin".toUpperCase() );
-		if( sRet == null ) sRet = get( "Source PIN".toUpperCase() );
-		if( sRet == null ) sRet = get( "From PIN".toUpperCase() );
-		if( sRet == null ) sRet = get( "FromPIN".toUpperCase() );
-		if( sRet == null ) sRet = get( "Source Premises ID".toUpperCase() );
-		if( sRet == null ) sRet = get( "Source Premise ID".toUpperCase() );
-		if( sRet == null ) sRet = get( "Source Premises".toUpperCase() );
-		if( sRet == null ) sRet = get( "Source Premise".toUpperCase() );
+		String sRet = get( "SourcePin" );
 		return sRet;
 	}
 	
 	public String getSourceFarm() {
-		String sRet = get( "Source".toUpperCase() );
-		if( sRet == null ) sRet = get( "SourceFarm".toUpperCase() );
-		if( sRet == null ) sRet = get( "Source Farm".toUpperCase() );
+		String sRet = get( "SourceFarm" );
 		return sRet;
 	}
 	
 	public String getDestFarm() {
-		String sRet = get( "Destination".toUpperCase() );
-		if( sRet == null ) sRet = get( "Destination Farm".toUpperCase() );
-		if( sRet == null ) sRet = get( "DestFarm".toUpperCase() );
-		if( sRet == null ) sRet = get( "To Farm".toUpperCase() );
+		String sRet = get( "DestFarm" );
 		return sRet;
 	}
 
 	public String getDestPin() {
-		String sRet = get( "DestPin".toUpperCase() );
-		if( sRet == null ) sRet = get( "Dest PIN".toUpperCase() );
-		if( sRet == null ) sRet = get( "ToPIN".toUpperCase() );
-		if( sRet == null ) sRet = get( "To PIN".toUpperCase() );
-		if( sRet == null ) sRet = get( "Dest Premises ID".toUpperCase() );
-		if( sRet == null ) sRet = get( "Dest Premise ID".toUpperCase() );
-		if( sRet == null ) sRet = get( "Dest Premises".toUpperCase() );
-		if( sRet == null ) sRet = get( "Dest Premise".toUpperCase() );
-		if( sRet == null ) sRet = get( "DestinationPIN".toUpperCase() );
-		if( sRet == null ) sRet = get( "Destination PIN".toUpperCase() );
-		if( sRet == null ) sRet = get( "Destination Premises ID".toUpperCase() );
-		if( sRet == null ) sRet = get( "Destination Premise ID".toUpperCase() );
-		if( sRet == null ) sRet = get( "Destination Premises".toUpperCase() );
-		if( sRet == null ) sRet = get( "Destination Premise".toUpperCase() );
+		String sRet = get( "DestPin" );
 		return sRet;
 	}
 	
 	public String getDestState() {
-		String sRet = get( "DestState".toUpperCase() );
-		if( sRet == null ) sRet = get( "Dest State".toUpperCase() );
-		if( sRet == null ) sRet = get( "DestinationState".toUpperCase() );
-		if( sRet == null ) sRet = get( "Destination State".toUpperCase() );
-		if( sRet == null ) sRet = get( "To State".toUpperCase() );
-		if( sRet == null ) sRet = get( "ToState".toUpperCase() );
-		return sRet;
-	}
-
-	public String getThisFarm() {
-		String sRet = get( "DestFarm".toUpperCase() );
-		if( sRet == null ) sRet = get( "Dest Farm".toUpperCase() );
-		if( sRet == null ) sRet = get( "Destination".toUpperCase() );
-		if( sRet == null ) sRet = get( "DestinationFarm".toUpperCase() );
-		if( sRet == null ) sRet = get( "Destination Farm".toUpperCase() );
+		String sRet = get( "DestState" );
+		if( sRet != null && sRet.trim().length() > 2 )
+			sRet = States.getStateCode(sRet);
 		return sRet;
 	}
 	
 	public String getVet() {
-		String sRet = get( "Vet".toUpperCase() );
-		if( sRet == null ) sRet = get( "Veterinarian".toUpperCase() );
-		if( sRet == null ) sRet = get( "Vet".toUpperCase() );
-		if( sRet == null && getCompany().equals("Cactus") ) sRet = "Peter Schneider";
+		String sRet = get( "Vet" );
+		if( sRet == null && getCompany().equals("CACTUS") ) sRet = cactusVets.getVetNameForPin(getSourcePin());
+		if( sRet == null && getCompany().equals("CACTUS") ) sRet = "Peter Schneider";
 		if( sRet == null && getCompany().equals("CFF") ) sRet = "Peter Schneider";
 		return sRet;
 	}
 
 	public int getNumber() {
-		String sNumber = get( "Number".toUpperCase() );
-		if( sNumber == null ) sNumber = get( "# Head".toUpperCase() );
+		String sNumber = get( "Number" );
 		int iNumber = -1;
 		try {
 		iNumber = Integer.parseInt(sNumber);
@@ -285,7 +275,7 @@ class CSVDataFile {
 	
 	public String getSex() {
 		String sSexOut = "Gender Unknown";
-		String sSexIn = get("Sex".toUpperCase());
+		String sSexIn = get("Sex");
 		if( sSexIn != null ) {
 			if( "Gilts".equals(sSexIn) || "Sows".equals(sSexIn) )
 				sSexOut = "Female";
@@ -301,7 +291,7 @@ class CSVDataFile {
 		String sAgeOut = null;
 		String sAgeNum = null;
 		String sAgeUnits = null;
-		String sAgeIn = get("Age".toUpperCase());
+		String sAgeIn = get("Age");
 		if( sAgeIn != null ) {
 			if( sAgeIn.toLowerCase().endsWith("days") )
 				sAgeUnits = "d";
@@ -342,19 +332,22 @@ class CSVDataFile {
 	}
 
 	public java.util.Date getDate() {
-		String sDate = get( "Date".toUpperCase() );
-		if( sDate == null ) sDate = get( "Date Moved".toUpperCase() );
-		if( sDate == null ) sDate = get( "Move Date".toUpperCase() );
-		if( sDate == null ) sDate = get( "Movement Date".toUpperCase() );
+		String sDate = get( "Date" );
 		java.util.Date dRet = null;
-		String sYear = sDate.substring(sDate.lastIndexOf('/'));
+		if( sDate != null ) {
+			int iLastSlash = sDate.lastIndexOf('/');
+			if( iLastSlash >= 0 ) {
+				String sYear = sDate.substring(iLastSlash);
 		
-		SimpleDateFormat df = new SimpleDateFormat( "M/d/yy");
-		if( sYear.trim().length() > 2 ) df = new SimpleDateFormat( "M/d/yyyy");
-		try {
-			dRet = df.parse(sDate);
-		} catch (ParseException e) {
-			logger.error( "Cannot parse " + sDate + " as a date" );
+				SimpleDateFormat df = new SimpleDateFormat( "M/d/yy");
+				if( sYear.trim().length() > 2 ) df = new SimpleDateFormat( "M/d/yyyy");
+				try {
+					dRet = df.parse(sDate);
+				} catch (ParseException e) {
+					MessageDialog.showMessage( null, "Civet Error: Invalid Date", "Invalid date format " + sDate + " in data file");
+					logger.error( "Cannot parse " + sDate + " as a date" );
+				}
+			}
 		}
 		return dRet;
 	}

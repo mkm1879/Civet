@@ -170,12 +170,12 @@ public class ConfigDialog extends JDialog {
 			logger.error("Faild to save Config properties");
 		}
 		// In case the user has already entered password, save it
-		String sMailUser = MailMan.getDefaultUserID();
-		String sMailPass = MailMan.getDefaultPassword();
+		String sMailUser = MailMan.getUserID();
+		String sMailPass = MailMan.getPassword();
 		CivetConfig.initEmail(false);
 		CivetConfig.initConfig();
-		MailMan.setDefaultUserID(sMailUser);
-		MailMan.setDefaultPassword(sMailPass);
+		MailMan.setUserID(sMailUser);
+		MailMan.setPassword(sMailPass);
 		setVisible(false);
 		dispose();
 	}

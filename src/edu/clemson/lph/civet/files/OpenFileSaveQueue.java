@@ -19,11 +19,11 @@ public class OpenFileSaveQueue {
 		this.controller = controller;
 		iThreads = 0;
 	}
-	
-	@Override protected void finalize() throws Throwable {
-	    flush();
-	    super.finalize();
-	}
+//	
+//	@Override protected void finalize() throws Throwable {
+//	    flush();
+//	    super.finalize();
+//	}
 	
 	public void push( OpenFile openFile ) {
 		OpenFile fileToSave = fileIn;
@@ -47,10 +47,14 @@ public class OpenFileSaveQueue {
 		}
 	}
 	
-	public synchronized void saveComplete() {
+	public boolean hasFileInQueue() {
+		return (fileIn != null);
+	}
+	
+	public synchronized void saveComplete(String sFilePath) {
 		iThreads--;
 		if( iThreads == 0 )
-			controller.saveComplete();
+			controller.saveComplete(sFilePath);
 		if( iThreads < 0 ) {
 			logger.error("Lost thread count");
 		}

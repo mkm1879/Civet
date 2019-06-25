@@ -122,12 +122,10 @@ public class CivetWebServices {
 	}
 
 	public boolean validUSAHERDSCredentials( String sUserName, String sPassword ) throws WebServiceException {
-		boolean bRet = true;
+		boolean bRet = false;
 		String sURL = CivetConfig.getHERDSWebServiceURL();
 		String sToken = UsaHerdsWebServiceAuthentication.getToken(sURL, sUserName, sPassword);
 		bRet = (sToken != null);
-		if( !bRet )
-			MessageDialog.showMessage(null, "Civet: USAHERDS Password Error", "Invalid Username/Password");
 		return bRet;
 	}
 	

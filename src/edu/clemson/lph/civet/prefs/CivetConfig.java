@@ -273,6 +273,10 @@ public class CivetConfig {
 	public synchronized static String getZohoPort() {
 		return "587";
 	}
+	
+	public synchronized static int getZohoPortInt() {
+		return 587;
+	}
 
 	public synchronized static String getZohoSecurity() {
 		return "STARTTLS";
@@ -290,7 +294,7 @@ public class CivetConfig {
 		return "civet@mminformatics.com";
 	}
 	public synchronized static String getZohoPass() {
-		return "I2nuHru*N7*G*J|FV&R+ES@" + getZohoKey();
+		return "$newOne" + getZohoKey();
 	}
 	
 	public synchronized static String getSmtpHost() {
@@ -503,32 +507,34 @@ public class CivetConfig {
 		}
 		if( sSmtpHost != null ) {
 			MailMan.setDefaultHost(CivetConfig.getSmtpHost());
-			sUserID = MailMan.getDefaultUserID();
-			if( (MailMan.getDefaultUserID() == null || MailMan.getDefaultPassword() == null) && bLogin ) {
+			sUserID = MailMan.getUserID();
+			if( (MailMan.getUserID() == null || MailMan.getPassword() == null) && bLogin ) {
 				TwoLineQuestionDialog ask = new TwoLineQuestionDialog( "Civet Email Login:",
 						"Email UserID:", "Email Password:", true);
 				ask.setPassword(true);
 				ask.setVisible(true);
 				if( ask.isExitOK() ) {
 					sUserID = ask.getAnswerOne();
-					MailMan.setDefaultUserID(sUserID);
-					MailMan.setDefaultPassword(ask.getAnswerTwo());
+					MailMan.setUserID(sUserID);
+					MailMan.setPassword(ask.getAnswerTwo());
 					bRet = true;
 				}
 				else {
 					bRet = false;
 				}
 			}
+			MailMan.setDefaultPort(CivetConfig.getSmtpPortInt());
+			MailMan.setSecurity(CivetConfig.getSmtpSecurity());
 		}
 		else if( sZohoKey != null ) {
 			MailMan.setDefaultHost(CivetConfig.getZohoHost());
 			sUserID = CivetConfig.getZohoUser();
 			String sPassword = CivetConfig.getZohoPass();
-			MailMan.setDefaultUserID(sUserID);
-			MailMan.setDefaultPassword(sPassword);
+			MailMan.setUserID(sUserID);
+			MailMan.setPassword(sPassword);
+			MailMan.setDefaultPort(CivetConfig.getZohoPortInt());
+			MailMan.setSecurity(CivetConfig.getZohoSecurity());
 		}
-		MailMan.setDefaultPort(CivetConfig.getSmtpPortInt());
-		MailMan.setSecurity(CivetConfig.getSmtpSecurity());
 		String sFrom = CivetConfig.getEmailFrom();
 		if( sFrom != null )
 			MailMan.setDefaultFrom(sFrom);
@@ -613,7 +619,7 @@ public class CivetConfig {
 	}
 	
 	public synchronized static String getBulkLoadDirPath() {
-		return getPath("bulkLoadDirPath", ".\\BulkLoad\\");
+		return getPath("bulkLoadDirPath", ".\\Swine\\");
 	}
 	
 	public synchronized static String getNineDashThreeLoadDirPath() {
@@ -900,6 +906,7 @@ public class CivetConfig {
 		else {
 			bRet = ( iJPedalType == XFA );
 		}
+		logger.info("JPedal detected: " + bRet);
 		return bRet;
 	}
 	

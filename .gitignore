@@ -1,4 +1,5 @@
 .settings
+Civet5Architecture.jpg
 examples/*
 OldJars/*
 *.pdf
@@ -96,5 +97,7 @@ CivetToBeFiled/
 CivetToBeMailedErrors/
 CivetToBeMailedOut/
 *.cvi
+*.launch
+
 
 

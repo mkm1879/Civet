@@ -107,6 +107,20 @@ public class StdeCviBinaries {
 		return pdfBytes;
 	}
 	
+	public boolean hasPDFAttachment() {
+		boolean bRet = false;
+		Element eBinary = getPDFAttachmentBinaryElement();
+		if( eBinary != null ) {
+			Element payload = helper.getChildElementByName(eBinary, "Payload");
+			if( payload != null ) {
+				String sBase64 = payload.getTextContent();
+				if( sBase64 != null && sBase64.trim().length() > 0 )
+					bRet = true;
+			}
+		}
+		return bRet;
+	}
+	
 	private Element getPDFAttachmentBinaryElement() {
 		Element eBinary = null;
 		Element eAttach = getPDFAttachmentElement();
