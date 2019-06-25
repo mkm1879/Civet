@@ -19,8 +19,6 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 
 package edu.clemson.lph.civet.xml.elements;
 
-import java.util.StringTokenizer;
-
 public class Address {
 	public String line1; 
 	public String line2; 
@@ -32,32 +30,32 @@ public class Address {
 	public Double latitude; 
 	public Double longitude;
 	
-	/**
-	 * Convert from AddressBlock to Address.  Only works if each field is , delimited.  Needs work.
-	 * @param addressBlock
-	 */
-	public Address(String addressBlock) {
-		StringTokenizer tok = new StringTokenizer(addressBlock, ", ");
-		line1 = tok.nextToken(); 
-		line2 = tok.nextToken(); 
-		town = tok.nextToken(); 
-		county = tok.nextToken();
-		state = tok.nextToken(); 
-		zip = tok.nextToken(); 
-		if( zip != null )
-			zip = zip.trim();
-		country = tok.nextToken();
-		String sLatitude = tok.nextToken(); 
-		String sLongitude = tok.nextToken();
-		try {
-			latitude = Double.parseDouble(sLatitude);
-			longitude = Double.parseDouble(sLongitude);
-		} catch ( NumberFormatException nfe ) {
-			latitude = null;
-			longitude = null;
-		}
 
-	}
+//	/**
+//	 * Convert from AddressBlock to Address.  Only works if each field is , delimited.  Needs work.
+//	 * @param addressBlock
+//	 */
+//	public Address(String addressBlock) {
+//		StringTokenizer tok = new StringTokenizer(addressBlock, ", ");
+//		line1 = tok.nextToken(); 
+//		line2 = tok.nextToken(); 
+//		town = tok.nextToken(); 
+//		county = tok.nextToken();
+//		state = tok.nextToken(); 
+//		zip = tok.nextToken(); 
+//		country = tok.nextToken();
+//		String sLatitude = tok.nextToken(); 
+//		String sLongitude = tok.nextToken();
+//		try {
+//			latitude = Double.parseDouble(sLatitude);
+//			longitude = Double.parseDouble(sLongitude);
+//		} catch ( NumberFormatException nfe ) {
+//			latitude = null;
+//			longitude = null;
+//		}
+//
+//	}
+
 	
 	public Address(String line1, String line2, String town, String county, String state, String zip, String country,
 			Double latitude, Double longitude) {

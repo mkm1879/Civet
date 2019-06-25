@@ -19,16 +19,16 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 
 package edu.clemson.lph.civet.xml.elements;
 public class Contact {
-	public String addressBlock;
+	public Address address;
 	public Person person;
 	
-	public Contact( String addressBlock, Person person ) {
-		this.addressBlock = addressBlock;
+	public Contact( Address address, Person person ) {
+		this.address = address;
 		this.person = person;
 	}
 	
-	public Contact( String addressBlock, String sName, String sPhone, String sEmail ) {
-		this.addressBlock = addressBlock;
+	public Contact(  Address address, String sName, String sPhone, String sEmail ) {
+		this.address = address;
 		this.person = new Person( sName, sPhone, sEmail);
 	}
 	

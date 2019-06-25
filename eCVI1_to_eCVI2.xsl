@@ -107,21 +107,21 @@
         </xsl:call-template>
     </xsl:template>
     <xsl:template match="v1:Consignor/v1:Address">
-        <xsl:call-template name="BlockedAddress">
+        <xsl:call-template name="FullAddress">
             <xsl:with-param name="parent">
                 <xsl:value-of select="."/>
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>
     <xsl:template match="v1:Consignee/v1:Address">
-        <xsl:call-template name="BlockedAddress">
+        <xsl:call-template name="FullAddress">
             <xsl:with-param name="parent">
                 <xsl:value-of select="."/>
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>
     <xsl:template match="v1:Veterinarian/v1:Address">
-        <xsl:call-template name="BlockedAddress">
+        <xsl:call-template name="FullAddress">
             <xsl:with-param name="parent">
                 <xsl:value-of select="."/>
             </xsl:with-param>
@@ -182,7 +182,7 @@
         </xsl:element>
     </xsl:template>
 
-    <xsl:template name="BlockedAddress">
+<!--    <xsl:template name="BlockedAddress">
         <xsl:param name="parent"/>
         <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="AddressBlock">
              <xsl:if test="exsl:node-set($parent)/v1:Line1">
@@ -229,7 +229,7 @@
             </xsl:if>
         </xsl:element>
     </xsl:template>
-
+-->
     <xsl:template match="@lat">
         <xsl:attribute name="Latitude">
             <xsl:value-of select="."/>
@@ -281,7 +281,7 @@
                                         <xsl:value-of select="v1:Laboratory/v1:PremId"/>
                                     </xsl:element>
                                 </xsl:if>
-                                 <xsl:call-template name="BlockedAddress">
+                                 <xsl:call-template name="FullAddress">
                                     <xsl:with-param name="parent" select="v1:Laboratory/v1:Address"/>
                                 </xsl:call-template>
                             </xsl:element>
@@ -298,7 +298,7 @@
                                 <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="PremId">
                                     <xsl:value-of select="v1:Laboratory/v1:PremId"/>
                                 </xsl:element>
-                                <xsl:call-template name="BlockedAddress">
+                                <xsl:call-template name="FullAddress">
                                     <xsl:with-param name="parent" select="v1:Laboratory/v1:Address"/>
                                 </xsl:call-template>
                             </xsl:element>

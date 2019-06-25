@@ -25,7 +25,7 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
-import edu.clemson.lph.civet.xml.elements.AddressBlock;
+import edu.clemson.lph.civet.xml.elements.Address;
 import edu.clemson.lph.civet.xml.elements.GroupLot;
 import edu.clemson.lph.civet.xml.elements.NameParts;
 import edu.clemson.lph.civet.xml.elements.Person;
@@ -161,10 +161,10 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 		xmlModel.setIssueDate(data.getDate());
 		if( data.getSourceState().equalsIgnoreCase(CivetConfig.getHomeStateAbbr()) && vetLookup != null ) {
 			NameParts parts = new NameParts(null, vetLookup.getFirstName(), null, vetLookup.getLastName(), null );
-			AddressBlock addr = new AddressBlock(vetLookup.getAddress(), null, vetLookup.getCity(), null, 
+			Address addr = new Address(vetLookup.getAddress(), null, vetLookup.getCity(), null, 
 					vetLookup.getState(), vetLookup.getZipCode(), null, null, null);
 			Person person = new Person(parts, vetLookup.getPhoneDigits(), null );
-			Veterinarian veterinarian = new Veterinarian(person, addr.toString(), CivetConfig.getHomeStateAbbr(),
+			Veterinarian veterinarian = new Veterinarian(person, addr, CivetConfig.getHomeStateAbbr(),
 					vetLookup.getLicenseNo(), vetLookup.getNAN());
 			xmlModel.setVet( veterinarian );
 		}

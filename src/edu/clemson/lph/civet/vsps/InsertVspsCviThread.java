@@ -35,7 +35,7 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.civet.xml.CviMetaDataXml;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
-import edu.clemson.lph.civet.xml.elements.AddressBlock;
+import edu.clemson.lph.civet.xml.elements.Address;
 import edu.clemson.lph.civet.xml.elements.Animal;
 import edu.clemson.lph.civet.xml.elements.AnimalTag;
 import edu.clemson.lph.civet.xml.elements.GroupLot;
@@ -129,13 +129,12 @@ class InsertVspsCviThread extends Thread implements ThreadCancelListener {
 //			eVet = xmlModel.setVet(sVetName, vet.getLicenseNo(), vet.getNAN(), vet.getPhoneDigits());
 //			xmlModel.setAddress(eVet, vet.getAddress(), vet.getCity(), null, vet.getState(), vet.getZipCode());
 			NameParts parts = new NameParts(null, vetLookup.getFirstName(), null, vetLookup.getLastName(), null );
-			AddressBlock addr = new AddressBlock(vetLookup.getAddress(), null, vetLookup.getCity(), null, 
+			Address addr = new Address(vetLookup.getAddress(), null, vetLookup.getCity(), null, 
 					vetLookup.getState(), vetLookup.getZipCode(), null, null, null);
 			Person person = new Person(parts, vetLookup.getPhoneDigits(), null );
-			Veterinarian vet = new Veterinarian(person, addr.toString(), CivetConfig.getHomeStateAbbr(),
+			Veterinarian vet = new Veterinarian(person, addr, CivetConfig.getHomeStateAbbr(),
 					vetLookup.getLicenseNo(), vetLookup.getNAN());
 			xmlModel.setVet( vet );
-
 		}
 		else {
 			xmlModel.setVet(cvi.getVeterinarianName());
