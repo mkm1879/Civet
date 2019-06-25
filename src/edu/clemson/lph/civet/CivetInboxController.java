@@ -395,7 +395,7 @@ public class CivetInboxController {
 			if( !CivetConfig.initEmail(true) )
 				return;
 			try {
-				if( MailMan.sendIt("mmarti5@clemson.edu", null, "Civet Error Log", 
+				if( MailMan.sendIt("mike@mminformatics.com", null, "Civet Error Log", 
 						sMsg, fLog.getAbsolutePath()) ) {
 					MessageDialog.showMessage(inbox, "Civet Log Sent:", "You can delete the Civet.log file after you exit if you like.");
 				}
