@@ -153,16 +153,19 @@ public class CivetInbox extends JFrame {
 		menuItemViewNew.setText("To Be Entered");
 		menuView.add(menuItemViewNew);
 		
-		menuItemViewOutbound.setText("Outbound");
-//		menuView.add(menuItemViewOutbound);
-		menuItemViewInbound.setText("Inbound");
-//		menuView.add(menuItemViewInbound);
-		
-		menuItemViewUnsentOutbound.setText("Unsent Outbound CVIs");
-		menuView.add(menuItemViewUnsentOutbound);
-		
-		menuItemViewUnsentInboundErrors.setText("Unsent Inbound Error CVIs");
-		menuView.add(menuItemViewUnsentInboundErrors);
+		String sSmtp = CivetConfig.getSmtpHost();
+		if( sSmtp != null && !"NONE".equalsIgnoreCase(sSmtp) ) {
+			menuItemViewOutbound.setText("Outbound");
+			//		menuView.add(menuItemViewOutbound);
+			menuItemViewInbound.setText("Inbound");
+			//		menuView.add(menuItemViewInbound);
+
+			menuItemViewUnsentOutbound.setText("Unsent Outbound CVIs");
+			menuView.add(menuItemViewUnsentOutbound);
+
+			menuItemViewUnsentInboundErrors.setText("Unsent Inbound Error CVIs");
+			menuView.add(menuItemViewUnsentInboundErrors);
+		}
 
 		menuItemViewToBeFiled.setText("Entered CVIs Ready to Upload to HERDS");
 		menuItemViewToBeFiled.setEnabled(true);
@@ -176,9 +179,11 @@ public class CivetInbox extends JFrame {
 		menuItemAbout.setText("About Civet");
 		menuHelp.add(menuItemAbout);
 		
-		menuItemSendLog = new JMenuItem();
-		menuItemSendLog.setText("Send Civet Error Log");
-		menuHelp.add(menuItemSendLog);
+		if( sSmtp != null && !"NONE".equalsIgnoreCase(sSmtp) ) {
+			menuItemSendLog = new JMenuItem();
+			menuItemSendLog.setText("Send Civet Error Log");
+			menuHelp.add(menuItemSendLog);
+		}
 
 		this.setJMenuBar(menuBar1);
 		statusPanel.setLayout(new FlowLayout());
@@ -205,13 +210,13 @@ public class CivetInbox extends JFrame {
 		mnSend.setEnabled(true);
 		menuBar1.add(mnSend);
 
-		menuItemSendOutboundCVIs = new JMenuItem("Send Outbound CVIs Email");
-		mnSend.add(menuItemSendOutboundCVIs);
+		if( sSmtp != null && !"NONE".equalsIgnoreCase(sSmtp) ) {
+			menuItemSendOutboundCVIs = new JMenuItem("Send Outbound CVIs Email");
+			mnSend.add(menuItemSendOutboundCVIs);
 
-
-		menuItemSendInboundErrors = new JMenuItem("Send Inbound Error Letters Email");
-		mnSend.add(menuItemSendInboundErrors);
-		
+			menuItemSendInboundErrors = new JMenuItem("Send Inbound Error Letters Email");
+			mnSend.add(menuItemSendInboundErrors);
+		}
 		menuItemSubmitSelectedCVIs = new JMenuItem("Submit Selected CVIs to USAHERDS");
 		mnSend.add(menuItemSubmitSelectedCVIs);
 
