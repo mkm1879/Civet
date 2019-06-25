@@ -43,7 +43,10 @@ public class SaveCVIModelThread extends Thread {
 			model = new StdeCviXmlModel( sXml );
 			setUpFileNamesAndContent();
 			saveXml( sXml );
-			saveEmail( sXml );
+			String sSmtp = CivetConfig.getSmtpHost();
+			if( sSmtp != null && !"NONE".equalsIgnoreCase(sSmtp) ) {
+				saveEmail( sXml );
+			}
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();

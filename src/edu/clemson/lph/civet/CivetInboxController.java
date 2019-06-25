@@ -131,12 +131,25 @@ public class CivetInboxController {
 				MessageDialog.showMessage(inbox, "About Civet", sMsg);
 			}
 		});
-		inbox.menuItemSendLog.addActionListener( new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				doMailLogFile();
-			}
-		});
+		String sSmtp = CivetConfig.getSmtpHost();
+		if( sSmtp != null && !"NONE".equalsIgnoreCase(sSmtp) ) {
+			inbox.menuItemSendOutboundCVIs.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					sendOutboundCVIs();
+				}
+			});
+			inbox.menuItemSendInboundErrors.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					sendInboundErrors();
+				}
+			});
+			inbox.menuItemSendLog.addActionListener( new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					doMailLogFile();
+				}
+			});
+		}
 		inbox.tblInBox.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if( e.getClickCount() == 2 ) {
@@ -149,16 +162,6 @@ public class CivetInboxController {
 				inbox.setVisible(false);
 				inbox.dispose();
 				inbox.dispatchEvent(new WindowEvent(inbox, WindowEvent.WINDOW_CLOSING));
-			}
-		});
-		inbox.menuItemSendOutboundCVIs.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				sendOutboundCVIs();
-			}
-		});
-		inbox.menuItemSendInboundErrors.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				sendInboundErrors();
 			}
 		});
 		inbox.menuItemSubmitSelectedCVIs.addActionListener(new ActionListener() {
@@ -342,11 +345,14 @@ public class CivetInboxController {
 		refreshTables();
 		inbox.menuItemSubmitSelectedCVIs.setEnabled(false);
 		inbox.menuItemSubmitAllCVIs.setEnabled(false);
-		if( inbox.currentModel.getRowCount() > 0 )
-			inbox.menuItemSendOutboundCVIs.setEnabled(true);	
-		else
-			inbox.menuItemSendOutboundCVIs.setEnabled(false);
-		inbox.menuItemSendInboundErrors.setEnabled(false);			
+		String sSmtp = CivetConfig.getSmtpHost();
+		if( sSmtp != null && !"NONE".equalsIgnoreCase(sSmtp) ) {
+			if( inbox.currentModel.getRowCount() > 0 )
+				inbox.menuItemSendOutboundCVIs.setEnabled(true);	
+			else
+				inbox.menuItemSendOutboundCVIs.setEnabled(false);
+			inbox.menuItemSendInboundErrors.setEnabled(false);		
+		}
 	}
 
 	private void viewUnsentInboundErrors() {
@@ -355,11 +361,15 @@ public class CivetInboxController {
 		refreshTables();
 		inbox.menuItemSubmitSelectedCVIs.setEnabled(false);
 		inbox.menuItemSubmitAllCVIs.setEnabled(false);
-		inbox.menuItemSendOutboundCVIs.setEnabled(false);			
-		if( inbox.currentModel.getRowCount() > 0 )
-			inbox.menuItemSendInboundErrors.setEnabled(true);	
-		else
-			inbox.menuItemSendInboundErrors.setEnabled(false);			
+		String sSmtp = CivetConfig.getSmtpHost();
+		if( sSmtp != null && !"NONE".equalsIgnoreCase(sSmtp) ) {
+
+			inbox.menuItemSendOutboundCVIs.setEnabled(false);			
+			if( inbox.currentModel.getRowCount() > 0 )
+				inbox.menuItemSendInboundErrors.setEnabled(true);	
+			else
+				inbox.menuItemSendInboundErrors.setEnabled(false);			
+		}
 	}
 
 	private void viewToBeFiled() {
@@ -374,8 +384,11 @@ public class CivetInboxController {
 			inbox.menuItemSubmitSelectedCVIs.setEnabled(false);
 			inbox.menuItemSubmitAllCVIs.setEnabled(false);			
 		}
-		inbox.menuItemSendOutboundCVIs.setEnabled(false);			
-		inbox.menuItemSendInboundErrors.setEnabled(false);			
+		String sSmtp = CivetConfig.getSmtpHost();
+		if( sSmtp != null && !"NONE".equalsIgnoreCase(sSmtp) ) {
+			inbox.menuItemSendOutboundCVIs.setEnabled(false);			
+			inbox.menuItemSendInboundErrors.setEnabled(false);		
+		}
 	}
 
 	private void viewNew() {
@@ -384,8 +397,11 @@ public class CivetInboxController {
 		refreshTables();
 		inbox.menuItemSubmitSelectedCVIs.setEnabled(false);
 		inbox.menuItemSubmitAllCVIs.setEnabled(false);
-		inbox.menuItemSendOutboundCVIs.setEnabled(false);			
-		inbox.menuItemSendInboundErrors.setEnabled(false);			
+		String sSmtp = CivetConfig.getSmtpHost();
+		if( sSmtp != null && !"NONE".equalsIgnoreCase(sSmtp) ) {
+			inbox.menuItemSendOutboundCVIs.setEnabled(false);			
+			inbox.menuItemSendInboundErrors.setEnabled(false);		
+		}
 	}
 	
 	private void doMailLogFile() {
