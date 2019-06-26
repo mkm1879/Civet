@@ -162,7 +162,7 @@ public final class CivetEditDialogController {
 	 */
 	public void openFilesComplete() {
 		try {
-			if( openFileList == null ) {
+			if( openFileList == null  || openFileList.isEmpty() ) {
 				MessageDialog.showMessage(dlg, "Civet Error: Empty File List", "Open files returned an empty list");
 				logger.error("Open files returned an empty list");
 				dlg.setVisible(false);
@@ -1427,6 +1427,11 @@ public final class CivetEditDialogController {
 									doShowAllVets(false);  // this is a toggle false means it wasn't NOW checked.
 								}
 								dlg.cbIssuedBy.setSelectedKey( iVetKey );
+								if( !dlg.cbIssuedBy.hasKey( iVetKey ) ) { 
+									MessageDialog.showMessage(dlg, "Civet Unknown Vet", 
+											"HERDS doesn't seem to have a Veterinarian record for " + vet.getFormattedName() 
+											+ "\n Update and come back to this CVI.");
+								}
 							}
 						}
 						else {

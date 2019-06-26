@@ -14,10 +14,27 @@
  */
 package edu.clemson.lph.civet.files;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 import com.itextpdf.text.pdf.PdfReader;
+
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.FileUtils;
+import edu.clemson.lph.utils.Validator;
 
 /**
  * 
@@ -38,11 +55,35 @@ public class AgViewSourceFile extends SourceFile {
 			pdfBytes = FileUtils.readBinaryFile(fSource);
 			iTextPdfReader = new PdfReader(pdfBytes);
 			String sStdXML = FileUtils.readTextFile(fData);
+			sStdXML = AddressBlock2Address(sStdXML);
+			if( !isValidCVI(sStdXML) ) {
+				FileUtils.writeTextFile(sStdXML, "FailedTransform" + fData.getName());
+				throw new SourceFileException( "Failed to convert AgView Source\n"
+						+ fFile.getName() + "\nFix manually and try again");
+			}
 			model = new StdeCviXmlModel(sStdXML);
 			model.setOrUpdatePDFAttachment(getPDFBytes(), fSource.getName());
 		} catch (Exception e) {
 			throw new SourceFileException(e);
 		}
+	}
+	
+	private boolean isValidCVI( String sXml ) {
+		boolean bRet = true;
+		String sSchemaPath = CivetConfig.getSchemaFile();
+		if( sSchemaPath != null && sSchemaPath.trim().length() > 0 ) {
+			Validator v = new Validator(sSchemaPath);
+			if( v != null ) {
+				if( !v.isValidXMLString(sXml) ) {
+					MessageDialog.showMessage(null, "Civet: Error", "Failed translation of AgView AddressBlock\n"
+							+ v.getLastError() 
+							+ "\nFix manually and try again" );
+					logger.error("Civet: Error Failed translation of AgView AddressBlock\n");
+					bRet = false;
+				}
+			}
+		}
+		return bRet;
 	}
 
 	/**
@@ -152,4 +193,28 @@ public class AgViewSourceFile extends SourceFile {
 	public String getSystem() {
 		return "AGV";
 	}
+	
+	public String AddressBlock2Address( String sXmlIn) {
+		String sRet = null;
+		String sXSLT = "AddressBlock2Address.xsl";
+		try {
+		    FileReader xsltReader = new FileReader( sXSLT );
+		    StringReader sourceReader = new StringReader( sXmlIn );
+		    ByteArrayOutputStream baosDest = new ByteArrayOutputStream();
+			TransformerFactory tFactory = TransformerFactory.newInstance();
+            Transformer transformer;
+				transformer = tFactory.newTransformer(new StreamSource(xsltReader));
+				transformer.transform(new StreamSource(sourceReader),
+						new StreamResult(baosDest));
+				sRet = new String( baosDest.toByteArray(), "UTF-8" );
+			} catch ( TransformerException e) {
+				logger.error("Failed to transform XML with XSLT: " + sXSLT, e);
+			} catch (UnsupportedEncodingException e) {
+				logger.error("Should not see this unsupported encoding", e);
+			} catch (FileNotFoundException e) {
+				logger.error("Could not find XSLT: " + sXSLT, e);
+			}
+ 		return sRet;
+	}
+
 }
