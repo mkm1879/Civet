@@ -69,6 +69,13 @@ public class OpenFileList {
 		oCurrent = aOpenFiles.get(0);	
 	}
 	
+	public boolean isEmpty() {
+		boolean bRet = true;
+		if( aOpenFiles != null && aOpenFiles.size() > 0 )
+			bRet = false;
+		return bRet;
+	}
+	
 	/**
 	 * Get the current OpenFile
 	 * @return
