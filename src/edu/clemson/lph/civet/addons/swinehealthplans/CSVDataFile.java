@@ -78,8 +78,11 @@ public class CSVDataFile {
 			sCompany = "UN_";
 		}
 		// Exception case
-		if( sCompany.equals("UN_") && sFileName.toUpperCase().contains("SE HEALTH") ) {
+		if( sFileName.toUpperCase().contains("SE HEALTH") ) {
 			sCompany = "CACTUS";
+		}
+		if( sFileName.toUpperCase().contains("PURVIS") ) {
+			sCompany = "PURVIS";
 		}
 		if( sCompany.equals("UN_") && sFileName.startsWith("IN") ) {
 			sCompany="TDM";
@@ -296,6 +299,8 @@ public class CSVDataFile {
 			if( sAgeIn.toLowerCase().endsWith("days") )
 				sAgeUnits = "d";
 			else if( sAgeIn.toLowerCase().endsWith("weeks") )
+				sAgeUnits = "wk";
+			else if( sAgeIn.toLowerCase().endsWith("week") )
 				sAgeUnits = "wk";
 			else if( sAgeIn.toLowerCase().endsWith("months") )
 				sAgeUnits = "mo";
