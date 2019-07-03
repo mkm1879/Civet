@@ -137,7 +137,7 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 				}
 			});		
 			// If successfully sent, record the number in CertNbrs.txt
-			System.out.println( service.getSuccessMessage() );
+			// System.out.println( service.getSuccessMessage() );
 			if( sRet != null && !sRet.toLowerCase().contains("error") && sRet.contains(service.getSuccessMessage() ) ) {
 				bRet = true;
 				if( !CertificateNbrLookup.addCertificateNbr(sCertNbr) ) {

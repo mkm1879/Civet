@@ -301,11 +301,11 @@ public class UsaHerdsLookupVets {
 						parser.getValue("NANLevel"),
 						parser.getValue("NANStatus") );
 				rows.add(row);
-				if( i++ < 2 ) {
-					for(String s : parser.getCurrent() ) {
-						System.out.print(s + ", ");
-					}
-				}
+//				if( i++ < 2 ) {
+//					for(String s : parser.getCurrent() ) {
+//						System.out.print(s + ", ");
+//					}
+//				}
 				} catch( NumberFormatException nfe ) {
 					logger.error("Bad key " + parser.getValue("VetKey") + " " + parser.getValue("FormattedName"));
 					// Press on
