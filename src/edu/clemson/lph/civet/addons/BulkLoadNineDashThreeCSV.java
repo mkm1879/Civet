@@ -376,7 +376,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 		// TODO Auto-generated method stub
 		// Do what needs to be done in GUI thread.
 		if( thread instanceof TWork93CSV ) {
-			System.out.println("Import Complete");
+			//System.out.println("Import Complete");
 			//System.exit(1);
 		}
 	}
