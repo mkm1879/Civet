@@ -131,12 +131,12 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 			}
 			String sRet = service.sendCviXML(sXML);
 			final String sReturn = sRet;
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					logger.info("Return code from Civet WS: " + sReturn);
-				}
-			});		
-			// If successfully sent, record the number in CertNbrs.txt
+//			SwingUtilities.invokeLater(new Runnable() {
+//				public void run() {
+//					logger.info("Return code from Civet WS: " + sReturn);
+//				}
+//			});		
+//			// If successfully sent, record the number in CertNbrs.txt
 			// System.out.println( service.getSuccessMessage() );
 			if( sRet != null && !sRet.toLowerCase().contains("error") && sRet.contains(service.getSuccessMessage() ) ) {
 				bRet = true;
