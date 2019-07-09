@@ -30,5 +30,7 @@ newer and update the version numbers, etc.  JPedal and SqlServer if used require
 
 Beginning with version 5 Civet is distributed as a Windows installer (other platforms if requested) courtesy of Install4J the multi-platform installer builder. https://www.ej-technologies.com/products/install4j/overview.html ![Install4J the multi-platform installer builder](https://www.ej-technologies.com/images/product_banners/install4j_large.png)
 
+A complete Windows 64 bit installer is available at https://clemson.box.com/s/li4s519t5equ9ki16sbffq83sx6jx99h
+
 The CivetConfig.txt file will require extensive editing to conform to local absolute file paths, IP addresses,
 email settings, etc.

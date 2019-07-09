@@ -130,7 +130,7 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 				return false;
 			}
 			String sRet = service.sendCviXML(sXML);
-			final String sReturn = sRet;
+//			final String sReturn = sRet;
 //			SwingUtilities.invokeLater(new Runnable() {
 //				public void run() {
 //					logger.info("Return code from Civet WS: " + sReturn);
