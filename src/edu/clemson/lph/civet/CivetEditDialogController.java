@@ -188,7 +188,8 @@ public final class CivetEditDialogController {
 			setPages(currentFile.getPageCount());
 			setFile(openFileList.getCurrentFileNo());
 			setFiles(openFileList.getFileCount());
-			dlg.setFormEditable(dlg.iMode != CivetEditDialog.VIEW_MODE);
+			dlg.setFormEditable(dlg.iMode != CivetEditDialog.VIEW_MODE 
+					&& !currentFile.isCurrentPageComplete() );
 			updateCounterPanel();
 			viewer.setPdfBytes(currentFile.getPDFBytes(), currentFile.isXFA() );
 			viewer.viewPage(currentFile.getCurrentPageNo()); 
@@ -208,20 +209,25 @@ public final class CivetEditDialogController {
 		}
 	}
 	
+	/**
+	 * Essentially the same as above but don't spend time loading the pdfBytes already in viewer.
+	 * For use when currentFile has not changed.
+	 */
 	private void updateFilePage() {
 		try {
 			clearForm();
 			if( currentFile.isDataFile() )
 				populateFromStdXml( currentFile.getModel() );
-//			currentFile = openFileList.getCurrentFile();
 			idListModel = new AnimalIDListTableModel( currentFile.getModel() );
-			dlg.setTitle(getViewerTitle()+currentFile.getSource().getFileName());
+//			dlg.setTitle(getViewerTitle()+currentFile.getSource().getFileName());
 			setPage(currentFile.getCurrentPageNo());
 			setPages(currentFile.getPageCount());
 			setFile(openFileList.getCurrentFileNo());
 			setFiles(openFileList.getFileCount());
-			dlg.setFormEditable(dlg.iMode != CivetEditDialog.VIEW_MODE);
+			dlg.setFormEditable(dlg.iMode != CivetEditDialog.VIEW_MODE 
+					&& !currentFile.isCurrentPageComplete() );
 			updateCounterPanel();
+//			viewer.setRotation(currentFile.getSource().getRotation());
 			viewer.viewPage(currentFile.getCurrentPageNo()); 
 			viewer.updatePdfDisplay();
 			setupSaveButtons();
@@ -393,11 +399,10 @@ public final class CivetEditDialogController {
 					try {
 						if( openFileList.moreFilesBack(false) ) {
 							openFileList.fileBackward(false);
+							currentFile = openFileList.getCurrentFile();
+							updateCounterPanel();
+							setupNewFilePage();
 						}
-						updateCounterPanel();
-						OpenFile tempOpen = openFileList.getCurrentFile();
-						viewer.setPdfBytes(tempOpen.getPDFBytes(), tempOpen.isXFA());
-						viewer.viewPage(tempOpen.getCurrentPageNo());
 					} catch (PdfException e1) {
 						logger.error(e1);
 					}
@@ -464,11 +469,12 @@ public final class CivetEditDialogController {
 			dlg.pCounters.bFileForward.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
-						openFileList.fileForward(false);
-						updateCounterPanel();
-						OpenFile tempOpen = openFileList.getCurrentFile();
-						viewer.setPdfBytes(tempOpen.getPDFBytes(), tempOpen.isXFA());
-						viewer.viewPage(tempOpen.getCurrentPageNo());
+						if( openFileList.moreFilesForward(false) ) {
+							openFileList.fileForward(false);
+							currentFile = openFileList.getCurrentFile();
+							updateCounterPanel();
+							setupNewFilePage();
+						}
 					} catch (PdfException e1) {
 						logger.error(e1);
 					}
@@ -1836,17 +1842,21 @@ public final class CivetEditDialogController {
 			// Only on multipage PDF do we page forward on save
 			if( currentFile.getSource().canSplit() && currentFile.morePagesForward(true) ) {
 				currentFile.pageForward(true);
+				updateFilePage(); 
 			}
+//			else if( currentFile.getSource().canSplit() && currentFile.morePagesBack(true) ) {
+//				currentFile.pageBackward(true);
+//				updateFilePage(); 
+//			}
 			// Backup to get skipped pages?  Not currently.
 			else if ( openFileList.moreFilesForward(true) || openFileList.moreFilesBack(true) ) {
 				currentFile = openFileList.nextFile(true);
-				viewer.setPdfBytes(currentFile.getPDFBytes(), currentFile.isXFA());
+				setupNewFilePage();
 			}
 			else {
 				return false;
 			}
-			updateFilePage(); 
-		} catch (SourceFileException | PdfException e) {
+		} catch (SourceFileException e) {
 			logger.error("Failure to read file " + currentFile.getSource().getFileName(), e);
 		}
 		prog.setVisible(false);

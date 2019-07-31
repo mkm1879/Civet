@@ -123,8 +123,9 @@ public class OpenFileList {
 	 */
 	public OpenFile nextFile(boolean bIncompleteOnly) {
 		OpenFile oRet = null;
-		oRet = nextFileForward(bIncompleteOnly);
-		if( oRet == null )
+		if(moreFilesForward(bIncompleteOnly))
+			oRet = nextFileForward(bIncompleteOnly);
+		if( oRet == null && moreFilesBack(bIncompleteOnly))
 			oRet = nextFileBack(bIncompleteOnly);
 		oCurrent = oRet;
 		return oRet;
@@ -147,9 +148,12 @@ public class OpenFileList {
     	iRet = 0;
     	String sDirIn = CivetConfig.getInputDirPath();
     	for( OpenFile fCurrent : aFilesComplete ) {
+    		// don't move if reopened.  Seems like a good way to only move from inbox.
     		if( fCurrent.getSource().fSource.getAbsolutePath().startsWith(sDirIn) ) {
-    			if( fCurrent.getSource().moveToDirectory(dirOut) )
-    				iRet++;
+    			if(fCurrent.allPagesDone() ) {
+    				if( fCurrent.getSource().moveToDirectory(dirOut) )
+    					iRet++;
+    			}
     		}
     	}
     	return iRet;
@@ -188,7 +192,7 @@ public class OpenFileList {
 		Integer iCurrent = aOpenFiles.indexOf(oCurrent); // 0 indexed
 		for( int i = iCurrent + 1; i < aOpenFiles.size(); i++ ) {
 			OpenFile oNext = aOpenFiles.get(i); // 0 indexed
-			if(  !bIncompleteOnly || !aFilesComplete.contains(oNext) ) {
+			if( oNext != null && (!bIncompleteOnly || !aFilesComplete.contains(oNext)) ) {
 				bRet = true;
 				break;
 			}
@@ -205,7 +209,7 @@ public class OpenFileList {
 	private OpenFile nextFileForward(boolean bIncompleteOnly) {
 		OpenFile oRet = null;
 		Integer iCurrent = aOpenFiles.indexOf(oCurrent);
-		for( int i = iCurrent + 1; i <= aOpenFiles.size(); i++ ) { // 0 indexed
+		for( int i = iCurrent + 1; i < aOpenFiles.size(); i++ ) { // 0 indexed
 			OpenFile oNext = aOpenFiles.get(i); // 0 indexed
 			if( !bIncompleteOnly || !aFilesComplete.contains(oNext) ) {
 				oRet = oNext;
@@ -213,7 +217,7 @@ public class OpenFileList {
 			}
 		}
 		if( oRet == null ) {
-			System.err.println( iCurrent + " of " + aOpenFiles.size() + " files returned null in next");
+			(new Exception( iCurrent + " of " + aOpenFiles.size() + " files returned null in next")).printStackTrace();;
 		}
 		return oRet;
 	}
@@ -240,7 +244,7 @@ public class OpenFileList {
 		Integer iCurrent = aOpenFiles.indexOf(oCurrent); // 0 indexed
 		for( int i = iCurrent - 1; i >= 0; i-- ) {
 			OpenFile oNext = aOpenFiles.get(i); // 0 indexed
-			if(  !bIncompleteOnly || !aFilesComplete.contains(oNext) ) {
+			if( oNext != null && (!bIncompleteOnly || !aFilesComplete.contains(oNext)) ) {
 				bRet = true;
 				break;
 			}
@@ -265,7 +269,7 @@ public class OpenFileList {
 			}
 		}
 		if( oRet == null ) {
-			System.err.println( iCurrent + " of " + aOpenFiles.size() + " files returned null in back");
+			(new Exception( iCurrent + " of " + aOpenFiles.size() + " files returned null in next")).printStackTrace();;
 		}
 		return oRet;
 	}

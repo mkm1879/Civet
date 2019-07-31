@@ -101,6 +101,10 @@ public class OpenFile {
 		return fileOut;
 	}
 	
+	public boolean isCurrentPageComplete() {
+		return isPageComplete(getCurrentPageNo());
+	}
+	
 	public boolean isPageComplete( Integer iPage ) {
 		boolean bRet = false;
 		if( aPagesDone.contains(iPage) ) 
@@ -200,6 +204,7 @@ public class OpenFile {
 	}
 	
 	public void setCurrentPagesDone() {
+		aPagesInCurrent.add(getCurrentPageNo());
 		for( Integer iPage : aPagesInCurrent ) {
 			if( !aPagesDone.contains(iPage) )
 				aPagesDone.add(iPage);
@@ -220,6 +225,13 @@ public class OpenFile {
 			source.gotoPageNo(iPage);
 		}
 		else throw new SourceFileException( "Page # " + iPage + " out of bounds 0 - " + getPageCount() );
+	}
+	
+	public boolean allPagesDone() {
+		boolean bRet = true;
+		if( morePagesForward(true) || morePagesBack(true) )
+			bRet = false;
+		return bRet;
 	}
 
 	/**
