@@ -36,6 +36,7 @@ public class SHPColumnMaps {
 			List<String> aRow = null;
 			int iCol = 0;
 			// For each column read all the rows
+			parser.reset();
 			for( String sField : parser.getHeader() ) {
 				ArrayList<String> aValues = new ArrayList<String>();
 				// For each row, if it has a value, add to the list for that header
@@ -69,6 +70,7 @@ public class SHPColumnMaps {
 	}
 	
 	public ArrayList<String> getMappedHeaders( String sField ) {
-		return hMaps.get(sField);
+		ArrayList<String> aRet = hMaps.get(sField);
+		return aRet;
 	}
 }

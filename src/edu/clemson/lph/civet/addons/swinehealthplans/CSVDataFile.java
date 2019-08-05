@@ -97,6 +97,7 @@ public class CSVDataFile {
 		CSVParserWrapper parser = new CSVParserWrapper(fr);
 		for( String sField : parser.getHeader() ) {
 			if(sField != null) {
+				sField = sField.replaceAll("[^a-zA-Z0-9# ]", "");
 				sField = sField.toUpperCase();
 				if( aKeys.contains(sField) ) {
 					// So we match the first of any given column name
