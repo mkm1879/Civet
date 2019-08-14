@@ -121,7 +121,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 				while( data.nextRow() && !bCanceled ) {
 					prog.setMessage(sProgMessage + getCVINumber(data)); 
 					String sXML = buildXml( data );
-			System.out.println(sXML);
+//			System.out.println(sXML);
 					// Send it!
 					String sRet = service.sendCviXML(sXML);
 					if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {

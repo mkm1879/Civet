@@ -161,7 +161,7 @@ public class SaveCVIModelThread extends Thread {
 			fileOut = new File(fDir, sXmlFileName);
 			sFilePath = fileOut.getAbsolutePath();
 			MessageDialog.showMessage(null, "Civet Save Errors", "Saving file: " + sFilePath);
-			logger.error("Saving error file: " + sFilePath);
+//			logger.error("Saving error file: " + sFilePath);
 		}
 		if( sFilePath == null ) 
 			return;
