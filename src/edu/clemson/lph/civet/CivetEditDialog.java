@@ -646,9 +646,14 @@ public final class CivetEditDialog extends JFrame {
 		gbc_jtfThisCity.gridy = 5;
 		pThisState.add(jtfThisCity, gbc_jtfThisCity);
 		// This control is hidden but used to force parallel logic
+		GridBagConstraints gbc_jtfThisCnty = new GridBagConstraints();
+		gbc_jtfThisCnty.fill = GridBagConstraints.BOTH;
+		gbc_jtfThisCnty.insets = new Insets(0, 0, 0, 0);
+		gbc_jtfThisCnty.gridx = 1;
+		gbc_jtfThisCnty.gridy = 5;
 		cbThisCounty = new JComboBox<String>();
 		cbThisCounty.setVisible(false);
-		pThisState.add(cbThisCounty, gbc_jtfThisCity );
+		pThisState.add(cbThisCounty, gbc_jtfThisCnty );
 
 		JLabel lThisZipCode = new JLabel("ZipCode:");
 		GridBagConstraints gbc_lThisZipCode = new GridBagConstraints();
