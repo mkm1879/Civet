@@ -90,6 +90,30 @@ public class PremCheckSum {
   }
 
   /**
+   * Check the identifier with checksum for validity.
+   * @param sID String Identifier with checksum
+   * @throws Exception If the identifier contains characters other than digits
+   * or capital letters.
+   * @return boolean true if last character is correct checksum.
+   */
+  public static boolean isValidPIN( String sID ) {
+	  boolean bRet = false;
+	  try {
+		  if( sID == null ) return false; 
+		  if( sID.trim().length() < 7 || sID.trim().length() > 8 ) return false;
+		  if( sID.trim().length() == 8 && !CivetConfig.hasStateIDChecksum() ) return true;  // Ignore State IDs in states without checksums
+		  if( sID.startsWith("OO") ) return false; // 'O' conflicts with 0 and is not allowed any longer
+		  char cCheckSum2 = sID.charAt( sID.length() -1 );
+		  String sID2 = sID.substring( 0, sID.length() - 1 );
+		  char cCheckSum = getChecksum( sID2 );
+		  bRet = ( cCheckSum == cCheckSum2 );
+	  } catch( Exception e ) {
+		  bRet = false;
+	  }
+	  return bRet;
+  }
+
+  /**
    * Try all iterations of zero to O, one to L, one to I, etc. and return first validated checksum
    * @param sID String string with invalid checksum
    * @return String with valid checksum or null if none found.
@@ -143,7 +167,13 @@ public class PremCheckSum {
   }
   
   public static void main( String args[] ) {
-	  System.out.println( findTypo( "IN73007P") );
+	  try {
+		System.out.println(getChecksum("00ABCD"));
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+//	  System.out.println( findTypo( "IN73007P") );
   }
   
 

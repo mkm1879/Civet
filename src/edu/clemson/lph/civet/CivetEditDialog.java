@@ -434,7 +434,7 @@ public final class CivetEditDialog extends JFrame {
 		gbc_cbOtherState.gridy = 0;	
 		pOtherState.add(cbOtherState, gbc_cbOtherState);
 
-		JLabel lOtherName = new JLabel("Name:");
+		JLabel lOtherName = new JLabel("Name or PIN:");
 		GridBagConstraints gbc_lOtherName = new GridBagConstraints();
 		gbc_lOtherName.fill = GridBagConstraints.BOTH;
 		gbc_lOtherName.insets = new Insets(0, 0, 0, 10);

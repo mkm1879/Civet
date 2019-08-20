@@ -6,7 +6,7 @@ homeStateKey=56
 #HERDS
 herdsWebServiceURL=https://LPHStage.clemson.edu/USAHerds.API
 brokenLIDs=true
-stateIDChecksum=FALSE
+stateIDChecksum=TRUE
 standAlone=no
 
 #Defaults

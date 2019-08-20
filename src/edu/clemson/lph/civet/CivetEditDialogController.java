@@ -508,6 +508,11 @@ public final class CivetEditDialogController {
 				refreshOtherCounties();
 			}
 		});
+		dlg.jtfOtherName.addFocusListener(new java.awt.event.FocusAdapter() {
+			public void focusLost(FocusEvent e) {
+				jtfOtherName_focusLost(e);
+			}
+		});
 		dlg.jtfOtherZip.addFocusListener( new FocusListener() {
 			@Override
 			public void focusGained(FocusEvent arg0) {
@@ -1077,6 +1082,37 @@ public final class CivetEditDialogController {
 			return;
 		}
 		gotoPage(iPage);
+	}
+
+	private void jtfOtherName_focusLost(FocusEvent e) {
+		String sOtherName = dlg.jtfOtherName.getText();	
+		if( sOtherName == null ) return;
+		int iLen = sOtherName.trim().length();
+		String sOtherStateID = null;
+		String sOtherPIN = null;
+		if( iLen == 8 ) sOtherStateID = sOtherName.toUpperCase();
+		else if( iLen == 8 ) sOtherPIN = sOtherName.toUpperCase();
+		else return;
+		try {
+			if( PremCheckSum.isValidPIN(sOtherPIN) || PremCheckSum.isValidPIN(sOtherStateID) ) {
+				UsaHerdsLookupPrems model = new UsaHerdsLookupPrems(sOtherStateID, sOtherPIN);
+				if( model != null ) {
+					if( model.first() )
+						if( model.next() ) {
+							dlg.jtfOtherName.setText(model.getPremName());
+							dlg.jtfOtherAddress.setText(model.getAddress());
+							dlg.jtfOtherCity.setText(model.getCity());
+							dlg.jtfOtherZip.setText(model.getZipCode());
+							dlg.cbOtherCounty.setSelectedItem(model.getCounty());
+							dlg.jtfPhone.requestFocus();
+						}
+				}
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			logger.error(e1);
+		}
+		
 	}
 
 	private void jtfThisPIN_focusLost(FocusEvent e) {
