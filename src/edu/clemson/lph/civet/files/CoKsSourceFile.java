@@ -193,6 +193,9 @@ public class CoKsSourceFile extends SourceFile {
 			InputSource is = new InputSource();
 			// Move namespace definition to each of the header nodes because we are losing the XFA document node later.
 			String sStrip = xmlString.replaceAll(" xfa:dataNode=\"dataGroup\"", " xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\"\nxfa:dataNode=\"dataGroup\"");
+			sStrip = sStrip.replaceAll("&#13;", "");
+			sStrip = sStrip.replace('Ñ', 'N');
+			System.out.println(sStrip);
 			is.setCharacterStream(new StringReader(sStrip));
 			doc = db.parse(is);
 			doc.setXmlStandalone(true);
