@@ -24,7 +24,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -44,10 +43,11 @@ import org.xml.sax.SAXException;
 import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.prefs.CivetConfig;
+import javax.xml.parsers.DocumentBuilder;
 import edu.clemson.lph.civet.xml.SafeDocBuilder;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.pdfgen.PDFUtils;
-import edu.clemson.lph.utils.FileUtils;
+import edu.clemson.lph.utils.FileUtils; 
 
 /**
  * 
@@ -178,7 +178,7 @@ public class CoKsSourceFile extends SourceFile {
 	private String toAcrobatXMLString() {
 		String sRet = null;
 		String xmlString = null;
-		Document doc = null;
+		Document doc = null; 
 		Node xmlNode = PDFUtils.getXFADataNode(pdfBytes);
 		if( xmlNode == null ) {
 			logger.error("Could not extract CO/KS data node from XFA PDF");		
@@ -195,7 +195,7 @@ public class CoKsSourceFile extends SourceFile {
 			String sStrip = xmlString.replaceAll(" xfa:dataNode=\"dataGroup\"", " xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\"\nxfa:dataNode=\"dataGroup\"");
 			sStrip = sStrip.replaceAll("&#13;", "");
 			sStrip = sStrip.replace('Ñ', 'N');
-			System.out.println(sStrip);
+//			System.out.println(sStrip);
 			is.setCharacterStream(new StringReader(sStrip));
 			doc = db.parse(is);
 			doc.setXmlStandalone(true);

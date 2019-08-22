@@ -38,5 +38,7 @@
 	<classpathentry kind="lib" path="lib/jpedal_LGPL.jar"/>
 	<classpathentry kind="lib" path="lib/javax.activation-1.2.0.jar"/>
 	<classpathentry kind="lib" path="lib/jai_core.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-api.jar"/>
+	<classpathentry kind="lib" path="lib/jaxb-impl-2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
