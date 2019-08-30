@@ -20,7 +20,6 @@
         <pathelement location="lib/axiom-dom-1.2.13.jar"/>
         <pathelement location="lib/axiom-impl-1.2.13.jar"/>
         <pathelement location="lib/axis2-adb-1.6.2.jar"/>
-        <pathelement location="lib/axis2-kernel-1.6.2.jar"/>
         <pathelement location="lib/axis2-transport-http-1.6.2.jar"/>
         <pathelement location="lib/axis2-transport-local-1.6.2.jar"/>
         <pathelement location="lib/commons-codec-1.9.jar"/>
@@ -30,9 +29,7 @@
         <pathelement location="lib/fluent-hc-4.5.3.jar"/>
         <pathelement location="lib/itextpdf-5.5.4.jar"/>
         <pathelement location="lib/javax.json-1.0.4.jar"/>
-        <pathelement location="lib/javax.json-api-1.0.jar"/>
         <pathelement location="lib/javax.activation-1.2.0.jar"/>
-		<pathelement location="lib/jaxb-api.jar"/>
 		<pathelement location="lib/somefile.jar"/>
         <pathelement location="lib/log4j-1.2.17.jar"/>
         <pathelement location="lib/mail-1.4.7.jar"/>
@@ -50,6 +47,8 @@
         <pathelement location="lib/jai_imageio-1.1.jar"/>
         <pathelement location="lib/jpedal.jar"/>
         <pathelement location="lib/jpedal_LGPL.jar"/>
+        <pathelement location="lib/jaxb-api.jar"/>
+        <pathelement location="lib/jaxb-impl-2.1.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -97,13 +96,13 @@
         <jar destfile="${dir.jarfile}/CivetPackage.jar">
             <manifest>
                 <attribute name="Main-Class" value="Civet"/>
-                <attribute name="Class-Path" value=". CivetPackage_lib/XmlSchema-1.4.7.jar
+                <attribute name="Class-Path" value=". 
+CivetPackage_lib/XmlSchema-1.4.7.jar
 CivetPackage_lib/addons.jar
 CivetPackage_lib/axiom-api-1.2.13.jar
 CivetPackage_lib/axiom-dom-1.2.13.jar
 CivetPackage_lib/axiom-impl-1.2.13.jar
 CivetPackage_lib/axis2-adb-1.6.2.jar
-CivetPackage_lib/axis2-kernel-1.6.2.jar
 CivetPackage_lib/axis2-transport-http-1.6.2.jar
 CivetPackage_lib/axis2-transport-local-1.6.2.jar
 CivetPackage_lib/commons-codec-1.9.jar
@@ -123,11 +122,10 @@ CivetPackage_lib/jai_imageio-1.1.jar
 CivetPackage_lib/jars.txt
 CivetPackage_lib/javax.activation-1.2.0.jar
 CivetPackage_lib/javax.json-1.0.4.jar
-CivetPackage_lib/javax.json-api-1.0.jar
-CivetPackage_lib/jaxb-api.jar
-CivetPackage_lib/jaxb-impl-2.1.jar
 CivetPackage_lib/jpedal.jar
 CivetPackage_lib/jpedal_LGPL.jar
+CivetPackage_lib/jaxb-api.jar
+CivetPackage_lib/jaxb-impl-2.1.jar
 CivetPackage_lib/log4j-1.2.17.jar
 CivetPackage_lib/mail-1.4.7.jar
 CivetPackage_lib/neethi-3.0.2.jar
@@ -144,7 +142,6 @@ CivetPackage_lib/wsdl4j-1.6.2.jar
         <copy file="${dir.jarfile}/lib/axiom-dom-1.2.13.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/axiom-impl-1.2.13.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/axis2-adb-1.6.2.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
-        <copy file="${dir.jarfile}/lib/axis2-kernel-1.6.2.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/axis2-transport-http-1.6.2.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/axis2-transport-local-1.6.2.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/commons-codec-1.9.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
@@ -154,10 +151,8 @@ CivetPackage_lib/wsdl4j-1.6.2.jar
         <copy file="${dir.jarfile}/lib/fluent-hc-4.5.3.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/itextpdf-5.5.4.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/javax.json-1.0.4.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
-        <copy file="${dir.jarfile}/lib/javax.json-api-1.0.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/javax.activation-1.2.0.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
-		<copy file="${dir.jarfile}/lib/jaxb-api.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
-        <copy file="${dir.jarfile}/lib/log4j-1.2.17.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
+       <copy file="${dir.jarfile}/lib/log4j-1.2.17.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/mail-1.4.7.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/neethi-3.0.2.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/sqljdbc4.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
@@ -171,7 +166,10 @@ CivetPackage_lib/wsdl4j-1.6.2.jar
         <copy file="${dir.jarfile}/lib/jai_codec.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/jai_core.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/jai_imageio-1.1.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
+        <copy file="${dir.jarfile}/lib/jpedal.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/jpedal_LGPL.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
+        <copy file="${dir.jarfile}/lib/jaxb-api.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
+        <copy file="${dir.jarfile}/lib/jaxb-impl-2.1.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
     </target>
 
 </project>

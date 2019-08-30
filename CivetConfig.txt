@@ -15,11 +15,15 @@ defaultDirection=Import
 cviValidDays=30
 saveCopies=true
 smallScreen=
+maxAnimals=
 rotation=0
 defaultPurpose=Other
 autoOpenPdf=yes
+supportXFA=no
+checkAccreditationStatus=TRUE
 
 #Email
+zohoKey=
 smtpHost=smtp-out.clemson.edu
 smtpPort=25
 smtpSecurity=NONE
@@ -37,6 +41,8 @@ EmailOutDirPath=CivetToBeMailedOut
 EmailErrorsDirPath=CivetToBeMailedErrors
 OutputDirPath=CivetOutbox
 vspsDirPath=VSPSData
+EmailOnlyInputPath=
+EmailOnlySendPath=
 
 #Files
 CoKsXSLTFile=CO_KS_eCVI_to_Standard2.xsl
@@ -45,6 +51,7 @@ acrobatPath=
 ExportEmailTemplate=CivetExportsEmailMessage.txt
 ImportErrorsEmailTemplate=CivetImportsErrorEmailMessage.txt
 ImportErrorsLetterTemplate=CivetImportsErrorLetterTemplate.txt
+EmailOnlyMessage=.\\EmailOnlyMessage.txt
 vetTableFile=VetTable.csv
 sppTableFile=SpeciesTable.csv
 errorTypeTableFile=ErrorTypeTable.csv
@@ -53,13 +60,6 @@ stateVetTableFile=StateVetTable.csv
 zipcodeTableFile=ZipTable.csv
 countiesTableFile=CountyTable.csv
 countyAliasesTableFile=CountyAliasesTable.csv
-
-#Robot
-robotInputPath=
-robotCompleteOutPath=
-robotXMLOutPath=
-robotOutputFormat=
-robotWaitSeconds=
 
 #Logging
 logLevel=INFO

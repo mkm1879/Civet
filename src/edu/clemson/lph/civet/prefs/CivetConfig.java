@@ -894,6 +894,10 @@ public class CivetConfig {
 	
 	public synchronized static boolean isJPedalXFA() {
 		boolean bRet = false;
+		String sVal = props.getProperty("supportXFA");
+		if( sVal == null || sVal.equalsIgnoreCase("false") || sVal.equalsIgnoreCase("no")) {
+			iJPedalType = LGPL;
+		}
 		if( iJPedalType == UNK ) {
 			final String xfaClassPath="org/jpedal/objects/acroforms/AcroRendererXFA.class";
 			ClassLoader loader = logger.getClass().getClassLoader();

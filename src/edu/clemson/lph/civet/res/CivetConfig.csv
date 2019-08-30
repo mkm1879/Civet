@@ -15,6 +15,7 @@ Defaults,N,maxAnimals,100,Num,,Maximum number of animals without a warning dialo
 Defaults,Y,rotation,0,Num,,Degrees to rotate PDF display by default.,
 Defaults,N,defaultPurpose,Other,Text,,Default value for purpose of movement drop down,
 Defaults,N,autoOpenPdf,TRUE,Bool,,Check to automatically open undisplayable PDFs in Acrobat.,
+Defaults,N,supportXFA,FALSE,Bool,,Allow JPedal to open unsafe XFA PDF files.,
 Defaults,N,checkAccreditationStatus,FALSE,Bool,,Do not display vets whos level 2 accreditation status is not Active.,
 Email,N,zohoKey,,Text,,Key for optional default email host,
 Email,Y,smtpHost,mail.clemson.edu,Text,,DNS name or IP address of email host,
