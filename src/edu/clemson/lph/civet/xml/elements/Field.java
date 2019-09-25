@@ -20,12 +20,12 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 package edu.clemson.lph.civet.xml.elements;
 public class Field {
 	public String premID;
-	public String addressBlock;
+	public Address address;
 	public String accessionDate;
 
-	public Field(String premID, String addressBlock, String accessionDate) {
+	public Field(String premID, Address address, String accessionDate) {
 		this.premID = premID;
-		this.addressBlock = addressBlock;
+		this.address = address;
 		this.accessionDate = accessionDate;
 	}
 }

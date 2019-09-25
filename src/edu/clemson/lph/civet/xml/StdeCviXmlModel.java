@@ -865,10 +865,12 @@ public class StdeCviXmlModel {
 			case MfrRFID:
 			case NUES9:
 			case NUES8:
-			case OtherOfficialID:
 			case ManagementID:
 				addIDNumber(animalTags, tag);
 				break; 
+			case OtherOfficialID:
+				addOtherOfficialID(animalTags, tag);
+				break;
 			case BrandImage:
 				addBrandImage(animalTags, tag);
 				break; 
@@ -1175,6 +1177,14 @@ public class StdeCviXmlModel {
 		String sElementName = tag.getElementName();
 		String sAfter = "Test,Vaccination";
 		Element eTag = helper.insertElementBefore(animal, sElementName, sAfter);
+		helper.setAttribute(eTag, "Number", tag.value);
+	}
+	
+	private void addOtherOfficialID(Element animal, AnimalTag tag) {
+		String sElementName = "OtherOfficialID";
+		String sAfter = "Test,Vaccination";
+		Element eTag = helper.insertElementBefore(animal, sElementName, sAfter);
+		helper.setAttribute(eTag, "Type", tag.otherType);
 		helper.setAttribute(eTag, "Number", tag.value);
 	}
 	

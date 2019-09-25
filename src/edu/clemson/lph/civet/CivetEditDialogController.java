@@ -1436,6 +1436,9 @@ public final class CivetEditDialogController {
 						String sOtherName = xStd.getDestination().premName;
 						if( sOtherName == null || sOtherName.trim().length() == 0 )
 							sOtherName = xStd.getDestination().personName;
+						if( sOtherName == null || sOtherName.trim().length() == 0 )
+							sOtherName = xStd.getDestination().personNameParts.firstName + " " +
+									xStd.getDestination().personNameParts.lastName;
 						//					jtfOtherPIN.setText(xStd.getDestinationPremId());
 						dlg.jtfOtherName.setText(sOtherName);
 						dlg.jtfOtherAddress.setText(xStd.getDestination().address.line1);
@@ -1519,6 +1522,11 @@ public final class CivetEditDialogController {
 						String sThisName = xStd.getDestination().premName;
 						if( sThisName == null || sThisName.trim().length() == 0 )
 							sThisName = xStd.getDestination().personName;
+						if( sThisName == null || sThisName.trim().length() == 0 )
+							sThisName = xStd.getDestination().personName;
+						if( sThisName == null || sThisName.trim().length() == 0 )
+							sThisName = xStd.getDestination().personNameParts.firstName + " " +
+									xStd.getDestination().personNameParts.lastName;
 						dlg.jtfThisName.setText(sThisName);
 						dlg.jtfThisPIN.setText(xStd.getDestination().premid);
 						dlg.jtfPhone.setText(xStd.getDestination().personPhone);

@@ -45,6 +45,8 @@
         <pathelement location="lib/jai_core.jar"/>
         <pathelement location="lib/jai_imageio-1.1.jar"/>
         <pathelement location="lib/jpedal.jar"/>
+        <pathelement location="lib/jaxb-api.jar"/>
+        <pathelement location="lib/jaxb-impl-2.1.jar"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
@@ -120,6 +122,8 @@ CivetPackage_lib/jai_imageio-1.1.jar
 CivetPackage_lib/jars.txt
 CivetPackage_lib/javax.activation-1.2.0.jar
 CivetPackage_lib/javax.json-1.0.4.jar
+CivetPackage_lib/jaxb-api.jar
+CivetPackage_lib/jaxb-impl-2.1.jar
 CivetPackage_lib/jpedal.jar
 CivetPackage_lib/log4j-1.2.17.jar
 CivetPackage_lib/mail-1.4.7.jar
@@ -161,6 +165,8 @@ CivetPackage_lib/wsdl4j-1.6.2.jar
         <copy file="${dir.jarfile}/lib/jai_codec.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/jai_core.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
         <copy file="${dir.jarfile}/lib/jai_imageio-1.1.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
+        <copy file="${dir.jarfile}/lib/jaxb-api.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
+        <copy file="${dir.jarfile}/lib/jaxb-impl-2.1.jar" todir="${dir.jarfile}/CivetPackage_lib"/>
     </target>
 
 </project>

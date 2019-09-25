@@ -29,6 +29,8 @@ import org.apache.log4j.Logger;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.xml.elements.AnimalTag;
 import edu.clemson.lph.civet.xml.elements.EquineDescription;
+import edu.clemson.lph.dialogs.MessageDialog;
+import edu.clemson.lph.utils.AnimalIDUtils;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
 public class VspsCviAnimal {
@@ -60,38 +62,64 @@ public class VspsCviAnimal {
 				String sOtherType = null;
 				if( sId == null || sId.trim().length() == 0 )
 					continue;
-				if( sId.startsWith("840") && sId.trim().length() >= 14 && sId.trim().length() <= 16) {
-					sId = sId.trim();
-					tag = new AnimalTag( AnimalTag.Types.AIN, sId);
+				String aTag[] = AnimalIDUtils.getIDandType(sId);
+				String sTrimmedId = aTag[0];
+				String sGuessedType = aTag[1];
+//				if( sId.startsWith("840") && sId.trim().length() >= 14 && sId.trim().length() <= 16) {
+//					sId = sId.trim();
+//					tag = new AnimalTag( AnimalTag.Types.AIN, sId);
+//				}
+//				else if( sId.startsWith("USA") && sId.trim().length() >= 14 && sId.trim().length() <= 16) {
+//					sId = sId.trim();
+//					tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, "USA", sId) ;
+//				}
+//				else if( "USDA Metal Tag".equalsIgnoreCase(sIdType) ) {
+//					if( sId.trim().length() == 9 ) 
+//						tag = new AnimalTag( AnimalTag.Types.NUES9, sId );
+//					else if( sId.trim().length() == 8 )
+//						tag = new AnimalTag( AnimalTag.Types.NUES8, sId );
+//					else {
+//						sOtherType = "USDA Metal Tag";
+//						tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, sOtherType, sId );
+//					}
+//				}
+				if( "MfrRFID".equals(sGuessedType) ) {
+					tag = new AnimalTag( AnimalTag.Types.MfrRFID, sTrimmedId );
 				}
-				else if( sId.startsWith("USA") && sId.trim().length() >= 14 && sId.trim().length() <= 16) {
-					sId = sId.trim();
-					tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, "USA", sId) ;
+				else if( "AIN".equals(sGuessedType) ) {
+					tag = new AnimalTag( AnimalTag.Types.AIN, sTrimmedId );
 				}
-				else if( "USDA Metal Tag".equalsIgnoreCase(sIdType) ) {
-					if( sId.trim().length() == 9 ) 
-						tag = new AnimalTag( AnimalTag.Types.NUES9, sId );
-					else if( sId.trim().length() == 8 )
-						tag = new AnimalTag( AnimalTag.Types.NUES8, sId );
-					else {
-						sOtherType = "USDA Metal Tag";
-						tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, sOtherType, sId );
-					}
+				else if( "NUES9".equals(sGuessedType) ) {
+					tag = new AnimalTag( AnimalTag.Types.NUES9, sTrimmedId );
+				}
+				else if( "NUES8".equals(sGuessedType) && "USDA Metal Tag".equalsIgnoreCase(sIdType) ) {
+					tag = new AnimalTag( AnimalTag.Types.NUES8, sTrimmedId );
+				}
+				else if( sGuessedType.startsWith("Short") ) {
+					tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, "OTHER", sTrimmedId );
+					MessageDialog.showMessage(null, "VSPS Error", "Invalid (long or short) ID '" + sId + "' found in VSPS file");
+				}
+				else if( sGuessedType.startsWith("Long") ) {
+					tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, "OTHER", sTrimmedId );
+					MessageDialog.showMessage(null, "VSPS Error", "Invalid ID '" + sId + "' found in VSPS file");
+				}
+				else if( sGuessedType.contains("USA") ) {
+					tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, "AMID", sTrimmedId );
 				}
 				else if( "Registered Name of Animal".equalsIgnoreCase(sIdType) ) {
 					EquineDescription ed = new EquineDescription( sId, sId );
 					tag = new AnimalTag( ed );
 				}
 				else if( "Tattoo".equalsIgnoreCase(sIdType) ) {
-					sOtherType = "Tattoo";
+					sOtherType = "TAT";
 					tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, sOtherType, sId );
 				}
 				else if( "Ear Tattoo".equalsIgnoreCase(sIdType) ) {
-					sOtherType = "Ear Tattoo";
+					sOtherType = "TAT";
 					tag = new AnimalTag( AnimalTag.Types.OtherOfficialID, sOtherType, sId );
 				}
 				else if( "Call Name".equalsIgnoreCase(sIdType) ) {
-					sOtherType = "Call Name";
+					sOtherType = "NAME";
 					tag = new AnimalTag( AnimalTag.Types.ManagementID, sOtherType, sId );
 				}
 				else {

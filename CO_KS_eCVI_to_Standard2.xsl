@@ -175,6 +175,8 @@
         </xsl:element>
     </xsl:template>
 
+<!-- TODO These really need to create complete Consignor and consignee records from 
+     origin and destination but with these addressed (parsed).-->
     <xsl:template match="eCVI/vetInspection/cviPG1/consignor/ownerAdd">
         <xsl:if test=". != ''">
             <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Consignor">
@@ -604,6 +606,9 @@
                             <xsl:attribute name="AccessionNumber">
                                 <xsl:text>Not provided</xsl:text>
                             </xsl:attribute>
+                            <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="LabName">
+                                <xsl:text>Not provided</xsl:text>
+                            </xsl:element>
                         </xsl:element>
                     </xsl:element>
                 </xsl:for-each>
