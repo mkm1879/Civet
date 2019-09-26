@@ -229,7 +229,9 @@ public class OpenFile {
 	
 	public boolean allPagesDone() {
 		boolean bRet = true;
-		if( morePagesForward(true) || morePagesBack(true) )
+		if( getType() == SourceFile.Types.CO_KS_PDF || getType() == SourceFile.Types.AgView )
+			bRet = true;  // Assume done whether opened or not
+		else if( morePagesForward(true) || morePagesBack(true) )
 			bRet = false;
 		return bRet;
 	}
