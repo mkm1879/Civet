@@ -1790,6 +1790,11 @@ public final class CivetEditDialogController {
 		// Collect up all values needed
 		fileToSave.getModel().checkExpiration();  // Set expiration date if not in data file already.
 		fileToSave.getModel().checkQuantity();  // Set expiration date if not in data file already.
+		String sInvalidID = fileToSave.getModel().checkAnimalIDTypes();
+		if( sInvalidID != null ) {
+			MessageDialog.showMessage(dlg, "Civet Warning", "Animal ID " + sInvalidID
+					+ " in certificate " + sCVINo + " is not valid for its type.\nChanged to 'OtherOfficialID'");
+		}
 		dlg.setImport(dlg.rbImport.isSelected());
 		boolean bInbound = dlg.rbImport.isSelected();
 		boolean bDataFile = currentFile.isDataFile();

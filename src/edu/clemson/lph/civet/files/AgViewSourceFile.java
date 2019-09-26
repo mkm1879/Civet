@@ -56,12 +56,18 @@ public class AgViewSourceFile extends SourceFile {
 			iTextPdfReader = new PdfReader(pdfBytes);
 			String sStdXML = FileUtils.readTextFile(fData);
 			sStdXML = AddressBlock2Address(sStdXML);
+			model = new StdeCviXmlModel(sStdXML);
+			String sInvalidID = model.checkAnimalIDTypes();
+			if( sInvalidID != null ) {
+				MessageDialog.showMessage(null, "Civet Warning", "Animal ID " + sInvalidID
+						+ " in certificate " + model.getCertificateNumber() + " is not valid for its type.\nChanged to 'OtherOfficialID'");
+				sStdXML = model.getXMLString();
+			}
 			if( !isValidCVI(sStdXML) ) {
 				FileUtils.writeTextFile(sStdXML, "FailedTransform" + fData.getName());
 				throw new SourceFileException( "Failed to convert AgView Source\n"
 						+ fFile.getName() + "\nFix manually and try again");
 			}
-			model = new StdeCviXmlModel(sStdXML);
 			model.setOrUpdatePDFAttachment(getPDFBytes(), fSource.getName());
 		} catch (Exception e) {
 			throw new SourceFileException(e);

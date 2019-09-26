@@ -40,6 +40,7 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.elements.*;
 import edu.clemson.lph.controls.PhoneField;
 import edu.clemson.lph.dialogs.MessageDialog;
+import edu.clemson.lph.utils.AnimalIDUtils;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.XMLUtility;
 
@@ -1456,6 +1457,40 @@ public class StdeCviXmlModel {
 				eGroup.setAttribute("Quantity", sQuantity);
 			}
 		}
+	}
+	
+	public String checkAnimalIDTypes() {
+		String sRet = null;
+		// For each Animal 
+		ArrayList<Animal> aAnimals = getAnimals();
+		for( Animal animal : aAnimals ) {
+			ArrayList<AnimalTag> aTags = animal.animalTags;
+			for( AnimalTag tag : aTags ) {
+				switch( tag.type ) {
+				case AIN:
+				case MfrRFID:
+				case NUES9:
+				case NUES8:
+					if( !AnimalIDUtils.isValid(tag.value, tag.getElementName())) {
+						fixAnimalTag( animal, tag );
+						sRet = tag.value;
+					}
+					break;
+				default:
+					break;  // The other types either don't have regexes or are too complicated to fix
+				}
+			}
+		}
+		return sRet;
+	}
+	
+	private void fixAnimalTag( Animal animal, AnimalTag tag ) {
+		Element eAnimal = animal.eAnimal;
+		Element eAnimalTags = helper.getChildElementByName(eAnimal, "AnimalTags");
+		helper.removeChild(eAnimalTags, tag.getElementName());
+		Element eNewTag = helper.appendChild(eAnimalTags, "OtherOfficialID");
+		eNewTag.setAttribute("Type", "OTHER");
+		eNewTag.setAttribute("Number", tag.value);
 	}
 	
 	/**

@@ -26,6 +26,7 @@ public class AnimalIDUtils {
 	public static void main( String args[]) {
 		String aTag[] = AnimalIDUtils.getIDandType( "microchip # 840123456789012 more");
 		System.out.println( aTag[0] + " is a " + aTag[1] );
+		System.out.println( AnimalIDUtils.isValid("982123456789012", "MfrRFID" ));
 	}
 	
 	public static String[] getIDandType(String sIDin) {
@@ -44,6 +45,23 @@ public class AnimalIDUtils {
 			}
 		}
 		return aRet;
+	}
+	
+	public static boolean isValid( String sValue, String sType ) {
+		boolean bRet = false;
+		int iIndex = -1;
+		for( int i = 0; i < aTagTypes.length; i++ ) {
+			if( aTagTypes[i].equals(sType) ) {
+				iIndex = i;
+				break;
+			}
+		}
+		Pattern pattern = Pattern.compile(aTagPatterns[iIndex]);
+		Matcher matcher = pattern.matcher(sValue);
+		if( matcher.find() ) {
+			bRet = true;
+		}
+		return bRet;
 	}
 
 }

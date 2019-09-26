@@ -46,8 +46,10 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import javax.xml.parsers.DocumentBuilder;
 import edu.clemson.lph.civet.xml.SafeDocBuilder;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.pdfgen.PDFUtils;
-import edu.clemson.lph.utils.FileUtils; 
+import edu.clemson.lph.utils.FileUtils;
+import edu.clemson.lph.utils.Validator; 
 
 /**
  * 
@@ -126,6 +128,17 @@ public class CoKsSourceFile extends SourceFile {
 					String sAcrobatXml = toAcrobatXMLString();
 					String sStdXml = toStdXMLString( sAcrobatXml );
 					model = new StdeCviXmlModel(sStdXml);
+					String sInvalidID = model.checkAnimalIDTypes();
+					if( sInvalidID != null ) {
+						MessageDialog.showMessage(null, "Civet Warning", "Animal ID " + sInvalidID
+								+ " in certificate " + model.getCertificateNumber() + " is not valid for its type.\nChanged to 'OtherOfficialID'");
+						sStdXml = model.getXMLString();
+					}
+					if( !isValidCVI(sStdXml) ) {
+						FileUtils.writeTextFile(sStdXml, "FailedTransform" + fData.getName());
+						throw new SourceFileException( "Failed to convert CO/KS Source\n"
+								+ super.sFileName + "\nFix manually and try again");
+					}
 					byte pdfBytes[] = getPDFBytes();
 					model.setOrUpdatePDFAttachment(pdfBytes, fSource.getName());
 				}
@@ -138,6 +151,25 @@ public class CoKsSourceFile extends SourceFile {
 		}
 		return model;
 	}
+	
+	private boolean isValidCVI( String sXml ) {
+		boolean bRet = true;
+		String sSchemaPath = CivetConfig.getSchemaFile();
+		if( sSchemaPath != null && sSchemaPath.trim().length() > 0 ) {
+			Validator v = new Validator(sSchemaPath);
+			if( v != null ) {
+				if( !v.isValidXMLString(sXml) ) {
+					MessageDialog.showMessage(null, "Civet: Error", "Failed translation of XFA data\n"
+							+ v.getLastError() 
+							+ "\nFix manually and try again" );
+					logger.error("Civet: Error Failed translation of AgView AddressBlock\n");
+					bRet = false;
+				}
+			}
+		}
+		return bRet;
+	}
+
 
 	@Override
 	public byte[] getPDFBytes() {
