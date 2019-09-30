@@ -32,6 +32,7 @@ import javax.xml.transform.stream.StreamSource;
 import com.itextpdf.text.pdf.PdfReader;
 
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
+import edu.clemson.lph.pdfgen.PDFUtils;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -69,6 +70,12 @@ public class CivetSourceFile extends SourceFile {
 			logger.error("File " + sFilePath + " does not exist");
 		}
 	}
+	
+	@Override
+	public boolean isXFA() {
+		return PDFUtils.isXFA(pdfBytes);
+	}
+
 	
 	private boolean isV1(String sStdXml) {
 		boolean bRet = false;

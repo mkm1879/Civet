@@ -73,6 +73,7 @@ import edu.clemson.lph.civet.xml.elements.Animal;
 import edu.clemson.lph.civet.xml.elements.GroupLot;
 import edu.clemson.lph.civet.xml.elements.NameParts;
 import edu.clemson.lph.civet.xml.elements.Person;
+import edu.clemson.lph.civet.xml.elements.Premises;
 import edu.clemson.lph.civet.xml.elements.SpeciesCode;
 import edu.clemson.lph.civet.xml.elements.Veterinarian;
 import edu.clemson.lph.dialogs.MessageDialog;
@@ -1425,41 +1426,41 @@ public final class CivetEditDialogController {
 				String sOriginState = xStd.getOrigin().address.state;
 				if( sOriginState != null ) {
 					sOriginState = States.getState(sOriginState);
+					Premises pOrigin = xStd.getOrigin();
+					if( pOrigin == null ) {
+						MessageDialog.showMessage(dlg, "Civet Error", "Data File lacks Origin information\nEnter manually");
+						return;
+					}
+					Premises pDestination = xStd.getDestination();	
+					if( pDestination == null ) {
+						MessageDialog.showMessage(dlg, "Civet Error", "Data File lacks Destination information\nEnter manually");
+						return;
+					}
 					if( sOriginState != null && sOriginState.equalsIgnoreCase(CivetConfig.getHomeState()) ) {
 						dlg.setImport(false);
 						dlg.rbExport.setSelected(true);
-						String sOtherState = States.getState(xStd.getDestination().address.state);
+						String sOtherState = States.getState(pDestination.address.state);
 						dlg.cbOtherState.setSelectedValue(sOtherState);
 						refreshOtherCounties();
-						//					jtfOtherPIN.setText("");
-						// For display purposes only!  Display person name if no prem name.
-						String sOtherName = xStd.getDestination().premName;
-						if( sOtherName == null || sOtherName.trim().length() == 0 )
-							sOtherName = xStd.getDestination().personName;
-						if( sOtherName == null || sOtherName.trim().length() == 0 )
-							sOtherName = xStd.getDestination().personNameParts.firstName + " " +
-									xStd.getDestination().personNameParts.lastName;
-						//					jtfOtherPIN.setText(xStd.getDestinationPremId());
+						String sOtherName = getBestNameForPremises( pDestination );
 						dlg.jtfOtherName.setText(sOtherName);
-						dlg.jtfOtherAddress.setText(xStd.getDestination().address.line1);
-						dlg.jtfOtherCity.setText(xStd.getDestination().address.town);
+						dlg.jtfOtherAddress.setText(pDestination.address.line1);
+						dlg.jtfOtherCity.setText(pDestination.address.town);
 						String sOtherStateCode = dlg.cbOtherState.getSelectedCode();
-						String sOtherCountyIn = xStd.getDestination().address.county;
-						String sOtherZip = xStd.getDestination().address.zip;
+						String sOtherCountyIn = pDestination.address.county;
+						String sOtherZip = pDestination.address.zip;
 						String sOtherHerdsCounty = getHerdsCounty( sOtherStateCode, sOtherCountyIn, sOtherZip );
 						dlg.cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
 						dlg.jtfOtherZip.setText(sOtherZip);
-						String sThisName = xStd.getOrigin().premName;
-						if( sThisName == null || sThisName.trim().length() == 0 )
-							sThisName = xStd.getOrigin().personName;
+						String sThisName = getBestNameForPremises( pOrigin );
 						dlg.jtfThisName.setText(sThisName);
-						dlg.jtfThisPIN.setText(xStd.getOrigin().premid);
-						dlg.jtfPhone.setText(xStd.getOrigin().personPhone);
-						dlg.jtfAddress.setText(xStd.getOrigin().address.line1);
-						dlg.jtfThisCity.setText(xStd.getOrigin().address.town);
+						dlg.jtfThisPIN.setText(pOrigin.premid);
+						dlg.jtfPhone.setText(pOrigin.personPhone);
+						dlg.jtfAddress.setText(pOrigin.address.line1);
+						dlg.jtfThisCity.setText(pOrigin.address.town);
 						String sThisStateCode = CivetConfig.getHomeStateAbbr();
-						String sThisCountyIn = xStd.getOrigin().address.county;
-						String sThisZip = xStd.getOrigin().address.zip;
+						String sThisCountyIn = pOrigin.address.county;
+						String sThisZip = pOrigin.address.zip;
 						String sThisHerdsCounty = getHerdsCounty( sThisStateCode, sThisCountyIn, sThisZip );
 						dlg.cbThisCounty.setSelectedItem(sThisHerdsCounty);
 						dlg.jtfZip.setText(sThisZip);
@@ -1499,42 +1500,31 @@ public final class CivetEditDialogController {
 					else {
 						dlg.setImport(true);
 						dlg.rbImport.setSelected(true);
-						String sOtherState = States.getState(xStd.getOrigin().address.state);
+						String sOtherState = States.getState(pOrigin.address.state);
 						dlg.cbOtherState.setSelectedValue(sOtherState);
-						//					jtfOtherPIN.setText("");
-						// For display purposes only!  Display person name if no prem name.
-						String sOtherName = xStd.getOrigin().premName;
-						if( sOtherName == null || sOtherName.trim().length() == 0 )
-							sOtherName = xStd.getOrigin().premName;
+						String sOtherName = getBestNameForPremises( pOrigin );
 						//					cbOtherCounty.setText(xStd.getOriginPremId());
 						dlg.jtfOtherName.setText(sOtherName);
-						dlg.jtfOtherAddress.setText(xStd.getOrigin().address.line1);
-						dlg.jtfOtherCity.setText(xStd.getOrigin().address.town);
+						dlg.jtfOtherAddress.setText(pOrigin.address.line1);
+						dlg.jtfOtherCity.setText(pOrigin.address.town);
 						refreshOtherCounties();
 						String sOtherStateCode = dlg.cbOtherState.getSelectedCode();
-						String sOtherCountyIn = xStd.getOrigin().address.county;
-						String sOtherZip = xStd.getOrigin().address.zip;
+						String sOtherCountyIn = pOrigin.address.county;
+						String sOtherZip = pOrigin.address.zip;
 						if( sOtherZip != null )
 							sOtherZip = sOtherZip.trim();
 						String sOtherHerdsCounty = getHerdsCounty( sOtherStateCode, sOtherCountyIn, sOtherZip );
 						dlg.jtfOtherZip.setText(sOtherZip);
 						dlg.cbOtherCounty.setSelectedItem(sOtherHerdsCounty);
-						String sThisName = xStd.getDestination().premName;
-						if( sThisName == null || sThisName.trim().length() == 0 )
-							sThisName = xStd.getDestination().personName;
-						if( sThisName == null || sThisName.trim().length() == 0 )
-							sThisName = xStd.getDestination().personName;
-						if( sThisName == null || sThisName.trim().length() == 0 )
-							sThisName = xStd.getDestination().personNameParts.firstName + " " +
-									xStd.getDestination().personNameParts.lastName;
+						String sThisName = getBestNameForPremises( pDestination );
 						dlg.jtfThisName.setText(sThisName);
-						dlg.jtfThisPIN.setText(xStd.getDestination().premid);
-						dlg.jtfPhone.setText(xStd.getDestination().personPhone);
-						dlg.jtfAddress.setText(xStd.getDestination().address.line1);
-						dlg.jtfThisCity.setText(xStd.getDestination().address.town);
+						dlg.jtfThisPIN.setText(pDestination.premid);
+						dlg.jtfPhone.setText(pDestination.personPhone);
+						dlg.jtfAddress.setText(pDestination.address.line1);
+						dlg.jtfThisCity.setText(pDestination.address.town);
 						String sThisState = CivetConfig.getHomeStateAbbr();
-						String sThisCountyIn = xStd.getDestination().address.county;
-						String sThisZip = xStd.getDestination().address.zip;
+						String sThisCountyIn = pDestination.address.county;
+						String sThisZip = pDestination.address.zip;
 						if( sThisZip != null )
 							sThisZip = sThisZip.trim();
 						String sThisHerdsCounty = getHerdsCounty( sThisState, sThisCountyIn, sThisZip);
@@ -1596,6 +1586,27 @@ public final class CivetEditDialogController {
 				logger.error("Unexpected error loading from XML standard document", e);
 			}
 		}
+	}
+	
+	private String getBestNameForPremises( Premises prem ) {
+		String sRet = null;
+		if( prem != null ) {
+			if( prem.premName != null && prem.premName.trim().length() > 0 ) {
+				sRet = prem.premName;
+			}
+			else {
+				NameParts nameParts = prem.personNameParts;
+				if( nameParts != null && 
+						( (  nameParts.firstName != null && nameParts.firstName.trim().length() > 0 ) ||
+					      ( nameParts.lastName != null && nameParts.lastName.trim().length() > 0 ) ) ) {
+					sRet = nameParts.firstName + " " + nameParts.lastName;
+				}
+				else if( prem.personName != null ){
+					sRet = prem.personName;
+				}
+			}
+		}
+		return sRet;
 	}
 	
 	private String getHerdsCounty( String sStateCode, String sCounty, String sZip ) {

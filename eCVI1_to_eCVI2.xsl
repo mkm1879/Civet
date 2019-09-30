@@ -92,144 +92,61 @@
         </xsl:element>
     </xsl:template>
 
-    <xsl:template match="v1:Origin/v1:Address">
-        <xsl:call-template name="FullAddress">
-            <xsl:with-param name="parent">
-                <xsl:value-of select="."/>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-    <xsl:template match="v1:Destination/v1:Address">
-        <xsl:call-template name="FullAddress">
-            <xsl:with-param name="parent">
-                <xsl:value-of select="."/>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-    <xsl:template match="v1:Consignor/v1:Address">
-        <xsl:call-template name="FullAddress">
-            <xsl:with-param name="parent">
-                <xsl:value-of select="."/>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-    <xsl:template match="v1:Consignee/v1:Address">
-        <xsl:call-template name="FullAddress">
-            <xsl:with-param name="parent">
-                <xsl:value-of select="."/>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-    <xsl:template match="v1:Veterinarian/v1:Address">
-        <xsl:call-template name="FullAddress">
-            <xsl:with-param name="parent">
-                <xsl:value-of select="."/>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
 
-    <xsl:template name="FullAddress">
-        <xsl:param name="parent"/>
-        <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Address">
-            <xsl:if test="exsl:node-set(exsl:node-set($parent))/v1:Line1">
+    <xsl:template match="v1:Address">
+       <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Address">
+           <xsl:if test="./v1:Line1">
                 <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Line1">
-                    <xsl:value-of select="exsl:node-set(exsl:node-set($parent))/v1:Line1"/>
+                    <xsl:value-of select="./v1:Line1"/>
                 </xsl:element>
             </xsl:if>
-            <xsl:if test="exsl:node-set(exsl:node-set($parent))/v1:Line2">
+            <xsl:if test="./v1:Line2">
                 <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Line2">
-                    <xsl:value-of select="exsl:node-set(exsl:node-set($parent))/v1:Line2"/>
+                    <xsl:value-of select="./v1:Line2"/>
                 </xsl:element>
             </xsl:if>
-            <xsl:if test="exsl:node-set($parent)/v1:Town">
-                <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Line2">
-                    <xsl:value-of select="exsl:node-set($parent)/v1:Town"/>
+            <xsl:if test="./v1:Town">
+                <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Town">
+                    <xsl:value-of select="./v1:Town"/>
                 </xsl:element>
             </xsl:if>
-            <xsl:if test="exsl:node-set($parent)/v1:County">
+            <xsl:if test="./v1:County">
                 <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="County">
-                    <xsl:value-of select="exsl:node-set($parent)/v1:County"/>
+                    <xsl:value-of select="./v1:County"/>
                 </xsl:element>
             </xsl:if>
             <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="State">
                 <xsl:choose>
-                    <xsl:when test="exsl:node-set($parent)/v1:State">
-                        <xsl:value-of select="exsl:node-set($parent)/v1:State"/>
+                    <xsl:when test="./v1:State">
+                        <xsl:value-of select="./v1:State"/>
                     </xsl:when>
                     <xsl:otherwise>AA</xsl:otherwise>
                 </xsl:choose>
             </xsl:element>
-            <xsl:if test="exsl:node-set($parent)/v1:ZIP">
-                <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Line2">
-                    <xsl:value-of select="exsl:node-set($parent)/v1:ZIP"/>
+            <xsl:if test="./v1:ZIP">
+                <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="ZIP">
+                    <xsl:value-of select="./v1:ZIP"/>
                 </xsl:element>
             </xsl:if>
-            <xsl:if test="exsl:node-set($parent)/v1:Country">
+            <xsl:if test="./v1:Country">
                 <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="Country">
-                    <xsl:value-of select="exsl:node-set($parent)/v1:Country"/>
+                    <xsl:value-of select="./v1:Country"/>
                 </xsl:element>
             </xsl:if>
-            <xsl:if test="exsl:node-set($parent)/v1:GeoPoint">
+            <xsl:if test="./v1:GeoPoint">
                 <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="GeoPoint">
                     <xsl:attribute name="Latitude">
-                        <xsl:value-of select="exsl:node-set($parent)/v1:GeoPoint/@lat"/>
+                        <xsl:value-of select="./v1:GeoPoint/@lat"/>
                     </xsl:attribute>
                     <xsl:attribute name="Longitude">
-                        <xsl:value-of select="exsl:node-set($parent)/v1:GeoPoint/@lng"/>
+                        <xsl:value-of select="./v1:GeoPoint/@lng"/>
                     </xsl:attribute>
                 </xsl:element>
             </xsl:if>
         </xsl:element>
     </xsl:template>
 
-<!--    <xsl:template name="BlockedAddress">
-        <xsl:param name="parent"/>
-        <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="AddressBlock">
-             <xsl:if test="exsl:node-set($parent)/v1:Line1">
-                <xsl:value-of select="exsl:node-set($parent)/v1:Line1"/>
-            </xsl:if>
-            <xsl:text>, </xsl:text>
-            <xsl:if test="exsl:node-set($parent)/v1:Line2">
-                <xsl:value-of select="exsl:node-set($parent)/v1:Line2"/>
-            </xsl:if>
-            <xsl:text>, </xsl:text>
-            <xsl:choose>
-                <xsl:when test="exsl:node-set($parent)/v1:Town">
-                    <xsl:value-of select="exsl:node-set($parent)/v1:Town"/>
-                </xsl:when>
-                <xsl:otherwise>No Town</xsl:otherwise>
-            </xsl:choose>
-            <xsl:text>, </xsl:text>
-            <xsl:if test="exsl:node-set($parent)/v1:County">
-                <xsl:value-of select="exsl:node-set($parent)/v1:County"/>
-            </xsl:if>
-            <xsl:text>, </xsl:text>
-            <xsl:choose>
-                <xsl:when test="exsl:node-set($parent)/v1:State">
-                    <xsl:value-of select="exsl:node-set($parent)/v1:State"/>
-                </xsl:when>
-                <xsl:otherwise>No State</xsl:otherwise>
-            </xsl:choose>
-            <xsl:text>, </xsl:text>
-            <xsl:choose>
-                <xsl:when test="exsl:node-set($parent)/v1:ZIP">
-                    <xsl:value-of select="exsl:node-set($parent)/v1:ZIP"/>
-                </xsl:when>
-                <xsl:otherwise>00000</xsl:otherwise>
-            </xsl:choose>
-            <xsl:if test="exsl:node-set($parent)/v1:Country">
-                <xsl:text>, </xsl:text>
-                <xsl:value-of select="exsl:node-set($parent)/v1:Country"/>
-            </xsl:if>
-            <xsl:if test="exsl:node-set($parent)/v1:GeoPoint">
-                <xsl:text>, </xsl:text>
-                <xsl:value-of select="exsl:node-set($parent)/v1:GeoPoint/@lat"/>
-                <xsl:text>, </xsl:text>
-                <xsl:value-of select="exsl:node-set($parent)/v1:GeoPoint/@lng"/>
-            </xsl:if>
-        </xsl:element>
-    </xsl:template>
--->
+
     <xsl:template match="@lat">
         <xsl:attribute name="Latitude">
             <xsl:value-of select="."/>
@@ -281,9 +198,6 @@
                                         <xsl:value-of select="v1:Laboratory/v1:PremId"/>
                                     </xsl:element>
                                 </xsl:if>
-                                 <xsl:call-template name="FullAddress">
-                                    <xsl:with-param name="parent" select="v1:Laboratory/v1:Address"/>
-                                </xsl:call-template>
                             </xsl:element>
                         </xsl:when>
                         <xsl:otherwise>
@@ -298,9 +212,6 @@
                                 <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="PremId">
                                     <xsl:value-of select="v1:Laboratory/v1:PremId"/>
                                 </xsl:element>
-                                <xsl:call-template name="FullAddress">
-                                    <xsl:with-param name="parent" select="v1:Laboratory/v1:Address"/>
-                                </xsl:call-template>
                             </xsl:element>
                         </xsl:otherwise>
                     </xsl:choose>

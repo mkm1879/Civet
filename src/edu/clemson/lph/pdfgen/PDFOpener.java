@@ -50,16 +50,16 @@ public class PDFOpener {
 		t.start();
 	}
 
-	/**
-	 * Opens the current Page in default PDF reader
-	 */
-	public void openPDFFileInAcrobat( String sFileName ) {
-		File fIn = new File( sFileName );
-		File fTemp = FileUtils.copyBinaryFile(fIn);
-		Thread t = new OpenRecordInAcrobat(fTemp.getAbsolutePath());
-		t.start();
-	}
-
+//	/**
+//	 * Opens the current Page in default PDF reader
+//	 */
+//	public void openPDFFileInAcrobat( String sFileName ) {
+//		File fIn = new File( sFileName );
+//		File fTemp = FileUtils.copyBinaryFile(fIn);
+//		Thread t = new OpenRecordInAcrobat(fTemp.getAbsolutePath());
+//		t.start();
+//	}
+//
 	public String extractRecordToTempPDF(byte[] pdfBytes) {
 		String sFileOut = null;
 		File fOut = null;
