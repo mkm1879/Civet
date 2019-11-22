@@ -46,6 +46,7 @@ public class OpenFile {
 	public OpenFile( String sFilePath ) throws SourceFileException {
 		File fFile = new File( sFilePath );
 		if( fFile != null && fFile.exists() && fFile.isFile() ) {
+			try {
 			// Factory method will populate with correct file type.
 			// All variation in handling should be encapsulated in a SourceFile subclass.
 			source = SourceFile.readSourceFile(fFile);
@@ -54,7 +55,11 @@ public class OpenFile {
 			aPagesInCurrent = new ArrayList<Integer>();
 			aPagesInCurrent.add(getCurrentPageNo());
 			aPagesDone = new ArrayList<Integer>();
-		}
+			} catch( Exception e ) {
+				logger.error("Failed to read file " + sFilePath , e );
+				throw new SourceFileException( "Failed to read file " + sFilePath );
+			}
+		} 
 		else {
 			throw new SourceFileException( "Attempt to read non-file " + sFilePath );
 		}
@@ -67,6 +72,7 @@ public class OpenFile {
 	 */
 	public OpenFile( File fFile ) throws SourceFileException {
 		if( fFile != null && fFile.exists() && fFile.isFile() ) {
+			try {
 			// Factory method will populate with correct file type.
 			// All variation in handling should be encapsulated in a SourceFile subclass.
 			source = SourceFile.readSourceFile(fFile);
@@ -75,6 +81,10 @@ public class OpenFile {
 			aPagesInCurrent = new ArrayList<Integer>();
 			aPagesInCurrent.add(getCurrentPageNo());
 			aPagesDone = new ArrayList<Integer>();
+		} catch( Exception e ) {
+			logger.error("Failed to read file " + fFile.getName() , e );
+			throw new SourceFileException( "Failed to read file " + fFile.getName() );
+		}
 		}
 		else if( fFile != null ) {
 			throw new SourceFileException( "Attempt to read non-file " + fFile.getName() );

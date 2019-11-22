@@ -58,6 +58,8 @@ public class NameParts {
 			sb.append(", ");
 		}
 		String sRet = sb.toString();
-		return sRet.substring(0, sRet.length() - 2);
+		if(sRet != null && sRet.trim().length() > 2 && sRet.trim().endsWith(", ") )
+			sRet = sRet.substring(0, sRet.length() - 2);
+		return sRet;
 	}
 }
