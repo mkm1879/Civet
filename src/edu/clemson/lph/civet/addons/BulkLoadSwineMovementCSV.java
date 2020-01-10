@@ -204,31 +204,34 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 		String sCompany = data.getCompany();
 		
 		boolean bValid = true;
-		String sSourcePIN = data.getSourcePin();
-		try {
-			if( !PremCheckSum.isValid(sSourcePIN) ) {
+		sRet = data.getCertificateNumber();
+		if( sRet == null ) {
+			String sSourcePIN = data.getSourcePin();
+			try {
+				if( !PremCheckSum.isValid(sSourcePIN) ) {
+					sSourcePIN = null;
+				}
+			} catch (Exception e1) {
 				sSourcePIN = null;
 			}
-		} catch (Exception e1) {
-			sSourcePIN = null;
-		}
-		String sDestinationPIN = data.getDestPin();
-		try {
-			if( !PremCheckSum.isValid(sDestinationPIN) ) {
+			String sDestinationPIN = data.getDestPin();
+			try {
+				if( !PremCheckSum.isValid(sDestinationPIN) ) {
+					sDestinationPIN = null;
+				}
+			} catch (Exception e1) {
 				sDestinationPIN = null;
 			}
-		} catch (Exception e1) {
-			sDestinationPIN = null;
-		}
-		if( !bValid && bRequireBothPINs ) {
-			MessageDialog.messageLater(fParent, "Civet: Missing PIN",
-					"Both source and destination PINs are required for bulk shipment records.\n" +
-							"Source PIN = " + sSourcePIN + "\n" +
-							"Dest PIN = " + sDestinationPIN + "\n" +
-							"Ship Date = " + sDate );
-		}
-		else {
-			sRet = sCompany + sSourcePIN + sDestinationPIN + sDate;
+			if( !bValid && bRequireBothPINs ) {
+				MessageDialog.messageLater(fParent, "Civet: Missing PIN",
+						"Both source and destination PINs are required for bulk shipment records.\n" +
+								"Source PIN = " + sSourcePIN + "\n" +
+								"Dest PIN = " + sDestinationPIN + "\n" +
+								"Ship Date = " + sDate );
+			}
+			else {
+				sRet = sCompany + sSourcePIN + sDestinationPIN + sDate;
+			}
 		}
 		return sRet;
 	}

@@ -138,6 +138,7 @@ class CSVNineDashThreeDataFile {
 		String sCVINumber = get("CVINumber");
 		return sCVINumber;
 	}
+	
 	public java.util.Date getInspectionDate() {
 		String sDate = get( "InspectionDate".toUpperCase() );
 		java.util.Date dRet = null;

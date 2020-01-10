@@ -477,6 +477,7 @@ class NineDashThreeDialog extends JFrame {
 		mSpListModel.clear();
 		xmlModel = new StdeCviXmlModel();
 		idModel = new AnimalIDListTableModel( xmlModel );
+		tblIDs.setModel(idModel);
 		if( !pConsignor.ckSticky.isSelected() )
 		{
 			pConsignor.jtfPIN.setText("");

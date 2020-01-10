@@ -191,6 +191,11 @@ public class CSVDataFile {
 	public String getCompany() {
 		return sCompany;
 	}
+	
+	public String getCertificateNumber() {
+		String sRet = get("CertificateNumber");
+		return sRet;
+	}
 
 	public String getOtherState() {
 		String sSourceState = getSourceState();
