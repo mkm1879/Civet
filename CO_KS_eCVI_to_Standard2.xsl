@@ -637,7 +637,7 @@
                 test="
                     translate($purpose, $smallcase, $uppercase) =
                     translate('Backgrounding', $smallcase, $uppercase)"
-                >other</xsl:when>
+                >Other</xsl:when>
             <xsl:when
                 test="
                     translate($purpose, $smallcase, $uppercase) =
@@ -677,7 +677,7 @@
                 test="
                     translate($purpose, $smallcase, $uppercase) =
                     translate('Production', $smallcase, $uppercase)"
-                >other</xsl:when>
+                >Other</xsl:when>
             <xsl:when
                 test="
                     translate($purpose, $smallcase, $uppercase) =
