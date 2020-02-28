@@ -756,7 +756,7 @@
             </xsl:if>
             <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="State">
                 <xsl:choose>
-                    <xsl:when test="$state">
+                    <xsl:when test="$state and $state != ''">
                         <xsl:value-of select="$state"/>
                     </xsl:when>
                     <xsl:otherwise>AA</xsl:otherwise>

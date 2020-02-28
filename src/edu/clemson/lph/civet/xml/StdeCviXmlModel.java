@@ -221,6 +221,13 @@ public class StdeCviXmlModel {
 				helper.setAttribute(eVet, "LicenseNumber", vet.licenseNumber);
 			if( vet.nationalAccreditationNumber  != null && vet.nationalAccreditationNumber .trim().length() > 0 )
 				helper.setAttribute(eVet, "NationalAccreditationNumber", vet.nationalAccreditationNumber );
+			if( vet.address.state == null || vet.address.state.trim().length() == 0 ) {
+				String sOriginState = getOriginStateCode();
+				if( sOriginState != null && sOriginState.trim().length() > 0 )
+					vet.address.state = sOriginState;
+				else // Things are really a mess use an obscure state code to get past schema
+					vet.address.state = "AA";
+			}
 			Element person = helper.getOrAppendChild(eVet,"Person");
 			if (vet.person.nameParts != null) {  
 				Element eName = helper.getOrAppendChild(person, "Name");
@@ -1473,6 +1480,11 @@ public class StdeCviXmlModel {
 		for( Animal animal : aAnimals ) {
 			ArrayList<AnimalTag> aTags = animal.animalTags;
 			for( AnimalTag tag : aTags ) {
+				if( !AnimalIDUtils.isValid(tag.value, tag.getElementName())) {
+					String[] ret = AnimalIDUtils.getIDandType(tag.value);
+					if( ret[1] != null && (ret[1].startsWith("Short") || ret[1].startsWith("Long") ) )
+						tag.type = AnimalTag.Types.OtherOfficialID;
+				}
 				switch( tag.type ) {
 				case AIN:
 				case MfrRFID:
