@@ -2305,6 +2305,7 @@ public final class CivetEditDialogController {
 						model.removeGroupLot(group);
 					}
 					else if( iCountIds > iNumOfSpp ) {
+						MessageDialog.showMessage(dlg, "Civet Error: Animal Count", "Number of tags " + iCountIds + " > number of animals " + iNumOfSpp + " for species " + sSpeciesCode);
 						logger.error("Number of tags " + iCountIds + " > number of animals " + iNumOfSpp + " for species " + sSpeciesCode);
 						// Leave things alone.
 					}
