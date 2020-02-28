@@ -1485,7 +1485,7 @@ public class StdeCviXmlModel {
 					else sRet = sRet + ", " + tag.value;
 					String[] tagRet = AnimalIDUtils.getIDandType(tag.value);
 					if( tagRet[1] != null && (tagRet[1].startsWith("Short") || tagRet[1].startsWith("Long") ) )
-						tag.type = AnimalTag.Types.OtherOfficialID;
+						fixAnimalTag( animal, tag );
 				}
 				switch( tag.type ) {
 				case AIN:

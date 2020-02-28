@@ -965,6 +965,7 @@ public final class CivetEditDialogController {
 	public int getPageNo() { return currentFile.getCurrentPageNo(); }
 	
 	private void checkPreDate() {
+		boolean bRet = false;
 		java.util.Date dateInspected = dlg.jtfDateInspected.getDate();
 		java.util.Date dateReceived = dlg.jtfDateReceived.getDate();
 		if( (dateInspected != null && dateReceived != null && dateInspected.getTime() > dateReceived.getTime() )
@@ -978,6 +979,7 @@ public final class CivetEditDialogController {
 					aErrorKeys.add(sShortName);
 				dlg.lError.setVisible(true);
 			}
+			MessageDialog.showMessage(dlg, "Civet Warning: Predated", "Warning: Issue data later than received date.");
 		}
 	}
 
