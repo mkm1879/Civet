@@ -267,6 +267,13 @@ public class StdeCviXmlModel {
 				address = getAddress(eAddress);
 			}
 			String sLicenseState = eVet.getAttribute("LicenseState");
+			if( sLicenseState == null || sLicenseState.trim().length() == 0 ) {
+				String sOriginState = getOriginStateCode();
+				if( sOriginState != null && sOriginState.trim().length() > 0 )
+					sLicenseState = sOriginState;
+				else // Things are really a mess use an obscure state code to get past schema
+					sLicenseState = "AA";
+			}
 			String sLicenseNumber = eVet.getAttribute("LicenseNumber");
 			String sNationalAccreditationNumber = eVet.getAttribute("NationalAccreditationNumber");
 			Person vetPerson = getPerson(eVet);
