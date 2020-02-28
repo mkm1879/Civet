@@ -1481,8 +1481,10 @@ public class StdeCviXmlModel {
 			ArrayList<AnimalTag> aTags = animal.animalTags;
 			for( AnimalTag tag : aTags ) {
 				if( !AnimalIDUtils.isValid(tag.value, tag.getElementName())) {
-					String[] ret = AnimalIDUtils.getIDandType(tag.value);
-					if( ret[1] != null && (ret[1].startsWith("Short") || ret[1].startsWith("Long") ) )
+					if( sRet == null ) sRet = tag.value;
+					else sRet = sRet + ", " + tag.value;
+					String[] tagRet = AnimalIDUtils.getIDandType(tag.value);
+					if( tagRet[1] != null && (tagRet[1].startsWith("Short") || tagRet[1].startsWith("Long") ) )
 						tag.type = AnimalTag.Types.OtherOfficialID;
 				}
 				switch( tag.type ) {
@@ -1492,7 +1494,8 @@ public class StdeCviXmlModel {
 				case NUES8:
 					if( !AnimalIDUtils.isValid(tag.value, tag.getElementName())) {
 						fixAnimalTag( animal, tag );
-						sRet = tag.value;
+						if( sRet == null ) sRet = tag.value;
+						else sRet = sRet + ", " + tag.value;
 					}
 					break;
 				default:

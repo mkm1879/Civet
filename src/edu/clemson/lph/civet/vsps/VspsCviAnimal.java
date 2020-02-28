@@ -65,6 +65,7 @@ public class VspsCviAnimal {
 				String aTag[] = AnimalIDUtils.getIDandType(sId);
 				String sTrimmedId = aTag[0];
 				String sGuessedType = aTag[1];
+// Replace all this with above getIDandType
 //				if( sId.startsWith("840") && sId.trim().length() >= 14 && sId.trim().length() <= 16) {
 //					sId = sId.trim();
 //					tag = new AnimalTag( AnimalTag.Types.AIN, sId);

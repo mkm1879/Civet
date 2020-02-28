@@ -31,6 +31,8 @@ public class AnimalIDUtils {
 	
 	public static String[] getIDandType(String sIDin) {
 		String aRet[] = new String[2];
+		if( sIDin == null ) return aRet;
+		sIDin = sIDin.trim();
 		aRet[0] = sIDin;
 		aRet[1] = "Unknown";
 		for( int i = 0; i < aTagPatterns.length; i++ ) {
