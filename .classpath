@@ -158,5 +158,15 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/jaxb-api-2.4.0-b180830.0359.jar"/>
+	<classpathentry kind="lib" path="lib/bcprov-ext-jdk15on-164.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/E:/EclipseJava/Civet/LibSources/bctls-jdk15on-164/javadoc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/bcprov-jdk15on-164.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/E:/EclipseJava/Civet/LibSources/bctls-jdk15on-164/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
