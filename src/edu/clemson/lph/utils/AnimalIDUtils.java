@@ -52,6 +52,9 @@ public class AnimalIDUtils {
 	public static boolean isValid( String sValue, String sType ) {
 		boolean bRet = false;
 		int iIndex = -1;
+		if( sValue == null || sValue.trim().length() == 0 ) {
+			return false;
+		}
 		for( int i = 0; i < aTagTypes.length; i++ ) {
 			if( aTagTypes[i].equals(sType) ) {
 				iIndex = i;

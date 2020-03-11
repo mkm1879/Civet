@@ -221,12 +221,16 @@ public class StdeCviXmlModel {
 				helper.setAttribute(eVet, "LicenseNumber", vet.licenseNumber);
 			if( vet.nationalAccreditationNumber  != null && vet.nationalAccreditationNumber .trim().length() > 0 )
 				helper.setAttribute(eVet, "NationalAccreditationNumber", vet.nationalAccreditationNumber );
-			if( vet.address.state == null || vet.address.state.trim().length() == 0 ) {
+			if( vet.address != null && ( vet.address.state == null || vet.address.state.trim().length() == 0 ) ) {
 				String sOriginState = getOriginStateCode();
 				if( sOriginState != null && sOriginState.trim().length() > 0 )
 					vet.address.state = sOriginState;
 				else // Things are really a mess use an obscure state code to get past schema
 					vet.address.state = "AA";
+				// Actually write to the XML
+				Element eAddr = helper.getOrAppendChild(eVet, "Address");
+				Element eState = helper.getOrAppendChild(eAddr, "State");
+				eState.setTextContent(vet.address.state);
 			}
 			Element person = helper.getOrAppendChild(eVet,"Person");
 			if (vet.person.nameParts != null) {  
@@ -1475,21 +1479,23 @@ public class StdeCviXmlModel {
 	
 	public String checkAnimalIDTypes() {
 		String sRet = null;
+		
 		// For each Animal 
 		ArrayList<Animal> aAnimals = getAnimals();
 		for( Animal animal : aAnimals ) {
 			ArrayList<AnimalTag> aTags = animal.animalTags;
 			for( AnimalTag tag : aTags ) {
-				if( !AnimalIDUtils.isValid(tag.value, tag.getElementName())) {
-					if( sRet == null ) sRet = tag.value;
-					else sRet = sRet + ", " + tag.value;
-					String[] tagRet = AnimalIDUtils.getIDandType(tag.value);
-					if( tagRet[1] != null && (tagRet[1].startsWith("Short") || tagRet[1].startsWith("Long") ) )
-						fixAnimalTag( animal, tag );
-				}
 				switch( tag.type ) {
 				case AIN:
 				case MfrRFID:
+					if( !AnimalIDUtils.isValid(tag.value, tag.getElementName())) {
+						if( sRet == null ) sRet = tag.value;
+						else sRet = sRet + ", " + tag.value;
+						String[] tagRet = AnimalIDUtils.getIDandType(tag.value);
+						if( tagRet[1] != null && (tagRet[1].startsWith("Short") || tagRet[1].startsWith("Long") ) )
+							fixAnimalTag( animal, tag );
+					}
+					break;
 				case NUES9:
 				case NUES8:
 					if( !AnimalIDUtils.isValid(tag.value, tag.getElementName())) {
@@ -1512,6 +1518,8 @@ public class StdeCviXmlModel {
 		helper.removeChild(eAnimalTags, tag.getElementName());
 		Element eNewTag = helper.appendChild(eAnimalTags, "OtherOfficialID");
 		eNewTag.setAttribute("Type", "OTHER");
+		if( tag.value == null || tag.value.trim().length() == 0 ) 
+			tag.value = "BLANK";
 		eNewTag.setAttribute("Number", tag.value);
 	}
 	
