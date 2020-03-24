@@ -782,6 +782,22 @@ public class CivetConfig {
 		return sRet;
 	}
 
+	public synchronized static String getConveyanceXSLTFile() {
+		String sRet = props.getProperty("ConveyanceXSLTFile");
+		if( sRet == null || sRet.trim().length() == 0 )  { 
+			exitError("xsltFile");
+			return null;
+		}
+		File f = new File( sRet );
+		if( !f.exists() || !f.isFile() ) {
+			logger.error( "ConveyanceXSLTFile " + sRet + " does not exist or is not a file");
+			System.exit(1);
+		}
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+
 	public synchronized static String getSchemaFile() {
 		String sRet = props.getProperty("StdSchema");
 		if( sRet == null || sRet.trim().length() == 0 )  { 

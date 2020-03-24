@@ -37,6 +37,7 @@ public abstract class SourceFile {
 		mCVI,
 		AgView,
 		Civet,
+		Conveyance,
 		Unknown
 	}
 
@@ -242,6 +243,9 @@ public abstract class SourceFile {
 		case Civet:
 			sourceFile = new CivetSourceFile( fFile );
 			break;
+		case Conveyance:
+			sourceFile = new ConveyanceSourceFile( fFile );
+			break;
 		case Unknown:
 			logger.error("Unknown file type " + fFile);
 		default:
@@ -268,6 +272,9 @@ public abstract class SourceFile {
 			}
 			else if( MCviSourceFile.isMCvi(fFile) ) {
 				type = Types.mCVI;
+			}
+			else if( ConveyanceSourceFile.isConveyance(fFile) ) {
+				type = Types.Conveyance;
 			}
 			else {
 				type = Types.PDF;

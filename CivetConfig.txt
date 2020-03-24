@@ -46,6 +46,7 @@ EmailOnlySendPath=
 
 #Files
 CoKsXSLTFile=CO_KS_eCVI_to_Standard2.xsl
+ConveyanceXSLTFile=Conveyance_to_Standard2.xsl
 StdSchema=ecvi2.xsd
 acrobatPath=
 ExportEmailTemplate=CivetExportsEmailMessage.txt
