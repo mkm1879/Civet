@@ -121,7 +121,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 				while( data.nextRow() && !bCanceled ) {
 					prog.setMessage(sProgMessage + getCVINumber(data)); 
 					String sXML = buildXml( data );
-//			System.out.println(sXML);
+			System.out.println(sXML);
 					// Send it!
 					String sRet = service.sendCviXML(sXML);
 					if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {
@@ -151,7 +151,8 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 	
 	private String buildXml( CSVDataFile data ) throws IOException {
 		StdeCviXmlModel xmlModel = new StdeCviXmlModel();
-		StringTokenizer tok = new StringTokenizer(data.getVet(), " ," );
+		String sVet = data.getVet();
+		StringTokenizer tok = new StringTokenizer(sVet, " ," );
 		String sFirst = tok.nextToken();
 		String sLast = tok.nextToken();
 		VetLookup vetLookup = new VetLookup( sLast, sFirst );

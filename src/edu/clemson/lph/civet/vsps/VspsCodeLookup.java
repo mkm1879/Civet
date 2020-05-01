@@ -70,7 +70,7 @@ public class VspsCodeLookup {
 	public static String getPurposeCode( String sPurpose ) {
 		String sRet;
 		sRet = hPurposeCodeLu.get(sPurpose);
-		if( sRet == null ) sRet = "other";
+		if( sRet == null ) sRet = "Other";
 		return sRet;
 	}
 }

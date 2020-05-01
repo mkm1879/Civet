@@ -84,6 +84,9 @@ public class CSVDataFile {
 		if( sFileName.toUpperCase().contains("PURVIS") ) {
 			sCompany = "PURVIS";
 		}
+		if( sFileName.toUpperCase().startsWith("TDM") ) {
+			sCompany = "TDM";
+		}
 		if( sCompany.equals("UN_") && sFileName.startsWith("IN") ) {
 			sCompany="TDM";
 		}
@@ -267,6 +270,7 @@ public class CSVDataFile {
 		if( sRet == null && getCompany().equals("CACTUS") ) sRet = cactusVets.getVetNameForPin(getSourcePin());
 		if( sRet == null && getCompany().equals("CACTUS") ) sRet = "Peter Schneider";
 		if( sRet == null && getCompany().equals("CFF") ) sRet = "Peter Schneider";
+		if( sRet == null && getCompany().equals("TDM") ) sRet = "Robert Sexton";
 		return sRet;
 	}
 
