@@ -11,7 +11,7 @@ import edu.clemson.lph.civet.threads.SaveCVIModelThread;
  */
 public class OpenFileSaveQueue {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private OpenFile fileIn = null;
+	private String fileIn = null;
 	private CivetEditDialogController controller;
 	private int iThreads = 0;
 
@@ -25,22 +25,22 @@ public class OpenFileSaveQueue {
 //	    super.finalize();
 //	}
 	
-	public void push( OpenFile openFile ) {
-		OpenFile fileToSave = fileIn;
+	public void push( String openFile ) {
+		String fileToSave = fileIn;
 		fileIn = openFile;
 		if( fileToSave != null ) {
 			save(fileToSave);
 		}
 	}
 	
-	public OpenFile pop() {
-		OpenFile fRet = fileIn;
+	public String pop() {
+		String fRet = fileIn;
 		fileIn = null;
 		return fRet;
 	}
 	
 	public void flush() {
-		OpenFile fileToSave = fileIn;
+		String fileToSave = fileIn;
 		fileIn = null;
 		if( fileToSave != null ) {
 			save( fileToSave );
@@ -60,9 +60,9 @@ public class OpenFileSaveQueue {
 		}
 	}
 
-	private synchronized void save(OpenFile fileToSave) {
+	private synchronized void save(String xmlToSave) {
 		iThreads++;
-		SaveCVIModelThread saveThread = new SaveCVIModelThread( this, fileToSave);
+		SaveCVIModelThread saveThread = new SaveCVIModelThread( this, xmlToSave);
 		saveThread.start();
 	}
 

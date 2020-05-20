@@ -19,33 +19,30 @@ import edu.clemson.lph.utils.FileUtils;
 public class SaveCVIModelThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private OpenFileSaveQueue queue;
-	private OpenFile fileToSave;
-	private String sXml;
+	String xmlToSave;
 	StdeCviXmlModel model;
 	
 	private String sXmlFileName;
 
 
-	public SaveCVIModelThread( OpenFileSaveQueue q, OpenFile fileToSave ) {
+	public SaveCVIModelThread( OpenFileSaveQueue q, String xmlToSave ) {
 		this.queue = q;
-		this.fileToSave = fileToSave;
-		StdeCviXmlModel modelToSave = fileToSave.getModel();
-		if( !fileToSave.getModel().hasPDFAttachment() ) {
-			MessageDialog.showMessage(null, "Civet Error", "No attachment to save for " + modelToSave.getCertificateNumber() );
-			logger.error("No attachment to save for " + modelToSave.getCertificateNumber() );
+		this.xmlToSave = xmlToSave;
+		model = new StdeCviXmlModel( xmlToSave );
+		if( !model.hasPDFAttachment() ) {
+			MessageDialog.showMessage(null, "Civet Error", "No attachment to save for " + model.getCertificateNumber() );
+			logger.error("No attachment to save for " + model.getCertificateNumber() );
 		}
-		sXml = modelToSave.getXMLString();  // Don't pass model across thread boundary!
 	}
 	
 	@Override
 	public void run() {
 		try {
-			model = new StdeCviXmlModel( sXml );
 			setUpFileNamesAndContent();
-			saveXml( sXml );
+			saveXml( xmlToSave );
 			String sSmtp = CivetConfig.getSmtpHost();
 			if( sSmtp != null && !"NONE".equalsIgnoreCase(sSmtp) ) {
-				saveEmail( sXml );
+				saveEmail( xmlToSave );
 			}
 		}
 		catch (Exception ex) {
@@ -72,7 +69,7 @@ public class SaveCVIModelThread extends Thread {
 			+ "_To_" + model.getDestinationStateCode() + "_" 
 			+ model.getCertificateNumber() + ".cvi";
 		sXmlFileName = FileUtils.replaceInvalidFileNameChars(sXmlFileName);	
-		String sOriginalFileName = fileToSave.getSource().getFileName();
+		String sOriginalFileName = model.getPDFAttachmentFilename();
 		checkExistingFiles( sOriginalFileName, sXmlFileName );
 		checkAttachment();
 	}

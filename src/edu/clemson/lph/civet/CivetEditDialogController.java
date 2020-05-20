@@ -815,10 +815,18 @@ public final class CivetEditDialogController {
 		dlg.setFocusTraversalPolicy(traversal);
 	}
 	
+//	private void setFileCompleteStatus() {
+//		if( !currentFile.getSource().canSplit() // File goes as a whole
+//				|| (!currentFile.morePagesForward(true) ) ) { // or no pages left
+//			// && !currentFile.morePagesBack(true) // if we don't want to ignore skipped pages
+//			if( !isReopened() )
+//				openFileList.markFileComplete(currentFile);
+//		}
+//	}
+	
 	private void setFileCompleteStatus() {
 		if( !currentFile.getSource().canSplit() // File goes as a whole
-				|| (!currentFile.morePagesForward(true) ) ) { // or no pages left
-			// && !currentFile.morePagesBack(true) // if we don't want to ignore skipped pages
+				|| currentFile.isFileComplete() ) { // or no pages left
 			if( !isReopened() )
 				openFileList.markFileComplete(currentFile);
 		}
@@ -828,21 +836,24 @@ public final class CivetEditDialogController {
 	/**
 	 * Add the currently displayed page to model retained 
 	 * from previous page and open controls for further editing
+	 * @throws IOException 
 	 */
 	private void doAddToPrevious() {
 		try {
 			dlg.bAddToPrevious.setVisible(false);
 			int iCurrentPage = currentFile.getCurrentPageNo();
-			OpenFile prevFile = currentFile; // reference to file in OpenFileList
-			currentFile = saveQueue.pop();   // retrieve the previously "saved" file
-			openFileList.replaceFile(prevFile, currentFile); // put the saved version in the list
-			populateFromStdXml( currentFile.getModel() ); // populate the form
-			currentFile.addPageToCurrent(iCurrentPage); // add the new page.  Is the old page marked complete?
+			String sXml = saveQueue.pop();   // retrieve the previously "saved" file
+			StdeCviXmlModel model = new StdeCviXmlModel(sXml);
+			currentFile.prependFile(model); 
+			populateFromStdXml( model ); // populate the form
+			currentFile.addPageToCurrent(iCurrentPage); // add the new page.  Is the old page marked complete? No!
 			sPrevCVINo = null;  // Disable duplicate check because it will be the saved one.
 			viewer.viewPage(iCurrentPage); 
 			viewer.updatePdfDisplay();
 
 		} catch (SourceFileException e) {
+			logger.error(e);
+		} catch (IOException e) {
 			logger.error(e);
 		}
 	}
@@ -1750,6 +1761,8 @@ public final class CivetEditDialogController {
 			currentFile.setCurrentPagesDone();
 			cStartingComponentFocus = null;
 			// For multi-page PDF this creates a new OpenFile from the current pages.  All others just self.
+			// This is the root of all evil.  The logic should not be File Save but FilePagesSave.  For
+			// non-multi CVI PDF files pages will be all.  
 			OpenFile fileToSave = currentFile;
 			currentFile = fileToSave.newOpenFileFromSource();
 			openFileList.replaceFile( fileToSave, currentFile ); 
@@ -1881,7 +1894,7 @@ public final class CivetEditDialogController {
 
 		// Precondition: PDF, Animals and Errors already in model.
 		// NOTE!!!!  model is not thread safe at this point.  
-		buildXml( fileToSave.getModel(), bInbound, bDataFile, 
+		String sXMLModel = buildXml( fileToSave.getModel(), bInbound, bDataFile, 
 				aSpecies, sOtherStateCode,
 				sOtherName, sOtherAddress, sOtherCity, sOtherCounty, sOtherZipcode, //sOtherPIN,
 				sThisPremisesId, sThisName, sPhone,
@@ -1889,7 +1902,7 @@ public final class CivetEditDialogController {
 				dDateIssued, dDateReceived, iIssuedByKey, sIssuedByName, sCVINo, sCVINoSource,
 				sMovementPurpose);
 		sPrevCVINo = sCVINo;
-		saveQueue.push(fileToSave);
+		saveQueue.push(sXMLModel);
 		return true;
 	}
 	
@@ -2168,7 +2181,7 @@ public final class CivetEditDialogController {
 		}
 	}
 	
-	private void buildXml( StdeCviXmlModel model,  
+	private String buildXml( StdeCviXmlModel model,  
 			boolean bImport, boolean bIsDataFile, ArrayList<SpeciesRecord> aSpecies, 
 			String sOtherStateCode, String sOtherName, String sOtherAddress, String sOtherCity, 
 			String sOtherCounty, String sOtherZipcode, //String sOtherPIN,
@@ -2177,6 +2190,7 @@ public final class CivetEditDialogController {
 			java.util.Date dDateIssued, java.util.Date dDateReceived, 
 			Integer iIssuedByKey, String sIssuedByName, String sCVINo, String sCVINoSource,
 			String sMovementPurpose) {
+		String sRet = null;
 		if( model == null ) {
 			logger.error("Null model in buildXML");
 			model = new StdeCviXmlModel();
@@ -2331,6 +2345,8 @@ public final class CivetEditDialogController {
 		if( sCVINoSource != null && sCVINoSource.equals("Paper") )
 			sCVINoSource = sOriginStateCode + " Paper";
 		model.setCertificateNumberSource(sCVINoSource);
+		sRet = model.getXMLString();
+		return sRet;
 	}
 
 }

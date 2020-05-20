@@ -37,21 +37,6 @@ public class OpenFileList {
 		aOpenFiles = new ArrayList<OpenFile>();
 		aFilesComplete = new ArrayList<OpenFile>();		
 	}
-
-
-	/**
-	 * @throws SourceFileException 
-	 * @throws PdfException 
-	 * 
-	 */
-	public OpenFileList( ArrayList<File> aFiles ) throws SourceFileException, PdfException {
-		aOpenFiles = new ArrayList<OpenFile>();
-		aFilesComplete = new ArrayList<OpenFile>();
-		for( File f : aFiles ) {
-			OpenFile openFile = new OpenFile(f);
-			aOpenFiles.add(openFile);
-		}
-	}
 	
 	/**
 	 * This method is called from OpenFilesThread for each file in the list.  
@@ -149,8 +134,9 @@ public class OpenFileList {
     	String sDirIn = CivetConfig.getInputDirPath();
     	for( OpenFile fCurrent : aFilesComplete ) {
     		// don't move if reopened.  Seems like a good way to only move from inbox.
+    		// don't I check this elsewhere CivetEditDialogController.setFileCompleteStatus
     		if( fCurrent.getSource().fSource.getAbsolutePath().startsWith(sDirIn) ) {
-    			if(fCurrent.allPagesDone() ) {
+    			if(fCurrent.isFileComplete() ) {
     				if( fCurrent.getSource().moveToDirectory(dirOut) )
     					iRet++;
     			}
@@ -164,17 +150,6 @@ public class OpenFileList {
 			logger.error("Repeat mark complete of file: " + completeFile.getSource().getFileName() );
 		else
 			aFilesComplete.add(completeFile);
-	}
-	
-	public void markFileIncomplete( OpenFile inCompleteFile ) {
-		if( !aOpenFiles.contains(inCompleteFile) ) {
-			// This is a file created from pages of multi-page need to insert
-			aOpenFiles.add( getCurrentFileNo() - 1, inCompleteFile );
-		}
-		else if( !aFilesComplete.contains(inCompleteFile) ) 
-			logger.error("Mark incomplete of file not yet complete: " + inCompleteFile.getSource().getFileName() );
-		else
-			aFilesComplete.remove(inCompleteFile);
 	}
 	
 	/*
