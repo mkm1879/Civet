@@ -111,7 +111,7 @@ public class ConveyanceSourceFile extends SourceFile {
 		boolean bRet = false;
 		if( fFile == null ) return false;
 		String sName = fFile.getName();
-		if( sName.toLowerCase().endsWith(".pdf") ) {
+		if( sName.toLowerCase().endsWith("for-CIVET.pdf") ) {
 			if( fFile.exists() && fFile.isFile() ) {
 				String sTop;
 				try {
