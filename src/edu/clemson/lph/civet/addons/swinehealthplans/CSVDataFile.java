@@ -73,12 +73,14 @@ public class CSVDataFile {
 		int iUnderscore = f.getName().indexOf('_');
 		if( iUnderscore > 0 ) {
 			sCompany = f.getName().substring(0, iUnderscore);
+			sCompany = sCompany.toUpperCase();
 		}
 		else {
 			sCompany = "UN_";
 		}
 		// Exception case
-		if( sFileName.toUpperCase().contains("SE HEALTH") ) {
+		if( sFileName.toUpperCase().contains("SE HEALTH")
+				|| sFileName.toUpperCase().contains("CACTUS")) {
 			sCompany = "CACTUS";
 		}
 		if( sFileName.toUpperCase().contains("PURVIS") ) {
@@ -87,13 +89,15 @@ public class CSVDataFile {
 		if( sFileName.toUpperCase().startsWith("TDM") ) {
 			sCompany = "TDM";
 		}
-		if( sCompany.equals("UN_") && sFileName.startsWith("IN") ) {
+		if( sCompany.equals("UN_") && sFileName.toUpperCase().startsWith("IN") ) {
 			sCompany="TDM";
 		}
-		if( sCompany.equals("Murphy Brown") ) {
+		if( sCompany.equals("Murphy Brown")
+				|| sFileName.toUpperCase().contains("MURPHYBROWN")
+				|| sFileName.toUpperCase().contains("MURPHY BROWN")) {
 			sCompany="MB";
 		}
-		if( sCompany.equals("Prestage") ) {
+		if( sCompany.equals("Prestage") || sFileName.toUpperCase().contains("PRESTAGE")) {
 			sCompany="PR";
 		}
 		FileReader fr = new FileReader( f );
