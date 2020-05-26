@@ -137,6 +137,8 @@ public class OpenFileList {
     		// don't I check this elsewhere CivetEditDialogController.setFileCompleteStatus
     		if( fCurrent.getSource().fSource.getAbsolutePath().startsWith(sDirIn) ) {
     			if(fCurrent.isFileComplete() ) {
+    				if( CivetConfig.isSaveSkippedPages() )
+    					fCurrent.saveSkippedPages();
     				if( fCurrent.getSource().moveToDirectory(dirOut) )
     					iRet++;
     			}

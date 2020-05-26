@@ -197,7 +197,7 @@ class PdfSourceFile extends SourceFile {
 		return pdfBytes;
 	}
 	
-	private byte[] getPageBytes(int iPage) {
+	public byte[] getPageBytes(int iPage) {
 		byte bOut[] = null;
 		ByteArrayOutputStream baOut = new ByteArrayOutputStream();
 		try {

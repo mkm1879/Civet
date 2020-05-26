@@ -846,6 +846,8 @@ public final class CivetEditDialogController {
 			StdeCviXmlModel model = new StdeCviXmlModel(sXml);
 			currentFile.prependFile(model); 
 			populateFromStdXml( model ); // populate the form
+			if( iCurrentPage > 1 )
+				currentFile.addPageToCurrent(iCurrentPage - 1); 
 			currentFile.addPageToCurrent(iCurrentPage); // add the new page.  Is the old page marked complete? No!
 			sPrevCVINo = null;  // Disable duplicate check because it will be the saved one.
 			viewer.viewPage(iCurrentPage); 

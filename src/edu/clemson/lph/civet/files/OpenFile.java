@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.pdfgen.MergePDF;
 import edu.clemson.lph.utils.FileUtils;
@@ -247,12 +248,30 @@ public class OpenFile {
 	}
 	
 	public boolean isFileComplete() {
-		boolean bRet = true;
+		boolean bRet = false;
 		if( !source.canSplit() && aPagesDone.size() > 0 )
 			bRet = true;  
-		else if( morePagesForward(true) || morePagesBack(true) )
-			bRet = false;
+		else if( CivetConfig.isSaveSkippedPages() && !morePagesForward(true) )
+			bRet = true;
+		else if( CivetConfig.isIgnoreSkippedPages() && !morePagesForward(true) )
+			bRet = true;
+		else if( !morePagesForward(true) && !morePagesBack(true) )
+			bRet = true;
 		return bRet;
+	}
+
+	public void saveSkippedPages() {
+		if( !(source instanceof PdfSourceFile) ) 
+			return;
+		for( Integer iPage = 1; iPage <= getPageCount(); iPage++ ) {
+			if( !isPageComplete( iPage ) ) {
+				PdfSourceFile pdf = (PdfSourceFile)source;
+				byte pageBytes[] = pdf.getPageBytes(iPage);
+				String sFileOut = CivetConfig.getInputDirPath() + "/" + FileUtils.getRoot(source.sFileName) + 
+						"UnsavedPage" + iPage + ".pdf";
+				FileUtils.writeBinaryFile(pageBytes, sFileOut);
+			}
+		}
 	}
 
 	/**

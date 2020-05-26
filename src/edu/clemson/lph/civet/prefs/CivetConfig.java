@@ -63,6 +63,8 @@ public class CivetConfig {
 	private static Boolean bSmall;
 	private static boolean bStateIDChecksum;
 	private static Boolean bAutoOpenPDF;
+	private static Boolean bSaveSkipped = null;
+	private static Boolean bIgnoreSkipped = null;
 	private static Boolean bOpenAfterAdd = null;
 	private static Boolean bCheckAccredStatus;
 	
@@ -148,6 +150,34 @@ public class CivetConfig {
 			}
 		}
 		return bSaveCopies;
+	}	
+	
+	public synchronized static boolean isSaveSkippedPages() {
+		if( bSaveSkipped == null ) {
+			String sVal = props.getProperty("saveSkipped");
+			if( sVal == null ) bSaveSkipped = false;
+			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bSaveSkipped = true;
+			}
+			else {
+				bSaveSkipped = false;
+			}
+		}
+		return bSaveSkipped;
+	}	
+	
+	public synchronized static boolean isIgnoreSkippedPages() {
+		if( bIgnoreSkipped == null ) {
+			String sVal = props.getProperty("ignoreSkipped");
+			if( sVal == null ) bIgnoreSkipped = true;
+			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bIgnoreSkipped = true;
+			}
+			else {
+				bIgnoreSkipped = false;
+			}
+		}
+		return bIgnoreSkipped;
 	}	
 	
 	public synchronized static boolean isOpenAfterAdd() {
