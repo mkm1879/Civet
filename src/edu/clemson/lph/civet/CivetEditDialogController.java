@@ -1028,6 +1028,7 @@ public final class CivetEditDialogController {
 			bInCleanup = false;
 		}
 		prog.setVisible(false);
+		dlg.requestFocus();
 	}
 
 	public boolean isReopened() {
