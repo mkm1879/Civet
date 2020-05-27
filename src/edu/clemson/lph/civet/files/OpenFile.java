@@ -53,7 +53,7 @@ public class OpenFile {
 			// xmlModel may be split in case of multi-CVI PDF files 
 			// so don't just call source.getDataModel() directly
 			aPagesInCurrent = new ArrayList<Integer>();
-			aPagesInCurrent.add(getCurrentPageNo());
+//			aPagesInCurrent.add(getCurrentPageNo());
 			aPagesDone = new ArrayList<Integer>();
 			} catch( Exception e ) {
 				logger.error("Failed to read file " + sFilePath , e );
@@ -79,7 +79,7 @@ public class OpenFile {
 			// xmlModel may be split in case of multi-CVI PDF files 
 			// so don't just call source.getDataModel() directly
 			aPagesInCurrent = new ArrayList<Integer>();
-			aPagesInCurrent.add(getCurrentPageNo());
+//			aPagesInCurrent.add(getCurrentPageNo());
 			aPagesDone = new ArrayList<Integer>();
 		} catch( Exception e ) {
 			logger.error("Failed to read file " + fFile.getName() , e );
