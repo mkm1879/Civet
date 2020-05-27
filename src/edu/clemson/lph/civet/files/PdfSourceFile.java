@@ -149,13 +149,19 @@ class PdfSourceFile extends SourceFile {
 	 * For ordinary PDF files this is a subset of the whole file.
 	 */
 	public void gotoPageNo( Integer iPageNo ) {
-		this.iPage = iPageNo;
-		model = new StdeCviXmlModel();
-		byte pdfPageBytes[] = getPageBytes(iPage);
-		if( pdfPageBytes == null ) {
-			logger.error("null page bytes in gotoPageNo(" + iPageNo + ") of " + getPageCount() + " pages");
+		try {
+			this.iPage = iPageNo;
+			model = new StdeCviXmlModel();
+			byte pdfPageBytes[];
+			pdfPageBytes = getPageBytes(iPage);
+			if( pdfPageBytes == null ) {
+				logger.error("null page bytes in gotoPageNo(" + iPageNo + ") of " + getPageCount() + " pages");
+			}
+			model.setOrUpdatePDFAttachment(pdfPageBytes, fSource.getName());
+		} catch (SourceFileException e) {
+			// Should never fire
+			logger.error(e);
 		}
-		model.setOrUpdatePDFAttachment(pdfPageBytes, fSource.getName());
 	}
 	
 
@@ -164,10 +170,15 @@ class PdfSourceFile extends SourceFile {
 	 */
 	@Override
 	public StdeCviXmlModel getDataModel() {
-		if( model == null ) {
-			model = new StdeCviXmlModel();
-			byte pageBytes[] = getPageBytes(1);
-			model.setOrUpdatePDFAttachment(pageBytes, fSource.getName());
+		try {
+			if( model == null ) {
+				model = new StdeCviXmlModel();
+				byte pageBytes[] = getPageBytes(1);
+				model.setOrUpdatePDFAttachment(pageBytes, fSource.getName());
+			}
+		} catch (SourceFileException e) {
+			// Should never fire
+			logger.error(e);
 		}
 		return model;
 	}
@@ -197,7 +208,8 @@ class PdfSourceFile extends SourceFile {
 		return pdfBytes;
 	}
 	
-	public byte[] getPageBytes(int iPage) {
+	@Override
+	public byte[] getPageBytes( Integer iPage ) throws SourceFileException {
 		byte bOut[] = null;
 		ByteArrayOutputStream baOut = new ByteArrayOutputStream();
 		try {

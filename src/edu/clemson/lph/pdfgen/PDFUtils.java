@@ -45,7 +45,7 @@ public class PDFUtils {
 	 * Given an array of bytes from a PDF determine whether at least the first page can be extracted
 	 * by iText;
 	 * @param byte[] data to test parse
-	 * @return byte[]
+	 * @return boolean
 	 */
 	public static boolean canExtractPages(byte[] pdfDataIn) {
 		boolean bRet = false;
@@ -68,6 +68,36 @@ public class PDFUtils {
 		} catch( DocumentException de ) {
 			logger.error(de.getMessage() + "\nDocument error extracting pages to byte array");
 			bRet = false;
+		}
+		return bRet;
+	}// End decode pages to new PDF
+	
+	/**
+	 * Given an array of bytes from a PDF extract one page using iText;
+	 * @param byte[] data to test parse
+	 * @return byte[]
+	 */
+	public static byte[] extractPage(byte[] pdfDataIn, int iPage) {
+		byte[] bRet = null;
+		ByteArrayOutputStream baOut = new ByteArrayOutputStream();
+		try {
+			PdfReader reader = new PdfReader(pdfDataIn);
+			com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+			PdfCopy writer = new PdfCopy(document, baOut);
+			document.open();
+			PdfImportedPage pip = writer.getImportedPage(reader, iPage);
+			writer.addPage(pip);
+			document.close();
+			byte[] pdfDataOut = baOut.toByteArray();
+			int iLen = pdfDataOut.length;
+			if( iLen == 0 ) 
+				bRet = null;
+		} catch( IOException ioe ) {
+			logger.error(ioe.getMessage() + "\nIO error extracting pages to byte array\n");
+			bRet = null;
+		} catch( DocumentException de ) {
+			logger.error(de.getMessage() + "\nDocument error extracting pages to byte array");
+			bRet = null;
 		}
 		return bRet;
 	}// End decode pages to new PDF

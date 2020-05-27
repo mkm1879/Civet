@@ -126,7 +126,7 @@ public final class CivetEditDialogController {
 	private VetLookup vetLookup;
 	private boolean bInCleanup = false;
 	private boolean bInEditLast;
-	private String sLastSaved = null;
+		private String sLastSaved = null;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -242,13 +242,19 @@ public final class CivetEditDialogController {
 	}
 	
 	private void setupSaveButtons() {
-		if( currentFile.getSource().canSplit() && currentFile.getCurrentPageNo() > 1 ) {
+		if( currentFile.getSource().canSplit() && currentFile.getCurrentPageNo() > 1 && saveQueue.hasFileInQueue()) {
 			dlg.bAddToPrevious.setVisible(true);
 		}
 		else {
 			dlg.bAddToPrevious.setVisible(false);
 		}
-			
+		if( saveQueue.hasFileInQueue() || sLastSaved != null ) {
+			dlg.bEditLast.setEnabled(true);
+		}
+		else {
+			dlg.bEditLast.setEnabled(false);
+		}
+	
 	}
 	
 	public CivetEditDialog getDialog() {
@@ -842,13 +848,12 @@ public final class CivetEditDialogController {
 		try {
 			dlg.bAddToPrevious.setVisible(false);
 			int iCurrentPage = currentFile.getCurrentPageNo();
+			currentFile.addPageToCurrent(iCurrentPage); // add the new page.  Is the old page marked complete? No!
 			String sXml = saveQueue.pop();   // retrieve the previously "saved" file
 			StdeCviXmlModel model = new StdeCviXmlModel(sXml);
-			currentFile.prependFile(model); 
+			byte[] bSavedFile = model.getPDFAttachmentBytes();
+			currentFile.prependFile(bSavedFile); 
 			populateFromStdXml( model ); // populate the form
-			if( iCurrentPage > 1 )
-				currentFile.addPageToCurrent(iCurrentPage - 1); 
-			currentFile.addPageToCurrent(iCurrentPage); // add the new page.  Is the old page marked complete? No!
 			sPrevCVINo = null;  // Disable duplicate check because it will be the saved one.
 			viewer.viewPage(iCurrentPage); 
 			viewer.updatePdfDisplay();
@@ -928,6 +933,7 @@ public final class CivetEditDialogController {
 	
 	private void doEditLast2 (String sFilePath) {
 		bInEditLast = false;
+		dlg.bAddToPrevious.setVisible(false);
 		try {
 			ArrayList<File> aFiles = new ArrayList<File>();
 			File fFile = new File( sFilePath );		

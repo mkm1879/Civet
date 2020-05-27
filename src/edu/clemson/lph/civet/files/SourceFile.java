@@ -213,9 +213,15 @@ public abstract class SourceFile {
 		}
 		return bRet;
 	}
+	
 	public void addPageToCurrent( Integer iPage ) throws SourceFileException {
 		throw new SourceFileException("Attempt to add page to unsplittable file.");
 	}
+	
+	public byte[] getPageBytes( Integer iPage ) throws SourceFileException {
+		throw new SourceFileException("Attempt to get page from unsplittable file.");
+	}
+	
 	/**
 	 * This is the factory method that constructs the appropriate subclass object.
 	 * @param sPath Full path to the source file being "opened".

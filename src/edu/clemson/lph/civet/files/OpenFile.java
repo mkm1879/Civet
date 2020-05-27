@@ -22,6 +22,7 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.pdfgen.MergePDF;
+import edu.clemson.lph.pdfgen.PDFUtils;
 import edu.clemson.lph.utils.FileUtils;
 
 /**
@@ -55,7 +56,7 @@ public class OpenFile {
 			// xmlModel may be split in case of multi-CVI PDF files 
 			// so don't just call source.getDataModel() directly
 			aPagesInCurrent = new ArrayList<Integer>();
-			aPagesInCurrent.add(getCurrentPageNo());
+//			aPagesInCurrent.add(getCurrentPageNo());
 			aPagesDone = new ArrayList<Integer>();
 			} catch( Exception e ) {
 				logger.error("Failed to read file " + sFilePath , e );
@@ -81,7 +82,7 @@ public class OpenFile {
 			// xmlModel may be split in case of multi-CVI PDF files 
 			// so don't just call source.getDataModel() directly
 			aPagesInCurrent = new ArrayList<Integer>();
-			aPagesInCurrent.add(getCurrentPageNo());
+//			aPagesInCurrent.add(getCurrentPageNo());
 			aPagesDone = new ArrayList<Integer>();
 		} catch( Exception e ) {
 			logger.error("Failed to read file " + fFile.getName() , e );
@@ -207,12 +208,11 @@ public class OpenFile {
 		}
 	}
 	
-	public void prependFile(StdeCviXmlModel model) throws SourceFileException, IOException {
+	public void prependFile(byte[] savedFile) throws SourceFileException, IOException {
 //		TODO update PDFBytes
-		byte[] savedBytes = model.getPDFAttachmentBytes();
-		byte[] currentBytes = getPDFBytes();
-		byte[] mergedBytes = MergePDF.appendPDFtoPDF( savedBytes, currentBytes );
-		getModel().setOrUpdatePDFAttachment(mergedBytes, model.getPDFAttachmentFilename());
+		byte[] currentBytes = source.getPageBytes(getCurrentPageNo());
+		byte[] mergedBytes = MergePDF.appendPDFtoPDF( savedFile, currentBytes );
+		getModel().setOrUpdatePDFAttachment(mergedBytes, source.getFileName());
 	}
 	
 	public ArrayList<Integer> getPagesInCurrent() {
@@ -261,16 +261,22 @@ public class OpenFile {
 	}
 
 	public void saveSkippedPages() {
-		if( !(source instanceof PdfSourceFile) ) 
-			return;
-		for( Integer iPage = 1; iPage <= getPageCount(); iPage++ ) {
-			if( !isPageComplete( iPage ) ) {
-				PdfSourceFile pdf = (PdfSourceFile)source;
-				byte pageBytes[] = pdf.getPageBytes(iPage);
-				String sFileOut = CivetConfig.getInputDirPath() + "/" + FileUtils.getRoot(source.sFileName) + 
-						"UnsavedPage" + iPage + ".pdf";
-				FileUtils.writeBinaryFile(pageBytes, sFileOut);
+		try {
+			if( !(source instanceof PdfSourceFile) ) 
+				return;
+			for( Integer iPage = 1; iPage <= getPageCount(); iPage++ ) {
+				if( !isPageComplete( iPage ) ) {
+					PdfSourceFile pdf = (PdfSourceFile)source;
+					byte pageBytes[];
+					pageBytes = pdf.getPageBytes(iPage);
+					String sFileOut = CivetConfig.getInputDirPath() + "/" + FileUtils.getRoot(source.sFileName) + 
+							"UnsavedPage" + iPage + ".pdf";
+					FileUtils.writeBinaryFile(pageBytes, sFileOut);
+				}
 			}
+		} catch (SourceFileException e) {
+			// Should never fire
+			logger.error(e);
 		}
 	}
 
