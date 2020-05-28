@@ -268,7 +268,7 @@ public class SubmitNineDashThreeThread extends Thread {
 						}
 						else if( iCountIds != iNumOfSpp ) {
 							Integer iNumUntagged = iNumOfSpp - iCountIds;
-							group.quantity = iNumUntagged.doubleValue();
+							group.setQuantity(iNumUntagged.doubleValue());
 							xmlModel.addOrEditGroupLot(group);
 						}
 					}

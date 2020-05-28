@@ -87,4 +87,11 @@ public class GroupLot {
 		Integer iQuant = quantity.intValue(); 
 		description = "Group of " + iQuant.toString() + " " + sSpecies;
 	}
+	
+	public void setQuantity( Double quantity ) {
+		this.quantity = quantity;
+		String sSpecies = speciesCode.toString();
+		Long iQuant = (Long) Math.round(quantity); 
+		this.description = "Group of " + iQuant.toString() + " " + sSpecies;
+	}
 }

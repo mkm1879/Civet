@@ -2311,9 +2311,9 @@ public final class CivetEditDialogController {
 						logger.error("Number of tags " + iCountIds + " > number of animals " + iNumOfSpp + " for species " + sSpeciesCode);
 						// Leave things alone.
 					}
-					else if( iCountIds != iNumOfSpp ) {
+					else {
 						Integer iNumUntagged = iNumOfSpp - iCountIds;
-						group.quantity = iNumUntagged.doubleValue();
+						group.setQuantity(iNumUntagged.doubleValue());
 						model.addOrEditGroupLot(group);
 					}
 				}
