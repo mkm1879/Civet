@@ -33,6 +33,7 @@ import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.dialogs.ThreadCancelListener;
 import edu.clemson.lph.utils.FileUtils;
+import edu.clemson.lph.utils.Validator;
 
 public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
@@ -117,11 +118,31 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 			});		
 		}
 	}
+	
+	private boolean isValidCVI( String sXml ) {
+		boolean bRet = true;
+		String sSchemaPath = CivetConfig.getSchemaFile();
+		if( sSchemaPath != null && sSchemaPath.trim().length() > 0 ) {
+			Validator v = new Validator(sSchemaPath);
+			if( v != null ) {
+				if( !v.isValidXMLString(sXml) ) {
+					MessageDialog.showMessage(null, "Civet: Error", "Schema Validation Failure:\n"+v.getLastError() );
+					logger.error("Schema Validation Failure:\n"+v.getLastError());
+					bRet = false;
+				}
+			}
+		}
+		return bRet;
+	}
+
 
 	private boolean processFile(File fThis) {
 		boolean bRet = false;
 		try {
 			String sXML = FileUtils.readTextFile(fThis);
+			if( !isValidCVI(sXML) ) {
+				return false;
+			}
 			final String sCertNbr = getCertNbr( sXML );
 			// Check but don't add yet.
 			if( CertificateNbrLookup.certficateNbrExists(sCertNbr) ) {
