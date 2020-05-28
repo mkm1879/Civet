@@ -190,7 +190,7 @@ class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalPolicy {
 	public Component getComponentAfter(Container aContainer, Component aComponent) {
 		// This nonsense is because when JComboBox is typed <String> the component we actually
 		// leave is a borderless text box.  The JComboBox is its parent.  That is what we have mapped.
-		if( aComponent.getParent().getClass() == JComboBox.class )
+		if( aComponent.getParent() != null && aComponent.getParent().getClass() == JComboBox.class )
 			aComponent = aComponent.getParent();
 		Component cNext = hMap.get(aComponent);
 		if( cNext != null )

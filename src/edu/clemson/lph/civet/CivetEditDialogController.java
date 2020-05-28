@@ -202,8 +202,7 @@ public final class CivetEditDialogController {
 			setupSaveButtons();
 			dlg.make90Percent();
 			dlg.setVisible(true);  // Only now display
-			if( cStartingComponentFocus != null )
-				cStartingComponentFocus.requestFocus();
+			setupFirstControl();
 
 		} catch( Exception e ) {
 			logger.error(e);
@@ -232,13 +231,26 @@ public final class CivetEditDialogController {
 			viewer.viewPage(currentFile.getCurrentPageNo()); 
 			viewer.updatePdfDisplay();
 			setupSaveButtons();
-			if( cStartingComponentFocus != null )
-				cStartingComponentFocus.requestFocus();
+			setupFirstControl();
 
 		} catch( Exception e ) {
 			logger.error(e);
 			e.printStackTrace();
 		}
+	}
+	
+	private void setupFirstControl() {
+		if( currentFile.isDataFile() ) {
+			cStartingComponentFocus = traversal.getComponentByName(traversal.getProperty("pPDFLoaded"));
+		}
+		else if(dlg.rbInState.isSelected()) {
+			cStartingComponentFocus = traversal.getComponentByName(traversal.getProperty("pInstateFirst"));
+		}
+		else if(dlg.rbExport.isSelected() || dlg.rbImport.isSelected() ) {
+			cStartingComponentFocus = traversal.getComponentByName(traversal.getProperty("pFirstControl"));
+		}
+		if( cStartingComponentFocus != null)
+			cStartingComponentFocus.requestFocus();
 	}
 	
 	private void setupSaveButtons() {
@@ -1034,7 +1046,7 @@ public final class CivetEditDialogController {
 			bInCleanup = false;
 		}
 		prog.setVisible(false);
-		dlg.requestFocus();
+		setupFirstControl();
 	}
 
 	public boolean isReopened() {
@@ -1400,9 +1412,6 @@ public final class CivetEditDialogController {
 			dlg.cbIssuedBy.setVisible(true);
 			dlg.jtfIssuedBy.setVisible(false);
 			dlg.ckAllVets.setVisible(true);
-			Component c = traversal.getComponentByName(traversal.getProperty("pInstateFirst"));
-			if( c != null)
-				c.requestFocus();
 		}
 		if(dlg.rbExport.isSelected()) {
 			dlg.lIssuedBy.setVisible(true);
@@ -1410,9 +1419,6 @@ public final class CivetEditDialogController {
 			dlg.cbIssuedBy.setVisible(true);
 			dlg.jtfIssuedBy.setVisible(false);
 			dlg.ckAllVets.setVisible(true);
-			Component c = traversal.getComponentByName(traversal.getProperty("pFirstControl"));
-			if( c != null)
-				c.requestFocus();
 		}
 		if(dlg.rbImport.isSelected()) {
 			dlg.lIssuedBy.setVisible(true);
@@ -1420,9 +1426,6 @@ public final class CivetEditDialogController {
 			dlg.cbIssuedBy.setVisible(false);
 			dlg.jtfIssuedBy.setVisible(true);
 			dlg.ckAllVets.setVisible(false);
-			Component c = traversal.getComponentByName(traversal.getProperty("pFirstControl"));
-			if( c != null)
-				c.requestFocus();
 		}
 		aErrorKeys = new ArrayList<String>();
 		sErrorNotes = null;
@@ -1599,9 +1602,6 @@ public final class CivetEditDialogController {
 						else
 							dlg.jtfDateReceived.setText("");
 					}
-					String sCompName = traversal.getProperty("pPDFLoaded");
-					Component c = traversal.getComponentByName(sCompName);
-					cStartingComponentFocus = c;
 				}
 				bInSppChangeByCode = false;
 			} catch( Exception e ) {
@@ -1768,7 +1768,7 @@ public final class CivetEditDialogController {
 			// Avoid stray input as we save.
 			dlg.setFormEditable( false );
 			currentFile.setCurrentPagesDone();
-			cStartingComponentFocus = null;
+//			cStartingComponentFocus = null;
 			// For multi-page PDF this creates a new OpenFile from the current pages.  All others just self.
 			// This is the root of all evil.  The logic should not be File Save but FilePagesSave.  For
 			// non-multi CVI PDF files pages will be all.  
