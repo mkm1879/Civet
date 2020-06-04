@@ -322,7 +322,7 @@
                     </xsl:attribute>
                     -->
                     <xsl:attribute name="Description">
-                        <xsl:value-of select="description"/>
+                        <xsl:value-of select="translate(description,'&#xA;&#x9;&#xd;',' ')"/>
                     </xsl:attribute>
                     <xsl:call-template name="AnimalSpecies">
                         <xsl:with-param name="item" select="."/>
@@ -583,10 +583,20 @@
                                 <xsl:value-of select="./eiaTestDate"/>
                             </xsl:attribute>
                             <xsl:attribute name="AccessionNumber">
-                                <xsl:value-of select="./other"/>
+                                <xsl:choose>
+                                    <xsl:when test="./other and ./other != ''">
+                                        <xsl:value-of select="./other"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>Not provided</xsl:otherwise>
+                                </xsl:choose>
                             </xsl:attribute>
                             <xsl:element namespace="http://www.usaha.org/xmlns/ecvi2" name="LabName">
-                                <xsl:value-of select="./eiaLab"/>
+                                <xsl:choose>
+                                    <xsl:when test="./eiaLab and ./eiaLab != ''">
+                                        <xsl:value-of select="./eiaLab"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>Not provided</xsl:otherwise>
+                                </xsl:choose>
                             </xsl:element>
                         </xsl:element>
                     </xsl:element>
