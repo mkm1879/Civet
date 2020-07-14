@@ -55,7 +55,9 @@ public class AgViewSourceFile extends SourceFile {
 			pdfBytes = FileUtils.readBinaryFile(fSource);
 			iTextPdfReader = new PdfReader(pdfBytes);
 			String sStdXML = FileUtils.readTextFile(fData);
-			sStdXML = AddressBlock2Address(sStdXML);
+			sStdXML = sStdXML.trim().replaceFirst("^([\\W]+)<","<");
+			if( sStdXML.indexOf("AddressBlock") > 0 )
+				sStdXML = AddressBlock2Address(sStdXML);
 			model = new StdeCviXmlModel(sStdXML);
 			String sInvalidID = model.checkAnimalIDTypes();
 			if( sInvalidID != null ) {
