@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -75,8 +76,9 @@ public class CoKsSourceFile extends SourceFile {
 		}
 		String sAcrobatXML = toAcrobatXMLString();
 		String sStdXML = toStdXMLString( sAcrobatXML);
+		byte[] xmlBytes = sStdXML.getBytes(StandardCharsets.UTF_8);
 		
-		model = new StdeCviXmlModel(sStdXML);
+		model = new StdeCviXmlModel(xmlBytes);
 		model.setOrUpdatePDFAttachment(pdfBytes, fSource.getName());
 	}
 
@@ -127,7 +129,8 @@ public class CoKsSourceFile extends SourceFile {
 				if( fData != null && fData.exists() && fData.isFile() ) {
 					String sAcrobatXml = toAcrobatXMLString();
 					String sStdXml = toStdXMLString( sAcrobatXml );
-					model = new StdeCviXmlModel(sStdXml);
+					byte[] xmlBytes = sStdXml.getBytes(StandardCharsets.UTF_8);
+					model = new StdeCviXmlModel(xmlBytes);
 					String sInvalidID = model.checkAnimalIDTypes();
 					if( sInvalidID != null ) {
 						MessageDialog.showMessage(null, "Civet Warning", "Animal ID " + sInvalidID

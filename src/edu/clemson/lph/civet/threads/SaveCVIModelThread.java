@@ -3,6 +3,7 @@ package edu.clemson.lph.civet.threads;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 
 import javax.swing.SwingUtilities;
 
@@ -19,15 +20,15 @@ import edu.clemson.lph.utils.FileUtils;
 public class SaveCVIModelThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private OpenFileSaveQueue queue;
-	String xmlToSave;
+	byte[] xmlToSave;
 	StdeCviXmlModel model;
 	
 	private String sXmlFileName;
 
 
-	public SaveCVIModelThread( OpenFileSaveQueue q, String xmlToSave ) {
+	public SaveCVIModelThread( OpenFileSaveQueue q, byte[] xmlToSave ) {
 		this.queue = q;
-		this.xmlToSave = xmlToSave;
+		this.xmlToSave = Arrays.copyOf(xmlToSave, xmlToSave.length);
 		model = new StdeCviXmlModel( xmlToSave );
 		if( !model.hasPDFAttachment() ) {
 			MessageDialog.showMessage(null, "Civet Error", "No attachment to save for " + model.getCertificateNumber() );
@@ -122,16 +123,13 @@ public class SaveCVIModelThread extends Thread {
 	}
 	
 	
-	private void saveXml(String sStdXml) {
+	private void saveXml(byte[] xmlBytes) {
 		String sDirPath = CivetConfig.getToFileDirPath();
 		File fDir = new File(sDirPath);
 		final File fileOut = new File(fDir, sXmlFileName);
 		final String sFilePath = fileOut.getAbsolutePath();
 		try {
-			PrintWriter pw = new PrintWriter( new FileOutputStream( fileOut ) );
-			pw.print(sStdXml);
-			pw.flush();
-			pw.close();
+			FileUtils.writeUTF8File(xmlBytes, sFilePath);
 		} catch (final Exception e) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
@@ -143,7 +141,7 @@ public class SaveCVIModelThread extends Thread {
 		}
 	}
 	
-	private void saveEmail(String sStdXml) {
+	private void saveEmail(byte[] xmlOut) {
 		File fileOut = null;
 		String sFilePath = null;
 		if( model.isExport() ) {
@@ -163,10 +161,7 @@ public class SaveCVIModelThread extends Thread {
 		if( sFilePath == null ) 
 			return;
 		try {
-			PrintWriter pw = new PrintWriter( new FileOutputStream( fileOut ) );
-			pw.print(sStdXml);
-			pw.flush();
-			pw.close();
+			FileUtils.writeUTF8File(xmlOut, sFilePath);
 		} catch (final Exception e) {
 			final String sFilePathNotSaved = sFilePath;
 			SwingUtilities.invokeLater(new Runnable() {

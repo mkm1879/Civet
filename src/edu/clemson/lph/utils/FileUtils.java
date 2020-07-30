@@ -45,6 +45,31 @@ public class FileUtils {
 		dAccessed = new java.util.Date( time.toMillis() );
 		return dAccessed;
 	}
+	
+	public static byte[] readUTF8File( File fIn ) throws Exception {
+	    byte[] baRet = null;
+	    try {
+	    	baRet =  Files.readAllBytes(fIn.toPath());
+	    }
+	    catch( Exception e ) {
+	    	logger.error( "Error reading file " + fIn.getAbsolutePath(), e );
+	    	throw e;
+	    }
+	    return baRet;
+	}
+	
+	public static File writeUTF8File( byte[] baOut, String sFileOut ) {
+		File fOut = null;
+		try (FileOutputStream fos = new FileOutputStream(sFileOut)) {
+		   fos.write(baOut);
+		   fOut = new File(sFileOut);
+					   //fos.close(); There is no more need for this line since you had created the instance of "fos" inside the try. And this will automatically close the OutputStream
+		} catch (IOException ex1) {
+			logger.error(ex1);
+		}
+		return fOut;
+	}
+	
 
 	public static String readTextFile( File fIn ) throws Exception {
 	    StringBuilder text = new StringBuilder();

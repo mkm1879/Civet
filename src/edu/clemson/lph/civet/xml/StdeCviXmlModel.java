@@ -113,8 +113,8 @@ public class StdeCviXmlModel {
 	 */
 	public StdeCviXmlModel( File fXML ) {
 		try {
-			String sXML = FileUtils.readTextFile(fXML);
-			createModel(sXML);		
+			byte[] xmlBytes = FileUtils.readUTF8File(fXML);
+			createModel(xmlBytes);		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error(e);
@@ -125,8 +125,8 @@ public class StdeCviXmlModel {
 	 * Create an XML document from the raw XML string.  
 	 * @param doc
 	 */
-	public StdeCviXmlModel( String sXML ) {
-		createModel(sXML);
+	public StdeCviXmlModel( byte[] xmlBytes ) {
+		createModel(xmlBytes);
 	}
 	
 	/**
@@ -151,13 +151,13 @@ public class StdeCviXmlModel {
 	 * Create an XML document from the raw XML string.  
 	 * @param doc
 	 */
-	public void createModel( String sXML ) {
+	public void createModel( byte[] xmlBytes ) {
 		try {
 			Document doc = null;
 			Element root = null;
-			if( sXML != null ) {
+			if( xmlBytes != null ) {
 				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
-				byte[] xmlBytes = sXML.getBytes();
+//				byte[] xmlBytes = sXML.getBytes();
 				InputStream is = new ByteArrayInputStream( xmlBytes );
 				doc = db.parse(is);
 				doc.setXmlStandalone(true);
@@ -1671,6 +1671,10 @@ public class StdeCviXmlModel {
 	
 	public String getXMLString() {
 		return helper.getXMLString();
+	}
+	
+	public byte[] getXMLBytes() {
+		return helper.getXMLBytes();
 	}
 	
 	public byte[] getNoAttachmentXmlBytes() {

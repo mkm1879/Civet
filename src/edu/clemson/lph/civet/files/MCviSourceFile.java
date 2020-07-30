@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.Transformer;
@@ -57,7 +58,9 @@ public class MCviSourceFile extends SourceFile {
 			iTextPdfReader = new PdfReader(pdfBytes);
 			String sAcrobatXML = FileUtils.readTextFile(fData);
 			String sStdXML = toStdXMLString( sAcrobatXML );
-			model = new StdeCviXmlModel(sStdXML);
+			byte[] xmlBytes = sStdXML.getBytes(StandardCharsets.UTF_8);
+			
+			model = new StdeCviXmlModel(xmlBytes);
 			model.setOrUpdatePDFAttachment(getPDFBytes(), fSource.getName());
 		} catch (Exception e) {
 			throw new SourceFileException(e);
@@ -95,8 +98,10 @@ public class MCviSourceFile extends SourceFile {
 			try { 
 				if( fData != null && fData.exists() && fData.isFile() ) {
 					String sAcrobatXml = FileUtils.readTextFile(fData);
-					String sStdXml = toStdXMLString( sAcrobatXml );
-					model = new StdeCviXmlModel(sStdXml);
+					String sStdXML = toStdXMLString( sAcrobatXml );
+					byte[] xmlBytes = sStdXML.getBytes(StandardCharsets.UTF_8);
+					
+					model = new StdeCviXmlModel(xmlBytes);
 					byte pdfBytes[] = getPDFBytes();
 					model.setOrUpdatePDFAttachment(pdfBytes, fSource.getName());
 				}

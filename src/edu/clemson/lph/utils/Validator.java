@@ -230,6 +230,12 @@ public class Validator extends org.xml.sax.helpers.DefaultHandler {
 		  ByteArrayInputStream bis = new ByteArrayInputStream( sMsg.getBytes() );
 		  return isValidStream( bis );
 	  }
+	  
+	  public boolean isValidXMLBytes( byte[] xmlBytes ) {
+		  ByteArrayInputStream bis = new ByteArrayInputStream( xmlBytes );
+		  return isValidStream( bis );
+	  }
+
 
 	  /**
 	   * Pass in the XML to be validated as an InputStream which may be from an open file

@@ -14,6 +14,7 @@
  */
 package edu.clemson.lph.civet.files;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -45,11 +47,12 @@ public class CivetSourceFile extends SourceFile {
 		type = Types.Civet;
 		if( fSource != null && fSource.exists() && fSource.isFile() ) {
 			try {
-				String sStdXml = FileUtils.readTextFile(fSource);
-				if( isV1(sStdXml) ) {
-					sStdXml = makeV2( sStdXml );
+				byte[] xmlBytes = FileUtils.readUTF8File(fSource);
+				if( isV1(xmlBytes) ) {
+					String sV2 = makeV2( xmlBytes );
+					xmlBytes = sV2.getBytes(StandardCharsets.UTF_8);
 				}
-				model = new StdeCviXmlModel(sStdXml);
+				model = new StdeCviXmlModel(xmlBytes);
 				pdfBytes = model.getPDFAttachmentBytes();
 				if( pdfBytes == null ) {
 					System.err.println("No PDF in CivetFile");
@@ -77,27 +80,29 @@ public class CivetSourceFile extends SourceFile {
 	}
 
 	
-	private boolean isV1(String sStdXml) {
+	private boolean isV1(byte[] xmlBytes) {
 		boolean bRet = false;
+		String sStdXml = new String(xmlBytes, StandardCharsets.UTF_8);
 		int iV1 = sStdXml.indexOf("xmlns=\"http://www.usaha.org/xmlns/ecvi\"");
 		if( iV1 >= 0 )
 			bRet = true;
 		return bRet;
 	}
 
-	private String makeV2(String sStdXmlV1) {
+	private String makeV2(byte[] xmlBytes) {
 		String sRet = null;
 		String sXSLT = "eCVI1_to_eCVI2.xsl";
 		try {
 			File fTransform = new File(sXSLT);
 			InputStream isXLT = new FileInputStream(fTransform);
 //			InputStream isXLT = getClass().getResourceAsStream("../res/eCVI1_to_eCVI2.xsl");
-			StringReader sourceReader = new StringReader( sStdXmlV1 );
+//			StringReader sourceReader = new StringReader( sStdXmlV1 );
+			ByteArrayInputStream baisSource = new ByteArrayInputStream(xmlBytes);
 			ByteArrayOutputStream baosDest = new ByteArrayOutputStream();
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			Transformer transformer;
 			transformer = tFactory.newTransformer(new StreamSource(isXLT));
-			transformer.transform(new StreamSource(sourceReader),
+			transformer.transform(new StreamSource(baisSource),
 					new StreamResult(baosDest));
 			sRet = new String( baosDest.toByteArray(), "UTF-8" );
 			sRet = postProcessv2(sRet);
@@ -129,9 +134,9 @@ public class CivetSourceFile extends SourceFile {
 	public StdeCviXmlModel getDataModel() {
 		if( model == null ) {
 			try {
-				String sStdXml = FileUtils.readTextFile(fSource);
-				if( sStdXml != null )
-					model = new StdeCviXmlModel( sStdXml );
+				byte[] xmlBytes = FileUtils.readUTF8File(fSource);
+				if( xmlBytes != null )
+					model = new StdeCviXmlModel( xmlBytes );
 			} catch (Exception e) {
 				logger.error("Failed to read file " + sFilePath, e);
 			}

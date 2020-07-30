@@ -11,7 +11,7 @@ import edu.clemson.lph.civet.threads.SaveCVIModelThread;
  */
 public class OpenFileSaveQueue {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private String fileIn = null;
+	private byte[] xmlBytesIn = null;
 	private CivetEditDialogController controller;
 	private int iThreads = 0;
 
@@ -25,30 +25,30 @@ public class OpenFileSaveQueue {
 //	    super.finalize();
 //	}
 	
-	public void push( String openFile ) {
-		String fileToSave = fileIn;
-		fileIn = openFile;
-		if( fileToSave != null ) {
-			save(fileToSave);
+	public void push( byte[] openFileBytes ) {
+		byte[] bytesToSave = xmlBytesIn;
+		xmlBytesIn = openFileBytes;
+		if( bytesToSave != null ) {
+			save(bytesToSave);
 		}
 	}
 	
-	public String pop() {
-		String fRet = fileIn;
-		fileIn = null;
+	public byte[] pop() {
+		byte[] fRet = xmlBytesIn;
+		xmlBytesIn = null;
 		return fRet;
 	}
 	
 	public void flush() {
-		String fileToSave = fileIn;
-		fileIn = null;
-		if( fileToSave != null ) {
-			save( fileToSave );
+		byte[] bytesToSave = xmlBytesIn;
+		xmlBytesIn = null;
+		if( bytesToSave != null ) {
+			save( bytesToSave );
 		}
 	}
 	
 	public boolean hasFileInQueue() {
-		return (fileIn != null);
+		return (xmlBytesIn != null);
 	}
 	
 	public synchronized void saveComplete(String sFilePath) {
@@ -60,7 +60,7 @@ public class OpenFileSaveQueue {
 		}
 	}
 
-	private synchronized void save(String xmlToSave) {
+	private synchronized void save(byte[] xmlToSave) {
 		iThreads++;
 		SaveCVIModelThread saveThread = new SaveCVIModelThread( this, xmlToSave);
 		saveThread.start();

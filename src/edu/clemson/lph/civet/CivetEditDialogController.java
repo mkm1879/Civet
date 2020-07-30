@@ -861,8 +861,8 @@ public final class CivetEditDialogController {
 			dlg.bAddToPrevious.setVisible(false);
 			int iCurrentPage = currentFile.getCurrentPageNo();
 			currentFile.addPageToCurrent(iCurrentPage); // add the new page.  Is the old page marked complete? No!
-			String sXml = saveQueue.pop();   // retrieve the previously "saved" file
-			StdeCviXmlModel model = new StdeCviXmlModel(sXml);
+			byte[] xmlBytes = saveQueue.pop();   // retrieve the previously "saved" file
+			StdeCviXmlModel model = new StdeCviXmlModel(xmlBytes);
 			byte[] bSavedFile = model.getPDFAttachmentBytes();
 			currentFile.prependFile(bSavedFile); 
 			populateFromStdXml( model ); // populate the form
@@ -1903,7 +1903,7 @@ public final class CivetEditDialogController {
 
 		// Precondition: PDF, Animals and Errors already in model.
 		// NOTE!!!!  model is not thread safe at this point.  
-		String sXMLModel = buildXml( fileToSave.getModel(), bInbound, bDataFile, 
+		byte[] xmlBytes = buildXml( fileToSave.getModel(), bInbound, bDataFile, 
 				aSpecies, sOtherStateCode,
 				sOtherName, sOtherAddress, sOtherCity, sOtherCounty, sOtherZipcode, //sOtherPIN,
 				sThisPremisesId, sThisName, sPhone,
@@ -1911,7 +1911,7 @@ public final class CivetEditDialogController {
 				dDateIssued, dDateReceived, iIssuedByKey, sIssuedByName, sCVINo, sCVINoSource,
 				sMovementPurpose);
 		sPrevCVINo = sCVINo;
-		saveQueue.push(sXMLModel);
+		saveQueue.push(xmlBytes);
 		return true;
 	}
 	
@@ -2190,7 +2190,7 @@ public final class CivetEditDialogController {
 		}
 	}
 	
-	private String buildXml( StdeCviXmlModel model,  
+	private byte[] buildXml( StdeCviXmlModel model,  
 			boolean bImport, boolean bIsDataFile, ArrayList<SpeciesRecord> aSpecies, 
 			String sOtherStateCode, String sOtherName, String sOtherAddress, String sOtherCity, 
 			String sOtherCounty, String sOtherZipcode, //String sOtherPIN,
@@ -2199,7 +2199,7 @@ public final class CivetEditDialogController {
 			java.util.Date dDateIssued, java.util.Date dDateReceived, 
 			Integer iIssuedByKey, String sIssuedByName, String sCVINo, String sCVINoSource,
 			String sMovementPurpose) {
-		String sRet = null;
+		byte[] baRet = null;
 		if( model == null ) {
 			logger.error("Null model in buildXML");
 			model = new StdeCviXmlModel();
@@ -2354,8 +2354,8 @@ public final class CivetEditDialogController {
 		if( sCVINoSource != null && sCVINoSource.equals("Paper") )
 			sCVINoSource = sOriginStateCode + " Paper";
 		model.setCertificateNumberSource(sCVINoSource);
-		sRet = model.getXMLString();
-		return sRet;
+		baRet = model.getXMLBytes();
+		return baRet;
 	}
 
 }

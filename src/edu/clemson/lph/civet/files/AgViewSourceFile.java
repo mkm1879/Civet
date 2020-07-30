@@ -20,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -54,18 +53,23 @@ public class AgViewSourceFile extends SourceFile {
 		try {
 			pdfBytes = FileUtils.readBinaryFile(fSource);
 			iTextPdfReader = new PdfReader(pdfBytes);
+			byte[] xmlBytes = FileUtils.readUTF8File(fData);
+			/*
 			String sStdXML = FileUtils.readTextFile(fData);
+			// Remove any whitespace before the first < in the XML.  Usually a BOM.
 			sStdXML = sStdXML.trim().replaceFirst("^([\\W]+)<","<");
 			if( sStdXML.indexOf("AddressBlock") > 0 )
 				sStdXML = AddressBlock2Address(sStdXML);
-			model = new StdeCviXmlModel(sStdXML);
+				*/
+			model = new StdeCviXmlModel(xmlBytes);
+			String sStdXML = null;
 			String sInvalidID = model.checkAnimalIDTypes();
+			sStdXML = model.getXMLString();
 			if( sInvalidID != null ) {
 				MessageDialog.showMessage(null, "Civet Warning", "Animal ID " + sInvalidID
 						+ " in certificate " + model.getCertificateNumber() + " is not valid for its type.\nChanged to 'OtherOfficialID'");
-				sStdXML = model.getXMLString();
 			}
-			if( !isValidCVI(sStdXML) ) {
+			if( !isValidCVI(xmlBytes) ) {
 				FileUtils.writeTextFile(sStdXML, "FailedTransform" + fData.getName());
 				throw new SourceFileException( "Failed to convert AgView Source\n"
 						+ fFile.getName() + "\nFix manually and try again");
@@ -76,13 +80,13 @@ public class AgViewSourceFile extends SourceFile {
 		}
 	}
 	
-	private boolean isValidCVI( String sXml ) {
+	private boolean isValidCVI( byte[] xmlBytes ) {
 		boolean bRet = true;
 		String sSchemaPath = CivetConfig.getSchemaFile();
 		if( sSchemaPath != null && sSchemaPath.trim().length() > 0 ) {
 			Validator v = new Validator(sSchemaPath);
 			if( v != null ) {
-				if( !v.isValidXMLString(sXml) ) {
+				if( !v.isValidXMLBytes(xmlBytes) ) {
 					MessageDialog.showMessage(null, "Civet: Error", "Failed translation of AgView AddressBlock\n"
 							+ v.getLastError() 
 							+ "\nFix manually and try again" );
@@ -123,8 +127,8 @@ public class AgViewSourceFile extends SourceFile {
 		if( model == null ) {
 			try { 
 				if( fData != null && fData.exists() && fData.isFile() ) {
-					String sStdXml = FileUtils.readTextFile(fData);
-					model = new StdeCviXmlModel(sStdXml);
+					byte[] xmlBytes = FileUtils.readUTF8File(fData);
+					model = new StdeCviXmlModel(xmlBytes);
 					byte pdfBytes[] = getPDFBytes();
 					model.setOrUpdatePDFAttachment(pdfBytes, fSource.getName());
 				}

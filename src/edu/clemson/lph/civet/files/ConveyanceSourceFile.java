@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -79,8 +80,9 @@ public class ConveyanceSourceFile extends SourceFile {
 		}
 		String sAcrobatXML = getXML();
 		String sStdXML = toStdXMLString( sAcrobatXML);
+		byte[] xmlBytes = sStdXML.getBytes(StandardCharsets.UTF_8);
 		
-		model = new StdeCviXmlModel(sStdXML);
+		model = new StdeCviXmlModel(xmlBytes);
 		model.setOrUpdatePDFAttachment(pdfBytes, fSource.getName());
 	}
 	
@@ -140,16 +142,18 @@ public class ConveyanceSourceFile extends SourceFile {
 			try { 
 				if( fData != null && fData.exists() && fData.isFile() ) {
 					String sAcrobatXml = getXML();
-					String sStdXml = toStdXMLString( sAcrobatXml );
-					model = new StdeCviXmlModel(sStdXml);
+					String sStdXML = toStdXMLString( sAcrobatXml );
+					byte[] xmlBytes = sStdXML.getBytes(StandardCharsets.UTF_8);
+					
+					model = new StdeCviXmlModel(xmlBytes);
 					String sInvalidID = model.checkAnimalIDTypes();
 					if( sInvalidID != null ) {
 						MessageDialog.showMessage(null, "Civet Warning", "Animal ID " + sInvalidID
 								+ " in certificate " + model.getCertificateNumber() + " is not valid for its type.\nChanged to 'OtherOfficialID'");
-						sStdXml = model.getXMLString();
+						sStdXML = model.getXMLString();
 					}
-					if( !isValidCVI(sStdXml) ) {
-						FileUtils.writeTextFile(sStdXml, "FailedTransform" + fData.getName());
+					if( !isValidCVI(sStdXML) ) {
+						FileUtils.writeTextFile(sStdXML, "FailedTransform" + fData.getName());
 						throw new SourceFileException( "Failed to convert Conveyance Source\n"
 								+ super.sFileName + "\nFix manually and try again");
 					}

@@ -132,8 +132,8 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 				int iPart = 1;
 				int iPdf = 1; // count to bail on last one.
 				for( File fNext : aCVIsIn ) {
-					String sXml = FileUtils.readTextFile(fNext);
-					StdeCviXmlModel stdXml = new StdeCviXmlModel( sXml );
+					byte[] xmlBytes = FileUtils.readUTF8File(fNext);
+					StdeCviXmlModel stdXml = new StdeCviXmlModel( xmlBytes );
 					byte[] pdfBytes = stdXml.getPDFAttachmentBytes();
 					if( pdfBytes == null || pdfBytes.length < 1 ) {
 						MessageDialog.showMessage(parent, "Civet Error: Missing Attachment", "Missing PDF Attachment");

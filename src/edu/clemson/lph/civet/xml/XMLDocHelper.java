@@ -1,4 +1,5 @@
 package edu.clemson.lph.civet.xml;
+import java.io.ByteArrayOutputStream;
 /*
 Copyright 2014 Michael K Martin
 
@@ -602,6 +603,41 @@ public class XMLDocHelper {
 			}
 		}
 		return eChild;
+	}
+	
+	public byte[] getXMLBytes() {
+		byte[] baRet = null;
+		try {
+			TransformerFactory transFactory = TransformerFactory.newInstance();
+			Transformer transformer = transFactory.newTransformer();
+			ByteArrayOutputStream bos=new ByteArrayOutputStream();
+			StreamResult result=new StreamResult(bos);
+			transformer.transform(new DOMSource(doc), result);
+			baRet=bos.toByteArray();		
+		} catch (TransformerException e) {
+			logger.error("Transform failure", e);
+		}
+		return baRet;
+	}
+	
+	public byte[] getXMLBytes(boolean bOmitDeclaration, String sEncoding ) {
+		byte[] baRet = null;
+		String sOmit = (bOmitDeclaration ? "yes" : "no");
+		try {
+			TransformerFactory transFactory = TransformerFactory.newInstance();
+			Transformer transformer = transFactory.newTransformer();
+			if( sEncoding != null )
+				transformer.setOutputProperty(OutputKeys.ENCODING, sEncoding);
+			StringWriter buffer = new StringWriter();
+			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, sOmit);
+			ByteArrayOutputStream bos=new ByteArrayOutputStream();
+			StreamResult result=new StreamResult(bos);
+			transformer.transform(new DOMSource(doc), result);
+			baRet=bos.toByteArray();		
+		} catch (TransformerException e) {
+			logger.error("Transform failure", e);
+		}
+		return baRet;
 	}
 	
 	public String getXMLString() {
