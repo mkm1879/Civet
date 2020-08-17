@@ -549,6 +549,7 @@ public class CivetConfig {
 					ask.setVisible(true);
 					if( ask.isExitOK() ) {
 						sUserID = ask.getAnswerOne();
+						MailMan.setUserID(sUserID);
 						MailMan.setPassword(ask.getAnswerTwo());
 						bRet = true;
 					}
