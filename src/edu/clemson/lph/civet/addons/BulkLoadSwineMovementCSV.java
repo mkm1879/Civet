@@ -120,10 +120,9 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 				// Iterate over the CSV file
 				while( data.nextRow() && !bCanceled ) {
 					prog.setMessage(sProgMessage + getCVINumber(data)); 
-					String sXML = buildXml( data );
-			System.out.println(sXML);
+					byte[] baXML = buildXml( data );
 					// Send it!
-					String sRet = service.sendCviXML(sXML);
+					String sRet = service.sendCviXML(baXML);
 					if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {
 						logger.error( sRet, new Exception("Error submitting swine spreadsheet CVI to USAHERDS: ") );
 						MessageDialog.messageLater(fParent, "Civet WS Error", "Error submitting to USAHERDS: " + sRet);
@@ -149,7 +148,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 
 	}// end inner class TWorkSave
 	
-	private String buildXml( CSVDataFile data ) throws IOException {
+	private byte[] buildXml( CSVDataFile data ) throws IOException {
 		StdeCviXmlModel xmlModel = new StdeCviXmlModel();
 		String sVet = data.getVet();
 		StringTokenizer tok = new StringTokenizer(sVet, " ," );
@@ -196,7 +195,7 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 		metaData.setCVINumberSource(sCVINbrSource);
 //	System.out.println(metaData.getXmlString());
 		xmlModel.addOrUpdateMetadataAttachment(metaData);
-		return xmlModel.getXMLString();
+		return xmlModel.getXMLBytes();
 	}
 
 	private String getCVINumber( CSVDataFile data ) {

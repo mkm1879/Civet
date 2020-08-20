@@ -18,6 +18,7 @@ You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -119,13 +120,13 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 		}
 	}
 	
-	private boolean isValidCVI( String sXml ) {
+	private boolean isValidCVI( byte[] baXml ) {
 		boolean bRet = true;
 		String sSchemaPath = CivetConfig.getSchemaFile();
 		if( sSchemaPath != null && sSchemaPath.trim().length() > 0 ) {
 			Validator v = new Validator(sSchemaPath);
 			if( v != null ) {
-				if( !v.isValidXMLString(sXml) ) {
+				if( !v.isValidXMLBytes(baXml) ) {
 					MessageDialog.showMessage(null, "Civet: Error", "Schema Validation Failure:\n"+v.getLastError() );
 					logger.error("Schema Validation Failure:\n"+v.getLastError());
 					bRet = false;
@@ -139,18 +140,18 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 	private boolean processFile(File fThis) {
 		boolean bRet = false;
 		try {
-			String sXML = FileUtils.readTextFile(fThis);
-			if( !isValidCVI(sXML) ) {
+			byte[] baXML = FileUtils.readUTF8File(fThis);
+			if( !isValidCVI(baXML) ) {
 				return false;
 			}
-			final String sCertNbr = getCertNbr( sXML );
+			final String sCertNbr = getCertNbr( baXML );
 			// Check but don't add yet.
 			if( CertificateNbrLookup.certficateNbrExists(sCertNbr) ) {
 				MessageDialog.showMessage(parent, "Civet Error", "Certificate Number " + sCertNbr + " already exists.\n" +
 						"Resolve conflict and try again.");
 				return false;
 			}
-			String sRet = service.sendCviXML(sXML);
+			String sRet = service.sendCviXML(baXML);
 //			final String sReturn = sRet;
 //			SwingUtilities.invokeLater(new Runnable() {
 //				public void run() {
@@ -190,7 +191,8 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 		return bRet;
 	}
 	
-	private String getCertNbr( String sXML ) {
+	private String getCertNbr( byte[] baXML ) {
+		String sXML = new String(baXML, StandardCharsets.UTF_8 );
 		if( sXML == null || sXML.trim().length() == 0 ) return null;
 		int iStart = sXML.indexOf("CviNumber=") + 11;
 		int iEnd = sXML.substring(iStart).indexOf('\"');

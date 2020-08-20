@@ -88,14 +88,14 @@ class InsertVspsCviThread extends Thread implements ThreadCancelListener {
 				if( (cvi.getDestination() == null || cvi.getDestination().getState() == null) &&  (cvi.getConsignee() == null || cvi.getConsignee().getState() == null))
 					continue;
 				prog.setMessage( sProgMsg + cvi.getCVINumber() );
-				String sXML = buildXml ( cvi );
+				byte[] baXML = buildXml ( cvi );
 //		System.out.println(sXML);
 				// Send it!
-				String sRet = service.sendCviXML(sXML);
+				String sRet = service.sendCviXML(baXML);
 				if( sRet == null || ( !sRet.trim().startsWith("00") && !sRet.contains("Success") ) ) {
 					String sCVINbr = cvi.getCVINumber();
 					logger.error( new Exception("Error submitting VSPS spreadsheet CVI " + sCVINbr + " to USAHERDS: ") );
-					FileUtils.writeTextFile(sXML, sCVINbr + "_Error.xml");
+					FileUtils.writeUTF8File(baXML, sCVINbr + "_Error.xml");
 					MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting CVI " + sCVINbr + " to USAHERDS: " + sRet);
 				}
 			}
@@ -116,7 +116,7 @@ class InsertVspsCviThread extends Thread implements ThreadCancelListener {
 	    }
 	}
 	
-	private String buildXml( VspsCvi cvi ) throws IOException {
+	private byte[] buildXml( VspsCvi cvi ) throws IOException {
 		StdeCviXmlModel xmlModel = new StdeCviXmlModel();
 		xmlModel.setCertificateNumber(cvi.getCVINumber());
 		xmlModel.setCertificateNumberSource("VSPS");
@@ -200,7 +200,7 @@ class InsertVspsCviThread extends Thread implements ThreadCancelListener {
 //		metaData.setErrorNote("VSPS Download");
 		metaData.setCVINumberSource(sCVINbrSource);
 		xmlModel.addOrUpdateMetadataAttachment(metaData);
-		return xmlModel.getXMLString();
+		return xmlModel.getXMLBytes();
 	}
 
 }

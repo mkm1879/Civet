@@ -2,6 +2,7 @@ package edu.clemson.lph.civet.addons;
 
 import java.awt.Window;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Paths;
@@ -132,16 +133,16 @@ public class SubmitNineDashThreeThread extends Thread {
 			if( "Eggs".equalsIgnoreCase( sProduct ) ) {
 				addToEggCVIs(sCVINo);
 			}
-			String sXML = buildXml();
+			byte[] baXML = buildXml();
 			// Save it just in case.
 			String sFileName = "./CivetOutbox/" + sCVINo + ".xml";
-			FileUtils.writeTextFile(sXML, sFileName);
+			FileUtils.writeUTF8File(baXML, sFileName);
 			// Send it!
 			String sRet = null;
 			int iTries = 0;
 			while( iTries < 3 ) {
 				try { 
-					sRet = service.sendCviXML(sXML);
+					sRet = service.sendCviXML(baXML);
 					iTries = 4;
 				} catch( Exception e ) {
 					if( sRet.contains("99,Timeout expired")) {
@@ -162,7 +163,7 @@ public class SubmitNineDashThreeThread extends Thread {
 					sRet = "Transmission level error\n" + sRet;
 					logger.error( sRet, new Exception("Error submitting NPIP 9-3 spreadsheet CVI to USAHERDS: " +
 							sCVINo ) );
-					logger.error(sXML);
+					logger.error(new String(baXML, StandardCharsets.UTF_8));
 					MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting to USAHERDS: " + 
 							sCVINo + "\n" + sRet);
 				}
@@ -192,7 +193,7 @@ public class SubmitNineDashThreeThread extends Thread {
 //		});
 	}
 	
-	private String buildXml() throws IOException {
+	private byte[] buildXml() throws IOException {
 		try {
 			if( !PremCheckSum.isValid(sOriginPIN) ) {
 				sOriginPIN = null;
@@ -337,7 +338,7 @@ public class SubmitNineDashThreeThread extends Thread {
 		metaData.setCVINumberSource("NPIP9_3");
 //	System.out.println(metaData.getXmlString());
 		xmlModel.addOrUpdateMetadataAttachment(metaData);
-		return xmlModel.getXMLString();
+		return xmlModel.getXMLBytes();
 	}
 
 	/**

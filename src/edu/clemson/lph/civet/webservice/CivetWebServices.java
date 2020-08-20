@@ -19,6 +19,8 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import edu.clemson.lph.civet.webservice.HttpGetClient;
 import edu.clemson.lph.dialogs.MessageDialog;
+
+import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import org.w3c.dom.Document;
 import org.apache.log4j.Logger;
@@ -58,7 +60,8 @@ public class CivetWebServices {
 	 * @see edu.clemson.lph.civet.webservice.CivetWebServices#sendCviXML(java.lang.String)
 	 */
 	
-	public String sendCviXML( String sXML ) throws RemoteException, WebServiceException {
+	public String sendCviXML( byte[] baXML ) throws RemoteException, WebServiceException {
+		String sXML = new String(baXML, StandardCharsets.UTF_8);
 		String sRet = null;
 		String sURL = null;
 		sURL = CivetConfig.getHERDSWebServiceURL() + POST_XML_URL;

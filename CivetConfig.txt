@@ -32,7 +32,7 @@ smtpSecurity=NONE
 smtpDomain=@gmail.com
 emailFrom=mmarti5@clemson.edu
 emailReplyTo=civet@mminformatics.com
-emailTestTo=
+emailTestTo=test@test.xyz
 emailCopyTo=
 maxAttachSize=5M
 

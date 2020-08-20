@@ -38,6 +38,7 @@ import edu.clemson.lph.utils.StringUtils;
 import java.awt.Window;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Paths;
@@ -157,14 +158,14 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 						if( "EGG".equalsIgnoreCase( data.getProduct() ) ) {
 							addToEggCVIs(data.getCVINumber());
 						}
-						String sXML = buildXml( data );
+						byte[] baXML = buildXml( data );
 //			System.out.println(sXML);
 						// Send it!
 						String sRet = null;
 						int iTries = 0;
 						while( iTries < 3 ) {
 							try { 
-								sRet = service.sendCviXML(sXML);
+								sRet = service.sendCviXML(baXML);
 								iTries = 4;
 							} catch( Exception e ) {
 								if( sRet.contains("99,Timeout expired")) {
@@ -185,7 +186,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 								sRet = "Transmission level error";
 								logger.error( sRet, new Exception("Error submitting NPIP 9-3 spreadsheet CVI to USAHERDS: " +
 										data.getCVINumber() ) );
-								logger.error(sXML);
+								logger.error(new String(baXML, StandardCharsets.UTF_8));
 								MessageDialog.messageLater(parent, "Civet WS Error", "Error submitting to USAHERDS: " + 
 										data.getCVINumber() + "\n" + sRet);
 							}
@@ -213,7 +214,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			});
 		}
 		
-		private String buildXml( CSVNineDashThreeDataFile data ) throws IOException {
+		private byte[] buildXml( CSVNineDashThreeDataFile data ) throws IOException {
 			StdeCviXmlModel xmlModel = new StdeCviXmlModel();
 			String sCVINumber = data.getCVINumber();
 			String sSpecies = data.getSpecies();
@@ -311,7 +312,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			metaData.setCVINumberSource(sCVINbrSource);
 //		System.out.println(metaData.getXmlString());
 			xmlModel.addOrUpdateMetadataAttachment(metaData);
-			return xmlModel.getXMLString();
+			return xmlModel.getXMLBytes();
 		}
 
 		private boolean cviExists( String sCVINbr, String sState ) {

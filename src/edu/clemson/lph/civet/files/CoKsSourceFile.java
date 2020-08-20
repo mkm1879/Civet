@@ -75,10 +75,9 @@ public class CoKsSourceFile extends SourceFile {
 			throw new SourceFileException(e);
 		}
 		String sAcrobatXML = toAcrobatXMLString();
-		String sStdXML = toStdXMLString( sAcrobatXML);
-		byte[] xmlBytes = sStdXML.getBytes(StandardCharsets.UTF_8);
+		byte[] baXml = toStdXMLBytes( sAcrobatXML);
 		
-		model = new StdeCviXmlModel(xmlBytes);
+		model = new StdeCviXmlModel(baXml);
 		model.setOrUpdatePDFAttachment(pdfBytes, fSource.getName());
 	}
 
@@ -128,17 +127,16 @@ public class CoKsSourceFile extends SourceFile {
 			try { 
 				if( fData != null && fData.exists() && fData.isFile() ) {
 					String sAcrobatXml = toAcrobatXMLString();
-					String sStdXml = toStdXMLString( sAcrobatXml );
-					byte[] xmlBytes = sStdXml.getBytes(StandardCharsets.UTF_8);
-					model = new StdeCviXmlModel(xmlBytes);
+					byte[] baXml = toStdXMLBytes( sAcrobatXml );
+					model = new StdeCviXmlModel(baXml);
 					String sInvalidID = model.checkAnimalIDTypes();
 					if( sInvalidID != null ) {
 						MessageDialog.showMessage(null, "Civet Warning", "Animal ID " + sInvalidID
 								+ " in certificate " + model.getCertificateNumber() + " is not valid for its type.\nChanged to 'OtherOfficialID'");
-						sStdXml = model.getXMLString();
+						baXml = model.getXMLBytes();
 					}
-					if( !isValidCVI(sStdXml) ) {
-						FileUtils.writeTextFile(sStdXml, "FailedTransform" + fData.getName());
+					if( !isValidCVI(baXml) ) {
+						FileUtils.writeUTF8File(baXml, "FailedTransform" + fData.getName());
 						throw new SourceFileException( "Failed to convert CO/KS Source\n"
 								+ super.sFileName + "\nFix manually and try again");
 					}
@@ -155,13 +153,13 @@ public class CoKsSourceFile extends SourceFile {
 		return model;
 	}
 	
-	private boolean isValidCVI( String sXml ) {
+	private boolean isValidCVI( byte[] baXml ) {
 		boolean bRet = true;
 		String sSchemaPath = CivetConfig.getSchemaFile();
 		if( sSchemaPath != null && sSchemaPath.trim().length() > 0 ) {
 			Validator v = new Validator(sSchemaPath);
 			if( v != null ) {
-				if( !v.isValidXMLString(sXml) ) {
+				if( !v.isValidXMLBytes(baXml) ) {
 					MessageDialog.showMessage(null, "Civet: Error", "Failed translation of XFA data\n"
 							+ v.getLastError() 
 							+ "\nFix manually and try again" );
@@ -228,8 +226,8 @@ public class CoKsSourceFile extends SourceFile {
 			InputSource is = new InputSource();
 			// Move namespace definition to each of the header nodes because we are losing the XFA document node later.
 			String sStrip = xmlString.replaceAll(" xfa:dataNode=\"dataGroup\"", " xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\"\nxfa:dataNode=\"dataGroup\"");
-			sStrip = sStrip.replaceAll("&#13;", "");
-			sStrip = sStrip.replace('Ñ', 'N');
+//			sStrip = sStrip.replaceAll("&#13;", "");
+//			sStrip = sStrip.replace('Ñ', 'N');
 //			System.out.println(sStrip);
 			is.setCharacterStream(new StringReader(sStrip));
 			doc = db.parse(is);
@@ -250,21 +248,26 @@ public class CoKsSourceFile extends SourceFile {
 	}
 	
 	private static String nodeToString(Node node, boolean bOmitDeclaration) {
+		byte[] baXml = nodeToBytes( node, bOmitDeclaration );
+		return new String( baXml, StandardCharsets.UTF_8);
+	}
+	
+	private static byte[] nodeToBytes(Node node, boolean bOmitDeclaration) {
 		String sOmit = bOmitDeclaration ? "yes" : "no";
-		StringWriter sw = new StringWriter();
+		ByteArrayOutputStream bast = new ByteArrayOutputStream();
 		try {
 			Transformer t = TransformerFactory.newInstance().newTransformer();
 			t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, sOmit);
 			t.setOutputProperty(OutputKeys.INDENT, "yes");
-			t.transform(new DOMSource(node), new StreamResult(sw));
+			t.transform(new DOMSource(node), new StreamResult(bast));
 		} catch (TransformerException te) {
 			logger.error("nodeToString Transformer Exception", te);
 		}
-		return sw.toString();
+		return bast.toByteArray();
 	}
 
-	private static String toStdXMLString( String sAcrobatXml ) {
-		String sRet = null;
+	private static byte[] toStdXMLBytes( String sAcrobatXml ) {
+		byte[] baRet = null;
 		String sXSLT = CivetConfig.getCoKsXSLTFile();
 		try {
 			File fTransform = new File(sXSLT);
@@ -277,15 +280,13 @@ public class CoKsSourceFile extends SourceFile {
             transformer = tFactory.newTransformer(new StreamSource(isXLT));
 				transformer.transform(new StreamSource(sourceReader),
 						new StreamResult(baosDest));
-				sRet = new String( baosDest.toByteArray(), "UTF-8" );
+				baRet = baosDest.toByteArray();
 			} catch ( TransformerException e) {
 				logger.error("Failed to transform XML with XSLT: " + sXSLT, e);
-			} catch (UnsupportedEncodingException e) {
-				logger.error("Should not see this unsupported encoding", e);
 			} catch (FileNotFoundException e) {
 				logger.error("Could not find transform file " + sXSLT, e);
 			}
- 		return sRet;
+ 		return baRet;
 	}
 
 	@Override
