@@ -26,6 +26,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
@@ -46,6 +47,26 @@ public class CertificateNbrLookup {
 			readCertNbrs();
 		}
 	}
+	
+	/**
+	 * Scrape the certificate number from the XML string directly.
+	 * @param baXML The eCVI XML in UTF-8 byte form.
+	 * @return
+	 */
+	public static String getCertNbr( byte[] baXML ) {
+		String sXML = new String(baXML, StandardCharsets.UTF_8 );
+		if( sXML == null || sXML.trim().length() == 0 ) return null;
+		int iStart = sXML.indexOf("CviNumber=") + 11;
+		int iEnd = sXML.substring(iStart).indexOf('\"');
+		String sRet = sXML.substring(iStart, iStart+iEnd);
+		iStart = sXML.indexOf("CviNumberIssuedBy=") + 19;
+		iEnd = sXML.substring(iStart).indexOf('\"');
+		String sSource = sXML.substring(iStart, iStart+iEnd);
+		if( sSource != null && sSource.trim().length() > 0 )
+			sRet = sSource + ":" + sRet;
+		return sRet;
+	}
+
 	
 	/** 
 	 * Use to test existence of Certificate Number without adding such as live during 

@@ -144,7 +144,7 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 			if( !isValidCVI(baXML) ) {
 				return false;
 			}
-			final String sCertNbr = getCertNbr( baXML );
+			final String sCertNbr = CertificateNbrLookup.getCertNbr( baXML );
 			// Check but don't add yet.
 			if( CertificateNbrLookup.certficateNbrExists(sCertNbr) ) {
 				MessageDialog.showMessage(parent, "Civet Error", "Certificate Number " + sCertNbr + " already exists.\n" +
@@ -189,14 +189,6 @@ public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
 			bRet = false;
 		} 
 		return bRet;
-	}
-	
-	private String getCertNbr( byte[] baXML ) {
-		String sXML = new String(baXML, StandardCharsets.UTF_8 );
-		if( sXML == null || sXML.trim().length() == 0 ) return null;
-		int iStart = sXML.indexOf("CviNumber=") + 11;
-		int iEnd = sXML.substring(iStart).indexOf('\"');
-		return sXML.substring(iStart, iStart+iEnd);
 	}
 
 	private void doLater() {

@@ -1553,6 +1553,14 @@ public class StdeCviXmlModel {
 		return sRet;
 	}
 	
+	public String getCertificateNumberSource() {
+		String sRet = null;
+		String sPath = ".";
+		String sAttr = "CviNumberIssuedBy";
+		sRet = helper.getAttributeByPath(sPath,sAttr);
+		return sRet;
+	}
+	
 	public void setCertificateNumber(String sCertificateNbr) {
 		String sPath = ".";
 		String sAttr = "CviNumber";

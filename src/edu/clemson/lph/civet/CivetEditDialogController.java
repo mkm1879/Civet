@@ -1446,6 +1446,13 @@ public final class CivetEditDialogController {
 		}
 		else {
 			try {
+				String sCertNbr = xStd.getCertificateNumber();
+				String sSource = xStd.getCertificateNumberSource();
+				if( sSource != null && sSource.trim().length() > 0 )
+					sCertNbr = sSource + ":" + sCertNbr;
+				if( CertificateNbrLookup.certficateNbrExists(sCertNbr) ) {
+					MessageDialog.showMessage(dlg, "Civet Warning", "Certificate " + sCertNbr + " has already been uploaded to HERDS");
+				}
 				bSppEntered = true;
 				bInSppChangeByCode = true;
 				String sOriginState = xStd.getOrigin().address.state;
