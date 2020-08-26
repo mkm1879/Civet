@@ -72,6 +72,24 @@ public class CertificateNbrLookup {
 	 * Use to test existence of Certificate Number without adding such as live during 
 	 * CivetEdit process.
 	 * @param sCertNbr
+	 * @param sSource CviNumberIssuedBy value
+	 * @return true if the number is a duplicate, false if unique or blank.
+	 */
+	public static boolean certficateNbrExists( String sCertNbr, String sSource ) {
+		if( sCertNbr == null || sCertNbr.trim().length() == 0 )
+			return false;
+		if( setCertNbrs == null ) {
+			readCertNbrs();
+		}
+		if( sSource != null && sSource.trim().length() > 0 )
+			sCertNbr = sSource + ":" + sCertNbr;
+		return setCertNbrs.contains(sCertNbr);
+	}
+	
+	/** 
+	 * Use to test existence of Certificate Number without adding such as live during 
+	 * CivetEdit process.
+	 * @param sCertNbr
 	 * @return true if the number is a duplicate, false if unique or blank.
 	 */
 	public static boolean certficateNbrExists( String sCertNbr ) {

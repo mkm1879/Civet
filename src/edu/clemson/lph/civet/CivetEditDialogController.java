@@ -1810,6 +1810,7 @@ public final class CivetEditDialogController {
 	 */
 	private boolean save( OpenFile fileToSave ) throws SourceFileException {
 		String sCVINo = dlg.jtfCVINo.getText();
+		String sCVINoSource = fileToSave.getSource().getSystem();
 		if( !bReOpened && sCVINo.equalsIgnoreCase(sPrevCVINo) ) {
 			MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " hasn't changed since last save");
 			dlg.jtfCVINo.requestFocus();
@@ -1819,7 +1820,14 @@ public final class CivetEditDialogController {
 			}
 			return false;
 		}
-		if( !bReOpened && CertificateNbrLookup.certficateNbrExists(dlg.jtfCVINo.getText()) ) {
+		String sOriginStateCode;
+		if( dlg.rbImport.isSelected() )
+			sOriginStateCode = States.getStateCode(dlg.cbOtherState.getSelectedValue());
+		else 
+			sOriginStateCode = CivetConfig.getHomeStateAbbr();
+		if( sCVINoSource != null && sCVINoSource.equals("Paper") )
+			sCVINoSource = sOriginStateCode + " Paper";
+		if( !bReOpened && CertificateNbrLookup.certficateNbrExists(sCVINo, sCVINoSource ) ) {
 			MessageDialog.showMessage(dlg, "Civet Error", "Certificate number " + sCVINo + " already exists");
 			dlg.jtfCVINo.requestFocus();
 			dlg.setFormEditable(true);
@@ -1906,7 +1914,6 @@ public final class CivetEditDialogController {
 			}
 			return false;
 		}
-		String sCVINoSource = fileToSave.getSource().getSystem();
 
 		// Precondition: PDF, Animals and Errors already in model.
 		// NOTE!!!!  model is not thread safe at this point.  
