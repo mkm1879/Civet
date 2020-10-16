@@ -213,7 +213,7 @@ public class MCviSourceFile extends SourceFile {
 	
 	private String postProcessStdXML( Document doc ) {
 		if( doc == null ) return null;
-		XMLDocHelper helper = new XMLDocHelper( doc );
+		XMLDocHelper helper = new XMLDocHelper( doc, null );
 //		NodeList nlAnimalTags = helper.getNodeListByPath("//AnimalTag");
 //		if( nlAnimalTags != null ) {
 //			for( int i = 0; i < nlAnimalTags.getLength(); i++ ) {

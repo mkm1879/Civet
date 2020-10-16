@@ -38,6 +38,7 @@ public abstract class SourceFile {
 		AgView,
 		Civet,
 		Conveyance,
+		VSPS,
 		Unknown
 	}
 
@@ -252,6 +253,9 @@ public abstract class SourceFile {
 		case Conveyance:
 			sourceFile = new ConveyanceSourceFile( fFile );
 			break;
+		case VSPS:
+			sourceFile = new VspsSourceFile( fFile );
+			break;
 		case Unknown:
 			logger.error("Unknown file type " + fFile);
 		default:
@@ -291,6 +295,9 @@ public abstract class SourceFile {
 		}
 		else if( CivetSourceFile.isCivet(fFile) ) {
 			type = Types.Civet;
+		}
+		else if( VspsSourceFile.isVsps(fFile) ) {
+			type = Types.VSPS;
 		}
 		else {
 			type = Types.Unknown;

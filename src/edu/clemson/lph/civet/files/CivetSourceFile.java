@@ -120,7 +120,14 @@ public class CivetSourceFile extends SourceFile {
 		boolean bRet = false;
 		String sName = fFile.getName();
 		if( sName.toLowerCase().endsWith(".cvi") ) {
-			bRet = true;
+			String sXML;
+			try {
+				sXML = FileUtils.readTextFile(fFile,3);
+				if( sXML.indexOf("CviNumberIssuedBy=\"VSPS\"") <= 0 )
+					bRet = true;
+			} catch (Exception e) {
+				logger.error(e);
+			}
 		}
 		return bRet;
 	}

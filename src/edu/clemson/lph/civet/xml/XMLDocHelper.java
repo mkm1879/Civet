@@ -438,7 +438,7 @@ public class XMLDocHelper {
 	
 	public ArrayList<Element> getElementsByName( String sName ) {
 		ArrayList<Element> aRet = new ArrayList<Element>();
-		NodeList nl = root.getElementsByTagName(sName);
+		NodeList nl = root.getElementsByTagNameNS("*", sName);
 		for( int i = 0; i < nl.getLength(); i++ ) {
 			Node nNext = nl.item(i);
 			if( nNext instanceof Element ) {
@@ -452,7 +452,7 @@ public class XMLDocHelper {
 	public Node getNodeByName( String sName ) {
 		Node nChild = null;
 		if( root != null ) {
-			NodeList nl = root.getElementsByTagName(sName);
+			NodeList nl = root.getElementsByTagNameNS("*", sName);
 			for( int i = 0; i < nl.getLength(); i++ ) {
 				Node nNext = nl.item(i);
 				if( nNext instanceof Element ) {
@@ -471,7 +471,7 @@ public class XMLDocHelper {
 			outerloop:
 			while( nChild == null && tok.hasMoreTokens() ) {
 				String sName = tok.nextToken();
-				NodeList nl = root.getElementsByTagName(sName);
+				NodeList nl = root.getElementsByTagNameNS("*", sName);
 				for( int i = 0; i < nl.getLength(); i++ ) {
 					Node nNext = nl.item(i);
 					if( nNext instanceof Element ) {
@@ -487,7 +487,7 @@ public class XMLDocHelper {
 	public Element getElementByName( String sName ) {
 		Element dChild = null;
 		if( root != null ) {
-			NodeList nl = root.getElementsByTagName(sName);
+			NodeList nl = root.getElementsByTagNameNS("*", sName);
 			for( int i = 0; i < nl.getLength(); i++ ) {
 				Node nNext = nl.item(i);
 				if( nNext instanceof Element ) {
@@ -506,7 +506,7 @@ public class XMLDocHelper {
 			outerloop:
 			while( eChild == null && tok.hasMoreTokens() ) {
 				String sName = tok.nextToken();
-				NodeList nl = root.getElementsByTagName(sName);
+				NodeList nl = root.getElementsByTagNameNS("*", sName);
 				for( int i = 0; i < nl.getLength(); i++ ) {
 					Node nNext = nl.item(i);
 					if( nNext instanceof Element ) {
@@ -522,7 +522,7 @@ public class XMLDocHelper {
 	public Node getChildNodeByName( Element n, String sName ) {
 		Node nChild = null;
 		if( n != null ) {
-			NodeList nl = n.getElementsByTagName(sName);
+			NodeList nl = n.getElementsByTagNameNS("*", sName);
 			for( int i = 0; i < nl.getLength(); i++ ) {
 				Node nNext = nl.item(i);
 				if( nNext instanceof Element ) {
@@ -541,7 +541,7 @@ public class XMLDocHelper {
 			outerloop:
 			while( nChild == null && tok.hasMoreTokens() ) {
 				String sName = tok.nextToken();
-				NodeList nl = n.getElementsByTagName(sName);
+				NodeList nl = n.getElementsByTagNameNS("*", sName);
 				for( int i = 0; i < nl.getLength(); i++ ) {
 					Node nNext = nl.item(i);
 					if( nNext instanceof Element ) {
@@ -573,7 +573,7 @@ public class XMLDocHelper {
 	public Element getChildElementByName( Element n, String sName ) {
 		Element dChild = null;
 		if( n != null ) {
-			NodeList nl = n.getElementsByTagName(sName);
+			NodeList nl = n.getElementsByTagNameNS("*", sName);
 			for( int i = 0; i < nl.getLength(); i++ ) {
 				Node nNext = nl.item(i);
 				if( nNext instanceof Element ) {
@@ -592,7 +592,7 @@ public class XMLDocHelper {
 			outerloop:
 			while( eChild == null && tok.hasMoreTokens() ) {
 				String sName = tok.nextToken();
-				NodeList nl = n.getElementsByTagName(sName);
+				NodeList nl = n.getElementsByTagNameNS("*", sName);
 				for( int i = 0; i < nl.getLength(); i++ ) {
 					Node nNext = nl.item(i);
 					if( nNext instanceof Element ) {

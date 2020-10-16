@@ -33,6 +33,7 @@ public class SafeDocBuilder {
 			factory = DocumentBuilderFactory.newInstance();
 	    String FEATURE = null;
 	     try {
+	       factory.setNamespaceAware(true);
 	       // This is the PRIMARY defense. If DTDs (doctypes) are disallowed, almost all XML entity attacks are prevented
 	       // Xerces 2 only - http://xerces.apache.org/xerces2-j/features.html#disallow-doctype-decl
 	       FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
@@ -59,6 +60,7 @@ public class SafeDocBuilder {
 	       factory.setXIncludeAware(false);
 	       factory.setExpandEntityReferences(false);
 	       builder = factory.newDocumentBuilder();
+	       System.out.println("Namespace aware = " + builder.isNamespaceAware());
 	       } catch (ParserConfigurationException e) {
 	             // This should catch a failed setFeature feature
 	             logger.error("ParserConfigurationException was thrown. The feature '" +

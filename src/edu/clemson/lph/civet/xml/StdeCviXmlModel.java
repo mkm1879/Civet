@@ -30,6 +30,7 @@ import java.util.Calendar;
 import java.util.HashSet;
 
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -121,6 +122,7 @@ public class StdeCviXmlModel {
 		}
 	}
 
+	
 	/** 
 	 * Create an XML document from the raw XML string.  
 	 * @param doc
@@ -156,7 +158,8 @@ public class StdeCviXmlModel {
 			Document doc = null;
 			Element root = null;
 			if( xmlBytes != null ) {
-				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); 
+//				DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 //				byte[] xmlBytes = sXML.getBytes();
 				InputStream is = new ByteArrayInputStream( xmlBytes );
 				doc = db.parse(is);
