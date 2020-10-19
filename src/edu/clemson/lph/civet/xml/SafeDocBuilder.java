@@ -60,7 +60,7 @@ public class SafeDocBuilder {
 	       factory.setXIncludeAware(false);
 	       factory.setExpandEntityReferences(false);
 	       builder = factory.newDocumentBuilder();
-	       System.out.println("Namespace aware = " + builder.isNamespaceAware());
+//	       System.out.println("Namespace aware = " + builder.isNamespaceAware());
 	       } catch (ParserConfigurationException e) {
 	             // This should catch a failed setFeature feature
 	             logger.error("ParserConfigurationException was thrown. The feature '" +
