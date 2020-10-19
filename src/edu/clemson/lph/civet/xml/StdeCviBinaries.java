@@ -188,7 +188,7 @@ public class StdeCviBinaries {
 		try {
 			String sPDFBase64 = new String(Base64.encodeBase64(pdfBytes));
 			String sID = null;
-			Element eAttach = helper.getElementByPathAndAttribute("/Attachment", "DocType", "PDF CVI");
+			Element eAttach = helper.getElementByPathAndAttribute("Attachment", "DocType", "PDF CVI");
 			if( eAttach == null ) {
 				String sAfter = StdeCviXmlModel.getFollowingElementList("MiscAttribute");
 				sID = getNextId("A");
@@ -199,7 +199,7 @@ public class StdeCviBinaries {
 			} else {
 				sID = eAttach.getAttribute("AttachmentRef");
 			}
-			Element binary = helper.getElementByPathAndAttribute("/Binary", "ID", sID);
+			Element binary = helper.getElementByPathAndAttribute("Binary", "ID", sID);
 			if( binary == null ) {
 				binary = helper.appendChild(helper.getRootElement(), "Binary");
 				binary.setAttribute("MimeType", "application/pdf");

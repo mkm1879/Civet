@@ -22,6 +22,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -51,19 +52,30 @@ public class XMLDocHelper {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private Document doc;
 	private Element root;
+	private  NamespaceResolver context;
 
 	private XPathFactory factory = null;
 
 	public XMLDocHelper( Document doc, Element root ) {
 		this.doc = doc;
 		this.root = root;
+		context = new NamespaceResolver(doc);
 		factory = XPathFactory.newInstance();
 	}
 	
 	public XMLDocHelper( Document doc ) {
 		this.doc = doc;
 		this.root = doc.getDocumentElement();
+		context = new NamespaceResolver(doc);
 		factory = XPathFactory.newInstance();
+	}
+	
+	public String getNSPrefix() {
+		String sRet = null;
+		sRet = context.getPrefix("http://www.usaha.org/xmlns/ecvi2");
+		if( sRet == null )
+			sRet = "ns0";
+		return sRet;
 	}
 	
 	public boolean isInitialized() {
@@ -162,6 +174,17 @@ public class XMLDocHelper {
 	public String getElementTextByPath( String sPath ) {
 		return getElementTextByPath(doc.getDocumentElement(), sPath );
 	}
+	
+	private String addPathPrefix( String sPath ) {
+		String sPrefix = getNSPrefix() + ":";
+		if( "." != sPath && sPath.indexOf(":") < 0 ) {
+			if( sPath.indexOf("/") >= 0 )
+				sPath = sPath.replaceAll("[^:]/", "/" + sPrefix);
+			else
+				sPath = sPrefix + sPath;
+		}
+		return sPath;
+	}
 		
 	/**
 	 * Returns the FIRST text node contents from nNode by path sPath
@@ -169,10 +192,12 @@ public class XMLDocHelper {
 	 * @param sPath
 	 * @return
 	 */
-	public String getElementTextByPath( Node nNode,  String sPath ) {
+	private String getElementTextByPath( Node nNode,  String sPath ) {
 		String sRet = null;
 		try {
 			XPath xPath = factory.newXPath();
+			xPath.setNamespaceContext(context);
+			sPath = addPathPrefix(sPath);
 			NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 			if( nodes == null || nodes.getLength() == 0 ) return "";
 			for (int i = 0; i < nodes.getLength(); ++i) {
@@ -221,14 +246,16 @@ public class XMLDocHelper {
 	}
 
 	
-	public Element getElementByPath( String sPath ) {
+	private Element getElementByPath( String sPath ) {
 		return getElementByPath(doc.getDocumentElement(), sPath );
 	}
 	
-	public void removeElementByPath( Node nNode,  String sPath ) {
+	private void removeElementByPath( Node nNode,  String sPath ) {
 		Element e = null;
 		try {
 			XPath xPath = factory.newXPath();
+			xPath.setNamespaceContext(context);
+			sPath = addPathPrefix(sPath);
 			NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 			if( nodes == null || nodes.getLength() == 0 ) return;
 			for (int i = 0; i < nodes.getLength(); ++i) {
@@ -244,10 +271,12 @@ public class XMLDocHelper {
 	}
 
 		
-	public Element getElementByPath( Node nNode,  String sPath ) {
+	private Element getElementByPath( Node nNode,  String sPath ) {
 		Element eRet = null;
 		try {
 			XPath xPath = factory.newXPath();
+			xPath.setNamespaceContext(context);
+			sPath = addPathPrefix(sPath);
 			NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 			if( nodes == null || nodes.getLength() == 0 ) return null;
 			for (int i = 0; i < nodes.getLength(); ++i) {
@@ -261,10 +290,12 @@ public class XMLDocHelper {
 		return eRet;
 	}
 	
-	public void updateElementByPath( String sPath, String sValue ) {
+	private void updateElementByPath( String sPath, String sValue ) {
 		Element e = null;
 		try {
 			XPath xPath = factory.newXPath();
+			xPath.setNamespaceContext(context);
+			sPath = addPathPrefix(sPath);
 			NodeList nodes = (NodeList)xPath.evaluate(sPath, doc.getDocumentElement(), XPathConstants.NODESET);
 			if( nodes == null || nodes.getLength() == 0 ) return;
 			for (int i = 0; i < nodes.getLength(); ++i) {
@@ -278,10 +309,12 @@ public class XMLDocHelper {
 		}
 	}
 	
-	public void updateAttributeByPath( String sPath, String sAttribute, String sValue ) {
+	private void updateAttributeByPath( String sPath, String sAttribute, String sValue ) {
 		Element e = null;
 		try {
 			XPath xPath = factory.newXPath();
+			xPath.setNamespaceContext(context);
+			sPath = addPathPrefix(sPath);
 			NodeList nodes = (NodeList)xPath.evaluate(sPath, doc.getDocumentElement(), XPathConstants.NODESET);
 			if( nodes == null || nodes.getLength() == 0 ) return;
 			for (int i = 0; i < nodes.getLength(); ++i) {
@@ -320,6 +353,8 @@ public class XMLDocHelper {
 		Element eRet = null;
 		try {
 			XPath xPath = factory.newXPath();
+			xPath.setNamespaceContext(context);
+			sPath = addPathPrefix(sPath);
 			NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 			if( nodes == null || nodes.getLength() == 0 ) return null;
 			for (int i = 0; i < nodes.getLength(); ++i) {
@@ -362,8 +397,9 @@ public class XMLDocHelper {
 		return getAttributeByPath( doc.getDocumentElement(), sPath, sAttr);
 	}
 		
-	public String getAttributeByPath( Node nNode, String sPath, String sAttr ) {
+	private String getAttributeByPath( Node nNode, String sPath, String sAttr ) {
 		String sRet = null;
+
 		if( sPath == null || sPath.trim().length() == 0 || sPath.equals(".") ) {
 			Element e = (Element)nNode;
 			sRet = e.getAttribute(sAttr);
@@ -371,6 +407,8 @@ public class XMLDocHelper {
 		else {
 			try {
 				XPath xPath = factory.newXPath();
+				xPath.setNamespaceContext(context);
+				sPath = addPathPrefix(sPath);
 				NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 				if( nodes == null || nodes.getLength() == 0 ) return "";
 				for (int i = 0; i < nodes.getLength(); ++i) {
@@ -392,7 +430,7 @@ public class XMLDocHelper {
 		return listAttributesByPath( doc.getDocumentElement(), sPath, sAttr );
 	}
 
-	public ArrayList<String> listAttributesByPath( Node nNode, String sPath, String sAttr ) {
+	private ArrayList<String> listAttributesByPath( Node nNode, String sPath, String sAttr ) {
 		ArrayList<String> aRet = new ArrayList<String>();
 		if( sPath == null || sPath.trim().length() == 0 || sPath.equals(".") ) {
 			Element e = (Element)nNode;
@@ -403,6 +441,8 @@ public class XMLDocHelper {
 		else {
 			try {
 				XPath xPath = factory.newXPath();
+				xPath.setNamespaceContext(context);
+				sPath = addPathPrefix(sPath);
 				NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 				if( nodes == null || nodes.getLength() == 0 ) return aRet;
 				for (int i = 0; i < nodes.getLength(); ++i) {
@@ -425,10 +465,12 @@ public class XMLDocHelper {
 		return getNodeListByPath( doc.getDocumentElement(), sPath );
 	}
 		
-	public NodeList getNodeListByPath( Node nNode, String sPath ) {
+	private NodeList getNodeListByPath( Node nNode, String sPath ) {
 		NodeList nRet = null;
 		try {
 			XPath xPath = factory.newXPath();
+			xPath.setNamespaceContext(context);
+			sPath = addPathPrefix(sPath);
 			nRet = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
 			logger.error("Error evaluating xpath " + sPath);;

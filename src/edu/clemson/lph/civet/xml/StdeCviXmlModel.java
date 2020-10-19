@@ -1568,9 +1568,6 @@ public class StdeCviXmlModel {
 		String sPath = ".";
 		String sAttr = "CviNumber";
 		helper.setAttributeByPath(sPath, sAttr, sCertificateNbr);
-		CviMetaDataXml meta = getMetaData();
-		meta.setCertificateNbr(sCertificateNbr);
-		binaries.addOrUpdateMetadata(meta);
 	}
 	
 	public java.util.Date getIssueDate() {

@@ -188,13 +188,14 @@ public class BulkLoadSwineMovementCSV implements AddOn {
 		GroupLot group = new GroupLot(sSpecies, null, sGender, dNum);  //(String speciesCode, String sBreed, String sGender, Double quantity 
 		group.age = sAge;
 		xmlModel.addGroupLot(group);
+//	System.out.println(xmlModel.getXMLString());
 		CviMetaDataXml metaData = new CviMetaDataXml();
 		metaData.setCertificateNbr(sCviNumber);
 		metaData.setBureauReceiptDate(data.getSavedDate());
 		metaData.setErrorNote("Swine Bulk Spreadsheet");
 		metaData.setCVINumberSource(sCVINbrSource);
-//	System.out.println(metaData.getXmlString());
 		xmlModel.addOrUpdateMetadataAttachment(metaData);
+//	System.out.println(xmlModel.getXMLString());
 		return xmlModel.getXMLBytes();
 	}
 
