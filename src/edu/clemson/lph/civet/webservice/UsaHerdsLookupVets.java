@@ -283,7 +283,6 @@ public class UsaHerdsLookupVets {
 		rows = new ArrayList<WebServiceVetRow>();
 		try {
 			LabeledCSVParser parser = new LabeledCSVParser( sFileName );
-			int i = 0;
 			do {
 				try {
 				WebServiceVetRow row = new WebServiceVetRow(

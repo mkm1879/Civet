@@ -22,7 +22,6 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.pdfgen.MergePDF;
-import edu.clemson.lph.pdfgen.PDFUtils;
 import edu.clemson.lph.utils.FileUtils;
 
 /**

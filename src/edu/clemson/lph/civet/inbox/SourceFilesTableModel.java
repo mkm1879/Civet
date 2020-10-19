@@ -30,6 +30,7 @@ import edu.clemson.lph.civet.Civet;
 
 @SuppressWarnings("serial")
 public class SourceFilesTableModel extends FilesTableModel {
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 
 	public SourceFilesTableModel(File fDirectory) {

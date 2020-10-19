@@ -1,16 +1,10 @@
 package edu.clemson.lph.civet.threads;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.util.Arrays;
-
 import javax.swing.SwingUtilities;
-
 import org.apache.log4j.Logger;
-
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.files.OpenFile;
 import edu.clemson.lph.civet.files.OpenFileSaveQueue;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;

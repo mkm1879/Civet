@@ -1,5 +1,5 @@
 package edu.clemson.lph.civet.xml;
-import java.io.ByteArrayOutputStream;
+
 /*
 Copyright 2014 Michael K Martin
 
@@ -18,11 +18,11 @@ GNU General Public License for more details.
 You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
+import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import javax.xml.namespace.NamespaceContext;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -245,32 +245,6 @@ public class XMLDocHelper {
 		}
 	}
 
-	
-	private Element getElementByPath( String sPath ) {
-		return getElementByPath(doc.getDocumentElement(), sPath );
-	}
-	
-	private void removeElementByPath( Node nNode,  String sPath ) {
-		Element e = null;
-		try {
-			XPath xPath = factory.newXPath();
-			xPath.setNamespaceContext(context);
-			sPath = addPathPrefix(sPath);
-			NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
-			if( nodes == null || nodes.getLength() == 0 ) return;
-			for (int i = 0; i < nodes.getLength(); ++i) {
-				if( nodes.item(i).getNodeType() == Node.ELEMENT_NODE ) {
-					e = (Element)nodes.item(i);
-				}
-			}
-		} catch (XPathExpressionException ex) {
-			logger.error("Error evaluating xpath " + sPath, ex);
-		}
-		Node nParent = e.getParentNode();
-		nParent.removeChild(e);
-	}
-
-		
 	private Element getElementByPath( Node nNode,  String sPath ) {
 		Element eRet = null;
 		try {
@@ -288,44 +262,6 @@ public class XMLDocHelper {
 			logger.error("Error evaluating xpath " + sPath, e);
 		}
 		return eRet;
-	}
-	
-	private void updateElementByPath( String sPath, String sValue ) {
-		Element e = null;
-		try {
-			XPath xPath = factory.newXPath();
-			xPath.setNamespaceContext(context);
-			sPath = addPathPrefix(sPath);
-			NodeList nodes = (NodeList)xPath.evaluate(sPath, doc.getDocumentElement(), XPathConstants.NODESET);
-			if( nodes == null || nodes.getLength() == 0 ) return;
-			for (int i = 0; i < nodes.getLength(); ++i) {
-				if( nodes.item(i).getNodeType() == Node.ELEMENT_NODE ) {
-					e = (Element)nodes.item(i);
-					e.setTextContent(sValue);
-				}
-			}
-		} catch (XPathExpressionException ex) {
-			logger.error("Error evaluating xpath " + sPath, ex);
-		}
-	}
-	
-	private void updateAttributeByPath( String sPath, String sAttribute, String sValue ) {
-		Element e = null;
-		try {
-			XPath xPath = factory.newXPath();
-			xPath.setNamespaceContext(context);
-			sPath = addPathPrefix(sPath);
-			NodeList nodes = (NodeList)xPath.evaluate(sPath, doc.getDocumentElement(), XPathConstants.NODESET);
-			if( nodes == null || nodes.getLength() == 0 ) return;
-			for (int i = 0; i < nodes.getLength(); ++i) {
-				if( nodes.item(i).getNodeType() == Node.ELEMENT_NODE ) {
-					e = (Element)nodes.item(i);
-					e.setAttribute(sAttribute, sValue);
-				}
-			}
-		} catch (XPathExpressionException ex) {
-			logger.error("Error evaluating xpath " + sPath, ex);
-		}
 	}
 	
 	public void updateAttribute( Node n, String sAttribute, String sValue ) {
@@ -670,7 +606,6 @@ public class XMLDocHelper {
 			Transformer transformer = transFactory.newTransformer();
 			if( sEncoding != null )
 				transformer.setOutputProperty(OutputKeys.ENCODING, sEncoding);
-			StringWriter buffer = new StringWriter();
 			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, sOmit);
 			ByteArrayOutputStream bos=new ByteArrayOutputStream();
 			StreamResult result=new StreamResult(bos);

@@ -30,7 +30,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.XMLUtility;
 
 /**

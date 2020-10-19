@@ -18,7 +18,6 @@ You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import edu.clemson.lph.civet.webservice.HttpGetClient;
-import edu.clemson.lph.dialogs.MessageDialog;
 
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;

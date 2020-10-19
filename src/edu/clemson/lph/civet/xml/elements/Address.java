@@ -19,8 +19,6 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 
 package edu.clemson.lph.civet.xml.elements;
 
-import java.util.StringTokenizer;
-
 public class Address {
 	public String line1; 
 	public String line2; 

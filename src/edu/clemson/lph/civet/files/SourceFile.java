@@ -15,12 +15,8 @@
 package edu.clemson.lph.civet.files;
 
 import java.io.File;
-import java.util.ArrayList;
-
 import org.apache.log4j.Logger;
-
 import com.itextpdf.text.pdf.PdfReader;
-
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.utils.FileUtils;
