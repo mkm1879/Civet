@@ -53,6 +53,7 @@ public class XMLDocHelper {
 	private Document doc;
 	private Element root;
 	private  NamespaceResolver context;
+	private String sNSPrefix;
 
 	private XPathFactory factory = null;
 
@@ -70,11 +71,15 @@ public class XMLDocHelper {
 		factory = XPathFactory.newInstance();
 	}
 	
+	public void setNSPrefix( String sPrefix ) {
+		sNSPrefix = sPrefix;
+	}
+	
 	public String getNSPrefix() {
 		String sRet = null;
-		sRet = context.getPrefix("http://www.usaha.org/xmlns/ecvi2");
+		sRet = sNSPrefix;
 		if( sRet == null )
-			sRet = "ns0";
+			sRet = null;
 		return sRet;
 	}
 	
@@ -111,6 +116,8 @@ public class XMLDocHelper {
 	 * @return
 	 */
 	public Element insertElementBefore( String sElementName, String sAfter ) {
+		if( sNSPrefix != null ) 
+			sElementName = sNSPrefix + ":" + sElementName;
 		Element e = doc.createElement(sElementName);
 		Element after = getChildElementByNames(root,sAfter);
 		if( after != null )
@@ -143,6 +150,8 @@ public class XMLDocHelper {
 	 * @return
 	 */
 	public Element insertElementBefore( Element eParent, String sElementName, String sAfter ) {
+		if( sNSPrefix != null ) 
+			sElementName = sNSPrefix + ":" + sElementName;
 		Element e = doc.createElement(sElementName);
 		Element after = getChildElementByNames(eParent,sAfter);
 		if( after != null )
@@ -160,12 +169,16 @@ public class XMLDocHelper {
 	}
 	
 	public Element appendChild( Element eParent, String sElementName ) {
+		if( sNSPrefix != null ) 
+			sElementName = sNSPrefix + ":" + sElementName;
 		Element e = doc.createElement(sElementName);
 		eParent.appendChild(e);
 		return e;
 	}
 	
 	public Element appendElement( String sElementName ) {
+		if( sNSPrefix != null ) 
+			sElementName = sNSPrefix + ":" + sElementName;
 		Element e = doc.createElement(sElementName);
 		doc.getDocumentElement().appendChild(e);
 		return e;
@@ -176,12 +189,14 @@ public class XMLDocHelper {
 	}
 	
 	private String addPathPrefix( String sPath ) {
-		String sPrefix = getNSPrefix() + ":";
-		if( "." != sPath && sPath.indexOf(":") < 0 ) {
-			if( sPath.indexOf("/") >= 0 )
-				sPath = sPath.replaceAll("[^:]/", "/" + sPrefix);
-			else
-				sPath = sPrefix + sPath;
+		if( getNSPrefix() != null ) {
+			String sPrefix = getNSPrefix() + ":";
+			if( "." != sPath && sPath.indexOf(":") < 0 ) {
+				if( sPath.indexOf("/") >= 0 )
+					sPath = sPath.replaceAll("[^:]/", "/" + sPrefix);
+				else
+					sPath = sPrefix + sPath;
+			}
 		}
 		return sPath;
 	}
@@ -570,12 +585,17 @@ public class XMLDocHelper {
 			outerloop:
 			while( eChild == null && tok.hasMoreTokens() ) {
 				String sName = tok.nextToken();
-				NodeList nl = n.getElementsByTagNameNS("*", sName);
+//				NodeList nl = n.getElementsByTagNameNS("*", sName);
+				NodeList nl = n.getChildNodes();
 				for( int i = 0; i < nl.getLength(); i++ ) {
 					Node nNext = nl.item(i);
 					if( nNext instanceof Element ) {
+						Element eNext = (Element)nNext;
+						String sTag = eNext.getTagName();
+						if( sTag.endsWith(sName) ) {
 						eChild = (Element)nNext;
 						break outerloop;
+						}
 					}
 				}
 			}

@@ -22,7 +22,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -156,6 +156,7 @@ public class StdeCviXmlModel {
 		try {
 			Document doc = null;
 			Element root = null;
+			String sPrefix = null;
 			if( xmlBytes != null ) {
 				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); 
 //				DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -164,8 +165,18 @@ public class StdeCviXmlModel {
 				doc = db.parse(is);
 				doc.setXmlStandalone(true);
 				root = doc.getDocumentElement();
+				String sXml = new String( xmlBytes, StandardCharsets.UTF_8);
+				int iLoc = sXml.indexOf("<", 3);
+				int iLocEnd = sXml.indexOf(":eCVI", iLoc);
+				if(iLocEnd > 0) {
+					sPrefix = sXml.substring(iLoc+1, iLocEnd);
+					System.out.println(sPrefix);
+				}
+				
 			}
 			helper = new XMLDocHelper( doc, root );
+			if( sPrefix != null )
+				helper.setNSPrefix(sPrefix);
 			binaries = new StdeCviBinaries( helper );
 		} catch (Exception e ) {
 			logger.error(e);
