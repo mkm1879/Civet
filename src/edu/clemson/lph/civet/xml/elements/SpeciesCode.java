@@ -56,4 +56,15 @@ public class SpeciesCode {
 		return sRet;
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		boolean bRet = false;
+		if( o instanceof SpeciesCode ) {
+			SpeciesCode scOther = (SpeciesCode)o;
+			if( code.equals(scOther.code) )
+				bRet = true;
+		}
+		return bRet;
+	}
+	
 }

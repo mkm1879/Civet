@@ -126,7 +126,7 @@ public final class CivetEditDialogController {
 	private VetLookup vetLookup;
 	private boolean bInCleanup = false;
 	private boolean bInEditLast;
-		private String sLastSaved = null;
+	private String sLastSaved = null;
 
 	/**
 	 * construct an empty pdf viewer and pop up the open window
@@ -1675,6 +1675,8 @@ public final class CivetEditDialogController {
 						+ " is not in USAHERDS as CVI species.\nSaving as Other.");
 				aBadSpecies.add(sSpeciesCode);
 			}
+			if( ! idListModel.contains(animal))
+				idListModel.addRow(animal.speciesCode.code, animal.getBestID());
 			boolean bSet = false;
 			if( aSpecies.size() > 0 ) {
 				for( SpeciesRecord r : aSpecies ) {
@@ -2315,6 +2317,12 @@ public final class CivetEditDialogController {
 		// Use species list to calculate the number of unidentified animals and build groups accordingly.
 		// Precondition:  Individually identified animals were added when the AddIdentifiers dialog closed.
 		ArrayList<Animal> animals = model.getAnimals();
+		for( AnimalIDRecord r : idListModel.getRows() ) {
+			Animal newAnimal = r.animal;
+			if( !animals.contains(newAnimal) ) {
+				animals.add(newAnimal);
+			}
+		}
 		// We don't collect separate date inspected for manually entered IDs.
 		for( Animal animal : animals ) {
 			if(animal.inspectionDate == null || animal.inspectionDate.trim().length() == 0 ) {
@@ -2346,7 +2354,8 @@ public final class CivetEditDialogController {
 					else if( iCountIds > iNumOfSpp ) {
 						MessageDialog.showMessage(dlg, "Civet Error: Animal Count", "Number of tags " + iCountIds + " > number of animals " + iNumOfSpp + " for species " + sSpeciesCode);
 						logger.error("Number of tags " + iCountIds + " > number of animals " + iNumOfSpp + " for species " + sSpeciesCode);
-						// Leave things alone.
+						model.removeGroupLot(group);
+						sr.iNumber = iCountIds;
 					}
 					else {
 						Integer iNumUntagged = iNumOfSpp - iCountIds;

@@ -50,6 +50,17 @@ public class AnimalIDListTableModel extends AbstractTableModel {
 		}
 	}
 	
+	public boolean contains( Animal animal ) {
+		boolean bRet = false;
+		for( AnimalIDRecord r : rows ) {
+			if( r.animal.equals(animal) ) {
+				bRet = true;
+				break;
+			}
+		}
+		return bRet;
+	}
+	
 	public void save() {
 		for( Animal animal : deletedAnimals ) {
 			xmlModel.removeAnimal(animal);
