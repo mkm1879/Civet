@@ -618,24 +618,24 @@ public class XMLDocHelper {
 		return baRet;
 	}
 	
-	public byte[] getXMLBytes(boolean bOmitDeclaration, String sEncoding ) {
-		byte[] baRet = null;
-		String sOmit = (bOmitDeclaration ? "yes" : "no");
-		try {
-			TransformerFactory transFactory = TransformerFactory.newInstance();
-			Transformer transformer = transFactory.newTransformer();
-			if( sEncoding != null )
-				transformer.setOutputProperty(OutputKeys.ENCODING, sEncoding);
-			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, sOmit);
-			ByteArrayOutputStream bos=new ByteArrayOutputStream();
-			StreamResult result=new StreamResult(bos);
-			transformer.transform(new DOMSource(doc), result);
-			baRet=bos.toByteArray();		
-		} catch (TransformerException e) {
-			logger.error("Transform failure", e);
-		}
-		return baRet;
-	}
+//	public byte[] getXMLBytes(boolean bOmitDeclaration, String sEncoding ) {
+//		byte[] baRet = null;
+//		String sOmit = (bOmitDeclaration ? "yes" : "no");
+//		try {
+//			TransformerFactory transFactory = TransformerFactory.newInstance();
+//			Transformer transformer = transFactory.newTransformer();
+//			if( sEncoding != null )
+//				transformer.setOutputProperty(OutputKeys.ENCODING, sEncoding);
+//			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, sOmit);
+//			ByteArrayOutputStream bos=new ByteArrayOutputStream();
+//			StreamResult result=new StreamResult(bos);
+//			transformer.transform(new DOMSource(doc), result);
+//			baRet=bos.toByteArray();		
+//		} catch (TransformerException e) {
+//			logger.error("Transform failure", e);
+//		}
+//		return baRet;
+//	}
 	
 	public String getXMLString() {
 		String sRet = null;
@@ -652,26 +652,26 @@ public class XMLDocHelper {
 		return sRet;
 	}
 	
-	public String getXMLString(boolean bOmitDeclaration) {
-		return getXMLString(bOmitDeclaration, null );
-	}
-		
-	public String getXMLString(boolean bOmitDeclaration, String sEncoding ) {
-		String sOmit = (bOmitDeclaration ? "yes" : "no");
-		try {
-		TransformerFactory transFactory = TransformerFactory.newInstance();
-		Transformer transformer = transFactory.newTransformer();
-		if( sEncoding != null )
-			transformer.setOutputProperty(OutputKeys.ENCODING, sEncoding);
-		StringWriter buffer = new StringWriter();
-		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, sOmit);
-			transformer.transform(new DOMSource(doc),
-			      new StreamResult(buffer));
-			return buffer.toString();
-		} catch (TransformerException e) {
-			logger.error("Transform failure", e);
-		}
-		return null;
-	}
+//	public String getXMLString(boolean bOmitDeclaration) {
+//		return getXMLString(bOmitDeclaration, null );
+//	}
+//		
+//	public String getXMLString(boolean bOmitDeclaration, String sEncoding ) {
+//		String sOmit = (bOmitDeclaration ? "yes" : "no");
+//		try {
+//		TransformerFactory transFactory = TransformerFactory.newInstance();
+//		Transformer transformer = transFactory.newTransformer();
+//		if( sEncoding != null )
+//			transformer.setOutputProperty(OutputKeys.ENCODING, sEncoding);
+//		StringWriter buffer = new StringWriter();
+//		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, sOmit);
+//			transformer.transform(new DOMSource(doc),
+//			      new StreamResult(buffer));
+//			return buffer.toString();
+//		} catch (TransformerException e) {
+//			logger.error("Transform failure", e);
+//		}
+//		return null;
+//	}
 
 }

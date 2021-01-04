@@ -171,6 +171,7 @@ public class StdeCviXmlModel {
 				if(iLocEnd > 0) {
 					sPrefix = sXml.substring(iLoc+1, iLocEnd);
 					System.out.println(sPrefix);
+					FileUtils.writeTextFile(sXml, "XMLOut.txt");
 				}
 				
 			}
