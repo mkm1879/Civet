@@ -176,8 +176,8 @@ public class StdeCviXmlModel {
 				
 			}
 			helper = new XMLDocHelper( doc, root );
-			if( sPrefix != null )
-				helper.setNSPrefix(sPrefix);
+//			if( sPrefix != null )
+//				helper.setNSPrefix(sPrefix);
 			binaries = new StdeCviBinaries( helper );
 		} catch (Exception e ) {
 			logger.error(e);

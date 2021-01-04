@@ -23,7 +23,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import javax.xml.transform.OutputKeys;
+//import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -52,36 +52,36 @@ public class XMLDocHelper {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private Document doc;
 	private Element root;
-	private  NamespaceResolver context;
-	private String sNSPrefix;
+//	private  NamespaceResolver context;
+//	private String sNSPrefix;
 
 	private XPathFactory factory = null;
 
 	public XMLDocHelper( Document doc, Element root ) {
 		this.doc = doc;
 		this.root = root;
-		context = new NamespaceResolver(doc);
+//		context = new NamespaceResolver(doc);
 		factory = XPathFactory.newInstance();
 	}
 	
 	public XMLDocHelper( Document doc ) {
 		this.doc = doc;
 		this.root = doc.getDocumentElement();
-		context = new NamespaceResolver(doc);
+//		context = new NamespaceResolver(doc);
 		factory = XPathFactory.newInstance();
 	}
 	
-	public void setNSPrefix( String sPrefix ) {
-		sNSPrefix = sPrefix;
-	}
-	
-	public String getNSPrefix() {
-		String sRet = null;
-		sRet = sNSPrefix;
-		if( sRet == null )
-			sRet = null;
-		return sRet;
-	}
+//	public void setNSPrefix( String sPrefix ) {
+//		sNSPrefix = sPrefix;
+//	}
+//	
+//	public String getNSPrefix() {
+//		String sRet = null;
+//		sRet = sNSPrefix;
+//		if( sRet == null )
+//			sRet = null;
+//		return sRet;
+//	}
 	
 	public boolean isInitialized() {
 		boolean bRet = false;
@@ -116,8 +116,8 @@ public class XMLDocHelper {
 	 * @return
 	 */
 	public Element insertElementBefore( String sElementName, String sAfter ) {
-		if( sNSPrefix != null ) 
-			sElementName = sNSPrefix + ":" + sElementName;
+//		if( sNSPrefix != null ) 
+//			sElementName = sNSPrefix + ":" + sElementName;
 		Element e = doc.createElement(sElementName);
 		Element after = getChildElementByNames(root,sAfter);
 		if( after != null )
@@ -150,8 +150,8 @@ public class XMLDocHelper {
 	 * @return
 	 */
 	public Element insertElementBefore( Element eParent, String sElementName, String sAfter ) {
-		if( sNSPrefix != null ) 
-			sElementName = sNSPrefix + ":" + sElementName;
+//		if( sNSPrefix != null ) 
+//			sElementName = sNSPrefix + ":" + sElementName;
 		Element e = doc.createElement(sElementName);
 		Element after = getChildElementByNames(eParent,sAfter);
 		if( after != null )
@@ -169,16 +169,16 @@ public class XMLDocHelper {
 	}
 	
 	public Element appendChild( Element eParent, String sElementName ) {
-		if( sNSPrefix != null ) 
-			sElementName = sNSPrefix + ":" + sElementName;
+//		if( sNSPrefix != null ) 
+//			sElementName = sNSPrefix + ":" + sElementName;
 		Element e = doc.createElement(sElementName);
 		eParent.appendChild(e);
 		return e;
 	}
 	
 	public Element appendElement( String sElementName ) {
-		if( sNSPrefix != null ) 
-			sElementName = sNSPrefix + ":" + sElementName;
+//		if( sNSPrefix != null ) 
+//			sElementName = sNSPrefix + ":" + sElementName;
 		Element e = doc.createElement(sElementName);
 		doc.getDocumentElement().appendChild(e);
 		return e;
@@ -188,18 +188,18 @@ public class XMLDocHelper {
 		return getElementTextByPath(doc.getDocumentElement(), sPath );
 	}
 	
-	private String addPathPrefix( String sPath ) {
-		if( getNSPrefix() != null ) {
-			String sPrefix = getNSPrefix() + ":";
-			if( "." != sPath && sPath.indexOf(":") < 0 ) {
-				if( sPath.indexOf("/") >= 0 )
-					sPath = sPath.replaceAll("[^:]/", "/" + sPrefix);
-				else
-					sPath = sPrefix + sPath;
-			}
-		}
-		return sPath;
-	}
+//	private String addPathPrefix( String sPath ) {
+//		if( getNSPrefix() != null ) {
+//			String sPrefix = getNSPrefix() + ":";
+//			if( "." != sPath && sPath.indexOf(":") < 0 ) {
+//				if( sPath.indexOf("/") >= 0 )
+//					sPath = sPath.replaceAll("[^:]/", "/" + sPrefix);
+//				else
+//					sPath = sPrefix + sPath;
+//			}
+//		}
+//		return sPath;
+//	}
 		
 	/**
 	 * Returns the FIRST text node contents from nNode by path sPath
@@ -211,8 +211,8 @@ public class XMLDocHelper {
 		String sRet = null;
 		try {
 			XPath xPath = factory.newXPath();
-			xPath.setNamespaceContext(context);
-			sPath = addPathPrefix(sPath);
+//			xPath.setNamespaceContext(context);
+//			sPath = addPathPrefix(sPath);
 			NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 			if( nodes == null || nodes.getLength() == 0 ) return "";
 			for (int i = 0; i < nodes.getLength(); ++i) {
@@ -264,8 +264,8 @@ public class XMLDocHelper {
 		Element eRet = null;
 		try {
 			XPath xPath = factory.newXPath();
-			xPath.setNamespaceContext(context);
-			sPath = addPathPrefix(sPath);
+//			xPath.setNamespaceContext(context);
+//			sPath = addPathPrefix(sPath);
 			NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 			if( nodes == null || nodes.getLength() == 0 ) return null;
 			for (int i = 0; i < nodes.getLength(); ++i) {
@@ -304,8 +304,8 @@ public class XMLDocHelper {
 		Element eRet = null;
 		try {
 			XPath xPath = factory.newXPath();
-			xPath.setNamespaceContext(context);
-			sPath = addPathPrefix(sPath);
+//			xPath.setNamespaceContext(context);
+//			sPath = addPathPrefix(sPath);
 			NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 			if( nodes == null || nodes.getLength() == 0 ) return null;
 			for (int i = 0; i < nodes.getLength(); ++i) {
@@ -358,8 +358,8 @@ public class XMLDocHelper {
 		else {
 			try {
 				XPath xPath = factory.newXPath();
-				xPath.setNamespaceContext(context);
-				sPath = addPathPrefix(sPath);
+//				xPath.setNamespaceContext(context);
+//				sPath = addPathPrefix(sPath);
 				NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 				if( nodes == null || nodes.getLength() == 0 ) return "";
 				for (int i = 0; i < nodes.getLength(); ++i) {
@@ -392,8 +392,8 @@ public class XMLDocHelper {
 		else {
 			try {
 				XPath xPath = factory.newXPath();
-				xPath.setNamespaceContext(context);
-				sPath = addPathPrefix(sPath);
+//				xPath.setNamespaceContext(context);
+//				sPath = addPathPrefix(sPath);
 				NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 				if( nodes == null || nodes.getLength() == 0 ) return aRet;
 				for (int i = 0; i < nodes.getLength(); ++i) {
@@ -420,8 +420,8 @@ public class XMLDocHelper {
 		NodeList nRet = null;
 		try {
 			XPath xPath = factory.newXPath();
-			xPath.setNamespaceContext(context);
-			sPath = addPathPrefix(sPath);
+//			xPath.setNamespaceContext(context);
+//			sPath = addPathPrefix(sPath);
 			nRet = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
 			logger.error("Error evaluating xpath " + sPath);;
@@ -431,7 +431,7 @@ public class XMLDocHelper {
 	
 	public ArrayList<Element> getElementsByName( String sName ) {
 		ArrayList<Element> aRet = new ArrayList<Element>();
-		NodeList nl = root.getElementsByTagNameNS("*", sName);
+		NodeList nl = root.getElementsByTagName( sName);
 		for( int i = 0; i < nl.getLength(); i++ ) {
 			Node nNext = nl.item(i);
 			if( nNext instanceof Element ) {
@@ -445,7 +445,7 @@ public class XMLDocHelper {
 	public Node getNodeByName( String sName ) {
 		Node nChild = null;
 		if( root != null ) {
-			NodeList nl = root.getElementsByTagNameNS("*", sName);
+			NodeList nl = root.getElementsByTagName( sName);
 			for( int i = 0; i < nl.getLength(); i++ ) {
 				Node nNext = nl.item(i);
 				if( nNext instanceof Element ) {
@@ -464,7 +464,7 @@ public class XMLDocHelper {
 			outerloop:
 			while( nChild == null && tok.hasMoreTokens() ) {
 				String sName = tok.nextToken();
-				NodeList nl = root.getElementsByTagNameNS("*", sName);
+				NodeList nl = root.getElementsByTagName( sName);
 				for( int i = 0; i < nl.getLength(); i++ ) {
 					Node nNext = nl.item(i);
 					if( nNext instanceof Element ) {
@@ -480,7 +480,7 @@ public class XMLDocHelper {
 	public Element getElementByName( String sName ) {
 		Element dChild = null;
 		if( root != null ) {
-			NodeList nl = root.getElementsByTagNameNS("*", sName);
+			NodeList nl = root.getElementsByTagName( sName);
 			for( int i = 0; i < nl.getLength(); i++ ) {
 				Node nNext = nl.item(i);
 				if( nNext instanceof Element ) {
@@ -499,7 +499,7 @@ public class XMLDocHelper {
 			outerloop:
 			while( eChild == null && tok.hasMoreTokens() ) {
 				String sName = tok.nextToken();
-				NodeList nl = root.getElementsByTagNameNS("*", sName);
+				NodeList nl = root.getElementsByTagName( sName);
 				for( int i = 0; i < nl.getLength(); i++ ) {
 					Node nNext = nl.item(i);
 					if( nNext instanceof Element ) {
@@ -515,7 +515,7 @@ public class XMLDocHelper {
 	public Node getChildNodeByName( Element n, String sName ) {
 		Node nChild = null;
 		if( n != null ) {
-			NodeList nl = n.getElementsByTagNameNS("*", sName);
+			NodeList nl = n.getElementsByTagName( sName);
 			for( int i = 0; i < nl.getLength(); i++ ) {
 				Node nNext = nl.item(i);
 				if( nNext instanceof Element ) {
@@ -534,7 +534,7 @@ public class XMLDocHelper {
 			outerloop:
 			while( nChild == null && tok.hasMoreTokens() ) {
 				String sName = tok.nextToken();
-				NodeList nl = n.getElementsByTagNameNS("*", sName);
+				NodeList nl = n.getElementsByTagName( sName);
 				for( int i = 0; i < nl.getLength(); i++ ) {
 					Node nNext = nl.item(i);
 					if( nNext instanceof Element ) {
@@ -566,7 +566,7 @@ public class XMLDocHelper {
 	public Element getChildElementByName( Element n, String sName ) {
 		Element dChild = null;
 		if( n != null ) {
-			NodeList nl = n.getElementsByTagNameNS("*", sName);
+			NodeList nl = n.getElementsByTagName( sName);
 			for( int i = 0; i < nl.getLength(); i++ ) {
 				Node nNext = nl.item(i);
 				if( nNext instanceof Element ) {
@@ -585,7 +585,7 @@ public class XMLDocHelper {
 			outerloop:
 			while( eChild == null && tok.hasMoreTokens() ) {
 				String sName = tok.nextToken();
-//				NodeList nl = n.getElementsByTagNameNS("*", sName);
+//				NodeList nl = n.getElementsByTagName( sName);
 				NodeList nl = n.getChildNodes();
 				for( int i = 0; i < nl.getLength(); i++ ) {
 					Node nNext = nl.item(i);
