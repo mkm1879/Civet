@@ -29,6 +29,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 
@@ -82,7 +84,7 @@ public class StdeCviXmlModel {
 	 */
 	public StdeCviXmlModel() {
 		try {
-			DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); //DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); 
 			Document doc = db.newDocument();
 			doc.setXmlStandalone(true);
 			Element root = doc.createElementNS("http://www.usaha.org/xmlns/ecvi2", "eCVI");
@@ -96,30 +98,14 @@ public class StdeCviXmlModel {
 	}
 
 	/** 
-	 * Create an XML document from the raw DOM object.  
-	 * @param doc
-	 */
-//	public StdeCviXmlModel( Document doc ) {
-//		doc.setXmlStandalone(true);
-//		Element root = doc.getDocumentElement();
-//		helper = new XMLDocHelper( doc, root );
-//		binaries = new StdeCviBinaries( helper );
-//		metaData = binaries.getMetaData();
-//	}
-	
-
-	/** 
 	 * Create an XML document from a File.  
 	 * @param doc
 	 */
 	public StdeCviXmlModel( File fXML ) {
 		try {
 			byte[] xmlBytes = FileUtils.readUTF8File(fXML);
-	        String sXmlIn = new String(xmlBytes, "UTF-8");
-	        String sXml = sXmlIn.replaceAll("ns0:", "");
-	        xmlBytes = sXml.getBytes("UTF-8");
-	        FileUtils.writeUTF8File(xmlBytes, "Bytes.xml");
-			createModel(xmlBytes);		
+			byte[] cleanBytes = removePrefix(xmlBytes);
+			createModel(cleanBytes);		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error(e);
@@ -132,17 +118,49 @@ public class StdeCviXmlModel {
 	 * @param doc
 	 */
 	public StdeCviXmlModel( byte[] xmlBytes ) {
-        String sXmlIn;
 		try {
-			sXmlIn = new String(xmlBytes, "UTF-8");
-			String sXml = sXmlIn.replaceAll("ns0:", "");
-			xmlBytes = sXml.getBytes("UTF-8");
-			FileUtils.writeUTF8File(xmlBytes, "Bytes.xml");
-			createModel(xmlBytes);
+			byte[] cleanBytes = removePrefix(xmlBytes);
+			createModel(cleanBytes);		
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
+	}
+	
+	private String findPrefix( String sXml ) {
+		String sRet = null;
+		String sPattern = "xmlns:.*=\"http://www.usaha.org/xmlns/ecvi2\"";
+		Pattern pattern = Pattern.compile(sPattern);
+	      Matcher m = pattern.matcher(sXml);
+	      if (m.find( )) {
+	    	  sRet = m.group(0);
+	    	  sRet = sRet.substring(6);
+	    	  int iEnd = sRet.indexOf('=');
+	    	  sRet = sRet.substring(0, iEnd);
+	      }
+		return sRet;
+	}
+	
+	private byte[] removePrefix(byte[] bytesIn ) {
+		byte[] aRet = null;
+		try {
+			String sXmlIn = new String(bytesIn, "UTF-8");
+			String sPrefix = findPrefix( sXmlIn );
+			if( sPrefix != null ) {
+				String sReplace = sPrefix + ":";
+				String sXml = sXmlIn.replaceAll(sReplace, "");
+				sReplace = ":" + sPrefix;
+				sXml = sXml.replaceAll(sReplace, "");
+				aRet = sXml.getBytes("UTF-8");
+			}
+			else {
+				aRet = bytesIn;
+			}
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			logger.error(e);
 		}
+		return aRet;
 	}
 	
 	/**
@@ -167,32 +185,21 @@ public class StdeCviXmlModel {
 	 * Create an XML document from the raw XML string.  
 	 * @param doc
 	 */
-	public void createModel( byte[] xmlBytes ) {
+	private void createModel( byte[] xmlBytes ) {
 		try {
 			Document doc = null;
 			Element root = null;
-			String sPrefix = null;
 			if( xmlBytes != null ) {
 				DocumentBuilder db = SafeDocBuilder.getSafeDocBuilder(); 
-//				DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-//				byte[] xmlBytes = sXML.getBytes();
 				InputStream is = new ByteArrayInputStream( xmlBytes );
 				doc = db.parse(is);
 				doc.setXmlStandalone(true);
 				root = doc.getDocumentElement();
-				String sXml = new String( xmlBytes, StandardCharsets.UTF_8);
-				int iLoc = sXml.indexOf("<", 3);
-				int iLocEnd = sXml.indexOf(":eCVI", iLoc);
-				if(iLocEnd > 0) {
-					sPrefix = sXml.substring(iLoc+1, iLocEnd);
-					System.out.println(sPrefix);
-					FileUtils.writeTextFile(sXml, "XMLOut.txt");
-				}
-				
+			}
+			else {
+				logger.error("null xmlBytes input to createModel");
 			}
 			helper = new XMLDocHelper( doc, root );
-//			if( sPrefix != null )
-//				helper.setNSPrefix(sPrefix);
 			binaries = new StdeCviBinaries( helper );
 		} catch (Exception e ) {
 			logger.error(e);

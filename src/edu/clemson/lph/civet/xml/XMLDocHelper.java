@@ -52,36 +52,21 @@ public class XMLDocHelper {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private Document doc;
 	private Element root;
-//	private  NamespaceResolver context;
-//	private String sNSPrefix;
 
 	private XPathFactory factory = null;
 
 	public XMLDocHelper( Document doc, Element root ) {
 		this.doc = doc;
 		this.root = root;
-//		context = new NamespaceResolver(doc);
 		factory = XPathFactory.newInstance();
 	}
 	
 	public XMLDocHelper( Document doc ) {
 		this.doc = doc;
 		this.root = doc.getDocumentElement();
-//		context = new NamespaceResolver(doc);
+
 		factory = XPathFactory.newInstance();
 	}
-	
-//	public void setNSPrefix( String sPrefix ) {
-//		sNSPrefix = sPrefix;
-//	}
-//	
-//	public String getNSPrefix() {
-//		String sRet = null;
-//		sRet = sNSPrefix;
-//		if( sRet == null )
-//			sRet = null;
-//		return sRet;
-//	}
 	
 	public boolean isInitialized() {
 		boolean bRet = false;
@@ -116,9 +101,7 @@ public class XMLDocHelper {
 	 * @return
 	 */
 	public Element insertElementBefore( String sElementName, String sAfter ) {
-//		if( sNSPrefix != null ) 
-//			sElementName = sNSPrefix + ":" + sElementName;
-		Element e = doc.createElement(sElementName);
+ 		Element e = doc.createElement(sElementName);
 		Element after = getChildElementByNames(root,sAfter);
 		if( after != null )
 			root.insertBefore(e, after);
@@ -126,6 +109,7 @@ public class XMLDocHelper {
 			root.appendChild(e);
 		return e;
 	}
+	
 	/**
 	 * Find an element with name sElementName.  If not found insert before the first element in the 
 	 * list (comma-delimited) in sAfter. 
@@ -150,8 +134,6 @@ public class XMLDocHelper {
 	 * @return
 	 */
 	public Element insertElementBefore( Element eParent, String sElementName, String sAfter ) {
-//		if( sNSPrefix != null ) 
-//			sElementName = sNSPrefix + ":" + sElementName;
 		Element e = doc.createElement(sElementName);
 		Element after = getChildElementByNames(eParent,sAfter);
 		if( after != null )
@@ -169,16 +151,12 @@ public class XMLDocHelper {
 	}
 	
 	public Element appendChild( Element eParent, String sElementName ) {
-//		if( sNSPrefix != null ) 
-//			sElementName = sNSPrefix + ":" + sElementName;
 		Element e = doc.createElement(sElementName);
 		eParent.appendChild(e);
 		return e;
 	}
 	
 	public Element appendElement( String sElementName ) {
-//		if( sNSPrefix != null ) 
-//			sElementName = sNSPrefix + ":" + sElementName;
 		Element e = doc.createElement(sElementName);
 		doc.getDocumentElement().appendChild(e);
 		return e;
@@ -188,19 +166,6 @@ public class XMLDocHelper {
 		return getElementTextByPath(doc.getDocumentElement(), sPath );
 	}
 	
-//	private String addPathPrefix( String sPath ) {
-//		if( getNSPrefix() != null ) {
-//			String sPrefix = getNSPrefix() + ":";
-//			if( "." != sPath && sPath.indexOf(":") < 0 ) {
-//				if( sPath.indexOf("/") >= 0 )
-//					sPath = sPath.replaceAll("[^:]/", "/" + sPrefix);
-//				else
-//					sPath = sPrefix + sPath;
-//			}
-//		}
-//		return sPath;
-//	}
-		
 	/**
 	 * Returns the FIRST text node contents from nNode by path sPath
 	 * @param nNode
@@ -211,8 +176,6 @@ public class XMLDocHelper {
 		String sRet = null;
 		try {
 			XPath xPath = factory.newXPath();
-//			xPath.setNamespaceContext(context);
-//			sPath = addPathPrefix(sPath);
 			NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 			if( nodes == null || nodes.getLength() == 0 ) return "";
 			for (int i = 0; i < nodes.getLength(); ++i) {
@@ -264,8 +227,6 @@ public class XMLDocHelper {
 		Element eRet = null;
 		try {
 			XPath xPath = factory.newXPath();
-//			xPath.setNamespaceContext(context);
-//			sPath = addPathPrefix(sPath);
 			NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 			if( nodes == null || nodes.getLength() == 0 ) return null;
 			for (int i = 0; i < nodes.getLength(); ++i) {
@@ -304,8 +265,6 @@ public class XMLDocHelper {
 		Element eRet = null;
 		try {
 			XPath xPath = factory.newXPath();
-//			xPath.setNamespaceContext(context);
-//			sPath = addPathPrefix(sPath);
 			NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 			if( nodes == null || nodes.getLength() == 0 ) return null;
 			for (int i = 0; i < nodes.getLength(); ++i) {
@@ -358,8 +317,6 @@ public class XMLDocHelper {
 		else {
 			try {
 				XPath xPath = factory.newXPath();
-//				xPath.setNamespaceContext(context);
-//				sPath = addPathPrefix(sPath);
 				NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 				if( nodes == null || nodes.getLength() == 0 ) return "";
 				for (int i = 0; i < nodes.getLength(); ++i) {
@@ -392,8 +349,6 @@ public class XMLDocHelper {
 		else {
 			try {
 				XPath xPath = factory.newXPath();
-//				xPath.setNamespaceContext(context);
-//				sPath = addPathPrefix(sPath);
 				NodeList nodes = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 				if( nodes == null || nodes.getLength() == 0 ) return aRet;
 				for (int i = 0; i < nodes.getLength(); ++i) {
@@ -420,8 +375,6 @@ public class XMLDocHelper {
 		NodeList nRet = null;
 		try {
 			XPath xPath = factory.newXPath();
-//			xPath.setNamespaceContext(context);
-//			sPath = addPathPrefix(sPath);
 			nRet = (NodeList)xPath.evaluate(sPath, nNode, XPathConstants.NODESET);
 		} catch (XPathExpressionException e) {
 			logger.error("Error evaluating xpath " + sPath);;
@@ -585,8 +538,8 @@ public class XMLDocHelper {
 			outerloop:
 			while( eChild == null && tok.hasMoreTokens() ) {
 				String sName = tok.nextToken();
-//				NodeList nl = n.getElementsByTagName( sName);
-				NodeList nl = n.getChildNodes();
+				NodeList nl = n.getElementsByTagName(sName);
+//				NodeList nl = n.getChildNodes();
 				for( int i = 0; i < nl.getLength(); i++ ) {
 					Node nNext = nl.item(i);
 					if( nNext instanceof Element ) {
@@ -618,25 +571,6 @@ public class XMLDocHelper {
 		return baRet;
 	}
 	
-//	public byte[] getXMLBytes(boolean bOmitDeclaration, String sEncoding ) {
-//		byte[] baRet = null;
-//		String sOmit = (bOmitDeclaration ? "yes" : "no");
-//		try {
-//			TransformerFactory transFactory = TransformerFactory.newInstance();
-//			Transformer transformer = transFactory.newTransformer();
-//			if( sEncoding != null )
-//				transformer.setOutputProperty(OutputKeys.ENCODING, sEncoding);
-//			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, sOmit);
-//			ByteArrayOutputStream bos=new ByteArrayOutputStream();
-//			StreamResult result=new StreamResult(bos);
-//			transformer.transform(new DOMSource(doc), result);
-//			baRet=bos.toByteArray();		
-//		} catch (TransformerException e) {
-//			logger.error("Transform failure", e);
-//		}
-//		return baRet;
-//	}
-	
 	public String getXMLString() {
 		String sRet = null;
 		try {
@@ -652,26 +586,5 @@ public class XMLDocHelper {
 		return sRet;
 	}
 	
-//	public String getXMLString(boolean bOmitDeclaration) {
-//		return getXMLString(bOmitDeclaration, null );
-//	}
-//		
-//	public String getXMLString(boolean bOmitDeclaration, String sEncoding ) {
-//		String sOmit = (bOmitDeclaration ? "yes" : "no");
-//		try {
-//		TransformerFactory transFactory = TransformerFactory.newInstance();
-//		Transformer transformer = transFactory.newTransformer();
-//		if( sEncoding != null )
-//			transformer.setOutputProperty(OutputKeys.ENCODING, sEncoding);
-//		StringWriter buffer = new StringWriter();
-//		transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, sOmit);
-//			transformer.transform(new DOMSource(doc),
-//			      new StreamResult(buffer));
-//			return buffer.toString();
-//		} catch (TransformerException e) {
-//			logger.error("Transform failure", e);
-//		}
-//		return null;
-//	}
 
 }
