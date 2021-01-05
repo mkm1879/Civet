@@ -1572,8 +1572,11 @@ public final class CivetEditDialogController {
 					java.util.Date dIssueDate = xStd.getIssueDate();
 					dlg.jtfDateInspected.setDate(dIssueDate);
 					dlg.jtfCVINo.setText(xStd.getCertificateNumber());
+					// Species groups and animals are a mess!!!
 					// Species multiples are an issue
 					loadSpeciesFromStdXml(xStd);
+					// Load IDs
+					idListModel = new AnimalIDListTableModel(xStd);
 					// Overly simplistic.  Only works if spelling matches
 					String sPurposeCode = xStd.getPurpose();
 					dlg.cbPurpose.setSelectedKey(sPurposeCode);
@@ -1650,7 +1653,15 @@ public final class CivetEditDialogController {
 		}
 		return sRet;
 	}
-
+	
+//	private void loadIDListFromStdXml(StdeCviXmlModel std) {
+//		idListModel = new AnimalIDListTableModel(std);
+//		ArrayList<Animal> animals = std.getAnimals();
+//		for( Animal animal : animals) {
+//			
+//		}
+//	}
+//
 	/**
 	 * Subroutine for above, just to keep the populateFromStdXml method somewhat sane
 	 * @param std StdeCviXml object being loaded.
@@ -2320,6 +2331,7 @@ public final class CivetEditDialogController {
 		for( AnimalIDRecord r : idListModel.getRows() ) {
 			Animal newAnimal = r.animal;
 			if( !animals.contains(newAnimal) ) {
+				model.addAnimal(newAnimal);
 				animals.add(newAnimal);
 			}
 		}
