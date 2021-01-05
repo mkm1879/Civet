@@ -22,6 +22,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -114,6 +115,10 @@ public class StdeCviXmlModel {
 	public StdeCviXmlModel( File fXML ) {
 		try {
 			byte[] xmlBytes = FileUtils.readUTF8File(fXML);
+	        String sXmlIn = new String(xmlBytes, "UTF-8");
+	        String sXml = sXmlIn.replaceAll("ns0:", "");
+	        xmlBytes = sXml.getBytes("UTF-8");
+	        FileUtils.writeUTF8File(xmlBytes, "Bytes.xml");
 			createModel(xmlBytes);		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -127,7 +132,17 @@ public class StdeCviXmlModel {
 	 * @param doc
 	 */
 	public StdeCviXmlModel( byte[] xmlBytes ) {
-		createModel(xmlBytes);
+        String sXmlIn;
+		try {
+			sXmlIn = new String(xmlBytes, "UTF-8");
+			String sXml = sXmlIn.replaceAll("ns0:", "");
+			xmlBytes = sXml.getBytes("UTF-8");
+			FileUtils.writeUTF8File(xmlBytes, "Bytes.xml");
+			createModel(xmlBytes);
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		}
 	}
 	
 	/**
