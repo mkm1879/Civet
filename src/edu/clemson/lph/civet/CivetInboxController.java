@@ -31,6 +31,7 @@ import edu.clemson.lph.civet.vsps.VspsCviFile;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.dialogs.QuestionDialog;
+import edu.clemson.lph.ems.EmsSubscriber;
 import edu.clemson.lph.mailman.MailMan;
 import edu.clemson.lph.utils.Validator;
 
@@ -179,6 +180,13 @@ public class CivetInboxController {
 			public void actionPerformed(ActionEvent arg0) {
 				VspsCviFile me = new VspsCviFile();
 				me.importVspsFile(inbox);
+			}
+		});
+		inbox.menuItemVSPSEMS.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				EmsSubscriber me = new EmsSubscriber();
+				me.getAlleCVIs();
 			}
 		});
 		inbox.menuEmailOnly.addActionListener( new ActionListener() {

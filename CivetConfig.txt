@@ -63,6 +63,11 @@ zipcodeTableFile=ZipTable.csv
 countiesTableFile=CountyTable.csv
 countyAliasesTableFile=CountyAliasesTable.csv
 
+#EMS
+subscriptionURL=
+emsToken=
+emsVerbose=
+
 #Logging
 logLevel=INFO
 log4j.rootLogger=info, stdout, R

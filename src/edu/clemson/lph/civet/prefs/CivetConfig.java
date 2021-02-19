@@ -67,6 +67,7 @@ public class CivetConfig {
 	private static Boolean bIgnoreSkipped = null;
 	private static Boolean bOpenAfterAdd = null;
 	private static Boolean bCheckAccredStatus;
+	private static Boolean bEmsVerbose = null;
 	
 
 	public synchronized static Properties getProps() {
@@ -422,6 +423,46 @@ public class CivetConfig {
 			sRet = null; 
 		return sRet;
 	}
+	
+	/**
+	 * return the URL address for the VSPS CVI subscription
+	 * This getter does not issue an error if not found because that is normal.
+	 * @return
+	 */
+	public synchronized static String getEMSSubscriptionURL() {
+		String sRet = props.getProperty("subscriptionURL");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+	
+	/**
+	 * return the security token for EMS 
+	 * This getter does not issue an error if not found because that is normal.
+	 * @return
+	 */
+	public synchronized static String getEMSToken() {
+		String sRet = props.getProperty("emsToken");
+		if( sRet != null && sRet.trim().length() == 0 ) 
+			sRet = null; 
+		return sRet;
+	}
+	
+	
+	public synchronized static boolean isEMSVerbose() {
+		if( bEmsVerbose  == null ) {
+			String sVal = props.getProperty("EMSVerbose");
+			if( sVal == null || sVal.trim().length() == 0 )
+				bEmsVerbose = true;
+			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bEmsVerbose = true;
+			}
+			else {
+				bEmsVerbose = false;
+			}
+		}
+		return bEmsVerbose;
+	}	
 	
 	/**
 	 * Get the URL for USAHERDS web services
