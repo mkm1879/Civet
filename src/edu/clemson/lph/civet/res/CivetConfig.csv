@@ -52,9 +52,9 @@ Files,Y,stateVetTableFile,.\StateVetTable.csv,File,,Table with State Veterinaria
 Files,Y,zipcodeTableFile,.\ZipTable.csv,File,,"Table with Census zip code, state, and county (supplied)",
 Files,Y,countiesTableFile,.\CountyTable.csv,File,,"Table with state, and county (supplied)",
 Files,Y,countyAliasesTableFile,.\CountyAliasesTable.csv,File,,Table with alternate spellings of counties,
-EMS,N,subscriptionURL,,Text,,URL to the VSPS CVI subscription
-EMS,N,emsToken,,Text,,Long lived login token string
-EMS,N,emsVerbose,TRUE,Bool,,Show each CVI and file name as they arrive?
+EMS,N,subscriptionURL,,Text,,URL to the VSPS CVI subscription,
+EMS,N,emsToken,,Text,,Long lived login token string,
+EMS,N,emsVerbose,TRUE,Bool,,Show each CVI and file name as they arrive?,
 Logging,Y,logLevel,INFO,Select,INFO;ERROR,Log only errors or informative log output as well,
 Logging,Y,log4j.rootLogger,INFO,Select,"INFO, stdout, R;ERROR, stdout, R",Log only errors or informative log output as well,
 Logging,Y,log4j.appender.stdout,org.apache.log4j.ConsoleAppender,Text,,Do not change unless instructed,

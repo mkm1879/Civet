@@ -143,12 +143,18 @@ class InsertVspsCviThread extends Thread implements ThreadCancelListener {
 		xmlModel.setPurpose(cvi.getStdPurpose());
 		// We don't enter the person name, normally  or add logic to tell prem name from person name.
 		VspsCviEntity origin = cvi.getOrigin();
+		String sOriginName = origin.getBusiness();
+		if( sOriginName == null || sOriginName.trim().length() == 0 )
+			sOriginName = origin.getName();
 		@SuppressWarnings("unused")
-		Element eOrigin = xmlModel.setOrigin( origin.getPremisesId(), origin.getBusiness(), origin.getPhoneDigits(), origin.getAddress1(), 
+		Element eOrigin = xmlModel.setOrigin( origin.getPremisesId(), sOriginName, origin.getPhoneDigits(), origin.getAddress1(), 
 				origin.getCity(), origin.getCounty(), origin.getState(), origin.getPostalCode() );
 		VspsCviEntity destination = cvi.getDestination();
+		String sDestinationName = destination.getBusiness();
+		if( sDestinationName == null || sDestinationName.trim().length() == 0 )
+			sDestinationName = destination.getName();
 		@SuppressWarnings("unused")
-		Element eDestination = xmlModel.setDestination( destination.getPremisesId(), destination.getBusiness(), destination.getPhoneDigits(), destination.getAddress1(), 
+		Element eDestination = xmlModel.setDestination( destination.getPremisesId(), sDestinationName, destination.getPhoneDigits(), destination.getAddress1(), 
 				destination.getCity(), destination.getCounty(), destination.getState(), destination.getPostalCode() );
 
 		HashMap<List<String>, Integer> hGroups = new HashMap<List<String>, Integer>();

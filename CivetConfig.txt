@@ -19,10 +19,10 @@ maxAnimals=
 rotation=0
 defaultPurpose=Other
 autoOpenPdf=yes
-supportXFA=no
+supportXFA=yes
 checkAccreditationStatus=TRUE
-ignoreSkipped=FALSE
-saveSkipped=TRUE
+ignoreSkipped=
+saveSkipped=
 
 #Email
 zohoKey=
@@ -32,7 +32,7 @@ smtpSecurity=NONE
 smtpDomain=@gmail.com
 emailFrom=mmarti5@clemson.edu
 emailReplyTo=civet@mminformatics.com
-emailTestTo=test@test.xyz
+emailTestTo=
 emailCopyTo=
 maxAttachSize=5M
 
@@ -64,9 +64,9 @@ countiesTableFile=CountyTable.csv
 countyAliasesTableFile=CountyAliasesTable.csv
 
 #EMS
-subscriptionURL=
+subscriptionURL=https://mrpvsmsg.aphis.usda.gov/SubscriberService/SubscriberServiceApi/api/subscriptions/sc-culph-icvi
 emsToken=
-emsVerbose=
+emsVerbose=TRUE
 
 #Logging
 logLevel=INFO
