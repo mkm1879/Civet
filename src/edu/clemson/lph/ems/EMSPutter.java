@@ -7,10 +7,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.log4j.Logger;
 
+import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 
 public class EMSPutter {
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	
 	public boolean putOne(String sLockToken, String sStatus) throws IOException {
 		boolean bRet = false;
@@ -23,21 +26,26 @@ public class EMSPutter {
 			HttpResponse response = null;
 			response = client.execute(putter);
 			int iStatus = response.getStatusLine().getStatusCode();
-			if( EmsSubscriber.bTesting ) {
+			if( CivetConfig.isEMSVerbose() ) {
+				StringBuffer sb = new StringBuffer();
 				Header headers[] = response.getAllHeaders();
 				for( Header h : headers ) {
 					String sName = h.getName();
 					String sValue = h.getValue();
+					sb.append(sName + ": = " + sValue + "\n");
 					System.out.println(sName + ": " +sValue);
 				}
+				logger.info(sb.toString());
 			}
 			if( iStatus == 200 ) {
 				bRet = true;
 			}
 			else {
+				logger.error("Response Code from Putter: " + sURI + " : " + iStatus);
 				System.out.println("Response Code from Putter: " + sURI + " : " + iStatus);
 			}
 		} catch( Exception e ) {
+			logger.error(e);
 			e.printStackTrace();
 		}
 		return bRet;

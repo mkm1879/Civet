@@ -33,6 +33,9 @@ import java.util.Scanner;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import java.io.PrintStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 import edu.clemson.lph.civet.lookup.LookupFilesGenerator;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -69,6 +72,11 @@ public class Civet {
 			CivetConfig.setHERDSPassword( args[1] );
 		}
 		StdErrLog.tieSystemErrToLog();
+	    try {
+			System.setOut(new PrintStream(new FileOutputStream("stdout.log")));
+		} catch (FileNotFoundException e1) {
+			logger.error(e1);
+		}
 		CivetConfig.validateHerdsCredentials();
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {

@@ -14,7 +14,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 
+import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.GUnzip;
@@ -24,6 +26,7 @@ import edu.clemson.lph.utils.JSONParser;
  * 
  */
 public class EMSGetter {
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private String sLastMsgFile = null;
 	private String sLastLock = null;
 	private String sSummaryJson = null;
@@ -34,6 +37,7 @@ public class EMSGetter {
 	
 	public boolean getOne() throws IOException {
 		boolean bRet = false;
+		Header headers[] = null;
 		try {
 			HttpClient client = HttpClientBuilder.create().build();
 			String sURI = CivetConfig.getEMSSubscriptionURL();
@@ -45,11 +49,13 @@ public class EMSGetter {
 			if( iStatus == 200 ) {
 				String sMsgID = null;
 				String sLockToken = null;
-				Header headers[] = response.getAllHeaders();
+				headers = response.getAllHeaders();
+				StringBuffer sb = new StringBuffer();
 				for( Header h : headers ) {
 					String sName = h.getName();
 					String sValue = h.getValue();
-					if( EmsSubscriber.bTesting )
+					sb.append(sName + ": = " + sValue + "\n");
+					if( CivetConfig.isEMSVerbose() )
 						System.out.println(sName + ": " +sValue);
 					if( "x-message-id".equalsIgnoreCase(sName) ) {
 						sMsgID = sValue;
@@ -58,6 +64,8 @@ public class EMSGetter {
 						sLockToken = sValue;
 					}
 				}
+				if(CivetConfig.isEMSVerbose() )
+					logger.info(sb.toString());
 				InputStream in = response.getEntity().getContent();
 				String sGZFileName = "Response.gz";
 				try {
@@ -87,9 +95,11 @@ public class EMSGetter {
 				sLastLock = sLockToken;
 			} 
 			else {
+				logger.error("Response Code from Getter: " + sURI + " : " + iStatus);
 				System.out.println("Response Code from Getter: " + sURI + " : " + iStatus);
 			}
 		} catch( Exception e ) {
+			logger.error("Exception in Getter", e);
 			e.printStackTrace();
 		}
 		return bRet;
@@ -113,27 +123,33 @@ public class EMSGetter {
 			getter.addHeader("x-auth-token", CivetConfig.getEMSToken());
 			HttpResponse response = null;
 			response = client.execute(getter);
-			if( EmsSubscriber.bTesting ) {
+			StringBuffer sb = new StringBuffer();
+			if( CivetConfig.isEMSVerbose() ) {
 				Header headers[] = response.getAllHeaders();
 				for( Header h : headers ) {
 					String sName = h.getName();
 					String sValue = h.getValue();
-					System.out.println(sName + ": " +sValue);
+					sb.append(sName + ": = " + sValue + "\n");
 				}
+				logger.info(sb.toString());
+				System.out.println(sb.toString());
 			}
 			int iStatus = response.getStatusLine().getStatusCode();
 			if( iStatus == 200 ) {
 				sSummaryJson = EntityUtils.toString(response.getEntity());
 				pSummary = new JSONParser(sSummaryJson);
 				bRet = true;
-				if( EmsSubscriber.bTesting ) {
+				if( CivetConfig.isEMSVerbose() ) {
+					logger.info(sSummaryJson);
 					System.out.println(sSummaryJson);
 				}
 			} 
 			else {
-				System.out.println("Response Code from Getter" + sURI + " : " + iStatus);
+				logger.error("Response Code from Getter " + sURI + " : " + iStatus);
+				System.out.println("Response Code from Getter " + sURI + " : " + iStatus);
 			}
 		} catch( Exception e ) {
+			logger.error(e);
 			e.printStackTrace();
 		}
 		return bRet;

@@ -5,8 +5,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.Logger;
 
+import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.dialogs.MessageDialog;
@@ -14,27 +15,18 @@ import edu.clemson.lph.utils.FileUtils;
 
 
 public class EmsSubscriber {
+	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	public static boolean bTesting = false;
 	public static boolean bCompressOutput = true;
 	public static boolean bDays = true;
 	private CivetWebServices service = null;
 
-
-	public static void main(String[] args) {
-		PropertyConfigurator.configure("CivetConfig.txt");
-		// Fail now so config file and required files can be fixed before work is done.
-		CivetConfig.checkAllConfig();
-		CivetConfig.validateHerdsCredentials();
-		bTesting = true;
-		EmsSubscriber me = new EmsSubscriber();
-		me.getAlleCVIs();
-	}
-	
 	public EmsSubscriber() {
 		service = new CivetWebServices();
 	}
 	
 	public void getAlleCVIs() {
+		logger.info("Getting CVIs Now");
 		EMSGetter getter = new EMSGetter();
 		int iLoop = 0;
 		if( getter.getSummary() ) {
@@ -61,6 +53,7 @@ public class EmsSubscriber {
 		}
 		else {
 			MessageDialog.showMessage(null, "VSPS EMS", "Failed to get new CVI count.");
+			logger.error("Failed to get CVI count");
 		}
 	}
 	
@@ -80,6 +73,7 @@ public class EmsSubscriber {
 				byte[] baIn = FileUtils.readUTF8File(new File(sFileName));
 				byte[] baClean = removePrefix(baIn);
 				String sResp = service.sendCviXML(baClean);
+		logger.info(sResp);
 		System.out.println(sResp);
 				if( "\"Success\"".equals(sResp) )
 					bPutRet = putter.putOne(getter.getLastLock(), "CompleteSuccessfullyProcessed");
@@ -91,7 +85,7 @@ public class EmsSubscriber {
 					bRet = true;
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			logger.error("Error in loopOnce", e);
 			e.printStackTrace();
 		}
 		return bRet;
@@ -128,6 +122,7 @@ public class EmsSubscriber {
 				aRet = baIn;
 			}
 		} catch (UnsupportedEncodingException e) {
+			logger.error(e);
 			e.printStackTrace();
 		}
 		return aRet;
