@@ -451,7 +451,7 @@ public class CivetConfig {
 	
 	public synchronized static boolean isEMSVerbose() {
 		if( bEmsVerbose  == null ) {
-			String sVal = props.getProperty("EMSVerbose");
+			String sVal = props.getProperty("emsVerbose");
 			if( sVal == null || sVal.trim().length() == 0 )
 				bEmsVerbose = true;
 			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
@@ -661,8 +661,12 @@ public class CivetConfig {
 		return getPath("EmailOutDirPath", null);
 	}
 
+	public synchronized static String getEmsOutDirPath() {
+		return getPath("emsOutputDirPath", ".\\EmsOutbox\\", false);
+	}
+	
 	public synchronized static String getEmailOnlySendPath() {
-		return getPath("EmailOnlySendPath", ".\\EmailOnlySend\\", false );
+		return getPath("EmailOnlySendPath", ".\\", false );
 	}
 
 	public synchronized static String getEmailOnlyEmailTemplate() {

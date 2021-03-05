@@ -64,9 +64,10 @@ countiesTableFile=CountyTable.csv
 countyAliasesTableFile=CountyAliasesTable.csv
 
 #EMS
-subscriptionURL=https://mrpvsmsg.aphis.usda.gov/SubscriberService/SubscriberServiceApi/api/subscriptions/sc-culph-icvi
+subscriptionURL=
 emsToken=
-emsVerbose=TRUE
+emsVerbose=FALSE
+emsOutputDirPath=
 
 #Logging
 logLevel=INFO

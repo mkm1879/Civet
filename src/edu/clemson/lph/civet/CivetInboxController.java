@@ -24,6 +24,7 @@ import edu.clemson.lph.civet.inbox.StdXMLFilesTableModel;
 import edu.clemson.lph.civet.lookup.StateVetTableEditDlg;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.prefs.ConfigDialog;
+import edu.clemson.lph.civet.threads.EMSSubscribeThread;
 import edu.clemson.lph.civet.threads.SendInboundErrorsEmailThread;
 import edu.clemson.lph.civet.threads.SendOutboundCVIEmailThread;
 import edu.clemson.lph.civet.threads.SubmitCVIsThread;
@@ -31,7 +32,6 @@ import edu.clemson.lph.civet.vsps.VspsCviFile;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.dialogs.QuestionDialog;
-import edu.clemson.lph.ems.EmsSubscriber;
 import edu.clemson.lph.mailman.MailMan;
 import edu.clemson.lph.utils.Validator;
 
@@ -185,8 +185,8 @@ public class CivetInboxController {
 		inbox.menuItemVSPSEMS.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				EmsSubscriber me = new EmsSubscriber();
-				me.getAlleCVIs();
+				EMSSubscribeThread t = new EMSSubscribeThread(inbox);
+				t.start();
 			}
 		});
 		inbox.menuEmailOnly.addActionListener( new ActionListener() {
