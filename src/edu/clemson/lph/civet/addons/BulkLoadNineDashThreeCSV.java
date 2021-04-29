@@ -153,9 +153,10 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 							}
 						}
 						prog.setMessage(sProgMsg + data.getCVINumber() );
-						if( cviExists( data.getCVINumber(), data.getConsignorState() )) {
+						String sCertificateNbr = data.getCVINumber().replaceAll("-", "");
+						if( cviExists( sCertificateNbr, data.getConsignorState() )) {
 							try {
-								String sLineOut = data.getCVINumber() + " from " + data.getConsignorState() + " already exists\r\n";
+								String sLineOut = sCertificateNbr + " from " + data.getConsignorState() + " already exists\r\n";
 							    Files.write(Paths.get("Duplicates.txt"), sLineOut.getBytes(), CREATE_OR_APPEND);
 							}catch (IOException e) {
 							    logger.error(e);
@@ -224,6 +225,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 		private byte[] buildXml( CSVNineDashThreeDataFile data ) throws IOException {
 			StdeCviXmlModel xmlModel = new StdeCviXmlModel();
 			String sCVINumber = data.getCVINumber();
+			sCVINumber = sCVINumber.replaceAll("-", "");
 			String sSpecies = data.getSpecies();
 			String sSpeciesCode = null;
 			if( sSpecies == null ) {

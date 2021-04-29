@@ -54,8 +54,25 @@ public class Product {
 		else {
 			String sSpecies = this.speciesCode.text;
 			Long iQuant = (Long) Math.round(quantity); 
-			this.description = "Group of " + iQuant.toString() + " " + sSpecies + " " + productType;
+			this.description = iQuant.toString() + " " + sSpecies + " " + productType;
 		}
+	}
+
+	public Product(SpeciesCode speciesCode, String productType, Double quantity ) {
+		this.eProduct = null;
+		this.speciesCode = speciesCode;
+		this.productId = null;
+		this.productType = productType;
+		this.quantity = quantity;
+		this.unit = null;
+		this.age = null;
+		this.breed = null;
+		this.sex = null;
+		String sSpecies = "OTH";
+		if( speciesCode != null )
+			sSpecies = this.speciesCode.text;
+		Integer iQuant = quantity.intValue(); 
+		description = iQuant.toString() + " " + sSpecies + " " + productType;
 	}
 
 	public Product(String speciesCode, String productType, Double quantity ) {
@@ -72,7 +89,7 @@ public class Product {
 		if( speciesCode != null )
 			sSpecies = this.speciesCode.text;
 		Integer iQuant = quantity.intValue(); 
-		description = "Group of " + iQuant.toString() + " " + sSpecies + " " + productType;
+		description = iQuant.toString() + " " + sSpecies + " " + productType;
 	}
 
 	public Product(String speciesCode, String sBreed, String sGender, String productType, Double quantity ) {
@@ -89,7 +106,7 @@ public class Product {
 		if( speciesCode != null )
 			sSpecies = this.speciesCode.text;
 		Integer iQuant = quantity.intValue(); 
-		description = "Group of " + iQuant.toString() + " " + sSpecies + " " + productType;
+		description = iQuant.toString() + " " + sSpecies + " " + productType;
 	}
 	
 	public void setQuantity( Double quantity ) {

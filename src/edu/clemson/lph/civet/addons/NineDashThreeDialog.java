@@ -204,6 +204,19 @@ class NineDashThreeDialog extends JFrame {
 				cbProduct.addItem("Live Animals");
 				cbProduct.addItem("Eggs");
 				cbProduct.setSelectedItem("Live Animals");
+				cbProduct.addFocusListener( new FocusListener() {
+					@Override
+					public void focusGained(FocusEvent e) {
+					}
+					@Override
+					public void focusLost(FocusEvent e) {
+						String sProduct = (String)cbProduct.getSelectedItem();
+						int iRows = tblIDs.getRowCount();
+						if( iRows > 0 && "Eggs".equalsIgnoreCase(sProduct)) 
+							MessageDialog.showMessage(NineDashThreeDialog.this, "Civet Error", "Eggs do not have individual IDs");
+					}
+					
+				});
 				pCertificate.add(cbProduct, gbc_cbProduct);
 				policy.addControl(cbProduct);
 			}
@@ -505,6 +518,11 @@ class NineDashThreeDialog extends JFrame {
 	}
 
 	protected void addIDs() {
+		String sProduct = (String)cbProduct.getSelectedItem();
+		if( "Eggs".equalsIgnoreCase(sProduct) ) {
+			MessageDialog.showMessage(this, "Civet Error", "Eggs do not have individual IDs");
+			return;
+		}
 		updateSpecies();
 		AddAnimalsDialog dlg = new AddAnimalsDialog( aSpecies, idModel );
 		dlg.setVisible(true);

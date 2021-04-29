@@ -26,6 +26,7 @@ import edu.clemson.lph.civet.xml.elements.Address;
 import edu.clemson.lph.civet.xml.elements.Animal;
 import edu.clemson.lph.civet.xml.elements.GroupLot;
 import edu.clemson.lph.civet.xml.elements.Premises;
+import edu.clemson.lph.civet.xml.elements.Product;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.FileUtils;
@@ -237,57 +238,64 @@ public class SubmitNineDashThreeThread extends Thread {
 		Premises pDestination = new Premises(sDestinationPIN, sDestinationBusiness, aDestination); 
 		pDestination.personName = sDestinationName;
 		xmlModel.setDestination(pDestination);
-		
-		ArrayList<Animal> animals = xmlModel.getAnimals();
-		for( Animal animal : animals ) {
-			String sDateIssued = StdeCviXmlModel.getDateFormat().format(dDateIssued);
-			animal.inspectionDate = sDateIssued;
-			xmlModel.editAnimal(animal);
-		}
-		ArrayList<GroupLot> groups = xmlModel.getGroups();
-		for( SpeciesRecord sr : aSpecies ) {
-			// Only add group lot if not officially IDd so count ids and subtract
-			String sSpeciesCode = sr.sSpeciesCode;
-			int iNumOfSpp = sr.iNumber;
-			int iCountIds = 0;
-			if( animals != null ) {
-				for( Animal animal : animals ) {
-					if(  animal.speciesCode.code != null && animal.speciesCode.code.equals(sSpeciesCode) ) {
-						iCountIds++;
-					}
-				}
+		if( "Eggs".equalsIgnoreCase(sProduct) ) {
+			// Should never have IDs for Eggs!
+			for( SpeciesRecord sr : aSpecies ) {
+				Product product = new Product(sr.sSpeciesCode, "Eggs", Double.valueOf(sr.iNumber));
+				xmlModel.addProduct(product);
 			}
-			boolean bFound = false;
-			if( groups != null ) {
-				for( GroupLot group : groups ) {
-					if( group.speciesCode.code != null && group.speciesCode.code.equals(sSpeciesCode) ) {
-						bFound = true;
-						if(iCountIds == iNumOfSpp) {
-							xmlModel.removeGroupLot(group);
-						}
-						else if( iCountIds > iNumOfSpp ) {
-							logger.error("Number of tags " + iCountIds + " > number of animals " + iNumOfSpp + " for species " + sSpeciesCode);
-							// Leave things alone.
-						}
-						else if( iCountIds != iNumOfSpp ) {
-							Integer iNumUntagged = iNumOfSpp - iCountIds;
-							group.setQuantity(iNumUntagged.doubleValue());
-							xmlModel.addOrEditGroupLot(group);
+		}
+		else {
+			ArrayList<Animal> animals = xmlModel.getAnimals();
+			for( Animal animal : animals ) {
+				String sDateIssued = StdeCviXmlModel.getDateFormat().format(dDateIssued);
+				animal.inspectionDate = sDateIssued;
+				xmlModel.editAnimal(animal);
+			}
+			ArrayList<GroupLot> groups = xmlModel.getGroups();
+			for( SpeciesRecord sr : aSpecies ) {
+				// Only add group lot if not officially IDd so count ids and subtract
+				String sSpeciesCode = sr.sSpeciesCode;
+				int iNumOfSpp = sr.iNumber;
+				int iCountIds = 0;
+				if( animals != null ) {
+					for( Animal animal : animals ) {
+						if(  animal.speciesCode.code != null && animal.speciesCode.code.equals(sSpeciesCode) ) {
+							iCountIds++;
 						}
 					}
 				}
+				boolean bFound = false;
+				if( groups != null ) {
+					for( GroupLot group : groups ) {
+						if( group.speciesCode.code != null && group.speciesCode.code.equals(sSpeciesCode) ) {
+							bFound = true;
+							if(iCountIds == iNumOfSpp) {
+								xmlModel.removeGroupLot(group);
+							}
+							else if( iCountIds > iNumOfSpp ) {
+								logger.error("Number of tags " + iCountIds + " > number of animals " + iNumOfSpp + " for species " + sSpeciesCode);
+								// Leave things alone.
+							}
+							else if( iCountIds != iNumOfSpp ) {
+								Integer iNumUntagged = iNumOfSpp - iCountIds;
+								group.setQuantity(iNumUntagged.doubleValue());
+								xmlModel.addOrEditGroupLot(group);
+							}
+						}
+					}
+				}
+				if( !bFound ) {
+					Integer iNumUntagged = iNumOfSpp - iCountIds;
+					GroupLot group = new GroupLot(sSpeciesCode, iNumUntagged.doubleValue());
+					xmlModel.addOrEditGroupLot(group);
+				}
 			}
-			if( !bFound ) {
-				Integer iNumUntagged = iNumOfSpp - iCountIds;
-				GroupLot group = new GroupLot(sSpeciesCode, iNumUntagged.doubleValue());
-				xmlModel.addOrEditGroupLot(group);
+			for( GroupLot group : xmlModel.getGroups() ) {
+				if( group.quantity <= 0 )
+					xmlModel.removeGroupLot(group);
 			}
 		}
-		for( GroupLot group : xmlModel.getGroups() ) {
-			if( group.quantity <= 0 )
-				xmlModel.removeGroupLot(group);
-		}
-
 		// xmlModel inside the IdListModel should already hold the animals.
 //		Original Implementation
 //		for( SpeciesRecord sr : aSpecies ) {

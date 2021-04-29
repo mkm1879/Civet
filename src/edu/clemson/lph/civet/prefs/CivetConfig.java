@@ -1040,7 +1040,7 @@ public class CivetConfig {
 
 	// These are only used by direct database "add ons" so don't start-up check but leave in.
 	public synchronized static String getDbServer() {
-		String sRet = "LPHSQL"; 
+		String sRet = "LPHStage"; 
 		return sRet;
 	}
 
