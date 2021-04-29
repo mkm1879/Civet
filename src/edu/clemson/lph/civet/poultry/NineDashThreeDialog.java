@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.addons;
+package edu.clemson.lph.civet.poultry;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -18,7 +18,9 @@ import edu.clemson.lph.civet.AddAnimalsDialog;
 import edu.clemson.lph.civet.AnimalIDListTableModel;
 import edu.clemson.lph.civet.AnimalIDRecord;
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.SpeciesRecord;
+import edu.clemson.lph.civet.addons.SCDatabaseConnectionFactory;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
@@ -52,7 +54,7 @@ import java.awt.event.FocusListener;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
-class NineDashThreeDialog extends JFrame {
+public class NineDashThreeDialog extends JFrame {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 
 	private DatabaseConnectionFactory factory = null;
@@ -76,33 +78,15 @@ class NineDashThreeDialog extends JFrame {
 	
 	private JButton okButton;
 	private DBNumericField jtfNumber;
-	/**
-	 * Launch the application.  Just for testing.
-	 */
-	public static void main(String[] args) {
-		try {
-			PropertyConfigurator.configure("CivetConfig.txt");
-			CivetConfig.checkAllConfig();
-			logger.setLevel(CivetConfig.getLogLevel());
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			try {
-				CivetConfig.validateHerdsCredentials();
-			} catch (Exception e) {
-				logger.error("Error running main program in event thread", e);
-			}
-			NineDashThreeDialog dialog = new NineDashThreeDialog(null, null);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Create the dialog.
 	 */
-	public NineDashThreeDialog(Window parent, DatabaseConnectionFactory factory) {
-		this.factory = factory;
+	public NineDashThreeDialog(Window parent) {
+		if( CivetInbox.VERSION.endsWith("local") ) {
+			if( factory == null )
+				factory = new SCDatabaseConnectionFactory();
+		}
 		xmlModel = new StdeCviXmlModel();
 		idModel = new AnimalIDListTableModel( xmlModel );
 		setBounds(100, 100, 700, 500);

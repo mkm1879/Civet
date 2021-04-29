@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.addons;
+package edu.clemson.lph.civet.poultry;
 /*
 Copyright 2014 Michael K Martin
 

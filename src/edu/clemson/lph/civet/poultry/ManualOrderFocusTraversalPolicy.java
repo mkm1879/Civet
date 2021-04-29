@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.addons;
+package edu.clemson.lph.civet.poultry;
 
 import java.awt.ContainerOrderFocusTraversalPolicy;
 import java.awt.Component;

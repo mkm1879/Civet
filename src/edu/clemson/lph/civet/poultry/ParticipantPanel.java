@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.addons;
+package edu.clemson.lph.civet.poultry;
 
 import javax.swing.JPanel;
 

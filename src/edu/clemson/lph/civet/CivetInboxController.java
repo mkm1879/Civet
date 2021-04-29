@@ -15,6 +15,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.log4j.Logger;
 
+import edu.clemson.lph.civet.poultry.BulkLoadNineDashThreeCSV;
+import edu.clemson.lph.civet.poultry.NineDashThreeDialog;
 import edu.clemson.lph.civet.emailonly.EmailOnlyDialog;
 import edu.clemson.lph.civet.files.SourceFileException;
 import edu.clemson.lph.civet.inbox.EmailFilesTableModel;
@@ -187,6 +189,20 @@ public class CivetInboxController {
 			public void actionPerformed(ActionEvent arg0) {
 				EMSSubscribeThread t = new EMSSubscribeThread(inbox);
 				t.start();
+			}
+		});
+		inbox.menuItem9Dash3Dialog.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				NineDashThreeDialog dlg = new NineDashThreeDialog(inbox);
+				dlg.setVisible(true);
+			}
+		});
+		inbox.menuItemBulk9Dash3.addActionListener( new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				BulkLoadNineDashThreeCSV bulkLoad = new BulkLoadNineDashThreeCSV();
+				bulkLoad.import93CSV(inbox);
 			}
 		});
 		inbox.menuEmailOnly.addActionListener( new ActionListener() {

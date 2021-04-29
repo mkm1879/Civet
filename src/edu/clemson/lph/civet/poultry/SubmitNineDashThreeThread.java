@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.addons;
+package edu.clemson.lph.civet.poultry;
 
 import java.awt.Window;
 import java.io.IOException;
@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.AnimalIDRecord;
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.SpeciesRecord;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
@@ -122,8 +123,7 @@ public class SubmitNineDashThreeThread extends Thread {
 	 */
 	public void run() {
 		try {
-			try {
-				Class.forName("edu.clemson.lph.civet.addons.SCDatabaseConnectionFactory");
+			if( CivetInbox.VERSION.endsWith("local") ) {
 				if( cviExists( sCVINo, sOriginStateCode )) {
 					try {
 						String sLineOut = sCVINo + " from " + sOriginStateCode + " already exists\r\n";
@@ -133,8 +133,6 @@ public class SubmitNineDashThreeThread extends Thread {
 					}
 					exitThread(false);
 				}
-			} catch (ClassNotFoundException e1) {
-				// Not running locally at LPH;
 			}
 			byte[] baXML = buildXml();
 			// Save it just in case.

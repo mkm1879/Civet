@@ -92,6 +92,8 @@ public class CivetInbox extends JFrame {
 	private JMenu menuAddOns = new JMenu();
 	JMenuItem menuItemVSPS = new JMenuItem();
 	JMenuItem menuItemVSPSEMS = new JMenuItem();
+	JMenuItem menuItemBulk9Dash3 = new JMenuItem();
+	JMenuItem menuItem9Dash3Dialog = new JMenuItem();
 	private JMenu menuHelp = new JMenu();
 	JMenuItem menuItemAbout = new JMenuItem();
 	JMenuItem menuItemSendLog;
@@ -241,6 +243,12 @@ public class CivetInbox extends JFrame {
 		menuExperimental.add(menuItemVSPS);
 		menuItemVSPSEMS.setText("Import VSPS eCVIs via EMS");
 		menuExperimental.add(menuItemVSPSEMS);
+		menuItem9Dash3Dialog.setText("Enter NPIP 9-3 Movement Forms");
+		menuExperimental.add(menuItem9Dash3Dialog);
+		menuItemBulk9Dash3.setText("Import NPIP 9-3 CSV File");
+		menuExperimental.add(menuItemBulk9Dash3);
+		JMenuItem menuItem9Dash3Dialog = new JMenuItem();
+
 		menuEmailOnly = new JMenuItem("Email Files Only");
 		menuExperimental.add(menuEmailOnly);
 		menuBar1.add(menuExperimental);

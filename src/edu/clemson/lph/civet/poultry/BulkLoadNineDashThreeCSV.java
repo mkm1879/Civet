@@ -1,4 +1,4 @@
-package edu.clemson.lph.civet.addons;
+package edu.clemson.lph.civet.poultry;
 /*
 Copyright 2014 Michael K Martin
 
@@ -20,6 +20,8 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.CSVFilter;
 import edu.clemson.lph.civet.Civet;
+import edu.clemson.lph.civet.CivetInbox;
+import edu.clemson.lph.civet.addons.SCDatabaseConnectionFactory;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
@@ -54,7 +56,7 @@ import javax.swing.*;
 
 import org.apache.log4j.*;
 
-public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
+public class BulkLoadNineDashThreeCSV implements ThreadListener {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_9dash3;
 	private static final String sProgMsg = "Loading 9-3: ";
@@ -65,12 +67,9 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 	}
 
 	public void import93CSV( Window parent ) {
-		try {
-			Class.forName("edu.clemson.lph.civet.addons.SCDatabaseConnectionFactory");
+		if( CivetInbox.VERSION.endsWith("local") ) {
 			if( factory == null )
-				factory = InitAddOns.getFactory();
-		} catch (ClassNotFoundException e) {
-			// Not running at LPH
+				factory = new SCDatabaseConnectionFactory();
 		}
 		String sFilePath = null;
 	    JFileChooser fc = new JFileChooser();
@@ -154,20 +153,18 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 						}
 						prog.setMessage(sProgMsg + data.getCVINumber() );
 						String sCertificateNbr = data.getCVINumber().replaceAll("-", "");
-						if( cviExists( sCertificateNbr, data.getConsignorState() )) {
-							try {
-								String sLineOut = sCertificateNbr + " from " + data.getConsignorState() + " already exists\r\n";
-							    Files.write(Paths.get("Duplicates.txt"), sLineOut.getBytes(), CREATE_OR_APPEND);
-							}catch (IOException e) {
-							    logger.error(e);
+						if( CivetInbox.VERSION.endsWith("local") ) {
+							if( cviExists( sCertificateNbr, data.getConsignorState() )) {
+								try {
+									String sLineOut = sCertificateNbr + " from " + data.getConsignorState() + " already exists\r\n";
+									Files.write(Paths.get("Duplicates.txt"), sLineOut.getBytes(), CREATE_OR_APPEND);
+								}catch (IOException e) {
+									logger.error(e);
+								}
+								continue;
 							}
-							continue;
 						}
-//						if( "EGG".equalsIgnoreCase( data.getProduct() ) ) {
-//							addToEggCVIs(data.getCVINumber());
-//						}
 						byte[] baXML = buildXml( data );
-//			System.out.println(sXML);
 						// Send it!
 						String sRet = null;
 						int iTries = 0;
@@ -371,16 +368,6 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			//System.out.println("Import Complete");
 			//System.exit(1);
 		}
-	}
-
-	@Override
-	public String getMenuText() {
-		return "Import NPIP 9-3 CSV File";
-	}
-
-	@Override
-	public void execute(Window parent) {
-		import93CSV(parent);
 	}
 
 }
