@@ -1298,9 +1298,9 @@ public class StdeCviXmlModel {
 	}
 */
 	public void clearGroupLots() {
-		ArrayList<Element> eAnimals = helper.getElementsByName("Animal");
-		for( Element eAnimal : eAnimals) {
-			helper.removeElement(eAnimal);
+		ArrayList<Element> eGroupLots = helper.getElementsByName("GroupLot");
+		for( Element eGroupLot : eGroupLots) {
+			helper.removeElement(eGroupLot);
 		}
 	}
 	
@@ -1308,14 +1308,14 @@ public class StdeCviXmlModel {
 		if( !isValidDoc() ) 
 			return null;
 		String sAfter = getFollowingElementList("Statements");
-		Element groupLot = helper.insertElementBefore("GroupLot", sAfter);
+		Element eGroupLot = helper.insertElementBefore("GroupLot", sAfter);
 		if( group.speciesCode.isStandardCode ) {
-			Element speciesCode = helper.appendChild(groupLot, "SpeciesCode");
+			Element speciesCode = helper.appendChild(eGroupLot, "SpeciesCode");
 			helper.setAttribute(speciesCode, "Code", group.speciesCode.code);
 			helper.setAttribute(speciesCode, "Text", group.speciesCode.text);
 		}
 		else {
-			Element speciesOther = helper.appendChild(groupLot, "SpeciesOther");
+			Element speciesOther = helper.appendChild(eGroupLot, "SpeciesOther");
 			helper.setAttribute(speciesOther, "Code", group.speciesCode.code);
 			helper.setAttribute(speciesOther, "Text", group.speciesCode.text);
 		}
@@ -1323,28 +1323,34 @@ public class StdeCviXmlModel {
 		// ID is an Element because it can repeat.  I only implement one.
 		String sId = group.groupLotId;
 		if( sId != null && sId.trim().length() > 0 ) {
-			Element groupId = helper.insertElementBefore(groupLot, "GroupLotID", sAfter);
+			Element groupId = helper.insertElementBefore(eGroupLot, "GroupLotID", sAfter);
 			groupId.setTextContent(sId);
 		}
 		Double quantity = group.quantity;
-		if( quantity != null )
-			helper.setAttribute(groupLot, "Quantity", quantity.toString());
+		String sQuant = "1";
+		if( quantity != null ) {
+			// Civet only deals with animals so no fraction part.  "200.0" would be confusing.
+			sQuant = String.format("%1$.0f", quantity); 
+			helper.setAttribute(eGroupLot, "Quantity", sQuant);
+		}
 		String sUnit = group.unit;
 		if( sUnit != null && sUnit.trim().length() > 0 )
-			helper.setAttribute(groupLot, "Unit", sUnit);
+			helper.setAttribute(eGroupLot, "Unit", sUnit);
 		String sAge = group.age;
 		if( sAge != null && sAge.trim().length() > 0 )
-			helper.setAttribute(groupLot, "Age", sAge);
+			helper.setAttribute(eGroupLot, "Age", sAge);
 		String sBreed = group.breed;
 		if( sBreed != null && sBreed.trim().length() > 0 )
-			helper.setAttribute(groupLot, "Breed", sBreed);
+			helper.setAttribute(eGroupLot, "Breed", sBreed);
 		String sSex = group.sex;
 		if( sSex != null && sSex.trim().length() > 0 )
-			helper.setAttribute(groupLot, "Sex", sSex);
+			helper.setAttribute(eGroupLot, "Sex", sSex);
 		String sDescription = group.description;
-		if( sDescription != null && sDescription.trim().length() > 0 )
-			helper.setAttribute(groupLot, "Description", sDescription);
-		return groupLot;
+		if( sDescription == null || sDescription.trim().length() <= 0 ) {
+			sDescription = sQuant + " " + group.speciesCode.text;
+		}
+		helper.setAttribute(eGroupLot, "Description", sDescription);
+		return eGroupLot;
 	}
 	
 	public boolean hasGroup( String sSpecies ) {
@@ -1404,9 +1410,10 @@ public class StdeCviXmlModel {
 			groupId.setTextContent(sId);
 		}
 		Double quantity = group.quantity;
+		String sQuant = "1";
 		if( quantity != null ) {
 			// Civet only deals with animals so no fraction part.  "200.0" would be confusing.
-			String sQuant = String.format("%1$.0f", quantity); 
+			sQuant = String.format("%1$.0f", quantity); 
 			helper.setAttribute(eGroupLot, "Quantity", sQuant);
 		}
 		String sUnit = group.unit;
@@ -1422,11 +1429,161 @@ public class StdeCviXmlModel {
 		if( sSex != null && sSex.trim().length() > 0 )
 			helper.setAttribute(eGroupLot, "Sex", sSex);
 		String sDescription = group.description;
-		if( sDescription != null && sDescription.trim().length() > 0 )
-			helper.setAttribute(eGroupLot, "Description", sDescription);
+		if( sDescription == null || sDescription.trim().length() <= 0 ) {
+			sDescription = sQuant + " " + group.speciesCode.text;
+		}
+		helper.setAttribute(eGroupLot, "Description", sDescription);
 		return;
 	}
 
+	// Start New Product Element
+	public void clearProducts() {
+		ArrayList<Element> eProducts = helper.getElementsByName("Product");
+		for( Element eProduct : eProducts) {
+			helper.removeElement(eProduct);
+		}
+	}
+	
+	public Element addProduct( Product product ) {
+		if( !isValidDoc() ) 
+			return null;
+		String sAfter = getFollowingElementList("Statements");
+		Element eProduct = helper.insertElementBefore("Product", sAfter);
+		if( product.speciesCode.isStandardCode ) {
+			Element speciesCode = helper.appendChild(eProduct, "SpeciesCode");
+			helper.setAttribute(speciesCode, "Code", product.speciesCode.code);
+			helper.setAttribute(speciesCode, "Text", product.speciesCode.text);
+		}
+		else {
+			Element speciesOther = helper.appendChild(eProduct, "SpeciesOther");
+			helper.setAttribute(speciesOther, "Code", product.speciesCode.code);
+			helper.setAttribute(speciesOther, "Text", product.speciesCode.text);
+		}
+		sAfter = "Test, Vaccination";
+		// ID is an Element because it can repeat.  I only implement one.
+		String sId = product.productId;
+		if( sId != null && sId.trim().length() > 0 ) {
+			Element productId = helper.insertElementBefore(eProduct, "GroupLotID", sAfter);
+			productId.setTextContent(sId);
+		}
+		String sProductType = product.productType;
+		if( sProductType != null && sProductType.trim().length() > 0 )
+			helper.setAttribute(eProduct, "ProductType", sProductType);
+		Double quantity = product.quantity;
+		String sQuant = "1";
+		if( quantity != null ) {
+			// Civet only deals with animals so no fraction part.  "200.0" would be confusing.
+			sQuant = String.format("%1$.0f", quantity); 
+			helper.setAttribute(eProduct, "Quantity", sQuant);
+		}
+		String sUnit = product.unit;
+		if( sUnit != null && sUnit.trim().length() > 0 )
+			helper.setAttribute(eProduct, "Unit", sUnit);
+		String sAge = product.age;
+		if( sAge != null && sAge.trim().length() > 0 )
+			helper.setAttribute(eProduct, "Age", sAge);
+		String sBreed = product.breed;
+		if( sBreed != null && sBreed.trim().length() > 0 )
+			helper.setAttribute(eProduct, "Breed", sBreed);
+		String sSex = product.sex;
+		if( sSex != null && sSex.trim().length() > 0 )
+			helper.setAttribute(eProduct, "Sex", sSex);
+		String sDescription = product.description;
+		if( sDescription == null || sDescription.trim().length() <= 0 ) {
+			sDescription = sQuant + " " + product.speciesCode.text + " " + sProductType;
+		}
+		helper.setAttribute(eProduct, "Description", sDescription);
+		return eProduct;
+	}
+	
+	public boolean hasProduct( String sSpecies, String sProductType ) {
+		boolean bRet = false;
+		if( isValidDoc() && sSpecies != null && sSpecies.trim().length() > 0 ) {
+			ArrayList<Element> products = helper.getElementsByName("Product");
+			for( Element product : products ) {
+					String sSpeciesCode = product.getAttribute("SpeciesCode");
+					String sProductTypeHere = product.getAttribute("ProductType");
+					if( sSpecies.equalsIgnoreCase(sSpeciesCode) && sProductType.equalsIgnoreCase(sProductTypeHere) ) {
+						bRet = true;
+						break;
+					}
+			}
+		}
+		return bRet;
+	}
+	
+	public void removeProduct( Product product ) {
+		helper.removeElement(product.eProduct);
+	}
+	
+	public void addOrEditProduct( Product product ) {
+		if( !isValidDoc() ) 
+			return;
+		String sAfter = getFollowingElementList("Statements");
+		Element eProduct = product.eProduct;
+		if( eProduct == null ) {
+			eProduct = helper.insertElementBefore("Product", sAfter);
+		}
+		if( product.speciesCode.isStandardCode ) {
+			Element speciesCode = helper.getChildElementByName(eProduct, "SpeciesCode");
+			if( speciesCode == null ) {
+				speciesCode = helper.appendChild(eProduct, "SpeciesCode");
+				Element speciesOther = helper.getChildElementByName(eProduct, "SpeciesOther");
+				if( speciesOther != null)
+					helper.removeElement(speciesOther);
+			}
+			helper.setAttribute(speciesCode, "Code", product.speciesCode.code);
+			helper.setAttribute(speciesCode, "Text",  product.speciesCode.text);
+		}
+		else {
+			Element speciesOther = helper.getChildElementByName(eProduct, "SpeciesOther");
+			if( speciesOther == null ) {
+				speciesOther = helper.appendChild(eProduct, "SpeciesOther");
+				Element speciesCode = helper.getChildElementByName(eProduct, "SpeciesCode");
+				if( speciesCode != null)
+					helper.removeElement(speciesCode);
+			}
+			helper.setAttribute(speciesOther, "Code", product.speciesCode.code);
+			helper.setAttribute(speciesOther, "Text", product.speciesCode.text);
+		}
+		sAfter = "Test, Vaccination";
+		// ID is an Element because it can repeat.  I only implement one.
+		String sId = product.productId;
+		if( sId != null && sId.trim().length() > 0 ) {
+			Element productId = helper.insertElementBefore(eProduct, "ProductID", sAfter);
+			productId.setTextContent(sId);
+		}
+		String sProductType = product.productType;
+		if( sProductType != null && sProductType.trim().length() > 0 )
+			helper.setAttribute(eProduct, "ProductType", sProductType);
+		Double quantity = product.quantity;
+		String sQuant = "1";
+		if( quantity != null ) {
+			// Civet only deals with animals so no fraction part.  "200.0" would be confusing.
+			sQuant = String.format("%1$.0f", quantity); 
+			helper.setAttribute(eProduct, "Quantity", sQuant);
+		}
+		String sUnit = product.unit;
+		if( sUnit != null && sUnit.trim().length() > 0 )
+			helper.setAttribute(eProduct, "Unit", sUnit);
+		String sAge = product.age;
+		if( sAge != null && sAge.trim().length() > 0 )
+			helper.setAttribute(eProduct, "Age", sAge);
+		String sBreed = product.breed;
+		if( sBreed != null && sBreed.trim().length() > 0 )
+			helper.setAttribute(eProduct, "Breed", sBreed);
+		String sSex = product.sex;
+		if( sSex != null && sSex.trim().length() > 0 )
+			helper.setAttribute(eProduct, "Sex", sSex);
+		String sDescription = product.description;
+		if( sDescription == null || sDescription.trim().length() <= 0 ) {
+			sDescription = sQuant + " " + product.speciesCode.text + " " + sProductType;
+		}
+		helper.setAttribute(eProduct, "Description", sDescription);
+		return;
+	}
+	
+	// End New Product Element
 	public void setOrUpdatePDFAttachment( byte[] pdfBytes, String sFileName ) {
 		sFileName = FileUtils.replaceInvalidFileNameChars(sFileName);
 		if( isValidDoc() && pdfBytes != null && pdfBytes.length > 0 ) {

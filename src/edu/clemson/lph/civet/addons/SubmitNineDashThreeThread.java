@@ -121,17 +121,19 @@ public class SubmitNineDashThreeThread extends Thread {
 	 */
 	public void run() {
 		try {
-			if( cviExists( sCVINo, sOriginStateCode )) {
-				try {
-					String sLineOut = sCVINo + " from " + sOriginStateCode + " already exists\r\n";
-					Files.write(Paths.get("Duplicates.txt"), sLineOut.getBytes(), CREATE_OR_APPEND);
-				}catch (IOException e) {
-					logger.error(e);
+			try {
+				Class.forName("edu.clemson.lph.civet.addons.SCDatabaseConnectionFactory");
+				if( cviExists( sCVINo, sOriginStateCode )) {
+					try {
+						String sLineOut = sCVINo + " from " + sOriginStateCode + " already exists\r\n";
+						Files.write(Paths.get("Duplicates.txt"), sLineOut.getBytes(), CREATE_OR_APPEND);
+					}catch (IOException e) {
+						logger.error(e);
+					}
+					exitThread(false);
 				}
-				exitThread(false);
-			}
-			if( "Eggs".equalsIgnoreCase( sProduct ) ) {
-				addToEggCVIs(sCVINo);
+			} catch (ClassNotFoundException e1) {
+				// Not running locally at LPH;
 			}
 			byte[] baXML = buildXml();
 			// Save it just in case.
@@ -374,37 +376,5 @@ public class SubmitNineDashThreeThread extends Thread {
 		}
 		return bRet;
 	}
-	
-	private boolean addToEggCVIs( String sCVINbr ) {
-		boolean bRet = false;
-		if( factory != null ) {
-			String sQuery = "INSERT INTO USAHERDS_LPH.dbo.EggCVIs VALUES( ? )";
-			Connection conn = factory.makeDBConnection();
-			try {
-				PreparedStatement ps = conn.prepareStatement(sQuery);
-				ps.setString(1, sCVINbr);
-				int iRet = ps.executeUpdate();
-				if( iRet > 0 ) {
-					bRet = true;
-				}
-			} catch( SQLException e ) {
-				logger.error("Error in query: " + sQuery, e);
-			} finally {
-				try {
-					if( conn != null && !conn.isClosed() )
-						conn.close();
-				} catch( Exception e2 ) {
-				}
-			}
-		}
-		else {
-			FileUtils.writeTextFile(sCVINbr + "\n", "EggCVIs.txt", true);
-		}
-		return bRet;
-	}
-
-
-
-
 
 }

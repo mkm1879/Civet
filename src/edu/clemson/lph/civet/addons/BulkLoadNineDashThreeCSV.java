@@ -29,9 +29,11 @@ import edu.clemson.lph.civet.xml.elements.Address;
 import edu.clemson.lph.civet.xml.elements.Animal;
 import edu.clemson.lph.civet.xml.elements.GroupLot;
 import edu.clemson.lph.civet.xml.elements.Premises;
+import edu.clemson.lph.civet.xml.elements.Product;
 import edu.clemson.lph.db.*;
 import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.utils.CountyUtils;
+import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.PremCheckSum;
 import edu.clemson.lph.utils.StringUtils;
 
@@ -63,8 +65,13 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 	}
 
 	public void import93CSV( Window parent ) {
-		if( factory == null )
-			factory = InitAddOns.getFactory();
+		try {
+			Class.forName("edu.clemson.lph.civet.addons.SCDatabaseConnectionFactory");
+			if( factory == null )
+				factory = InitAddOns.getFactory();
+		} catch (ClassNotFoundException e) {
+			// Not running at LPH
+		}
 		String sFilePath = null;
 	    JFileChooser fc = new JFileChooser();
 	    fc.setCurrentDirectory(new File(CivetConfig.getNineDashThreeLoadDirPath() ));
@@ -155,9 +162,9 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 							}
 							continue;
 						}
-						if( "EGG".equalsIgnoreCase( data.getProduct() ) ) {
-							addToEggCVIs(data.getCVINumber());
-						}
+//						if( "EGG".equalsIgnoreCase( data.getProduct() ) ) {
+//							addToEggCVIs(data.getCVINumber());
+//						}
 						byte[] baXML = buildXml( data );
 //			System.out.println(sXML);
 						// Send it!
@@ -289,21 +296,28 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			}
 			String sGender = "Gender Unknown";
 			int iNumTags = 0;
-			if( data.hasTags() ) {
-				for( String sID : data.listTagIds() ) {
-					Animal animal = new Animal(sSpeciesCode, sID);
-					animal.sex = sGender;
-					animal.inspectionDate = StdeCviXmlModel.getDateFormat().format(data.getInspectionDate());
-					xmlModel.addAnimal(animal);
-					iNumTags++;
-				}
+			String sProduct = data.getProduct();
+			if( "Eggs".equalsIgnoreCase(sProduct) ) {
+				Product product = new Product(sSpeciesCode, "Eggs", Double.valueOf(iNum));
+				xmlModel.addProduct(product);
 			}
-			if( iNumTags < iNum ) {
-				Double dNum = Double.valueOf(iNum - iNumTags);
-				GroupLot group = new GroupLot(sSpeciesCode, dNum);
-				group.sex = sGender;
-				group.description = "Poultry Lot Under NPIP 9-3";
-				xmlModel.addGroupLot(group);
+			else {
+				if( data.hasTags() ) {
+					for( String sID : data.listTagIds() ) {
+						Animal animal = new Animal(sSpeciesCode, sID);
+						animal.sex = sGender;
+						animal.inspectionDate = StdeCviXmlModel.getDateFormat().format(data.getInspectionDate());
+						xmlModel.addAnimal(animal);
+						iNumTags++;
+					}
+				}
+				if( iNumTags < iNum ) {
+					Double dNum = Double.valueOf(iNum - iNumTags);
+					GroupLot group = new GroupLot(sSpeciesCode, dNum);
+					group.sex = sGender;
+					group.description = "Poultry Lot Under NPIP 9-3";
+					xmlModel.addGroupLot(group);
+				}
 			}
 			CviMetaDataXml metaData = new CviMetaDataXml();
 			metaData.setCertificateNbr(sCVINumber);
@@ -312,6 +326,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			metaData.setCVINumberSource(sCVINbrSource);
 //		System.out.println(metaData.getXmlString());
 			xmlModel.addOrUpdateMetadataAttachment(metaData);
+		FileUtils.writeTextFile(xmlModel.getXMLString(), "NineDash3Out " + xmlModel.getCertificateNumber() + ".xml");
 			return xmlModel.getXMLBytes();
 		}
 
@@ -341,32 +356,6 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener, AddOn {
 			}
 			return bRet;
 		}
-		
-		private boolean addToEggCVIs( String sCVINbr ) {
-			boolean bRet = false;
-			// NOTE: There is no generator for this now.  Make one in AddOns and distribute to other states????
-			String sQuery = "INSERT INTO USAHERDS_LPH.dbo.EggCVIs VALUES( ? )";
-			Connection conn = factory.makeDBConnection();
-			try {
-				PreparedStatement ps = conn.prepareStatement(sQuery);
-				ps.setString(1, sCVINbr);
-				int iRet = ps.executeUpdate();
-				if( iRet > 0 ) {
-					bRet = true;
-				}
-			} catch( SQLException e ) {
-				logger.error("Error in query: " + sQuery, e);
-			} finally {
-				try {
-					if( conn != null && !conn.isClosed() )
-						conn.close();
-				} catch( Exception e2 ) {
-				}
-			}
-			return bRet;
-		}
-
-
 	
 	}// end inner class TWorkSave
 	
