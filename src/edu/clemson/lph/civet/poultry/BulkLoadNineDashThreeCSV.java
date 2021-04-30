@@ -325,7 +325,6 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener {
 			metaData.setCVINumberSource(sCVINbrSource);
 //		System.out.println(metaData.getXmlString());
 			xmlModel.addOrUpdateMetadataAttachment(metaData);
-		FileUtils.writeTextFile(xmlModel.getXMLString(), "NineDash3Out " + xmlModel.getCertificateNumber() + ".xml");
 			return xmlModel.getXMLBytes();
 		}
 
