@@ -20,7 +20,6 @@ import edu.clemson.lph.civet.AnimalIDRecord;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.SpeciesRecord;
-import edu.clemson.lph.civet.addons.SCDatabaseConnectionFactory;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
@@ -83,10 +82,6 @@ public class NineDashThreeDialog extends JFrame {
 	 * Create the dialog.
 	 */
 	public NineDashThreeDialog(Window parent) {
-		if( CivetInbox.VERSION.endsWith("local") ) {
-			if( factory == null )
-				factory = new SCDatabaseConnectionFactory();
-		}
 		xmlModel = new StdeCviXmlModel();
 		idModel = new AnimalIDListTableModel( xmlModel );
 		setBounds(100, 100, 700, 500);

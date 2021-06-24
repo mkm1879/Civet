@@ -39,8 +39,8 @@ maxAttachSize=5M
 #Folders
 InputDirPath=CivetInbox
 ToBeFiledDirPath=CivetToBeFiled
-EmailOutDirPath=CivetToBeMailedOut
-EmailErrorsDirPath=CivetToBeMailedErrors
+EmailOutDirPath=CivetToEMailOut
+EmailErrorsDirPath=CivetToEMailErrors
 OutputDirPath=CivetOutbox
 vspsDirPath=VSPSData
 EmailOnlyInputPath=

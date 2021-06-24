@@ -21,7 +21,6 @@ import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.CSVFilter;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetInbox;
-import edu.clemson.lph.civet.addons.SCDatabaseConnectionFactory;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
@@ -67,10 +66,6 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener {
 	}
 
 	public void import93CSV( Window parent ) {
-		if( CivetInbox.VERSION.endsWith("local") ) {
-			if( factory == null )
-				factory = new SCDatabaseConnectionFactory();
-		}
 		String sFilePath = null;
 	    JFileChooser fc = new JFileChooser();
 	    fc.setCurrentDirectory(new File(CivetConfig.getNineDashThreeLoadDirPath() ));
@@ -85,7 +80,6 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener {
 	    	return;
 	    }
 		importNineDashThreeCSVFile( parent, sFilePath );
-
 	}
 	
 	private void importNineDashThreeCSVFile( Window parent, String sFilePath ) {
