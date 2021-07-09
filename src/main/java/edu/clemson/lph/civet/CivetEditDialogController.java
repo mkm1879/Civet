@@ -996,7 +996,6 @@ public final class CivetEditDialogController {
 	public int getPageNo() { return currentFile.getCurrentPageNo(); }
 	
 	private void checkPreDate() {
-		boolean bRet = false;
 		java.util.Date dateInspected = dlg.jtfDateInspected.getDate();
 		java.util.Date dateReceived = dlg.jtfDateReceived.getDate();
 		if( (dateInspected != null && dateReceived != null && dateInspected.getTime() > dateReceived.getTime() )

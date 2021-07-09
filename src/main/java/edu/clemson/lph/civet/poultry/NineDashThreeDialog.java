@@ -7,21 +7,17 @@ import java.awt.FlowLayout;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 
 import edu.clemson.lph.civet.AddAnimalsDialog;
 import edu.clemson.lph.civet.AnimalIDListTableModel;
 import edu.clemson.lph.civet.AnimalIDRecord;
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.SpeciesRecord;
 import edu.clemson.lph.civet.lookup.SpeciesLookup;
-import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.controls.DBNumericField;
 import edu.clemson.lph.controls.DateField;
@@ -40,7 +36,6 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.table.TableColumnModel;
 import javax.swing.text.JTextComponent;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;

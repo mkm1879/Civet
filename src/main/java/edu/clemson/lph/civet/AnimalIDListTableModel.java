@@ -29,6 +29,7 @@ import edu.clemson.lph.utils.IDTypeGuesser;
 
 @SuppressWarnings("serial")
 public class AnimalIDListTableModel extends AbstractTableModel {
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private StdeCviXmlModel xmlModel;
 	private ArrayList<Animal> deletedAnimals;  // Stored as native data compatible with XML

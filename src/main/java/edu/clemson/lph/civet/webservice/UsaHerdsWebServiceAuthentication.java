@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
-import edu.clemson.lph.civet.webservice.HttpPostClient;
 import edu.clemson.lph.utils.JSONParser;
 
 public class UsaHerdsWebServiceAuthentication {

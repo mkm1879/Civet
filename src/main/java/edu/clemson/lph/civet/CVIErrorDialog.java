@@ -40,6 +40,7 @@ import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
 class CVIErrorDialog extends JDialog {
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
 	private ArrayList<String> aErrorKeys;
 	private boolean bExitOK = false;

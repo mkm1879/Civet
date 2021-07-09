@@ -35,8 +35,6 @@ import org.apache.log4j.PropertyConfigurator;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.controls.DBTable;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
-import edu.clemson.lph.dialogs.DialogHelper;
-import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.db.ThreadListener;
 
 
