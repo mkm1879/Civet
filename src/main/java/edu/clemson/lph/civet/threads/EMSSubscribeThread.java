@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetInbox;
-import edu.clemson.lph.civet.files.OpenFile;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
 import edu.clemson.lph.dialogs.MessageDialog;

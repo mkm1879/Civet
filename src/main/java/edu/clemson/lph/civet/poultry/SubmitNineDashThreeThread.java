@@ -3,21 +3,12 @@ package edu.clemson.lph.civet.poultry;
 import java.awt.Window;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.OpenOption;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.AnimalIDRecord;
 import edu.clemson.lph.civet.Civet;
-import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.SpeciesRecord;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServices;
@@ -35,7 +26,7 @@ import edu.clemson.lph.utils.PremCheckSum;
 
 public class SubmitNineDashThreeThread extends Thread {
 	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	private static final OpenOption[] CREATE_OR_APPEND = new OpenOption[] { StandardOpenOption.APPEND, StandardOpenOption.CREATE };
+//	private static final OpenOption[] CREATE_OR_APPEND = new OpenOption[] { StandardOpenOption.APPEND, StandardOpenOption.CREATE };
 //	private static final String sProgMsg = "Loading 9-3: ";
 	
 	Window parent;
@@ -123,17 +114,6 @@ public class SubmitNineDashThreeThread extends Thread {
 	 */
 	public void run() {
 		try {
-			if( CivetInbox.VERSION.endsWith("local") ) {
-				if( cviExists( sCVINo, sOriginStateCode )) {
-					try {
-						String sLineOut = sCVINo + " from " + sOriginStateCode + " already exists\r\n";
-						Files.write(Paths.get("Duplicates.txt"), sLineOut.getBytes(), CREATE_OR_APPEND);
-					}catch (IOException e) {
-						logger.error(e);
-					}
-					exitThread(false);
-				}
-			}
 			byte[] baXML = buildXml();
 			// Save it just in case.
 			String sFileName = "./CivetOutbox/" + sCVINo + ".xml";
@@ -294,93 +274,14 @@ public class SubmitNineDashThreeThread extends Thread {
 					xmlModel.removeGroupLot(group);
 			}
 		}
-		// xmlModel inside the IdListModel should already hold the animals.
-//		Original Implementation
-//		for( SpeciesRecord sr : aSpecies ) {
-//			String sSpeciesCode = sr.sSpeciesCode;
-//			Integer iNum = sr.iNumber;
-//			int iNumTags = 0;
-//			String sGender = "Gender Unknown";
-//			for( AnimalIDRecord ar : aAnimalIDs ) {
-//				if( ar.sSpeciesCode.equals( sSpeciesCode ) ) {
-//					xmlModel.addAnimal(sSpeciesCode, dDateIssued, null, null, sGender, "OTH", ar.sTag);
-//					iNumTags++;
-//				}
-//			}
-//			if( iNumTags < iNum ) {
-//				xmlModel.addGroup(iNum - iNumTags, "Poultry Lot Under NPIP 9-3", sSpeciesCode, null, sGender);
-//			}		
-//		}
-//		
-//		Implementation from BulkLoadReWrite
-//		Integer iNum = data.getAnimalCount();
-//		if( iNum == null ) {
-//			logger.error("Missing Animal Count in " + sCVINumber);
-//			iNum = 1;
-//		}
-//		String sGender = "Gender Unknown";
-//		int iNumTags = 0;
-//		if( data.hasTags() ) {
-//			for( String sID : data.listTagIds() ) {
-//				Animal animal = new Animal(sSpeciesCode, sID);
-//				animal.sex = sGender;
-//				SimpleDateFormat getDateFormat() = new SimpleDateFormat("yyyy-MM-dd");
-//				animal.inspectionDate = getDateFormat().format(data.getInspectionDate());
-//				xmlModel.addAnimal(animal);
-//				iNumTags++;
-//			}
-//		}
-//		if( iNumTags < iNum ) {
-//			Double dNum = new Double(iNum - iNumTags);
-//			GroupLot group = new GroupLot(sSpeciesCode, dNum);
-//			group.sex = sGender;
-//			group.description = "Poultry Lot Under NPIP 9-3";
-//			xmlModel.addGroupLot(group);
-//		}
-
 		
 		CviMetaDataXml metaData = new CviMetaDataXml();
 		metaData.setCertificateNbr(sCVINo);
 		metaData.setBureauReceiptDate((new java.util.Date()));
-		metaData.setErrorNote("NPIP 9-3 Form Spreadsheet");
+		metaData.setErrorNote("NPIP 9-3 Dialog entry");
 		metaData.setCVINumberSource("NPIP9_3");
-//	System.out.println(metaData.getXmlString());
 		xmlModel.addOrUpdateMetadataAttachment(metaData);
 		return xmlModel.getXMLBytes();
-	}
-
-	/**
-	 * Duplicate checking is only available for local SC use with direct DB access.
-	 * @param sCVINbr
-	 * @param sState
-	 * @return
-	 */
-	private boolean cviExists( String sCVINbr, String sState ) {
-		if( factory == null ) return false;
-		boolean bRet = false;
-		// NOTE: There is no generator for this now.  Make one in AddOns and distribute to other states????
-		String sQuery = "SELECT * FROM USAHERDS.dbo.CVIs c \n" +
-		                "JOIN USAHERDS.dbo.States s ON s.StateKey = c.StateKey \n" +
-				        "WHERE c.CertificateNbr = ? AND s.StateCode = ?";
-		Connection conn = factory.makeDBConnection();
-		try {
-			PreparedStatement ps = conn.prepareStatement(sQuery);
-			ps.setString(1, sCVINbr);
-			ps.setString(2,  sState);
-			ResultSet rs = ps.executeQuery();
-			if( rs.next() ) {
-				bRet = true;
-			}
-		} catch( SQLException e ) {
-			logger.error("Error in query: " + sQuery, e);
-		} finally {
-			try {
-				if( conn != null && !conn.isClosed() )
-					conn.close();
-			} catch( Exception e2 ) {
-			}
-		}
-		return bRet;
 	}
 
 }

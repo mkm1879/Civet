@@ -1,6 +1,6 @@
 package edu.clemson.lph.civet.webservice;
 /*
-Copyright 2014-16 Michael K Martin
+Copyright 2014-21 Michael K Martin
 
 This file is part of Civet.
 
@@ -17,8 +17,6 @@ GNU General Public License for more details.
 You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
-import edu.clemson.lph.civet.webservice.HttpGetClient;
-
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import org.w3c.dom.Document;
@@ -43,8 +41,8 @@ public class CivetWebServices {
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}
-	private static final String CVI_UPLOAD_MESSAGE_TYPE = "Civet XML";
-	private static final String CVI_UPLOAD_SOURCE = "Civet";
+	private static final String CVI_UPLOAD_MESSAGE_TYPE = "USAHA eCVI XML";
+	private static final String CVI_UPLOAD_SOURCE = "CIVET";
 	private String CVI_SUCCESS_MESSAGE = "Success";
 	private static final String LOOKUPS_URL = "/api/Civet/GetLookups/";
 	private static final String POST_PREM_URL = "/api/Civet/SearchPremises";

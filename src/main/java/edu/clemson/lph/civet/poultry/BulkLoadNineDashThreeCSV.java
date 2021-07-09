@@ -17,7 +17,6 @@ GNU General Public License for more details.
 You should have received a copy of the Lesser GNU General Public License
 along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
-import edu.clemson.lph.civet.AddOn;
 import edu.clemson.lph.civet.CSVFilter;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetInbox;
@@ -34,7 +33,6 @@ import edu.clemson.lph.civet.xml.elements.Product;
 import edu.clemson.lph.db.*;
 import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.utils.CountyUtils;
-import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.PremCheckSum;
 import edu.clemson.lph.utils.StringUtils;
 

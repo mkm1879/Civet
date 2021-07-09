@@ -247,7 +247,6 @@ public class CivetInbox extends JFrame {
 		menuExperimental.add(menuItem9Dash3Dialog);
 		menuItemBulk9Dash3.setText("Import NPIP 9-3 CSV File");
 		menuExperimental.add(menuItemBulk9Dash3);
-		JMenuItem menuItem9Dash3Dialog = new JMenuItem();
 
 		menuEmailOnly = new JMenuItem("Email Files Only");
 		menuExperimental.add(menuEmailOnly);
