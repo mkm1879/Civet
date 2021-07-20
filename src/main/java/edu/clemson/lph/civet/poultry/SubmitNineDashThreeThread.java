@@ -204,7 +204,7 @@ public class SubmitNineDashThreeThread extends Thread {
 		xmlModel.setIssueDate(dDateIssued);
 		xmlModel.setVet("NPIP");
 		// Expiration date will be set automatically from getXML();
-		xmlModel.setPurpose("Other");
+		xmlModel.setPurpose("Sale");
 
 		Address aOrigin = new Address(sOriginAddress, null, sOriginCity, sOriginCounty, sOriginStateCode, sOriginZipCode,
 				"USA", null, null);
