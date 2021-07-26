@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.clemson.lph.utils</groupId>
   <artifactId>lphutils</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
   <name>lphutils</name>
   <description>Civet CVI Transcription and Conversion Tool</description>
   <properties>
@@ -58,15 +58,29 @@
 	<dependency>
 		<groupId>org.bouncycastle</groupId>
 		<artifactId>bcprov-jdk15on</artifactId>
-		<version>1.68</version>
+		<version>1.69</version>
 	</dependency> 
 	
-	<!-- https://mvnrepository.com/artifact/log4j/log4j -->
-	<dependency>
-		<groupId>log4j</groupId>
-		<artifactId>log4j</artifactId>
-		<version>1.2.17</version>
-	</dependency>
+	<!-- https://mvnrepository.com/artifact/log4j/log4j-->
+<dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.17</version>
+</dependency> 
+
+<!-- https://mvnrepository.com/artifact/org.apache.log4j/log4j-core 
+ lacks PropertyConfigurator.  Too much to change everything.
+<dependency>
+    <groupId>org.apache.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.14.0</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.log4j</groupId>
+    <artifactId>log4j-api</artifactId>
+    <version>2.14.0</version>
+</dependency> -->
+
 	
 	<!-- https://mvnrepository.com/artifact/org.glassfish/javax.json -->
 	<dependency>
