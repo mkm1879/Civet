@@ -29,13 +29,13 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 
 public class CertificateNbrLookup {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+       private static Logger logger = Logger.getLogger();
 	private static HashSet<String> setCertNbrs = null;
 
 	/**

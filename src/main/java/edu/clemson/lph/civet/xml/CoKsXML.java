@@ -36,7 +36,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -51,7 +51,7 @@ import edu.clemson.lph.utils.IDTypeGuesser;
 import edu.clemson.lph.utils.XMLUtility;
 
 public class CoKsXML {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private Node xmlNode = null;
 	private String xmlString = null;
 

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -33,7 +33,7 @@ import edu.clemson.lph.utils.LabeledCSVParser;
  *
  */
 public class ErrorTypeLookup {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+     private static Logger logger = Logger.getLogger();
 	private static HashMap<String, Error> keyErrorMap = null;
 	private static HashMap<String, String> descriptionKeyMap = null;
 	private static ArrayList<String> aErrorTypes = new ArrayList<String>();

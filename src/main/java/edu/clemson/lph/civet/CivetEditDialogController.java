@@ -45,7 +45,7 @@ import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.text.JTextComponent;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.jpedal.exception.PdfException;
 
 import edu.clemson.lph.civet.files.OpenFile;
@@ -87,7 +87,7 @@ import edu.clemson.lph.utils.PremCheckSum;
 
 
 public final class CivetEditDialogController {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private CivetEditDialog dlg;
 	private String viewerTitle="Civet: ";
 	private Window parent = null;

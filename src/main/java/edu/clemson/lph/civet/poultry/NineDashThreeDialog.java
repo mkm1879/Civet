@@ -10,7 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.AddAnimalsDialog;
 import edu.clemson.lph.civet.AnimalIDListTableModel;
@@ -49,7 +49,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class NineDashThreeDialog extends JFrame {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 
 	private DatabaseConnectionFactory factory = null;
 	private JTextField jtfCVINo;

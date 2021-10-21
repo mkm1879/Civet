@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.xml.elements.AnimalTag;
@@ -34,7 +34,7 @@ import edu.clemson.lph.utils.AnimalIDUtils;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
 public class VspsCviAnimal {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private List<String> aCols;
 	private LabeledCSVParser parser;
 	private DateFormat df = new SimpleDateFormat( "dd-MMM-yy");

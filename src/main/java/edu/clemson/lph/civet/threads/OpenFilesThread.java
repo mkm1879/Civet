@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.jpedal.exception.PdfException;
 
 import edu.clemson.lph.civet.Civet;
@@ -34,7 +34,7 @@ import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.ProgressDialog;
 
 public class OpenFilesThread extends Thread {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private ProgressDialog prog;
 	private CivetEditDialogController dlgController;
 	private CivetEditDialog dlg;

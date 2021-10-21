@@ -30,7 +30,7 @@ import java.awt.*;
 
 @SuppressWarnings("serial")
 class DBSearchTextField extends JTextField {
-//	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+//      private static Logger logger = Logger.getLogger();
 //	private String sQuery = null;
 	private String sSearchQuery;
 	private String sSearchTitle = "Search";

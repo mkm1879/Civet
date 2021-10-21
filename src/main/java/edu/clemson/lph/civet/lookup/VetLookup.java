@@ -25,7 +25,7 @@ import java.util.TreeSet;
 
 import javax.swing.event.TableModelListener;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -38,7 +38,7 @@ import edu.clemson.lph.utils.StringUtils;
 
 @SuppressWarnings("serial")
 public class VetLookup extends DBComboBoxModel implements DBTableSource, javax.swing.table.TableModel  {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private static ArrayList<Vet> allRows = null;
 	private static HashMap<String, Vet> vetNameMap = null;
 	private static HashMap<String, Vet> vetNANMap = null;

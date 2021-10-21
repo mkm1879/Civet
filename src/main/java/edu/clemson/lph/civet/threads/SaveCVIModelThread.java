@@ -3,7 +3,7 @@ package edu.clemson.lph.civet.threads;
 import java.io.File;
 import java.util.Arrays;
 import javax.swing.SwingUtilities;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.files.OpenFileSaveQueue;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -12,7 +12,7 @@ import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.utils.FileUtils;
 
 public class SaveCVIModelThread extends Thread {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private OpenFileSaveQueue queue;
 	byte[] xmlToSave;
 	StdeCviXmlModel model;

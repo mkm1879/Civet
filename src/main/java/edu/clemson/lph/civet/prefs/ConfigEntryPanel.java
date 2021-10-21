@@ -20,13 +20,13 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 
 @SuppressWarnings("serial")
 class ConfigEntryPanel extends JPanel {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private ConfigEntry entry = null;
 	private ConfigDialog dlgParent = null;
 	private JTextField jtfValue;

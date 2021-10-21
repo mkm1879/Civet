@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+
+import edu.clemson.lph.logging.Logger;
+
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.utils.CountyUtils;
@@ -32,13 +32,9 @@ import edu.clemson.lph.utils.PremCheckSum;
 
 
 public class VspsCviEntity {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private String[] aEntityNames = {"Origin","Destination","Consignee","Consignor","Carrier"};
 	public List<String> lEntityNames = Arrays.asList(aEntityNames);
-	static {
-		PropertyConfigurator.configure("CivetConfig.txt");
-		logger.setLevel(Level.ERROR);
-	}
 	private LabeledCSVParser parser = null;
 	private List<String> aCols;
 	private int iDelta;

@@ -20,7 +20,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import org.w3c.dom.Document;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.XMLUtility;
@@ -37,7 +37,7 @@ import edu.clemson.lph.utils.XMLUtility;
  *
  */
 public class CivetWebServices {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}

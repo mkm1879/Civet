@@ -19,7 +19,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import javax.swing.DefaultComboBoxModel;
 
-import org.apache.log4j.*;
+import edu.clemson.lph.logging.Logger;
 
 import java.sql.*;
 import java.util.*;
@@ -31,7 +31,7 @@ import edu.clemson.lph.dialogs.MessageDialog;
 
 @SuppressWarnings("serial")
 public class DBComboBoxModel extends DefaultComboBoxModel<String> {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private DatabaseConnectionFactory factory;
 	private String sQuery;
 	protected boolean bBlank = false;

@@ -21,7 +21,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.File;
 import java.util.List;
 import javax.swing.SwingUtilities;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
@@ -34,7 +34,7 @@ import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.Validator;
 
 public class SubmitCVIsThread extends Thread implements ThreadCancelListener {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}

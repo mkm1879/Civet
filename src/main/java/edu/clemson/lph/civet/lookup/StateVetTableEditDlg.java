@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
-import org.apache.log4j.PropertyConfigurator;
+
 
 import edu.clemson.lph.civet.prefs.CivetConfig;
 
@@ -49,7 +49,6 @@ public class StateVetTableEditDlg extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
-			PropertyConfigurator.configure("CivetConfig.txt");
 			CivetConfig.checkAllConfig();
 
 			StateVetTableEditDlg dialog = new StateVetTableEditDlg();

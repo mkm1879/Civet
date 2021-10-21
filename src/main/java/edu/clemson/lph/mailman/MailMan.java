@@ -40,13 +40,13 @@ import javax.mail.internet.MimeMultipart;
 //import javax.mail.*;
 //import javax.mail.internet.*;
 import javax.mail.util.ByteArrayDataSource;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 
 
 public class MailMan {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private static String sUserID = null;
 	private static String sPassword = null;
 	private static String sHost = null;
@@ -216,7 +216,7 @@ public class MailMan {
 					throws AuthenticationFailedException, MessagingException {
 		boolean bRet = true;
 		if( aFiles == null || aFiles.size() <= 0 ) {
-			logger.warn("No Files to Send");
+			logger.error("No Files to Send");
 			return false;
 		}
 		Properties props = setupProperties();

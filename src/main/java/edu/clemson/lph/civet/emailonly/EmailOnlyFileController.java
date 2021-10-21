@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.jpedal.PdfDecoder;
 
 import com.itextpdf.text.DocumentException;
@@ -17,7 +17,7 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.dialogs.MessageDialog;
 
 class EmailOnlyFileController {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	
 	private EmailOnlyDialog dlg;
 	/** Data defining PDF and Index state **/

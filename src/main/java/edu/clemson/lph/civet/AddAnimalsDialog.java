@@ -48,13 +48,13 @@ import edu.clemson.lph.utils.IDTypeGuesser;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 @SuppressWarnings("serial")
 public class AddAnimalsDialog extends JDialog {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private final JPanel contentPanel = new JPanel();
 	private JTextField jtfNewId;
 	private DBNumericField jtfAddNum;

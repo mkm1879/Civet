@@ -22,14 +22,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
 class CSVNineDashThreeDataFile {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private ArrayList<HashMap<String,String>> aaValues = null;
 	private int iCurrentRow;
 	private int iNumRows;

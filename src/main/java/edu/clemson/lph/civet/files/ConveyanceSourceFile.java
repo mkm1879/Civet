@@ -32,8 +32,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.PropertyConfigurator;
+
+
 
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfReader;
@@ -49,11 +49,6 @@ import edu.clemson.lph.utils.Validator;
  * 
  */
 public class ConveyanceSourceFile extends SourceFile {
-	static {
-		// BasicConfigurator replaced with PropertyConfigurator.
-	     PropertyConfigurator.configure("CivetConfig.txt");
-	     logger.setLevel(Level.INFO);
-	}
 	
 	public ConveyanceSourceFile( File fFile ) throws SourceFileException {
 		super(fFile);

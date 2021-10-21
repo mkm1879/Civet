@@ -20,7 +20,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 
 import java.awt.*;
 import javax.swing.*;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import edu.clemson.lph.db.*;
 import java.awt.event.*;
 import edu.clemson.lph.civet.Civet;
@@ -37,7 +37,7 @@ import edu.clemson.lph.controls.*;
 
 @SuppressWarnings("serial")
 public class DBSearchDialog extends JDialog implements SearchDialog<Integer> {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private int deltaX = 0;
 	private int deltaY = 0;
 	private String sSearchQuery;

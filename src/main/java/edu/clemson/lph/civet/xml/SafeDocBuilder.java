@@ -17,14 +17,14 @@ package edu.clemson.lph.civet.xml;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import edu.clemson.lph.civet.Civet;
 
 /**
  * 
  */
 public class SafeDocBuilder {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private static DocumentBuilderFactory factory = null;
 	
 	public static DocumentBuilder getSafeDocBuilder() {

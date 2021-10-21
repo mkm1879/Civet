@@ -26,7 +26,7 @@ import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.*;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.mailman.*;
 import edu.clemson.lph.pdfgen.PDFOpener;
@@ -39,7 +39,7 @@ import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.dialogs.*;
 
 public class SendOutboundCVIEmailThread extends Thread {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private static String sOutBoundCVIMessage = null;
 	private ProgressDialog prog;
 	private CivetInbox parent;

@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetInbox;
@@ -21,7 +21,7 @@ import edu.clemson.lph.ems.EMSPutter;
 import edu.clemson.lph.utils.FileUtils;
 
 public class EMSSubscribeThread extends Thread implements ThreadCancelListener {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private ProgressDialog prog;
 	private String sProgTitle = "Civet: Retrieving VSPS CVIs";
 	private String sProgPrompt = "Certificate #: ";

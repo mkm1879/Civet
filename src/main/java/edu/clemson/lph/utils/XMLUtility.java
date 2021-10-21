@@ -35,7 +35,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -48,7 +48,7 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.xml.SafeDocBuilder;
 
 public class XMLUtility {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private static final String sXmlDateFmt = "yyyy-MM-dd";
 
 	public static Document stringToDom( String sXML ) throws ParserConfigurationException, SAXException, IOException	{

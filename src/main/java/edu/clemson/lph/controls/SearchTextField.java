@@ -29,7 +29,7 @@ import java.awt.*;
 
 @SuppressWarnings("serial")
 public class SearchTextField extends JTextField {
-//	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+//      private static Logger logger = Logger.getLogger();
 	private ArrayList<SearchTextFieldListener> lListeners = null;
 	private boolean bInSearch = false;
 //	private boolean bChanged = false;

@@ -30,14 +30,14 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import org.apache.log4j.*;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 
 
 @SuppressWarnings("serial")
 public class YesNoDialog extends JDialog {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private String sQuestion;
 	private JTextArea jlQuestion = new JTextArea();
 	private JPanel panel1 = new JPanel();

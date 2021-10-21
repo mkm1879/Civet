@@ -25,14 +25,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
 
 public class VspsCvi {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private LabeledCSVParser parser = null;
 	private List<String> aCols;
 	private List<VspsCviAnimal> lAnimals;

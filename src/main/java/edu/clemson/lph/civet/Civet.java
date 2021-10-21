@@ -42,16 +42,12 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.utils.StdErrLog;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import edu.clemson.lph.logging.Logger;
 
 public class Civet {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+       private static Logger logger = Logger.getLogger();
 	static {
-		// BasicConfigurator replaced with PropertyConfigurator.
-	     PropertyConfigurator.configure("CivetConfig.txt");
-	     logger.setLevel(Level.INFO);
+	     logger.setLevel("Info");
 	}
 	
 	private static ProgressDialog prog;
@@ -60,13 +56,10 @@ public class Civet {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		// BasicConfigurator replaced with PropertyConfigurator.
-		PropertyConfigurator.configure("CivetConfig.txt");
-		// Fail now so config file and required files can be fixed before work is done.
 		CivetConfig.checkAllConfig();
 		logger.setLevel(CivetConfig.getLogLevel());
-		CivetInbox.VERSION = readVersion();
-		logger.info("Civet running build: " + CivetInbox.VERSION);
+		logger.setEnvironment(CivetConfig.getHERDSWebServiceURL(), CivetConfig.getHERDSUserName(), CivetConfig.getVersion(), CivetConfig.isJPedalXFA());
+		logger.info("Civet running build: " + CivetConfig.getVersion());
 		if( args.length >= 2 ) {
 			CivetConfig.setHERDSUserName( args[0] );
 			CivetConfig.setHERDSPassword( args[1] );
@@ -130,35 +123,6 @@ public class Civet {
 		});
 	}
 
-	/**
-	 * Read the version from a one line text file in Resources.
-	 * 
-	 *  I keep forgetting how this trick works.  See https://community.oracle.com/blogs/pat/2004/10/23/stupid-scanner-tricks
-	 	Finally now with Java 1.5's Scanner I have a true one-liner: 
-    	String text = new Scanner( source ).useDelimiter("\\A").next();
-		One line, one class. The only tricky is to remember the regex \A, which matches the beginning of input. 
-		This effectively tells Scanner to tokenize the entire stream, from beginning to (illogical) next beginning. 
-		As a bonus, Scanner can work not only with an InputStream as the source, but also a File, Channel, or 
-		anything that implements the new java.lang.Readable interface. For example, to read a file: 
-    	String text = new Scanner( new File("poem.txt") ).useDelimiter("\\A").next();
-	 * @return String with version number for display.
-	 */
-	private static String readVersion() {
-		String sRet = null;
-		try {
-			InputStream iVersion = Civet.class.getResourceAsStream("res/Version.txt");
-			try ( @SuppressWarnings("resource")
-			Scanner s = new Scanner(iVersion).useDelimiter("\\A") ) {
-				sRet = s.hasNext() ? s.next() : "";
-				s.close();
-				iVersion.close();
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error(e);
-		} 
-		return sRet;
-	}
 	
 	/**
 	 * Hide constructor.  This class is ONLY a static main for configuration and startup.

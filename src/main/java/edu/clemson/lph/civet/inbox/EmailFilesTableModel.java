@@ -22,14 +22,14 @@ import java.io.FileFilter;
 
 import javax.swing.table.TableRowSorter;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 
 @SuppressWarnings("serial")
 public class EmailFilesTableModel extends FilesTableModel {
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 
 	public EmailFilesTableModel(File fDirectory) {
 		super(fDirectory, new FileFilter() {

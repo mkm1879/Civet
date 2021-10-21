@@ -22,9 +22,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import edu.clemson.lph.logging.Logger;
 import org.jpedal.PdfDecoder;
 import org.jpedal.objects.PdfPageData;
 
@@ -39,12 +37,7 @@ import edu.clemson.lph.utils.FileUtils;
 
 @SuppressWarnings("serial")
 public class EmailOnlyDialog extends JDialog {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	static {
-		// BasicConfigurator replaced with PropertyConfigurator.
-	     PropertyConfigurator.configure("CivetConfig.txt");
-	     logger.setLevel(Level.INFO);
-	}
+      private static Logger logger = Logger.getLogger();
 
 	private final JPanel contentPanel = new JPanel();
 		@SuppressWarnings("unused")
@@ -59,21 +52,6 @@ public class EmailOnlyDialog extends JDialog {
 		JPanel pView;
 		DBComboBox cbState;
 		private JButton bSaveNext;
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		CivetConfig.checkAllConfig();
-		logger.setLevel(CivetConfig.getLogLevel());
-		try {
-			EmailOnlyDialog dialog = new EmailOnlyDialog((CivetInbox)null);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.selectFiles();
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Create the dialog.

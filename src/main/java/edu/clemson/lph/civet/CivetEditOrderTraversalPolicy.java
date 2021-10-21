@@ -35,7 +35,7 @@ import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.controls.DBComboBox;
 
@@ -48,7 +48,7 @@ import edu.clemson.lph.controls.DBComboBox;
  */
 @SuppressWarnings("serial")
 class CivetEditOrderTraversalPolicy extends ContainerOrderFocusTraversalPolicy {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private static final int PRIMARY_MAP = 1;
 	private static final int ALTERNATE_MAP = 2;
 	private static final String PRIMARY_FILE = "CivetTabOrderMap.txt";

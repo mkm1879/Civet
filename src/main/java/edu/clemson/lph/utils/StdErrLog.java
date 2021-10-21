@@ -19,10 +19,10 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.io.PrintStream;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 public class StdErrLog {
-	    private static final Logger logger = Logger.getLogger(edu.clemson.lph.civet.Civet.class.getName());
+	    private static final Logger logger = Logger.getLogger();
 
 	    public static void tieSystemErrToLog() {
 	        System.setErr(createLoggingProxy(System.err));

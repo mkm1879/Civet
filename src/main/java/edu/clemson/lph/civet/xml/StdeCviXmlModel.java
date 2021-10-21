@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -48,7 +48,7 @@ import edu.clemson.lph.utils.XMLUtility;
 
 // TODO Refactor rename to StdXmlDataModel
 public class StdeCviXmlModel {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	public static final String sDateFormat = "yyyy-MM-dd";
 	private static final String allElements = "Veterinarian,MovementPurposes,Origin,Destination,Consignor,Consignee," +
 	                                   "Carrier,TransportMode,Accessions,Animal,GroupLot,Statements,Attachment," +

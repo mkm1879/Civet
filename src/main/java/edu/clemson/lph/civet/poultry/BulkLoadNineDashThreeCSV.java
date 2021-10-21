@@ -51,10 +51,10 @@ import java.sql.SQLException;
 
 import javax.swing.*;
 
-import org.apache.log4j.*;
+import edu.clemson.lph.logging.Logger;
 
 public class BulkLoadNineDashThreeCSV implements ThreadListener {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private String sCVINbrSource = CviMetaDataXml.CVI_SRC_9dash3;
 	private static final String sProgMsg = "Loading 9-3: ";
 	private static final OpenOption[] CREATE_OR_APPEND = new OpenOption[] { StandardOpenOption.APPEND, StandardOpenOption.CREATE };
@@ -145,7 +145,7 @@ public class BulkLoadNineDashThreeCSV implements ThreadListener {
 						}
 						prog.setMessage(sProgMsg + data.getCVINumber() );
 						String sCertificateNbr = data.getCVINumber().replaceAll("-", "");
-						if( CivetInbox.VERSION.endsWith("local") ) {
+						if( CivetConfig.getVersion().endsWith("local") ) {
 							if( cviExists( sCertificateNbr, data.getConsignorState() )) {
 								try {
 									String sLineOut = sCertificateNbr + " from " + data.getConsignorState() + " already exists\r\n";

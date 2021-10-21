@@ -15,7 +15,7 @@
 package edu.clemson.lph.civet.files;
 
 import java.io.File;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import com.itextpdf.text.pdf.PdfReader;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
@@ -25,7 +25,7 @@ import edu.clemson.lph.utils.FileUtils;
  * Common functionality of all source file types including ID of type.
  */
 public abstract class SourceFile {
-	protected static final Logger logger = Logger.getLogger(Civet.class.getName());
+	protected static Logger logger = Logger.getLogger();
 	public static enum Types {
 		PDF,
 		Image,

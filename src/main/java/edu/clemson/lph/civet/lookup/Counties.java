@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
 public class Counties  {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+       private static Logger logger = Logger.getLogger();
 	private static HashMap<String, ArrayList<String>> counties = null;
 	private static HashMap<StatePlusAlias, String> aliasMap = null;
 	private ArrayList<String> rows = null;

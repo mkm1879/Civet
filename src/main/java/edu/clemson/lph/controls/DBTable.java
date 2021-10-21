@@ -22,7 +22,7 @@ import javax.swing.table.*;
 
 import java.awt.*;
 
-import org.apache.log4j.*;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.db.DBTableModel;
@@ -33,7 +33,7 @@ import edu.clemson.lph.db.ThreadListener;
 
 @SuppressWarnings("serial")
 public class DBTable extends JTable implements ThreadListener {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private Thread refreshThread = null;
 	private DBTableModel model;
 	

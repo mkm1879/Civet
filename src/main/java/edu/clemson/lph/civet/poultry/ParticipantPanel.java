@@ -2,7 +2,7 @@ package edu.clemson.lph.civet.poultry;
 
 import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.lookup.Counties;
@@ -44,7 +44,7 @@ import javax.swing.JComboBox;
 
 @SuppressWarnings("serial")
 class ParticipantPanel extends JPanel {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}

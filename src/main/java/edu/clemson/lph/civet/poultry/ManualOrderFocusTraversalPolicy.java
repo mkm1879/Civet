@@ -7,13 +7,13 @@ import java.util.ArrayList;
 
 import javax.swing.JComboBox;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 
 @SuppressWarnings("serial")
 class ManualOrderFocusTraversalPolicy extends ContainerOrderFocusTraversalPolicy {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private ArrayList<Component> aComponents = new ArrayList<Component>();
 
 	public ManualOrderFocusTraversalPolicy() {

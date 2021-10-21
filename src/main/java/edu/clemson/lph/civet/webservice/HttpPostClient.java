@@ -32,7 +32,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 
@@ -44,7 +44,7 @@ import org.apache.http.message.BasicNameValuePair;
  */
 class HttpPostClient {
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private int status;
 	private String sBody;
 	private String sError;
@@ -101,6 +101,9 @@ class HttpPostClient {
             	bRet = false;
             	sError = "Unexpected response status: " + status + "\n" + sBody;
             }
+        } catch( NoSuchFieldError ex ) {
+        	sError = ex.getMessage();
+        	bRet = false;
         } catch( ClientProtocolException ex ) {
         	sError = ex.getMessage();
         	bRet = false;

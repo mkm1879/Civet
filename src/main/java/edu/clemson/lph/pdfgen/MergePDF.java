@@ -25,7 +25,7 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
@@ -34,7 +34,7 @@ import edu.clemson.lph.civet.Civet;
 
 
 public class MergePDF {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 
 	public static void testMerge() {
 		File fDir = new File( "." );

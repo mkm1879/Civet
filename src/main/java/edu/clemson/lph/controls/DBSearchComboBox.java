@@ -26,12 +26,12 @@ import edu.clemson.lph.db.*;
 import edu.clemson.lph.dialogs.DBSearchDialog;
 import edu.clemson.lph.dialogs.SearchDialog;
 
-import org.apache.log4j.*;
+import edu.clemson.lph.logging.Logger;
 
 
 @SuppressWarnings("serial")
 public class DBSearchComboBox extends DBComboBox {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private String sSearchQuery;
 	private String sSearchTitle = "Search";
 	private SearchDialog<Integer> dSearchDialog = null;
