@@ -58,7 +58,6 @@ public class Civet {
 	public static void main(String[] args) {
 		CivetConfig.checkAllConfig();
 		logger.setLevel(CivetConfig.getLogLevel());
-		logger.setEnvironment(CivetConfig.getHERDSWebServiceURL(), CivetConfig.getHERDSUserName(), CivetConfig.getVersion(), CivetConfig.isJPedalXFA());
 		logger.info("Civet running build: " + CivetConfig.getVersion());
 		if( args.length >= 2 ) {
 			CivetConfig.setHERDSUserName( args[0] );
