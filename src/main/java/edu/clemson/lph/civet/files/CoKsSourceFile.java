@@ -31,8 +31,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.PropertyConfigurator;
+
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -54,11 +54,6 @@ import edu.clemson.lph.utils.Validator;
  * 
  */
 public class CoKsSourceFile extends SourceFile {
-	static {
-		// BasicConfigurator replaced with PropertyConfigurator.
-	     PropertyConfigurator.configure("CivetConfig.txt");
-	     logger.setLevel(Level.INFO);
-	}
 	
 	public CoKsSourceFile( File fFile ) throws SourceFileException {
 		super(fFile);

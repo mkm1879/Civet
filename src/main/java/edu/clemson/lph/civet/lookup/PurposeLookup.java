@@ -20,7 +20,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.db.DBComboBoxModel;
@@ -29,7 +29,7 @@ import edu.clemson.lph.utils.StringUtils;
 @SuppressWarnings("serial")
 public class PurposeLookup extends DBComboBoxModel {
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private static final ArrayList<String> aStdCodes = 
 	new ArrayList<String>(Arrays.asList("Racing","Sale","Grazing","Training","Slaughter","Medical Treatment",
 									"Exhibition/Show/Rodeo","Breeding","Competition","Feeding to condition",

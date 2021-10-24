@@ -19,7 +19,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.civet.xml.elements.Animal;
 import edu.clemson.lph.civet.xml.elements.AnimalTag;
@@ -30,7 +30,7 @@ import edu.clemson.lph.utils.IDTypeGuesser;
 @SuppressWarnings("serial")
 public class AnimalIDListTableModel extends AbstractTableModel {
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private StdeCviXmlModel xmlModel;
 	private ArrayList<Animal> deletedAnimals;  // Stored as native data compatible with XML
 	private ArrayList<AnimalIDRecord> rows;  // Stored in table model friendly format.

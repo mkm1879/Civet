@@ -24,13 +24,13 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 
 @SuppressWarnings("serial")
 public abstract class FilesTableModel extends AbstractTableModel {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	protected boolean bMulti = true;
 	protected File fDir;
 	protected FileFilter fileFilter = null;

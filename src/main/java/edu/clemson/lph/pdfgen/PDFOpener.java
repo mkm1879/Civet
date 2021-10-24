@@ -22,14 +22,14 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import java.awt.Window;
 import java.io.*;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfCopy;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 
 public class PDFOpener {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	
 	/**
 	 * Note: Originally intended to open viewer as child window but that failed.

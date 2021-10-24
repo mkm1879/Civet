@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.zip.DataFormatException;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -34,7 +34,7 @@ import edu.clemson.lph.civet.webservice.WebServiceException;
 import edu.clemson.lph.utils.CSVWriter;
 
 public class LookupFilesGenerator {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private static boolean bNewThisSession = false;
 
 	public LookupFilesGenerator() {

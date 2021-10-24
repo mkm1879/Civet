@@ -1,6 +1,6 @@
 package edu.clemson.lph.civet.files;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetEditDialogController;
@@ -10,7 +10,7 @@ import edu.clemson.lph.civet.threads.SaveCVIModelThread;
  * this is a queue of exactly one item
  */
 public class OpenFileSaveQueue {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private byte[] xmlBytesIn = null;
 	private CivetEditDialogController controller;
 	private int iThreads = 0;

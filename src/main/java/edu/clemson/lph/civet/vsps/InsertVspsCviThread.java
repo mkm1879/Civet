@@ -26,7 +26,7 @@ import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.w3c.dom.Element;
 
 import edu.clemson.lph.civet.Civet;
@@ -49,7 +49,7 @@ import edu.clemson.lph.dialogs.ThreadCancelListener;
 import edu.clemson.lph.utils.FileUtils;
 
 class InsertVspsCviThread extends Thread implements ThreadCancelListener {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private Window parent;
 	private VspsCviFile cviFile;
 	private ProgressDialog prog;

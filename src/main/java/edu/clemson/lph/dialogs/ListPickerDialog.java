@@ -29,8 +29,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import edu.clemson.lph.logging.Logger;
+
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.controls.DBTable;
@@ -40,18 +40,12 @@ import edu.clemson.lph.db.ThreadListener;
 
 @SuppressWarnings("serial")
 class ListPickerDialog extends JDialog {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private int iKey = -1;
 	private DatabaseConnectionFactory factory = null;
 	private boolean bHideCode = true;
 	private boolean bLink = false;
 	
-	
-	static {
-		// BasicConfigurator replaced with PropertyConfigurator.
-		PropertyConfigurator.configure("CivetConfig.txt");
-	}
-
 	private JPanel jpMain = new JPanel();
 	private BorderLayout borderLayout1 = new BorderLayout();
 	private JPanel jpClient = new JPanel();

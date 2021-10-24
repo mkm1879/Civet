@@ -19,7 +19,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -44,7 +44,7 @@ import edu.clemson.lph.utils.XMLUtility;
  *
  */
 public class UsaHerdsWebServiceLookup {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	static {
 	     logger.setLevel(CivetConfig.getLogLevel());
 	}

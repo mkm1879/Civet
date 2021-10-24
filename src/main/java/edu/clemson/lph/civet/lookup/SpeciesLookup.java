@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -39,7 +39,7 @@ import edu.clemson.lph.utils.StringComparator;
  */
 @SuppressWarnings("serial")
 public class SpeciesLookup extends DBComboBoxModel implements DBTableSource {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private static HashMap<String, Spp> code2Spp;
 	private static HashMap<String, Spp> name2Spp;
 	private static SpeciesLookup me = null;

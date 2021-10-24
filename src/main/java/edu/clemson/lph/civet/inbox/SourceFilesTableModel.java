@@ -24,14 +24,14 @@ import java.util.ArrayList;
 import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 
 @SuppressWarnings("serial")
 public class SourceFilesTableModel extends FilesTableModel {
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 
 	public SourceFilesTableModel(File fDirectory) {
 		super(fDirectory, new FileFilter() {

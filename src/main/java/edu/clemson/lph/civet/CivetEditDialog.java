@@ -47,7 +47,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.files.SourceFileException;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -74,7 +74,7 @@ import java.awt.Insets;
  */
 @SuppressWarnings("serial")
 public final class CivetEditDialog extends JFrame {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private Window parent;
 	private CivetEditDialog dialogParent;
 	public static final int PDF_MODE = 0;

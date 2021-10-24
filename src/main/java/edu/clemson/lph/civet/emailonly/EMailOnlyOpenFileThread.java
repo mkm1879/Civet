@@ -7,7 +7,7 @@ import java.io.File;
 
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
 
@@ -23,7 +23,7 @@ import edu.clemson.lph.utils.FileUtils;
  *
  */
 class EMailOnlyOpenFileThread extends Thread {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private ProgressDialog prog;
 	private EmailOnlyDialog dlg;
 	private PdfDecoder pdfDecoder;

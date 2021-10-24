@@ -13,7 +13,7 @@ import javax.mail.MessagingException;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.poultry.BulkLoadNineDashThreeCSV;
 import edu.clemson.lph.civet.poultry.NineDashThreeDialog;
@@ -38,7 +38,7 @@ import edu.clemson.lph.mailman.MailMan;
 import edu.clemson.lph.utils.Validator;
 
 public class CivetInboxController {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private CivetInbox inbox = null;
 	private static CivetInboxController singleInstance;
 
@@ -130,7 +130,7 @@ public class CivetInboxController {
 		inbox.menuItemAbout.addActionListener( new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				String sMsg = "Civet: CVI Management Utility\nVersion: " + CivetInbox.VERSION;
+				String sMsg = "Civet: CVI Management Utility\nVersion: " + CivetConfig.getVersion();
 				MessageDialog.showMessage(inbox, "About Civet", sMsg);
 			}
 		});

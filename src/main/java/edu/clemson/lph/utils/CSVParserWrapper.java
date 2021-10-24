@@ -32,7 +32,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 
@@ -43,7 +43,7 @@ import edu.clemson.lph.civet.Civet;
  *
  */
 public class CSVParserWrapper {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private char cSepChar = ',';
 	private char cQuoteChar = '"';
 	

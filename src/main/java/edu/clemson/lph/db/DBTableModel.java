@@ -26,14 +26,14 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.table.*;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.dialogs.MessageDialog;
 
 @SuppressWarnings("serial")
 public class DBTableModel extends AbstractTableModel implements ThreadListener {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private String sQuery = null;
 	private DBTableSource dbTableSource = null;
 	private ArrayList<ThreadListener> listeners = new ArrayList<ThreadListener>();

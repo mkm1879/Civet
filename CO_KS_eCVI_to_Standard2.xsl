@@ -584,9 +584,12 @@
                             </xsl:attribute>
                             <xsl:attribute name="AccessionNumber">
                                 <xsl:choose>
-                                    <xsl:when test="./other and ./other != ''">
-                                        <xsl:value-of select="./other"/>
+                                    <xsl:when test="./accession and ./accession != '' and string-length(./accession) &lt; 20">
+                                        <xsl:value-of select="./accession"/>
                                     </xsl:when>
+                                   <xsl:when test="./other and ./other != '' and string-length(./other) &lt; 20">
+                                        <xsl:value-of select="./other"/>
+                                    </xsl:when> 
                                     <xsl:otherwise>Not provided</xsl:otherwise>
                                 </xsl:choose>
                             </xsl:attribute>

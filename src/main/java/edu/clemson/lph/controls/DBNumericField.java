@@ -24,7 +24,7 @@ import java.awt.event.*;
 
 import javax.swing.JDialog;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.dialogs.MessageDialog;
@@ -32,7 +32,7 @@ import edu.clemson.lph.dialogs.MessageDialog;
 
 @SuppressWarnings("serial")
 public class DBNumericField extends JTextField{
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private int iType = java.sql.Types.INTEGER;  // Someday handle other types
 	private long lMin = Long.MIN_VALUE;
 	private long lMax = Long.MAX_VALUE;

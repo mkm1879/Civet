@@ -20,7 +20,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.io.*;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
@@ -28,7 +28,7 @@ import com.itextpdf.text.pdf.*;
 import edu.clemson.lph.civet.Civet;
 
 public class PDFGen implements CodeSource{
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private static final Font.FontFamily fTimes = Font.FontFamily.TIMES_ROMAN;
 	private static final Font fBold = new Font(fTimes, 12, Font.BOLD);
 	private static final Font fNormal = new Font(fTimes, 12, Font.NORMAL);

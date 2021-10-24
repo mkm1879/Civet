@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -34,7 +34,7 @@ import edu.clemson.lph.utils.LabeledCSVParser;
 import edu.clemson.lph.utils.StringComparator;
 
 public class StateVetLookup implements DBTableSource {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private static HashMap<String, StateVet> vetStateMap = null;
 	private static HashMap<String, String> stateStateCodeMap = null;
 	private static ArrayList<String> lSearchColumns = null;

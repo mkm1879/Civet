@@ -21,18 +21,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import javax.swing.SwingUtilities;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.webservice.UsaHerdsWebServiceAuthentication;
@@ -40,9 +39,10 @@ import edu.clemson.lph.civet.webservice.WebServiceException;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.TwoLineQuestionDialog;
 import edu.clemson.lph.mailman.MailMan;
+import edu.clemson.lph.logging.Logger;
 
 public class CivetConfig {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+    private static Logger logger = Logger.getLogger();
 	// initialized in Civet.main via checkAllConfig
 	private static Properties props = null;
 	private static final int UNK = -1;
@@ -107,6 +107,37 @@ public class CivetConfig {
 		}
 		return bStandAlone;
 	}	
+	
+	/**
+	 * Read the version from a one line text file in Resources.
+	 * 
+	 *  I keep forgetting how this trick works.  See https://community.oracle.com/blogs/pat/2004/10/23/stupid-scanner-tricks
+	 	Finally now with Java 1.5's Scanner I have a true one-liner: 
+    	String text = new Scanner( source ).useDelimiter("\\A").next();
+		One line, one class. The only tricky is to remember the regex \A, which matches the beginning of input. 
+		This effectively tells Scanner to tokenize the entire stream, from beginning to (illogical) next beginning. 
+		As a bonus, Scanner can work not only with an InputStream as the source, but also a File, Channel, or 
+		anything that implements the new java.lang.Readable interface. For example, to read a file: 
+    	String text = new Scanner( new File("poem.txt") ).useDelimiter("\\A").next();
+	 * @return String with version number for display.
+	 */
+	public static String getVersion() {
+		String sRet = null;
+		try {
+			InputStream iVersion = Civet.class.getResourceAsStream("res/Version.txt");
+			try ( @SuppressWarnings("resource")
+			Scanner s = new Scanner(iVersion).useDelimiter("\\A") ) {
+				sRet = s.hasNext() ? s.next() : "";
+				s.close();
+				iVersion.close();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error(e);
+		} 
+		return sRet;
+	}
+
 	
 	public synchronized static boolean isSmallScreen() {
 		if( bSmall == null ) {
@@ -229,12 +260,12 @@ public class CivetConfig {
 		bStandAlone = standAlone;
 	}
 	
-	public synchronized static Level getLogLevel() {
-		Level lRet = Level.ERROR;
+	public synchronized static String getLogLevel() {
 		String sVal = props.getProperty("logLevel");
-		if( sVal != null && sVal.equalsIgnoreCase("info") )
-			lRet = Level.INFO;
-		return lRet;
+		if( sVal != null && (sVal.equalsIgnoreCase("info") || sVal.equalsIgnoreCase("error")  || sVal.equalsIgnoreCase("warn") ) )
+			return sVal;
+		else
+			return "Error";
 	}
 	
 	public synchronized static String getDefaultDirection() {
@@ -559,6 +590,8 @@ public class CivetConfig {
 				sUser = dlg.getAnswerOne();
 				sPass = dlg.getAnswerTwo();
 				dlg.dispose();
+				CivetConfig.setHERDSUserName(sUser);
+				CivetConfig.setHERDSPassword(sPass);
 			}
 		} catch (Exception e) {
 			logger.error("Error running main program in event thread", e);
@@ -1004,7 +1037,6 @@ public class CivetConfig {
 		else {
 			bRet = ( iJPedalType == XFA );
 		}
-		logger.info("JPedal detected: " + bRet);
 		return bRet;
 	}
 	

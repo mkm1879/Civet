@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -37,7 +37,7 @@ import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.utils.XMLUtility;
 
 public class CviMetaDataXml {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	public static final String CVI_SRC_CIVET = "Civet";
 	public static final String CVI_SRC_VSPS = "VSPS";
 	public static final String CVI_SRC_SWINE = "SWINE_SS";

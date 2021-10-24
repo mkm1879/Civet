@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.zip.DataFormatException;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+
+import edu.clemson.lph.logging.Logger;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -55,12 +55,7 @@ import edu.clemson.lph.utils.XMLUtility;
  *
  */
 public class UsaHerdsLookupVets {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
-	static {
-		// BasicConfigurator replaced with PropertyConfigurator.
-	     PropertyConfigurator.configure("CivetConfig.txt");
-	     logger.setLevel(Level.ERROR);
-	}
+      private static Logger logger = Logger.getLogger();
 	// Choice of type for full list.
 	public final static int NVAP_LEVEL2 = 2; 
 	public final static int NVAP_ANY = 1; 

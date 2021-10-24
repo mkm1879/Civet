@@ -22,7 +22,7 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
@@ -35,7 +35,7 @@ import com.itextpdf.text.pdf.XfaForm;
 import edu.clemson.lph.civet.Civet;
 
 public class PDFUtils {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 
 	public PDFUtils() {
 		// TODO Auto-generated constructor stub

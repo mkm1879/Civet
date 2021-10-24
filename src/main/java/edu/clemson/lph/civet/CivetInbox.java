@@ -35,7 +35,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.dialogs.*;
 import edu.clemson.lph.civet.inbox.DateCellRenderer;
@@ -45,10 +45,9 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
 
 @SuppressWarnings("serial")
 public class CivetInbox extends JFrame {
-	public static String VERSION = "Not Set";
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+//	public static String VERSION = "Not Set";
+      private static Logger logger = Logger.getLogger();
 	static {
-	     logger.setLevel(CivetConfig.getLogLevel());
 	}
 	private JPanel contentPane;
 	private JMenuBar menuBar1 = new JMenuBar();
@@ -89,7 +88,6 @@ public class CivetInbox extends JFrame {
 	JMenuItem menuItemSendOutboundCVIs;
 	JMenuItem menuItemSendInboundErrors;
 	private JMenu menuExperimental = new JMenu();
-	private JMenu menuAddOns = new JMenu();
 	JMenuItem menuItemVSPS = new JMenuItem();
 	JMenuItem menuItemVSPSEMS = new JMenuItem();
 	JMenuItem menuItemBulk9Dash3 = new JMenuItem();
@@ -104,6 +102,7 @@ public class CivetInbox extends JFrame {
 	// for design time only remove before distribution
 	public CivetInbox() {
 		try {
+		    logger.setLevel(CivetConfig.getLogLevel());
 			initGui();
 			inboxController = new CivetInboxController( this );
 			if( !LookupFilesGenerator.isNewThisSession() ) {
@@ -119,6 +118,7 @@ public class CivetInbox extends JFrame {
 	 * Create the frame.
 	 */
 	private void initGui() {
+		logger.info("Starting CivetInBox");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		appIcon = new ImageIcon(getClass().getResource("res/civet32.png"));
 		this.setIconImage(appIcon.getImage());
@@ -226,18 +226,6 @@ public class CivetInbox extends JFrame {
 		menuItemSubmitAllCVIs = new JMenuItem("Submit All CVIs to USAHERDS");
 		mnSend.add(menuItemSubmitAllCVIs);
 
-		// Only include add ons in local version
-		// This is a kluge until I figure out how to package add ons differently for local use
-		// in a better build cycle.
-		if( VERSION.toLowerCase().trim().endsWith("local") ) {
-			menuAddOns = new JMenu( "Add Ons");
-			menuBar1.add(menuAddOns);
-			// Once we set it up right, the package edu.clemson.lph.civet.addons will
-			// be in a separate Jar file.  It will be empty by default and populated with 
-			// Clemson DB stuff for us.
-			AddOnLoader.populateMenu(this, menuAddOns);
-		}
-		
 		menuExperimental.setText("Experimental");
 		menuItemVSPS.setText("Import VSPS eCVI CSV File");
 		menuExperimental.add(menuItemVSPS);

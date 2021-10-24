@@ -19,7 +19,7 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 */
 import javax.swing.*;
 
-import org.apache.log4j.*;
+import edu.clemson.lph.logging.Logger;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import edu.clemson.lph.db.*;
 
 @SuppressWarnings("serial")
 public class DBComboBox extends JComboBox<String> {
-	protected static final Logger logger = Logger.getLogger(Civet.class.getName());
+	protected static final Logger logger = Logger.getLogger();
 	protected boolean bBlankDefault = true;
 
 	protected DatabaseConnectionFactory factory = null;

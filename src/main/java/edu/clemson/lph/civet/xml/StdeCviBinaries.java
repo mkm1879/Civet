@@ -17,7 +17,7 @@ package edu.clemson.lph.civet.xml;
 import java.util.ArrayList;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.w3c.dom.Element;
 
 import edu.clemson.lph.civet.Civet;
@@ -27,7 +27,7 @@ import edu.clemson.lph.dialogs.MessageDialog;
  * Just to get the complexity of Binaries and their references isolated.
  */
 public class StdeCviBinaries {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private XMLDocHelper helper;
 	private int iSeq;  // Use for new IDs
 	private ArrayList<String> aRefs;  // List all used and new IDs

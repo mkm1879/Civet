@@ -17,7 +17,7 @@ package edu.clemson.lph.civet.files;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
@@ -32,7 +32,7 @@ import edu.clemson.lph.utils.FileUtils;
  *  perform the type-appropriate behaviors while hiding the type details (mostly).
  */
 public class OpenFile {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private SourceFile source = null;
 	private ArrayList<Integer> aPagesInCurrent = null;
 	private ArrayList<Integer> aPagesDone = null;

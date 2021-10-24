@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.swing.JTabbedPane;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.mailman.MailMan;
 
 @SuppressWarnings("serial")
 public class ConfigDialog extends JDialog {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 
 	private JTabbedPane tpTabs;
 	private ArrayList<ConfigEntryPanel> aEntries = null;

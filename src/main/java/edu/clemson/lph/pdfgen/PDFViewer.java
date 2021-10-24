@@ -1,6 +1,6 @@
 package edu.clemson.lph.pdfgen;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
 import org.jpedal.objects.PdfPageData;
@@ -15,7 +15,7 @@ import edu.clemson.lph.dialogs.QuestionDialog;
  * pdf for the current OpenFile.  Paging consists of setting at least setPage() and calling updatePdfDisplay().
  */
 public class PDFViewer {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	/** Data behind the GUI **/
 	/**the actual JPanel/decoder object*/
 	private PdfDecoder pdfDecoder;

@@ -37,7 +37,7 @@ import java.awt.GridBagConstraints;
 
 import javax.swing.JTextField;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -52,7 +52,7 @@ import edu.clemson.lph.dialogs.SearchDialog;
 
 @SuppressWarnings("serial")
 public class PremisesSearchDialog extends JDialog implements SearchDialog<String> {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 
 	private final JPanel contentPanel = new JPanel();
 	private int deltaX;

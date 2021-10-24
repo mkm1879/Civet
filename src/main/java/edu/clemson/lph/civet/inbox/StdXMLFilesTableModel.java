@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.swing.table.TableRowSorter;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
@@ -32,7 +32,7 @@ import edu.clemson.lph.civet.xml.elements.Veterinarian;
 
 @SuppressWarnings("serial")
 public class StdXMLFilesTableModel extends FilesTableModel {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 //	private ArrayList<StdeCviXml> aRows = new ArrayList<StdeCviXml>();
 	private ArrayList<String[]> aRows = new ArrayList<String[]>();
 	private SimpleDateFormat df = new SimpleDateFormat( "MMM d, yyyy");

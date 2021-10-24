@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
 class ConfigCsv {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private LabeledCSVParser parser;
 	private List<List<List<String>>> tabs;
 	private List<List<String>> currentTab;

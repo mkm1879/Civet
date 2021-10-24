@@ -30,8 +30,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import edu.clemson.lph.logging.Logger;
+
 
 import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -39,7 +39,7 @@ import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.LabeledCSVParser;
 
 public class VspsCviFile {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	
 	private LabeledCSVParser parser = null;
 	private List<String> aCols = null;
@@ -85,16 +85,6 @@ public class VspsCviFile {
 		}
 		InsertVspsCviThread thread = new InsertVspsCviThread( parent, this );
 		thread.start();
-	}
-	
-	public static void main( String args[] ) {
-		// BasicConfigurator replaced with PropertyConfigurator.
-		PropertyConfigurator.configure("CivetConfig.txt");
-		// Fail now so config file and required files can be fixed before work is done.
-		CivetConfig.checkAllConfig();
-		logger.setLevel(CivetConfig.getLogLevel());
-		VspsCviFile me = new VspsCviFile();
-		me.printme(fixCSV(new File("./VSPSData/TestLineBreakVSPSCVI_NOEXCEL.csv")));
 	}
 	
 	private static File fixCSV( File fIn ) {

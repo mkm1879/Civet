@@ -16,7 +16,7 @@ package edu.clemson.lph.civet.files;
 
 import java.io.File;
 import java.util.ArrayList;
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 import org.jpedal.exception.PdfException;
 
 import edu.clemson.lph.civet.Civet;
@@ -27,7 +27,7 @@ import edu.clemson.lph.civet.prefs.CivetConfig;
  * the CivetDialog.  It handles the logic around navigating between files.
  */
 public class OpenFileList {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private ArrayList<OpenFile> aOpenFiles = null;
 	private ArrayList<OpenFile> aFilesComplete = null;
 	private OpenFile oCurrent;

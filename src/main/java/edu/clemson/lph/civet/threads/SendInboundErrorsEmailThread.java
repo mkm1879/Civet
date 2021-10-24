@@ -29,7 +29,7 @@ import java.util.HashMap;
 import javax.mail.AuthenticationFailedException;
 import javax.swing.SwingUtilities;
 
-import org.apache.log4j.*;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.mailman.*;
 import edu.clemson.lph.pdfgen.CodeSource;
@@ -47,7 +47,7 @@ import edu.clemson.lph.dialogs.*;
 
 public 
 class SendInboundErrorsEmailThread extends Thread implements CodeSource {
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private ProgressDialog prog;
 	private CivetInbox parent;
 	private HashMap<String, ArrayList<File>> mStateMap;

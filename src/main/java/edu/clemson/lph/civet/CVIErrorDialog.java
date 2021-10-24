@@ -30,7 +30,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import org.apache.log4j.Logger;
+import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.lookup.ErrorTypeLookup;
 
@@ -41,7 +41,7 @@ import javax.swing.JTextField;
 @SuppressWarnings("serial")
 class CVIErrorDialog extends JDialog {
 	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(Civet.class.getName());
+      private static Logger logger = Logger.getLogger();
 	private ArrayList<String> aErrorKeys;
 	private boolean bExitOK = false;
 
