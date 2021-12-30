@@ -4,7 +4,7 @@ import javax.swing.JPanel;
 
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.lookup.Counties;
 import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.prefs.CivetConfig;

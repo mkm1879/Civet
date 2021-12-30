@@ -17,7 +17,7 @@ package edu.clemson.lph.civet.files;
 import java.io.File;
 import edu.clemson.lph.logging.Logger;
 import com.itextpdf.text.pdf.PdfReader;
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.utils.FileUtils;
 

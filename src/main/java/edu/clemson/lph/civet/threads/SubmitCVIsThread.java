@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import edu.clemson.lph.logging.Logger;
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.lookup.CertificateNbrLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;

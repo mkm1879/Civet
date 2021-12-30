@@ -504,6 +504,8 @@ public class CivetConfig {
 		if( sRet == null || sRet.trim().length() == 0 ) exitError("herdsWebServiceURL");
 		if( sRet != null && sRet.trim().length() == 0 ) 
 			sRet = null; 
+		if( sRet.endsWith("/") || sRet.endsWith("\\") )
+			sRet = sRet.substring(0, sRet.length() - 1);
 		return sRet;
 	}
 	

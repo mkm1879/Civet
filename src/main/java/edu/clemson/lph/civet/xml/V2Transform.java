@@ -16,7 +16,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.utils.FileUtils;
 
 public class V2Transform {

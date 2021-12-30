@@ -9,7 +9,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.HttpClientBuilder;
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.prefs.CivetConfig;
 
 public class EMSPutter {

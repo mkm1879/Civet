@@ -5,7 +5,7 @@ import org.jpedal.PdfDecoder;
 import org.jpedal.exception.PdfException;
 import org.jpedal.objects.PdfPageData;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.dialogs.MessageDialog;
 import edu.clemson.lph.dialogs.QuestionDialog;

@@ -26,7 +26,7 @@ import java.util.List;
 
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.xml.elements.AnimalTag;
 import edu.clemson.lph.civet.xml.elements.EquineDescription;
 import edu.clemson.lph.dialogs.MessageDialog;

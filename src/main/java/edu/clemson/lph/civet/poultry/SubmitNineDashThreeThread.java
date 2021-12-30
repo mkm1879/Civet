@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.AnimalIDRecord;
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.SpeciesRecord;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.webservice.CivetWebServices;

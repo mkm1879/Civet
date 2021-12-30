@@ -27,10 +27,6 @@ unusually details of your application to mmarti5@clemson.edu.
 */
 
 import java.awt.EventQueue;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Scanner;
-
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import java.io.PrintStream;
@@ -70,6 +66,7 @@ public class Civet {
 			logger.error(e1);
 		}
 		CivetConfig.validateHerdsCredentials();
+		logger.info("Civet running build: " + CivetConfig.getVersion());
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {

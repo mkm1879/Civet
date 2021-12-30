@@ -26,7 +26,7 @@ import javax.swing.table.TableRowSorter;
 
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.civet.xml.elements.Veterinarian;
 

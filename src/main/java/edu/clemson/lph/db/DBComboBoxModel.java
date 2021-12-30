@@ -24,7 +24,7 @@ import edu.clemson.lph.logging.Logger;
 import java.sql.*;
 import java.util.*;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.controls.*;
 import edu.clemson.lph.dialogs.MessageDialog;
 

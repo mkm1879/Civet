@@ -16,7 +16,7 @@ import java.util.Properties;
 
 import javax.swing.JTabbedPane;
 import edu.clemson.lph.logging.Logger;
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.mailman.MailMan;
 
 @SuppressWarnings("serial")

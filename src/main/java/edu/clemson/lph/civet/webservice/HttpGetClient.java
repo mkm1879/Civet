@@ -33,7 +33,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 
 /**
  * This example demonstrates the use of the {@link ResponseHandler} to simplify

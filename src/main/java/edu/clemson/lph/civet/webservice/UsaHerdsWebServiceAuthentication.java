@@ -2,7 +2,6 @@ package edu.clemson.lph.civet.webservice;
 
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.JSONParser;
 

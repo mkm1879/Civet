@@ -18,7 +18,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import edu.clemson.lph.logging.Logger;
-import edu.clemson.lph.civet.Civet;
+
 
 /**
  * 

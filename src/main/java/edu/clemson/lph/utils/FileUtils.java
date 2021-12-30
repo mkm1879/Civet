@@ -31,7 +31,7 @@ import java.util.Scanner;
 
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 
 public class FileUtils {
       private static Logger logger = Logger.getLogger();

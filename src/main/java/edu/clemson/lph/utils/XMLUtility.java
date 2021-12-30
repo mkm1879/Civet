@@ -44,7 +44,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.xml.SafeDocBuilder;
 
 public class XMLUtility {

@@ -23,7 +23,7 @@ import javax.swing.*;
 import edu.clemson.lph.logging.Logger;
 import edu.clemson.lph.db.*;
 import java.awt.event.*;
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.controls.*;
 
 /**

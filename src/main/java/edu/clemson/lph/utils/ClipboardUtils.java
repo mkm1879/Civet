@@ -5,7 +5,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.util.ArrayList;
 import java.util.List;
 import edu.clemson.lph.logging.Logger;
-import edu.clemson.lph.civet.Civet;
+
 
 public class ClipboardUtils {
       private static Logger logger = Logger.getLogger();

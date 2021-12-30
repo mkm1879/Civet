@@ -16,7 +16,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.GUnzip;

@@ -36,7 +36,7 @@ import edu.clemson.lph.pdfgen.CodeSource;
 import edu.clemson.lph.pdfgen.PDFGen;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.StringUtils;
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.lookup.ErrorTypeLookup;
 import edu.clemson.lph.civet.lookup.StateVetLookup;

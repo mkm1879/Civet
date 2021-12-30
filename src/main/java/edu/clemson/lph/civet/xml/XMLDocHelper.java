@@ -40,7 +40,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import edu.clemson.lph.civet.Civet;
+
 
 /**
  * This class wraps an XML DOM document and provides various, mostly XPath-based, 

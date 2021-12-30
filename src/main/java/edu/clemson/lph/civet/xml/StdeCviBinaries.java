@@ -20,7 +20,7 @@ import org.apache.commons.codec.binary.Base64;
 import edu.clemson.lph.logging.Logger;
 import org.w3c.dom.Element;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.dialogs.MessageDialog;
 
 /**

@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import org.w3c.dom.Document;
 import edu.clemson.lph.logging.Logger;
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.XMLUtility;
 
@@ -114,8 +114,11 @@ public class CivetWebServices {
 			}
 			dOut = XMLUtility.stringToDom(sOut);
 		} catch (RuntimeException re) {
+			logger.error("Error in Lookup " + sURL + '\n' + re.getMessage());
+			
 			throw re;
 		} catch (Exception e) {
+			logger.error("Error in Lookup " + sURL + '\n' + e.getMessage());
 			throw new WebServiceException(e);
 		}
 		return dOut;

@@ -32,7 +32,7 @@ import javax.swing.JTextArea;
 
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 
 
 @SuppressWarnings("serial")

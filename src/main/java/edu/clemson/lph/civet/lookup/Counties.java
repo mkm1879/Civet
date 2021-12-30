@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import edu.clemson.lph.logging.Logger;
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.utils.FileUtils;
 import edu.clemson.lph.utils.LabeledCSVParser;

@@ -32,7 +32,7 @@ import javax.swing.JScrollPane;
 import edu.clemson.lph.logging.Logger;
 
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.controls.DBTable;
 import edu.clemson.lph.db.DatabaseConnectionFactory;
 import edu.clemson.lph.db.ThreadListener;

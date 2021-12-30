@@ -24,7 +24,7 @@ import edu.clemson.lph.logging.Logger;
 import java.awt.*;
 import java.util.ArrayList;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.db.*;
 
 

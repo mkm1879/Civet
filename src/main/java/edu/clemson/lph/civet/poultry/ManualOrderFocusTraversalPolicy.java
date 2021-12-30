@@ -9,7 +9,7 @@ import javax.swing.JComboBox;
 
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 
 @SuppressWarnings("serial")
 class ManualOrderFocusTraversalPolicy extends ContainerOrderFocusTraversalPolicy {

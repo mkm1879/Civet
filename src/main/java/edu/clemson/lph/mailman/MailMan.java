@@ -41,7 +41,7 @@ import javax.mail.internet.MimeMultipart;
 //import javax.mail.internet.*;
 import javax.mail.util.ByteArrayDataSource;
 import edu.clemson.lph.logging.Logger;
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.prefs.CivetConfig;
 
 

@@ -25,7 +25,7 @@ import javax.swing.SwingUtilities;
 import edu.clemson.lph.logging.Logger;
 import org.jpedal.exception.PdfException;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.CivetEditDialog;
 import edu.clemson.lph.civet.CivetEditDialogController;
 import edu.clemson.lph.civet.files.OpenFileList;

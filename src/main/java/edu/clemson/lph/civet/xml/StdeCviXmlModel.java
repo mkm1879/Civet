@@ -37,7 +37,7 @@ import edu.clemson.lph.logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.elements.*;
 import edu.clemson.lph.controls.PhoneField;

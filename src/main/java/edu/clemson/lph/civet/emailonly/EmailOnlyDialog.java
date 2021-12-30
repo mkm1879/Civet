@@ -26,7 +26,6 @@ import edu.clemson.lph.logging.Logger;
 import org.jpedal.PdfDecoder;
 import org.jpedal.objects.PdfPageData;
 
-import edu.clemson.lph.civet.Civet;
 import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.lookup.States;
 import edu.clemson.lph.civet.prefs.CivetConfig;

@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.db.DBComboBoxModel;
 import edu.clemson.lph.utils.StringUtils;
 

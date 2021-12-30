@@ -31,7 +31,7 @@ import edu.clemson.lph.logging.Logger;
 import edu.clemson.lph.mailman.*;
 import edu.clemson.lph.pdfgen.PDFOpener;
 import edu.clemson.lph.utils.FileUtils;
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.CivetInbox;
 import edu.clemson.lph.civet.lookup.StateVetLookup;
 import edu.clemson.lph.civet.prefs.CivetConfig;

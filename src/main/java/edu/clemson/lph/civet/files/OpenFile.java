@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import edu.clemson.lph.logging.Logger;
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;
 import edu.clemson.lph.pdfgen.MergePDF;

@@ -26,7 +26,7 @@ import javax.swing.table.TableRowSorter;
 
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 
 @SuppressWarnings("serial")
 public class SourceFilesTableModel extends FilesTableModel {

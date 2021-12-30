@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import javax.swing.SwingUtilities;
 import edu.clemson.lph.logging.Logger;
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.files.OpenFileSaveQueue;
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.StdeCviXmlModel;

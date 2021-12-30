@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import edu.clemson.lph.logging.Logger;
 import org.jpedal.exception.PdfException;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.civet.prefs.CivetConfig;
 
 /**

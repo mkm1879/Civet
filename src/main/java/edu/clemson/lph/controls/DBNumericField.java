@@ -26,7 +26,7 @@ import javax.swing.JDialog;
 
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.dialogs.MessageDialog;
 
 

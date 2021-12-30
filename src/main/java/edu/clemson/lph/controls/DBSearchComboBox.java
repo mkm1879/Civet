@@ -21,7 +21,7 @@ import java.awt.event.*;
 import java.awt.*;
 import java.util.*;
 
-import edu.clemson.lph.civet.Civet;
+
 import edu.clemson.lph.db.*;
 import edu.clemson.lph.dialogs.DBSearchDialog;
 import edu.clemson.lph.dialogs.SearchDialog;

@@ -32,7 +32,7 @@ import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.XfaForm;
 
-import edu.clemson.lph.civet.Civet;
+
 
 public class PDFUtils {
       private static Logger logger = Logger.getLogger();

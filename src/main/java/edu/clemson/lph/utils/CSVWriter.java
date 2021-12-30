@@ -30,7 +30,7 @@ import java.util.zip.DataFormatException;
 
 import edu.clemson.lph.logging.Logger;
 
-import edu.clemson.lph.civet.Civet;
+
 
 public class CSVWriter {
 	@SuppressWarnings("unused")

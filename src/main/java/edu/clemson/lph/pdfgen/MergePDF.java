@@ -30,7 +30,7 @@ import edu.clemson.lph.logging.Logger;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 
-import edu.clemson.lph.civet.Civet;
+
 
 
 public class MergePDF {
