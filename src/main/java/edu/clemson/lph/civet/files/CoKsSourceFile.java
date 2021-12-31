@@ -219,9 +219,18 @@ public class CoKsSourceFile extends SourceFile {
 			InputSource is = new InputSource();
 			// Move namespace definition to each of the header nodes because we are losing the XFA document node later.
 			String sStrip = xmlString.replaceAll(" xfa:dataNode=\"dataGroup\"", " xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\"\nxfa:dataNode=\"dataGroup\"");
-//			sStrip = sStrip.replaceAll("&#13;", "");
+			// Brute force remove any known problem characters.  Very hard to know how they show up here from Adobe.
+			sStrip = sStrip.replaceAll("&amp;#10;", "?");
+			sStrip = sStrip.replaceAll("&amp;#13;", "?");
+			sStrip = sStrip.replaceAll("&amp;#xa;", "?");
+			sStrip = sStrip.replaceAll("&amp;#xA;", "?");
+			sStrip = sStrip.replaceAll("&amp;#xd;", "?");
+			sStrip = sStrip.replaceAll("&amp;#xD;", "?");
+			sStrip = sStrip.replaceAll("&amp;#9;", "?");
+			sStrip = sStrip.replaceAll("&gt;", "?");
+			sStrip = sStrip.replaceAll("&lt;", "?");
 //			sStrip = sStrip.replace('�', 'N');
-//			System.out.println(sStrip);
+			System.out.println(sStrip);
 			is.setCharacterStream(new StringReader(sStrip));
 			doc = db.parse(is);
 			doc.setXmlStandalone(true);

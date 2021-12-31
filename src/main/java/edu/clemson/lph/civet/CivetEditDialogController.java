@@ -1614,7 +1614,7 @@ public final class CivetEditDialogController {
 				}
 				bInSppChangeByCode = false;
 			} catch( Exception e ) {
-				logger.error("Unexpected error loading from XML standard document", e);
+				logger.error("Unexpected error loading from XML standard document\n" + e.getMessage(), e);
 			}
 		}
 	}
