@@ -32,11 +32,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import edu.clemson.lph.logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import edu.clemson.lph.civet.prefs.CivetConfig;
 import edu.clemson.lph.civet.xml.elements.*;
@@ -178,6 +183,51 @@ public class StdeCviXmlModel {
 		binaries = new StdeCviBinaries( helper );
 		binaries.setOrUpdatePDFAttachment(pdfBytes, sFileName);
 		metaData = new CviMetaDataXml();
+	}
+	
+	public void cleanupTags() {
+		ArrayList<Animal> animals = getAnimals();
+		for( Animal a : animals ) {
+			NodeList nl = a.eAnimal.getElementsByTagName("AnimalTags");
+			for( int j = 0; j < nl.getLength(); j++ ) {
+				Node nNext = nl.item(j);
+				if( nNext instanceof Element ) {
+						Element eTag = (Element)nNext;
+						try {
+							XPathFactory factory = XPathFactory.newInstance();
+							XPath xPath = factory.newXPath();
+							NodeList nodes = (NodeList)xPath.evaluate("./*", nNext, XPathConstants.NODESET);
+							if( nodes != null && nodes.getLength() > 0 ) {
+								for (int i = 0; i < nodes.getLength(); ++i) {
+									if( nodes.item(i).getNodeType() == Node.ELEMENT_NODE ) {
+										Element e = (Element)nodes.item(i);
+										String sTag = e.getAttribute("Number");
+										if( sTag != null && sTag.trim().length() > 0 ) {
+											sTag = sTag.replaceAll("\r", " ");
+											sTag = sTag.replaceAll("&#13;", " ");
+											sTag = sTag.replaceAll("&#10;", " ");
+											e.setAttribute("Number", sTag);										
+										}
+										else if(sTag != null && sTag.trim().length() == 0) {
+											e.setAttribute("Number",  "NOT PROVIDED");
+										}
+									}
+								}
+							}
+						} catch (XPathExpressionException e) {
+							logger.error("Error evaluating xpath " + "./*[Number]");
+						}
+					}
+				}
+			// Update the in memory structure as well.
+			for( AnimalTag tag : a.animalTags) {
+				String sTag = tag.value;
+				sTag = sTag.replaceAll("\r", " ");
+				sTag = sTag.replaceAll("&#13;", " ");
+				sTag = sTag.replaceAll("&#10;", " ");
+				tag.value = sTag;
+			}
+		}
 	}
 
 	/** 
