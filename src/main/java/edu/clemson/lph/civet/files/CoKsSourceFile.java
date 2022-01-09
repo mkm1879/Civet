@@ -229,7 +229,6 @@ public class CoKsSourceFile extends SourceFile {
 			sStrip = sStrip.replaceAll("&amp;#9;", "?");
 			sStrip = sStrip.replaceAll("&gt;", "?");
 			sStrip = sStrip.replaceAll("&lt;", "?");
-//			sStrip = sStrip.replace('�', 'N');
 			System.out.println(sStrip);
 			is.setCharacterStream(new StringReader(sStrip));
 			doc = db.parse(is);

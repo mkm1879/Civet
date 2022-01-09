@@ -201,15 +201,17 @@ public class StdeCviXmlModel {
 								for (int i = 0; i < nodes.getLength(); ++i) {
 									if( nodes.item(i).getNodeType() == Node.ELEMENT_NODE ) {
 										Element e = (Element)nodes.item(i);
-										String sTag = e.getAttribute("Number");
-										if( sTag != null && sTag.trim().length() > 0 ) {
-											sTag = sTag.replaceAll("\r", " ");
-											sTag = sTag.replaceAll("&#13;", " ");
-											sTag = sTag.replaceAll("&#10;", " ");
-											e.setAttribute("Number", sTag);										
-										}
-										else if(sTag != null && sTag.trim().length() == 0) {
-											e.setAttribute("Number",  "NOT PROVIDED");
+										if( e.hasAttribute("Number") ) {
+											String sTag = e.getAttribute("Number");
+											if( sTag != null && sTag.trim().length() > 0 ) {
+												sTag = sTag.replaceAll("\r", " ");
+												sTag = sTag.replaceAll("&#13;", " ");
+												sTag = sTag.replaceAll("&#10;", " ");
+												e.setAttribute("Number", sTag);										
+											}
+											else if(sTag != null && sTag.trim().length() == 0) {
+												e.setAttribute("Number",  "NOT PROVIDED");
+											}
 										}
 									}
 								}
