@@ -207,6 +207,7 @@ public class StdeCviXmlModel {
 												sTag = sTag.replaceAll("\r", " ");
 												sTag = sTag.replaceAll("&#13;", " ");
 												sTag = sTag.replaceAll("&#10;", " ");
+												sTag = sTag.replaceAll("&quot;", " ");
 												e.setAttribute("Number", sTag);										
 											}
 											else if(sTag != null && sTag.trim().length() == 0) {
@@ -227,9 +228,28 @@ public class StdeCviXmlModel {
 				sTag = sTag.replaceAll("\r", " ");
 				sTag = sTag.replaceAll("&#13;", " ");
 				sTag = sTag.replaceAll("&#10;", " ");
+				sTag = sTag.replaceAll("&quot;", " ");
 				tag.value = sTag;
 			}
 		}
+	}
+	
+	public void cleanupMiscAttributesTag() {
+			String sPath = "/eCVI/MiscAttribute";
+			NodeList nodes = helper.getNodeListByPath(sPath);
+			if( nodes != null && nodes.getLength() > 0 ) {
+				for (int i = 0; i < nodes.getLength(); ++i) {
+					if( nodes.item(i).getNodeType() == Node.ELEMENT_NODE ) {
+						Element e = (Element)nodes.item(i);
+						if( e.hasAttribute("Value") ) {
+							String sValue = e.getAttribute("Value");
+							if( sValue.trim().length() == 0 ) {
+								helper.removeElement(e);
+							}
+						}
+					}
+				}
+			}
 	}
 
 	/** 

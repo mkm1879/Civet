@@ -61,6 +61,7 @@ public class MCviSourceFile extends SourceFile {
 			byte[] xmlBytes = sStdXML.getBytes(StandardCharsets.UTF_8);
 			
 			model = new StdeCviXmlModel(xmlBytes);
+			model.cleanupMiscAttributesTag();
 			model.setOrUpdatePDFAttachment(getPDFBytes(), fSource.getName());
 		} catch (Exception e) {
 			throw new SourceFileException(e);

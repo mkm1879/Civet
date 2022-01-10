@@ -53,6 +53,7 @@ public class CivetSourceFile extends SourceFile {
 				}
 				model = new StdeCviXmlModel(xmlBytes);
 				model.cleanupTags();
+				model.cleanupMiscAttributesTag();
 				pdfBytes = model.getPDFAttachmentBytes();
 				if( pdfBytes == null ) {
 					System.err.println("No PDF in CivetFile");
