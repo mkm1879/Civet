@@ -11,6 +11,7 @@ Defaults,Y,defaultDirection,Import,Select,Import;Export,Form opens with either i
 Defaults,Y,cviValidDays,30,Num,,Days CVIs are valid in home state.  Used for error checking.,
 Defaults,N,saveCopies,TRUE,Bool,,Check to copy original (PDF) to Output folder,
 Defaults,N,smallScreen,FALSE,Bool,,"Check if normal display doesn't fit in screen. A smaller, scrollable configuration will be used.",
+Defaults,N,hiRes,FALSE,Bool,,"Check if normal display is high resolution and Civet test is too small.",
 Defaults,N,maxAnimals,100,Num,,Maximum number of animals without a warning dialog,
 Defaults,Y,rotation,0,Num,,Degrees to rotate PDF display by default.,
 Defaults,N,defaultPurpose,Other,Text,,Default value for purpose of movement drop down,

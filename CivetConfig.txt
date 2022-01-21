@@ -4,7 +4,7 @@ homeStateAbbr=SC
 homeStateKey=56
 
 #HERDS
-herdsWebServiceURL=https://LPHStage.clemson.edu/USAHerds.API
+herdsWebServiceURL=https://LPHApps.clemson.edu/USAHerds.API
 brokenLIDs=true
 stateIDChecksum=TRUE
 standAlone=no
@@ -15,6 +15,7 @@ defaultDirection=Import
 cviValidDays=30
 saveCopies=true
 smallScreen=
+hiRes=true
 maxAnimals=
 rotation=0
 defaultPurpose=Other

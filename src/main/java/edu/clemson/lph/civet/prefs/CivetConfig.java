@@ -61,6 +61,7 @@ public class CivetConfig {
 	private static String sDBUserName = null;
 	private static String sDBPassword = null;
 	private static Boolean bSmall;
+	private static Boolean bHiRes;
 	private static boolean bStateIDChecksum;
 	private static Boolean bAutoOpenPDF;
 	private static Boolean bSaveSkipped = null;
@@ -152,6 +153,21 @@ public class CivetConfig {
 			}
 		}
 		return bSmall;
+	}	
+	
+	public synchronized static boolean isHighRes() {
+		if( bHiRes == null ) {
+			String sVal = props.getProperty("hiRes");
+			if( sVal == null || sVal.trim().length() == 0 ) 
+				bHiRes = false;
+			else if( sVal.equalsIgnoreCase("true") || sVal.equalsIgnoreCase("yes")) {
+				bHiRes = true;
+			}
+			else {
+				bHiRes = false;
+			}
+		}
+		return bHiRes;
 	}	
 	
 	public synchronized static boolean isDefaultReceivedDate() {

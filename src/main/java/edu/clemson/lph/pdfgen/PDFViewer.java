@@ -27,6 +27,8 @@ public class PDFViewer {
 
 	public PDFViewer() {
 		pdfDecoder = new PdfDecoder();
+		if(CivetConfig.isHighRes() )
+			scale = 2.0f;
 	}
 	
 	/**

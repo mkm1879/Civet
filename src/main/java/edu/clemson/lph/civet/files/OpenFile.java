@@ -85,7 +85,7 @@ public class OpenFile {
 			aPagesDone = new ArrayList<Integer>();
 		} catch( Exception e ) {
 			logger.error("Failed to read file " + fFile.getName() , e );
-			throw new SourceFileException( "Failed to read file " + fFile.getName() );
+			throw new SourceFileException( "Failed to read file " + fFile.getName() + "\n" + e.getMessage() );
 		}
 		}
 		else if( fFile != null ) {

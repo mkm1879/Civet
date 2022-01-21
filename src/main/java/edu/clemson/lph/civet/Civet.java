@@ -27,6 +27,11 @@ unusually details of your application to mmarti5@clemson.edu.
 */
 
 import java.awt.EventQueue;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
+
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import java.io.PrintStream;
@@ -80,7 +85,10 @@ public class Civet {
 						UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 					}
 					else {
-						UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+						if( !CivetConfig.isHighRes() )
+							UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+						else
+							UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 					}
 				} 
 				catch (Exception e) {
