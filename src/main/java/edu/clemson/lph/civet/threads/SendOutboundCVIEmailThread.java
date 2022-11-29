@@ -22,8 +22,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.mail.AuthenticationFailedException;
-import javax.mail.MessagingException;
+import jakarta.mail.AuthenticationFailedException;
+import jakarta.mail.MessagingException;
 import javax.swing.SwingUtilities;
 
 import edu.clemson.lph.logging.Logger;
@@ -179,13 +179,13 @@ public class SendOutboundCVIEmailThread extends Thread {
 				MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
 						"Successfully sent: " + sbCVICounts.toString() );
 			}
-		} catch (javax.mail.AuthenticationFailedException eAuth) {
+		} catch (jakarta.mail.AuthenticationFailedException eAuth) {
 			MailMan.setUserID(null);
 			MailMan.setPassword(null);
 			logger.error(eAuth.getMessage() + "\nEmail Authentication Error");
 			MessageDialog.showMessage(prog.getWindowParent(), "Civet: Email Error", "Email server userID/password incorrect"
 					+ "\nEmail Host: " + CivetConfig.getSmtpHost() );
-		} catch (javax.mail.MessagingException e) {
+		} catch (jakarta.mail.MessagingException e) {
 			logger.error(e.getMessage() + "\nEmail Connection Error");
 		} catch (Exception ex) {
 			logger.error("Error Sending Email", ex );
@@ -243,7 +243,7 @@ public class SendOutboundCVIEmailThread extends Thread {
 			bRet = MailMan.sendIt(sEmail, sFileCopyAddress,
 					 "CVIs From " + sHomeState + " to " + sState + (iPart>1?" Part " + iPart:""),
 					sOutBoundCVIMessage, aFiles);
-		} catch (javax.mail.AuthenticationFailedException eAuth) {
+		} catch (jakarta.mail.AuthenticationFailedException eAuth) {
 			throw eAuth;
 		} catch (MailException me) {
 			logger.error(me.getMessage() + "\nInvalid MIMEFile Specification" );

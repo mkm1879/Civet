@@ -9,7 +9,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -36,6 +36,7 @@ import edu.clemson.lph.dialogs.ProgressDialog;
 import edu.clemson.lph.dialogs.QuestionDialog;
 import edu.clemson.lph.mailman.MailMan;
 import edu.clemson.lph.utils.Validator;
+import jakarta.mail.AuthenticationFailedException;
 
 public class CivetInboxController {
       private static Logger logger = Logger.getLogger();
@@ -432,9 +433,9 @@ public class CivetInboxController {
 		File fLog = new File( "Civet.log");
 		if( fLog.exists() ) {
 			String sMsg = QuestionDialog.ask(inbox, "Civet Send Log", "Describe your problem:");
-			if( !CivetConfig.initEmail(true) )
-				return;
 			try {
+				if( !CivetConfig.initEmail(true) )
+					return;
 				if( MailMan.sendIt("mike@mminformatics.com", null, "Civet Error Log", 
 						sMsg, fLog.getAbsolutePath()) ) {
 					MessageDialog.showMessage(inbox, "Civet Log Sent:", "You can delete the Civet.log file after you exit if you like.");
@@ -442,7 +443,7 @@ public class CivetInboxController {
 				else {
 					MessageDialog.showMessage(inbox, "Civet Error:", "Failed to send Civet.log.  Please email manually.");
 				}
-			} catch (javax.mail.AuthenticationFailedException eAuth) {
+			} catch (jakarta.mail.AuthenticationFailedException eAuth) {
 				MailMan.setUserID(null);
 				MailMan.setPassword(null);
 				logger.error(eAuth.getMessage() + "\nEmail Authentication Error");

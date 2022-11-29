@@ -20,26 +20,26 @@ along with Civet.  If not, see <http://www.gnu.org/licenses/>.
 import java.util.*;
 import java.io.*;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.mail.AuthenticationFailedException;
-import javax.mail.Authenticator;
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import jakarta.activation.DataHandler;
+import jakarta.activation.FileDataSource;
+import jakarta.mail.AuthenticationFailedException;
+import jakarta.mail.Authenticator;
+import jakarta.mail.BodyPart;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 //import javax.activation.*;
-//import javax.mail.*;
-//import javax.mail.internet.*;
-import javax.mail.util.ByteArrayDataSource;
+//import jakarta.mail.*;
+//import jakarta.mail.internet.*;
+import jakarta.mail.util.ByteArrayDataSource;
 import edu.clemson.lph.logging.Logger;
 
 import edu.clemson.lph.civet.prefs.CivetConfig;
@@ -121,7 +121,7 @@ public class MailMan {
 			    msg.addRecipient(Message.RecipientType.CC, new InternetAddress(sCC));
 			Transport.send(msg);
 		}
-		catch( javax.mail.MessagingException mex ) {
+		catch( jakarta.mail.MessagingException mex ) {
 			throw mex;
 		}
 		catch (Exception ex)
@@ -185,10 +185,10 @@ public class MailMan {
 				msg.addRecipient(Message.RecipientType.CC, new InternetAddress(sCC));
 			Transport.send(msg);
 		}
-		catch( javax.mail.AuthenticationFailedException auth ) {
+		catch( jakarta.mail.AuthenticationFailedException auth ) {
 			throw auth;
 		}
-		catch( javax.mail.MessagingException mex ) {
+		catch( jakarta.mail.MessagingException mex ) {
 			throw mex;
 		}
 		catch (Exception ex)
@@ -209,7 +209,7 @@ public class MailMan {
 	 * @param sMsg
 	 * @param aFiles MIMEFile arrayList 
 	 * @return
-	 * @throws javax.mail.AuthenticationFailedException
+	 * @throws jakarta.mail.AuthenticationFailedException
 	 */
 	public static boolean sendIt(String sTo, String sCC, String sSubject, String sMsg,
 			ArrayList<MIMEFile> aFiles)
@@ -275,10 +275,10 @@ public class MailMan {
 				msg.addRecipient(Message.RecipientType.CC, new InternetAddress(sCC));
 			Transport.send(msg);
 		}
-		catch( javax.mail.AuthenticationFailedException auth ) {
+		catch( jakarta.mail.AuthenticationFailedException auth ) {
 			throw auth;
 		}
-		catch( javax.mail.MessagingException mex ) {
+		catch( jakarta.mail.MessagingException mex ) {
 			throw mex;
 		}
 		catch (Exception ex)

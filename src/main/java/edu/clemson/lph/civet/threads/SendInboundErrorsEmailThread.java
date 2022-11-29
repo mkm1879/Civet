@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-import javax.mail.AuthenticationFailedException;
+import jakarta.mail.AuthenticationFailedException;
 import javax.swing.SwingUtilities;
 
 import edu.clemson.lph.logging.Logger;
@@ -195,13 +195,13 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 				MessageDialog.messageLater( prog.getWindowParent(), "Civet: Messages Sent", 
 						"Successfully sent: " + sbCVICounts.toString() );
 			}
-		} catch (javax.mail.AuthenticationFailedException eAuth) {
+		} catch (jakarta.mail.AuthenticationFailedException eAuth) {
 			MailMan.setUserID(null);
 			MailMan.setPassword(null);
 			logger.error(eAuth.getMessage() + "\nEmail Authentication Error");
 			MessageDialog.showMessage(prog.getWindowParent(), "Civet: Email Error", "Email server userID/password incorrect"
 					+ "\nEmail Host: " + CivetConfig.getSmtpHost() );
-		} catch (javax.mail.MessagingException e) {
+		} catch (jakarta.mail.MessagingException e) {
 			logger.error(e.getMessage() + "\nEmail Connection Error");
 		} catch (Exception ex) {
 			logger.error("Error Sending Email", ex );
@@ -252,7 +252,7 @@ class SendInboundErrorsEmailThread extends Thread implements CodeSource {
 			bRet = MailMan.sendIt(sEmail, sFileCopyAddress, 
 					"CVIs With Errors From " + sState + " to " + sHomeState + (iPart>1?" Part " + iPart:""),
 					sInBoundCVIErrorMessage, aFiles);
-		} catch (javax.mail.AuthenticationFailedException eAuth) {
+		} catch (jakarta.mail.AuthenticationFailedException eAuth) {
 			throw eAuth;
 		} catch (MailException me) {
 			sCurrentEmailError = me.getMessage();
