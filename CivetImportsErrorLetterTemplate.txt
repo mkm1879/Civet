@@ -1,9 +1,9 @@
 .himage.Logo.png
-.cb.South Carolina
-.cb.Department of Livestock
-.cb.Poultry Health Programs
-.cb.Office (803) 788-2260
-.cb.Fax (803) 736-0885
+.cb.State Name
+.cb.Agency Name
+.cb.Department Name
+.cb.Office (NNN) NNN-NNNN
+.cb.Fax (NNN) NNN-NNNN
 {{{Date}}}
 
 {{{OtherStateVet}}}
@@ -22,11 +22,11 @@ It is the responsibility of the licensed and accredited veterinarian who issues 
 
 Note: If the reason list includes "Certificate out of date" the logic applied was that the ADT rule allows 5 working days from the issuing veterinarian to the origin state veterinarian and another five working days to forward to the destination state veterinarian.  To allow a margin of error, at this time we only mark these "out of date" if received 30 days or more after issuance.
 
-Boyd H. Parr, DVM
+State Vet Name
 State Veterinarian
 
 .fimage.civet64.png
-.ci.DEPARTMENT OF LIVESTOCK POULTRY HEALTH PROGRAMS
-.csi.Animal Health Programs   PO Box 102406, Columbia, SC 29224-2406  (500 Clemson Road, Columbia, SC 29229) 
-.csi. 803.788.2260   FAX 803.736.0885    
-.csi. Public Service Activities
+.ci.Department Name
+.csi.Contact Address
+.csi. Contact Phone(s)  
+.csi. Other
