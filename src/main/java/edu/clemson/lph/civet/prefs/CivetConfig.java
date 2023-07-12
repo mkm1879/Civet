@@ -337,44 +337,6 @@ public class CivetConfig {
 	}
 
 	
-	public synchronized static String getZohoKey() {
-		String sRet = props.getProperty("zohoKey");
-		if( sRet != null && sRet.trim().length() == 0 ) 
-			sRet = null; 
-		return sRet;
-	}
-
-	public synchronized static String getZohoHost() {
-		return "smtp.zoho.com";
-	}
-
-	public synchronized static String getZohoPort() {
-		return "587";
-	}
-	
-	public synchronized static int getZohoPortInt() {
-		return 587;
-	}
-
-	public synchronized static String getZohoSecurity() {
-		return "STARTTLS";
-	}
-
-	public synchronized static String getZohoDomain() {
-		return "@mminformatics.com";
-	}
-
-	public synchronized static String getZohoFrom() {
-		return "civet@mminformatics.com";
-	}
-
-	public synchronized static String getZohoUser() {
-		return "civet@mminformatics.com";
-	}
-	public synchronized static String getZohoPass() {
-		return "$newOne" + getZohoKey();
-	}
-	
 	public synchronized static String getSmtpHost() {
 		String sRet = props.getProperty("smtpHost");
 		if( sRet != null && sRet.trim().length() == 0 ) {
@@ -386,16 +348,12 @@ public class CivetConfig {
 	public synchronized static String getSmtpPort() {
 		String sRet = props.getProperty("smtpPort");
 		if( sRet == null || sRet.trim().length() == 0 ) 
-			sRet = getZohoPort();
-		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = null; 
 		return sRet;
 	}
 
 	public synchronized static String getSmtpSecurity() {
 		String sRet = props.getProperty("smtpSecurity");
-		if( sRet == null || sRet.trim().length() == 0 ) 
-			sRet = getZohoSecurity();
 		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = null; 
 		return sRet;
@@ -404,8 +362,6 @@ public class CivetConfig {
 	public synchronized static int getSmtpPortInt() {
 		int iRet = -1;
 		String sRet = props.getProperty("smtpPort");
-		if( sRet == null || sRet.trim().length() == 0 ) 
-			sRet = getZohoPort();
 		try {
 			iRet = Integer.parseInt(sRet);
 		} catch( NumberFormatException nfe ) {
@@ -418,8 +374,6 @@ public class CivetConfig {
 	
 	public synchronized static String getSmtpDomain() {
 		String sRet = props.getProperty("smtpDomain");
-		if( sRet == null || sRet.trim().length() == 0 ) 
-			sRet = getZohoDomain();
 		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = null; 
 		return sRet;
@@ -440,8 +394,6 @@ public class CivetConfig {
 	public synchronized static String getEmailFrom() {
 		String sRet = null;
 		sRet = props.getProperty("emailFrom");
-		if( sRet == null || sRet.trim().length() == 0 ) 
-			sRet = getZohoFrom();
 		if( sRet == null || sRet.trim().length() == 0 ) 
 			sRet = null; 
 		return sRet;
@@ -621,10 +573,9 @@ public class CivetConfig {
 	public synchronized static boolean initEmail(boolean bLogin) {
 		boolean bRet = true;
 		String sUserID = null;
-		String sZohoKey = getZohoKey();
 		String sSmtpHost = getSmtpHost();
-		if( sSmtpHost == null && sZohoKey == null ) {
-			logger.info("No email setup.  Either smtpHost or zohoKey is required to use email features.");
+		if( sSmtpHost == null ) {
+			logger.info("No email setup.  smtpHost is required to use email features.");
 			return false;
 		}
 		if( sSmtpHost != null ) {
@@ -650,15 +601,6 @@ public class CivetConfig {
 					}
 				}
 			}
-		}
-		else if( sZohoKey != null ) {
-			MailMan.setDefaultHost(CivetConfig.getZohoHost());
-			sUserID = CivetConfig.getZohoUser();
-			String sPassword = CivetConfig.getZohoPass();
-			MailMan.setUserID(sUserID);
-			MailMan.setPassword(sPassword);
-			MailMan.setDefaultPort(CivetConfig.getZohoPortInt());
-			MailMan.setSecurity(CivetConfig.getZohoSecurity());
 		}
 		String sFrom = CivetConfig.getEmailFrom();
 		if( sFrom != null )

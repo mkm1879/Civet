@@ -4,7 +4,7 @@ homeStateAbbr=SC
 homeStateKey=56
 
 #HERDS
-herdsWebServiceURL=https://LPHApps.clemson.edu/USAHerds.API
+herdsWebServiceURL=https://HerdsHost.domain.com/USAHerds.API
 brokenLIDs=true
 stateIDChecksum=TRUE
 standAlone=no
@@ -26,13 +26,12 @@ ignoreSkipped=
 saveSkipped=
 
 #Email
-zohoKey=
-smtpHost=smtp-out.clemson.edu
+smtpHost=smtp.domain.com
 smtpPort=25
 smtpSecurity=NONE
 smtpDomain=@gmail.com
-emailFrom=mmarti5@clemson.edu
-emailReplyTo=civet@mminformatics.com
+emailFrom=Error@domain.com
+emailReplyTo=michael.martin.dvm.mph@gmail.com
 emailTestTo=
 emailCopyTo=
 maxAttachSize=5M
