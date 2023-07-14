@@ -23,7 +23,7 @@ greater data interoperability, especially around animal disease traceability.  T
 we ask in return is that you keep us informed of your use so that we can properly plan any 
 enhancements and bug-fixes.  At least semi-annually please send your Java and Civet version 
 numbers, the number of instances of Civet you are running in test and production, and any 
-unusually details of your application to mmarti5@clemson.edu.
+unusually details of your application to michael.martin.dvm.mph@gmail.com.
 */
 
 import java.awt.EventQueue;
